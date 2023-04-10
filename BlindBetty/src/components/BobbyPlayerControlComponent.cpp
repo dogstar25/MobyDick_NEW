@@ -1,9 +1,4 @@
 #include "BobbyPlayerControlComponent.h"
-
-#include "IMGui/IMGuiUtil.h"
-#include "SceneManager.h"
-#include "EnumMap.h"
-#include "game.h"
 #include "../GameConstants.h"
 
 extern std::unique_ptr<Game> game;

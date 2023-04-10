@@ -149,7 +149,7 @@
     <Lib>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\projects\MobyDick\MobyDick\vendor\jsoncpp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <Verbose>true</Verbose>
       <AdditionalOptions>
@@ -190,7 +190,7 @@
     <Lib>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\projects\MobyDick\MobyDick\vendor\jsoncpp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <Verbose>true</Verbose>
       <AdditionalOptions>
@@ -308,6 +308,7 @@
     <ClCompile Include="src\ContextManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\MobyDick.h" />
     <ClInclude Include="src\actions\ActionFactory.h" />
     <ClInclude Include="src\actions\ActorWarpAction.h" />
     <ClInclude Include="src\actions\PrimitiveMoveAction.h" />
@@ -379,8 +380,6 @@
     <ClInclude Include="src\components\PhysicsComponent.h" />
     <ClInclude Include="src\components\RenderComponent.h" />
     <ClInclude Include="src\components\Component.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="resource1.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Clock.h" />
@@ -416,14 +415,13 @@
     <None Include="readme.md" />
     <None Include="src\opengl\shaders\basic.glsl" />
     <None Include="src\opengl\shaders\uberShader.glsl" />
-    <None Include="vcpkg.json_old" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties assets_4gameObjectDefinitions_4commonObjects_1json__JsonSchema="gina" />
+      <UserProperties />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

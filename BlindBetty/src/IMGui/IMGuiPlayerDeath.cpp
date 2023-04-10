@@ -1,9 +1,5 @@
 #include "IMGuiPlayerDeath.h"
-
-#include "Scene.h"
-#include <SDL2/SDL.h>
 #include "BB_IMGuiUtil.h"
-#include "IMGui/IMGuiUtil.h"
 #include "../GameConstants.h"
 #include "../BBContextManager.h"
 

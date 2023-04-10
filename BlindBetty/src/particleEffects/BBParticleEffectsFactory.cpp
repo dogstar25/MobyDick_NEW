@@ -1,9 +1,5 @@
 #include "BBParticleEffectsFactory.h"
-#include "BaseConstants.h"
-#include "particleEffects/ParticleEffectsFactory.h"
-
-
-#include <iostream>
+#include "GameParticleEffects.h"
 
 
 ParticleEffect BBParticleEffectsFactory::create(std::string particleType)

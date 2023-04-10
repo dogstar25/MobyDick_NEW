@@ -1,7 +1,5 @@
 #pragma once
-#include "components/Component.h"
-#include "ComponentFactory.h"
-#include <json/json.h>
+#include "MobyDick.h"
 
 class Scene;
 

@@ -1,10 +1,6 @@
 #pragma once
 
-#include "GameParticleEffects.h"
-#include "particleEffects/ParticleEffectsFactory.h"
-
-#include <memory>
-#include <optional>
+#include "MobyDick.h"
 
 
 class BBParticleEffectsFactory : public ParticleEffectsFactory{

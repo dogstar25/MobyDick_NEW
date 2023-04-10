@@ -1,8 +1,5 @@
 #pragma once
-#include <memory.h>
-
-#include "cutScenes/CutScene.h"
-#include "cutScenes/CutSceneFactory.h"
+#include "MobyDick.h"
 
 class BBCutSceneFactory : public CutSceneFactory
 {

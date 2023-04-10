@@ -1,5 +1,5 @@
 #pragma once
-#include "EnumMap.h"
+#include "MobyDick.h"
 
 
 class BBEnumMap : public EnumMap

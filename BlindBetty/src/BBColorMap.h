@@ -1,5 +1,5 @@
 #pragma once
-#include "ColorMap.h"
+#include "MobyDick.h"
 
 
 class BBColorMap : public ColorMap

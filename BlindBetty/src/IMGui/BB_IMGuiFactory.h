@@ -1,11 +1,6 @@
 #pragma once
-#include <memory>
-#include <string>
-#include "IMGui/IMGuiItem.h"
-#include "IMGui/IMGuiFactory.h"
-#include <SDL2/SDL.h>
-#include <box2d/box2d.h>
-#include "Scene.h"
+
+#include "MobyDick.h"
 
 class BB_IMGuiFactory : public IMGuiFactory
 {

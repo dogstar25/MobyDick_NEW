@@ -1,10 +1,5 @@
 #pragma once
-#include "IMGui/IMGuiItem.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_sdlrenderer.h"
-
-#include "GameObject.h"
-#include <memory>
+#include "MobyDick.h"
 
 
 class IMGuiPlayerDeath : public IMGuiItem

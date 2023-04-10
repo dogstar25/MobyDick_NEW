@@ -1,8 +1,5 @@
 #include "ActorStairsMoveAction.h"
-
 #include "../GameConstants.h"
-#include "GameObject.h"
-
 
 void ActorStairsMoveAction::perform(GameObject* gameObject, int direction)
 {

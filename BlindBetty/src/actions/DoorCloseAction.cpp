@@ -1,6 +1,4 @@
 #include "DoorCloseAction.h"
-#include <iostream>
-#include "game.h"
 #include "../GameConstants.h"
 
 extern std::unique_ptr<Game> game;

@@ -329,9 +329,6 @@
     <ClInclude Include="src\TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\EnumMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -420,9 +417,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\actions\DefaultRotateAction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ContactListener.h">
@@ -584,6 +578,9 @@
     <ClInclude Include="src\actions\ActorWarpAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\MobyDick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="ExtraLibs\SDL2main.lib" />
@@ -594,7 +591,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vcpkg.json_old" />
     <None Include="src\opengl\shaders\basic.glsl" />
     <None Include="src\opengl\shaders\uberShader.glsl" />
     <None Include="readme.md" />

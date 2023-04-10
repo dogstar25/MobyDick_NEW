@@ -1,6 +1,7 @@
 #include "BBColorMap.h"
 #include "GameConstants.h"
 
+
 BBColorMap::BBColorMap()
 {
 

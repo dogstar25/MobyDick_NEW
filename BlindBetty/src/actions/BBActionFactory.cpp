@@ -1,16 +1,9 @@
 #include "BBActionFactory.h"
-#include "actions/ActionFactory.h"
-#include "BaseConstants.h"
-#include "actions/NoAction.h"
 #include "ActorMoveAction.h"
 #include "DoorCloseAction.h"
 #include "DoorOpenAction.h"
 #include "DoorEnterAction.h"
 #include "ActorStairsMoveAction.h"
-
-
-#include <iostream>
-
 
 std::shared_ptr<Action> BBActionFactory::create(std::string actionType)
 {

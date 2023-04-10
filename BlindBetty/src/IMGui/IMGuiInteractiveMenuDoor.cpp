@@ -1,10 +1,4 @@
 #include "IMGuiInteractiveMenuDoor.h"
-#include "IMGui/IMGuiUtil.h"
-#include "ContextManager.h"
-#include "Util.h"
-#include "game.h"
-#include <memory>
-#include "components/AnimationComponent.h"
 #include "../gameConstants.h"
 
 

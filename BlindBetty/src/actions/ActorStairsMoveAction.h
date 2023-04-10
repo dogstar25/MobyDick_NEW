@@ -1,6 +1,5 @@
 #pragma once
-#include "actions/Action.h"
-#include "../GameConstants.h"
+#include "MobyDick.h"
 
 class ActorStairsMoveAction : public Action
 {

@@ -1,11 +1,7 @@
 #include "PlayerDeath.h"
 
-#include "SceneManager.h"
-#include "game.h"
 #include "../GameConstants.h"
-#include "triggers/Trigger.h"
 #include "../particleEffects/GameParticleEffects.h"
-#include "SoundManager.h"
 
 
 extern std::unique_ptr<Game> game;
