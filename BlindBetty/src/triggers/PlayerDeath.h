@@ -1,5 +1,6 @@
 #pragma once
-#include "triggers/Trigger.h"
+#include "MobyDick.h"
+
 class PlayerDeath : public Trigger
 {
 

@@ -1,8 +1,6 @@
 #pragma once
-#include "GameObject.h"
-#include "IMGui/IMGuiItem.h"
 
-#include <memory>
+#include "MobyDick.h"
 
 class IMGuiInteractiveMenuDoor : public IMGuiItem
 {

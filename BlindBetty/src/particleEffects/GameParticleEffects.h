@@ -1,5 +1,5 @@
 #pragma once
-#include "particleEffects\BaseParticleEffects.h"
+
 
 namespace ParticleEffects {
 

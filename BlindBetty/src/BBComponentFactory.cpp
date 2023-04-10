@@ -1,8 +1,5 @@
 #include "BBComponentFactory.h"
-
 #include "GameConstants.h"
-#include "components/BrainComponent.h"
-#include "components/InventoryComponent.h"
 #include "components/BobbyPlayerControlComponent.h"
 
 std::shared_ptr<Component> BBComponentFactory::create(

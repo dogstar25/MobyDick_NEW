@@ -1,16 +1,8 @@
 #include "BBContactListener.h"
-#include "SceneManager.h"
-
-#include <iostream>
-
 #include "BBContextManager.h"
-#include "game.h"
 #include "GameConstants.h"
-#include "SoundManager.h"
 #include "particleEffects/GameParticleEffects.h"
-#include "components/InventoryComponent.h"
 #include "components/BobbyPlayerControlComponent.h"
-#include "components/AttachmentsComponent.h"
 
 extern std::unique_ptr<Game> game;
 

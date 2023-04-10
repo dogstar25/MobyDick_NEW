@@ -1,6 +1,4 @@
 #include "BB_IMGuiUtil.h"
-#include "IMGui/IMGuiUtil.h"
-#include "GameConfig.h"
 #include "../BBContextManager.h"
 
 extern std::unique_ptr<Game> game;

@@ -1,8 +1,6 @@
 #pragma once
-#pragma once
-#include "actions\Action.h"
 
-#include <SDL2/SDL.h>
+#include "MobyDick.h"
 
 class DoorCloseAction : public Action
 {

@@ -1,10 +1,5 @@
 #pragma once
-
-#include <memory>
-#include <optional>
-
-#include "actions/Action.h"
-#include "actions/ActionFactory.h"
+#include "MobyDick.h"
 
 class BBActionFactory : public ActionFactory{
 

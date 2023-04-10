@@ -1,12 +1,7 @@
 #pragma once
 
-#include <memory>
-#include <string>
-#include <bitset>
-#include <chrono>
+#include "MobyDick.h"
 
-#include "components/PlayerControlComponent.h"
-#include "Timer.h"
 
 class AnimationComponent;
 class PhysicsComponent;

@@ -1,10 +1,5 @@
 #pragma once
-#include <memory>
-#include <string>
-#include "triggers/TriggerFactory.h"
-#include "triggers/Trigger.h"
-#include <SDL2/SDL.h>
-#include <box2d/box2d.h>
+#include "MobyDick.h"
 
 class BBTriggerFactory : public TriggerFactory
 {

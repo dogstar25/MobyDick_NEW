@@ -1,30 +1,9 @@
 #include "BBGame.h"
-
 #include "GameConstants.h"
-#include "GameObjectManager.h"
-#include "SoundManager.h"
-#include "LevelManager.h"
 #include "BBContextManager.h"
-#include "Camera.h"
-#include "Clock.h"
-#include "ContactFilter.h"
-#include "ContactListener.h"
-#include "IMGui/IMGuiUtil.h"
-#include <fstream>
-
-#include "EnumMap.h"
-#include "ColorMap.h"
-
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_sdlrenderer.h"
 
 using namespace std::chrono_literals;
 
-
-/*
-Initialize Game
-*/
 bool BBGame::init(std::shared_ptr<ContactListener> contactListener, std::shared_ptr<ContactFilter> contactFilter,
 	std::shared_ptr<ComponentFactory> componentFactory, std::shared_ptr<ActionFactory> actionFactory, std::shared_ptr<ParticleEffectsFactory> particleEffectsFactory,
 	std::shared_ptr<CutSceneFactory> cutSceneFactory, std::shared_ptr<IMGuiFactory> iMGuiFactory, std::shared_ptr<TriggerFactory> triggerFactory, std::shared_ptr<ContextManager> contextManager,

@@ -1,7 +1,5 @@
 #include "BBContactFilter.h"
-
 #include "GameConstants.h"
-#include "GameObject.h"
 
 BBContactFilter::BBContactFilter()
 {

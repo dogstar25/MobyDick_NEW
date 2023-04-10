@@ -1,12 +1,6 @@
 #include "IMGuiTestLevelMenu.h"
-
-#include "Scene.h"
-#include <SDL2/SDL.h>
-#include "BB_IMGuiUtil.h"
-#include "IMGui/IMGuiUtil.h"
-
 #include "../GameConstants.h"
-#include "../BBContextManager.h"
+#include "../IMGui/BB_IMGuiUtil.h"
 
 
 extern std::unique_ptr<Game> game;

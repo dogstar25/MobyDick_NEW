@@ -1,9 +1,6 @@
-#include "IMGui/IMGuiItem.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_sdlrenderer.h"
+#pragma once
+#include "MobyDick.h"
 
-#include "GameObject.h"
-#include <memory>
 
 
 class IMGuiTestLevelMenu : public IMGuiItem

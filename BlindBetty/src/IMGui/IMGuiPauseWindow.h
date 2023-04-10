@@ -1,10 +1,6 @@
-#include "IMGui/IMGuiItem.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_sdlrenderer.h"
+#pragma once
 
-#include "GameObject.h"
-#include <memory>
-
+#include "MobyDick.h"
 
 class IMGuiPauseWindow : public IMGuiItem
 {
