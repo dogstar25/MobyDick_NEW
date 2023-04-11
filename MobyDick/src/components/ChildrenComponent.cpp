@@ -194,8 +194,8 @@ b2Vec2 ChildrenComponent::_calcChildPosition(b2Vec2 childSize, int childCount, C
 	//Calculate top left corner of child
 	switch (location.slot) {
 	case 1:
-		x = parentPosition.x - (childSize.x);
-		y = parentPosition.y - (childSize.y);
+		x = parentPosition.x - childSize.x;
+		y = parentPosition.y - childSize.y;
 		break;
 	case 2:
 		x = parentPosition.x;
