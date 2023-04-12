@@ -308,6 +308,7 @@
     <ClCompile Include="src\ContextManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\MobyDick.h" />
     <ClInclude Include="src\actions\ActionFactory.h" />
     <ClInclude Include="src\actions\PrimitiveMoveAction.h" />
     <ClInclude Include="src\ColorMap.h" />
