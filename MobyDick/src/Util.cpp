@@ -352,7 +352,6 @@ namespace util
 
 		}
 
-		std::cout << "ComponentType " << componentType << "not found" << std::endl;
 		assert(true && "Component not found");
 		return Json::Value();
 	}

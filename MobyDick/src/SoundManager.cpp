@@ -123,7 +123,7 @@ int SoundManager::playSound(std::string id, int distanceMagnitude, bool loops )
 		channelPlayedOn = Mix_PlayChannel(availableChannel, m_sfxChunks[id], loopFlag);
 	}
 	else {
-		std::cout << "negative sound channel for " << id << std::endl;
+		//std::cout << "negative sound channel for " << id << std::endl;
 		return -1;
 	}
 
