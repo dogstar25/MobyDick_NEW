@@ -34,6 +34,8 @@ EnumMap::EnumMap()
 	m_enumMap["UICONTROL_COMPONENT"] = (int)ComponentTypes::UICONTROL_COMPONENT;
 	m_enumMap["VITALITY_COMPONENT"] = (int)ComponentTypes::VITALITY_COMPONENT;
 	m_enumMap["WEAPON_COMPONENT"] = (int)ComponentTypes::WEAPON_COMPONENT;
+	m_enumMap["LIGHT_COMPONENT"] = (int)ComponentTypes::LIGHT_COMPONENT;
+	m_enumMap["LIGHTED_TREATMENT_COMPONENT"] = (int)ComponentTypes::LIGHTED_TREATMENT_COMPONENT;
 
 
 	//Renderer Types
@@ -204,6 +206,10 @@ EnumMap::EnumMap()
 	//Hud Item Types
 	m_enumMap["HudItemTypes::STATUS_SINGLE"] = (int)HudItemTypes::STATUS_SINGLE;
 	m_enumMap["HudItemTypes::STATUS_SERIES"] = (int)HudItemTypes::STATUS_SERIES;
+
+	m_enumMap["LightType::TEXTURE_LIGHT"] = (int)LightType::TEXTURE_LIGHT;
+	m_enumMap["LightType::SHADER_LIGHT"] = (int)LightType::SHADER_LIGHT;
+	m_enumMap["LightType::RAY_LIGHT"] = (int)LightType::RAY_LIGHT;
 
 	m_enumMap["DISABLED_TYPE::RENDER"] = DISABLED_TYPE::RENDER;
 	m_enumMap["DISABLED_TYPE::UPDATE"] = DISABLED_TYPE::UPDATE;

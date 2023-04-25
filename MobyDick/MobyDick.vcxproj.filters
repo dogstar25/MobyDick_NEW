@@ -291,6 +291,12 @@
     <ClCompile Include="src\actions\ActorWarpAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\components\LightedTreatmentComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\LightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -579,6 +585,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MobyDick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\LightedTreatmentComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\LightComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

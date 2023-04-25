@@ -224,9 +224,13 @@ void RenderComponent::render()
 		return;
 	}
 
-	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-	SDL_FRect destQuad = { getRenderDestRect() };
+	//If this object has a lighted treatment component then skip the render
+	//because the lighted treatment component will do the rendering
+	if (parent()->hasComponent(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)) {
+		return;
+	}
 
+	SDL_FRect destQuad = { getRenderDestRect() };
 	render(destQuad);
 
 }
