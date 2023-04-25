@@ -113,6 +113,7 @@ namespace TraitTag {
 	inline constexpr int conditional_impasse = 14;
 	inline constexpr int complex_impasse = 15;
 	inline constexpr int mobile = 16;
+	inline constexpr int light = 17;
 
 }
 
@@ -205,6 +206,12 @@ enum class PhysicsChainType {
 	CW_REFLECT_OUT
 };
 
+enum class LightType {
+	TEXTURE_LIGHT = 0,
+	SHADER_LIGHT,
+	RAY_LIGHT
+};
+
 namespace DebugSceneSettings {
 	inline constexpr int SHOW_PHYSICS_DEBUG = 0;
 	inline constexpr int SHOW_NAVIGATION_DEBUG_MAP = 1;
@@ -239,8 +246,10 @@ namespace ComponentTypes {
 	inline constexpr int UICONTROL_COMPONENT = 22;
 	inline constexpr int VITALITY_COMPONENT = 23;
 	inline constexpr int WEAPON_COMPONENT = 24;
+	inline constexpr int LIGHT_COMPONENT = 25;
+	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 26;
 	
-	inline constexpr int LAST_BASE_COMPONENT = 26;
+	inline constexpr int LAST_BASE_COMPONENT = 27;
 
 }
 

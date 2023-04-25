@@ -214,6 +214,8 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\components\LightComponent.cpp" />
+    <ClCompile Include="src\components\LightedTreatmentComponent.cpp" />
     <ClCompile Include="src\actions\ActionFactory.cpp" />
     <ClCompile Include="src\actions\ActorWarpAction.cpp" />
     <ClCompile Include="src\actions\PrimitiveMoveAction.cpp" />
@@ -309,6 +311,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MobyDick.h" />
+    <ClInclude Include="src\components\LightComponent.h" />
+    <ClInclude Include="src\components\LightedTreatmentComponent.h" />
     <ClInclude Include="src\actions\ActionFactory.h" />
     <ClInclude Include="src\actions\ActorWarpAction.h" />
     <ClInclude Include="src\actions\PrimitiveMoveAction.h" />

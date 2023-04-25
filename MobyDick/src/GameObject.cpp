@@ -9,6 +9,7 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_sdlrenderer.h"
 #include "Util.h"
+#include "components/LightedTreatmentComponent.h"
 
 
 extern std::unique_ptr<Game> game;
@@ -307,6 +308,12 @@ void GameObject::render()
 		if (hasComponent(ComponentTypes::CONTAINER_COMPONENT)) {
 
 			getComponent<ContainerComponent>(ComponentTypes::CONTAINER_COMPONENT)->render();
+		}
+
+		//If you have a Light treatment component, then render it
+		if (hasComponent(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)) {
+
+			getComponent<LightedTreatmentComponent>(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)->render();
 		}
 
 	}
