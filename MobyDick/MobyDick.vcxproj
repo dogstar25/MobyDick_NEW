@@ -74,32 +74,32 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\projects\MobyDick\MobyDick\vendor;C:\projects\MobyDick\MobyDick\vendor\jsoncpp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\lib\</OutDir>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\projects\vcpkg\installed\x64-windows\lib;C:\projects\MobyDick\MobyDick\vendor\jsoncpp;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <SourcePath>C:\projects\MobyDick\MobyDick\vendor;$(SourcePath)</SourcePath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\projects\MobyDick\MobyDick\vendor;C:\projects\MobyDick\MobyDick\vendor\jsoncpp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\lib\</OutDir>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\projects\vcpkg\installed\x64-windows\lib;C:\projects\MobyDick\MobyDick\vendor\jsoncpp;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <SourcePath>C:\projects\MobyDick\MobyDick\vendor;$(SourcePath)</SourcePath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
@@ -419,6 +419,7 @@
     <None Include="readme.md" />
     <None Include="src\opengl\shaders\basic.glsl" />
     <None Include="src\opengl\shaders\uberShader.glsl" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,7 @@
+Package: imgui
+Feature: sdl2-renderer-binding
+Depends: sdl2
+Architecture: x64-windows-static
+Multi-Arch: same
+Description: Make available SDL2 Renderer binding
+Status: install ok installed
