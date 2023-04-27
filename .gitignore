@@ -259,3 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+#VCPKG
+/MobyDick/vcpkg_installed/x64-windows/vcpkg/updates
