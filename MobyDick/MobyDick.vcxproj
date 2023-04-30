@@ -93,13 +93,13 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
@@ -417,14 +417,14 @@
     <None Include="readme.md" />
     <None Include="src\opengl\shaders\basic.glsl" />
     <None Include="src\opengl\shaders\uberShader.glsl" />
-    <None Include="vcpkg.json_old" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties assets_4gameObjectDefinitions_4commonObjects_1json__JsonSchema="gina" />
+      <UserProperties />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
