@@ -262,3 +262,4 @@ __pycache__/
 
 #VCPKG
 /MobyDick/vcpkg_installed/x64-windows/vcpkg/updates
+/MobyDick/vcpkg_installed/x64-windows
