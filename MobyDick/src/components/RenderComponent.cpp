@@ -60,7 +60,7 @@ RenderComponent::RenderComponent(Json::Value componentJSON)
 
 	if (componentJSON.isMember("outline")) {
 		m_renderOutline = true;
-		m_outLineColor =  util::JsonToColor(componentJSON["outline"]["color"]);
+		m_outLineColor = game->colorMap()->toSDLColor(componentJSON["outline"]["color"].asString());
 	}
 	else {
 		m_renderOutline = false;
@@ -159,7 +159,7 @@ Get the portion of the gameObject texture to render
 For animated objects, this is the portion of the texture that
 represents the current frame of animation
 */
-SDL_Rect* RenderComponent::getRenderTextureRect(std::shared_ptr<Texture> texture)
+SDL_Rect* RenderComponent::getRenderTextureRect(Texture* texture)
 {
 
 	SDL_Rect* textureSrcRect=nullptr;
@@ -231,12 +231,45 @@ void RenderComponent::render()
 	}
 
 	SDL_FRect destQuad = { getRenderDestRect() };
-	render(destQuad);
+	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
 
 }
 
-
 void RenderComponent::render(SDL_FRect destQuad)
+{
+
+	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
+
+
+}
+
+void RenderComponent::render(SDL_FPoint destPoint)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	destQuad.x = destPoint.x;
+	destQuad.y = destPoint.y;
+	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
+
+}
+
+void RenderComponent::render(Texture* texture)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	render(texture, m_color, destQuad, m_textureBlendMode);
+
+}
+
+void RenderComponent::render(Texture* texture, SDL_Color color, RenderBlendMode textureBlendMode)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	render(texture, color, destQuad, textureBlendMode);
+
+}
+
+void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQuad, RenderBlendMode textureBlendMode)
 {
 	
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
@@ -261,16 +294,15 @@ void RenderComponent::render(SDL_FRect destQuad)
 
 		bool outline{};
 		SDL_Color outlineColor{};
-		SDL_Color color = m_color;
 		float angle = transform->angle();
 
 		//SDL_FRect destQuad = getRenderDestRect();
-		SDL_Rect* textureSourceQuad = getRenderTextureRect(getRenderTexture());
+		SDL_Rect* textureSourceQuad = getRenderTextureRect(texture);
 
 		//SDL Only Stuff
 		if (GameConfig::instance().rendererType() == RendererType::SDL) {
 
-			SDL_Texture* sdlTexture = getRenderTexture()->sdlTexture;
+			SDL_Texture* sdlTexture = texture->sdlTexture;
 		}
 
 		//Alter the render variables if there is an Overlay applied!
@@ -291,7 +323,6 @@ void RenderComponent::render(SDL_FRect destQuad)
 		}
 		else {
 
-			color = m_color;
 			outline = m_renderOutline;
 			outlineColor = m_outLineColor;
 		}
@@ -346,12 +377,42 @@ void RenderComponent::render(SDL_FRect destQuad)
 
 		}
 		else {
-			game->renderer()->drawSprite(destQuad, color, getRenderTexture().get(), textureSourceQuad, angle, outline, outlineColor, m_textureBlendMode);
+			game->renderer()->drawSprite(parent()->layer(), destQuad, color, texture, textureSourceQuad, angle, outline, outlineColor, textureBlendMode);
 		}
 
 	}
 
 }
+
+void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode)
+{
+	///
+	///
+	/// NOTE:I dont know if this works. I used it for a while and realized it might not be the best in terms of
+	/// performance. So, for now, I am changing the render target right before the render instead of
+	/// this which is switching the render tagert every time this is called. this was done during the time
+	/// of texture light development and i'm still learning (05/13/2023)
+	/// 
+	//Set the render target to the texture destination texture
+	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
+
+	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+	SDL_Color color = gameObectToRender->getColor();
+	float angle = gameObectToRender->getAngle();
+
+	SDL_Rect* textureSourceQuad = getRenderTextureRect(renderComponent->getRenderTexture().get());
+	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
+	
+
+	game->renderer()->drawSprite(parent()->layer(), destQuad, color, renderComponent->getRenderTexture().get(), 
+		textureSourceQuad, angle, false, SDL_Color(), textureBlendMode);
+
+	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+
+}
+
+
 
 void RenderComponent::applyDisplayOverlay(DisplayOverlay displayOverlay)
 {

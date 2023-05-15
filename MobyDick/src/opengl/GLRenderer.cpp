@@ -5,6 +5,7 @@
 
 #include "LineDrawBatch.h"
 #include "SpriteDrawBatch.h"
+#include "../IMGui/IMGuiUtil.h"
 
 #include "../game.h"
 
@@ -79,7 +80,7 @@ bool GLRenderer::clear()
 	return true;
 }
 
-bool GLRenderer::present()
+void GLRenderer::drawBatches()
 {
 
 	//Draw each batch if batching is turned on
@@ -93,13 +94,18 @@ bool GLRenderer::present()
 
 	}
 
+}
+
+bool GLRenderer::present()
+{
+
 	SDL_GL_SwapWindow(game->window());
 	//SDL_Delay(1);
 
 	return true;
 }
 
-void GLRenderer::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
+void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
 	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
 {
 
@@ -207,7 +213,7 @@ void GLRenderer::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* textur
 	//auto shadertype = GLShaderType::GLOW;
 
 	if (GameConfig::instance().openGLBatching() == true) {
-		_addVertexBufferToBatch(spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode);
+		_addVertexBufferToBatch(spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
 	}
 	else {
 		Shader& shader = static_cast<GLRenderer*>(game->renderer())->shader(shadertype);
@@ -224,7 +230,7 @@ void GLRenderer::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* textur
 
 }
 
-void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color)
+void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer)
 {
 
 	glm::vec4 normalizedcolor = util::glNormalizeColor(color);
@@ -254,7 +260,7 @@ void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color)
 	auto shadertype = GLShaderType::LINE;
 
 	if (GameConfig::instance().openGLBatching() == true) {
-		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype);
+		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype, layer);
 	}
 	else {
 		Shader shader = static_cast<GLRenderer*>(game->renderer())->shader(shadertype);
@@ -275,7 +281,7 @@ GLRenderer::~GLRenderer()
 }
 
 void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, 
-	GLShaderType shaderType, RenderBlendMode textureBlendMode)
+	GLShaderType shaderType, RenderBlendMode textureBlendMode, int layer)
 {
 
 	std::stringstream texturePtrString;
@@ -290,7 +296,7 @@ void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& sprite
 	}
 	
 	//Build the map key
-	keyString << (int)objectType << "_" << texturePtrString.str() << "_" << (int)shaderType << "_" << (int)textureBlendMode;
+	keyString << (int)layer << "_" << (int)objectType << "_" << texturePtrString.str() << "_" << (int)shaderType << "_" << (int)textureBlendMode;
 
 	//See if the drawBatch for this combo exists yet
 	if (m_drawBatches.find(keyString.str()) == m_drawBatches.end()) {
@@ -310,13 +316,13 @@ void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& sprite
 }
 
 
-void GLRenderer::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType)
+void GLRenderer::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer)
 {
 
 	std::stringstream keyString;
 
 	//Build the map key
-	keyString << (int)objectType << "_" << (int)shaderType;
+	keyString << (int)layer << "_" <<(int)objectType << "_" << (int)shaderType;
 
 	//See if the drawBatch for this combo exists yet
 	if (m_drawBatches.find(keyString.str()) == m_drawBatches.end()) {
@@ -387,7 +393,7 @@ void GLRenderer::renderPrimitives(int layerIndex)
 
 	for (auto& line : m_primitiveLines) {
 
-		drawLine(line.pointA, line.pointB, line.color);
+		drawLine(line.pointA, line.pointB, line.color, layerIndex);
 
 	}
 

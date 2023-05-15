@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "game.h"
+#include "gameConfig.h"
 #include "IMGui/IMGuiUtil.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
@@ -94,6 +95,13 @@ void SceneManager::run()
 			scene.render();
 		}
 
+		//If our Renderer is OpenGL, and we are batching, then we need to send the vertex data that hasn't been drawn yet
+		//This needs to happen before the IMGui draw piece below
+		if (GameConfig::instance().rendererType() == RendererType::OPENGL &&
+			GameConfig::instance().openGLBatching() == true) {
+			game->renderer()->drawBatches();
+		}
+
 		//Render any IMGui frames that were updated in this loop
 		ImGui::MobyDickRenderFrame();
 
@@ -142,12 +150,13 @@ std::optional<SceneAction> SceneManager::pollEvents()
 					//	//SDL_SetWindowMouseGrab(game->window(), SDL_FALSE);
 
 					//	break;
-					case SDL_WINDOWEVENT_MINIMIZED:
+					case SDL_WINDOWEVENT_RESIZED:
 						//SDL_SetWindowKeyboardGrab(game->window(), SDL_FALSE);
 						//SDL_SetWindowMouseGrab(game->window(), SDL_FALSE);
 						//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Switched to PAUSE", "Switched to PAUSE", game->window());
-						sceneAction = SceneAction{};
-						sceneAction->actionCode = SCENE_ACTION_WINDOW_PAUSE;
+						//glViewport(0, 0, event.window.data1, event.window.data2);
+						//sceneAction = SceneAction{};
+						//sceneAction->actionCode = SCENE_ACTION_WINDOW_PAUSE;
 						break;
 
 					case SDL_WINDOWEVENT_RESTORED:

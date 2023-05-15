@@ -202,6 +202,7 @@ EnumMap::EnumMap()
 	m_enumMap["conditional_impasse"] = TraitTag::conditional_impasse;
 	m_enumMap["complex_impasse"] = TraitTag::complex_impasse;
 	m_enumMap["mobile"] = TraitTag::mobile;
+	m_enumMap["light"] = TraitTag::light;
 
 	//Hud Item Types
 	m_enumMap["HudItemTypes::STATUS_SINGLE"] = (int)HudItemTypes::STATUS_SINGLE;

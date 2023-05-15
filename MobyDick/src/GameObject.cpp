@@ -286,12 +286,6 @@ void GameObject::render()
 			getComponent<HudComponent>(ComponentTypes::HUD_COMPONENT)->render();
 		}
 
-		//If you have a vitality component, then render the vitality items
-		if (hasComponent(ComponentTypes::VITALITY_COMPONENT)) {
-
-			getComponent<VitalityComponent>(ComponentTypes::VITALITY_COMPONENT)->render();
-		}
-
 		//If you have a IMGui component, then render it
 		if (hasComponent(ComponentTypes::IMGUI_COMPONENT)) {
 
@@ -318,6 +312,20 @@ void GameObject::render()
 
 	}
 }
+
+bool GameObject::intersectsWith(GameObject* gameObject)
+{
+	SDL_FRect compareObjectRect = gameObject->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
+	SDL_FRect thisObjectRect = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
+
+	if (SDL_HasIntersectionF(&compareObjectRect, &thisObjectRect) ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 
 void GameObject::reset()
 {

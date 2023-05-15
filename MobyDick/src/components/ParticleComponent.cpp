@@ -56,7 +56,7 @@ void ParticleComponent::render()
 
 			SDL_FRect destRect = renderComponent->getRenderDestRect(positionRect);
 
-			game->renderer()->drawSprite(destRect, particle.color, particle.texture, &particle.texture->textureAtlasQuad, 0, false, SDL_Color{}, RenderBlendMode::ADD);
+			game->renderer()->drawSprite(parent()->layer(), destRect, particle.color, particle.texture, &particle.texture->textureAtlasQuad, 0, false, SDL_Color{}, RenderBlendMode::ADD);
 
 		}
 	}

@@ -211,6 +211,12 @@ void Game::_displayLoadingMsg()
 		texture.sdlTexture = sdlTexture;
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
+
+		//here how we get the texureId used by imgui
+		//USE it here below ToDo!
+		int test = (GLuint)ImGui::GetIO().Fonts->TexID;
+		/////
+
 		GL_TextureIndexType textureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
 		GLuint textureAtlasId = static_cast<GLRenderer*>(renderer())->getTextureId(textureIndex);
 		glActiveTexture((int)textureIndex);
@@ -229,7 +235,7 @@ void Game::_displayLoadingMsg()
 		m_gameScreenResolution.y / (float)2 - (float)42,
 		(float)tempSurface->w, (float)tempSurface->h };
 
-	m_renderer->drawSprite(dest, SDL_Color{ 255,255,255,255 }, &texture, &texture.textureAtlasQuad, 0, false, SDL_Color{}, RenderBlendMode::BLEND);
+	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, &texture, &texture.textureAtlasQuad, 0, false, SDL_Color{}, RenderBlendMode::BLEND);
 	m_renderer->present();
 
 	if (texture.surface != nullptr) {

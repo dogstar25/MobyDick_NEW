@@ -22,7 +22,6 @@
 #include "components/ActionComponent.h"
 #include "components/AnimationComponent.h"
 #include "components/AttachmentsComponent.h"
-//#include "components/BrainComponent.h"
 #include "components/ChildrenComponent.h"
 #include "components/CompositeComponent.h"
 #include "components/NavigationComponent.h"
@@ -79,6 +78,7 @@ public:
 	void setContainerResapwnTimer(float containerResapwnTimer);
 	void setContainerStartCount(int containerStartCount);
 	void setContainerCapacity(int containerCapacity);
+	bool intersectsWith(GameObject* gameObject);
 
 
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);
@@ -159,6 +159,9 @@ public:
 
 	inline std::shared_ptr<Component> addComponent(std::shared_ptr<Component> component)
 	{
+
+		assert(component->componentType() != ComponentTypes::NONE && "Can't have a component without a ComponentType!");
+
 		auto componentType = component->componentType();
 		m_components[(int)componentType] = std::move(component);
 		return m_components.at((int)componentType);

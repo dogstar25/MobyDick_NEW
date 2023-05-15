@@ -5,10 +5,10 @@
 class LightComponent : public Component
 {
 
-	LightComponent() = default;
-	LightComponent(Json::Value componentJSON);
-
 	public:
+		LightComponent() = default;
+		LightComponent(Json::Value componentJSON);
+	
 		void update() override;
 
 	protected:

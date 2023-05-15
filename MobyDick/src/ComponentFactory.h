@@ -26,6 +26,8 @@
 #include "components/WeaponComponent.h"
 #include "components/PlayerControlComponent.h"
 #include "components/IMGuiComponent.h"
+#include "components/LightComponent.h"
+#include "components/LightedTreatmentComponent.h"
 
 
 

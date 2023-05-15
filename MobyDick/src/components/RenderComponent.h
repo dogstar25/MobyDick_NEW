@@ -26,7 +26,13 @@ public:
 
 	void update() override;
 	void render();
+	void render(Texture* texture, SDL_Color color, SDL_FRect destQuad, RenderBlendMode textureBlendMode);
+	void render(Texture* texture, SDL_Color color, RenderBlendMode textureBlendMode);
 	void render(SDL_FRect destQuad);
+	void render(SDL_FPoint destPoint);
+	void render(Texture* texture);
+
+	void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode);
 	void postInit() override;
 
 	SDL_FRect getRenderDestRect();
@@ -40,7 +46,7 @@ public:
 	void removeDisplayOverlay();
 
 
-	SDL_Rect* getRenderTextureRect(std::shared_ptr<Texture> texture);
+	SDL_Rect* getRenderTextureRect(Texture* texture);
 	std::shared_ptr<Texture> getRenderTexture();
 	SDL_Surface* getRenderSurface();
 	

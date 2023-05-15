@@ -61,6 +61,14 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::IMGUI_COMPONENT);
 			component = std::make_shared<IMGuiComponent>(componentJSON, name, scene);
 			break;
+		case ComponentTypes::LIGHT_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::LIGHT_COMPONENT);
+			component = std::make_shared<LightComponent>(componentJSON);
+			break;
+		case ComponentTypes::LIGHTED_TREATMENT_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::LIGHTED_TREATMENT_COMPONENT);
+			component = std::make_shared<LightedTreatmentComponent>(componentJSON);
+			break;
 		case ComponentTypes::NAVIGATION_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::NAVIGATION_COMPONENT);
 			component = std::make_shared<NavigationComponent>(componentJSON);
