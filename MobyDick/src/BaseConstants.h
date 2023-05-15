@@ -57,6 +57,7 @@ namespace Colors {
 
 	inline SDL_Color WHITE = { 255, 255, 255, 255 };
 	inline SDL_Color BLACK = { 0, 0, 0, 255 };
+	inline SDL_Color BLACKISH = { 1, 1, 1, 255 };
 	inline SDL_Color CLOUD = { 200, 200, 200, 200 };
 
 	inline SDL_Color RED = { 255, 0, 0, 255 };
@@ -249,7 +250,7 @@ namespace ComponentTypes {
 	inline constexpr int LIGHT_COMPONENT = 25;
 	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 26;
 	
-	inline constexpr int LAST_BASE_COMPONENT = 27;
+	inline constexpr int LAST_BASE_COMPONENT = 26;
 
 }
 

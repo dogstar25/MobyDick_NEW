@@ -47,11 +47,12 @@ public:
 	SDL_Renderer* sdlRenderer() { return nullptr; }
 	void init(SDL_Window* window);
 	bool present();
+	void drawBatches() override;
 	bool clear();
 	SDL_Texture* createTextureFromSurface(SDL_Surface* surface) { return nullptr; };
-	void drawSprite(SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
+	void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
 		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) override;
-	void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color);
+	void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer);
 	const GLDrawer& spriteDrawer(){ return m_spriteDrawer; }
 	const GLDrawer& lineDrawer() { return m_lineDrawer; }
 	void prepTexture(Texture* texture);
@@ -67,8 +68,8 @@ public:
 private:
 
 	void _addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, GLShaderType shaderType,
-		RenderBlendMode textureBlendMode);
-	void _addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType);
+		RenderBlendMode textureBlendMode, int layer);
+	void _addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer);
 	
 	GLuint _addTexture(Texture* texture);
 	SDL_GLContext m_glcontext{};

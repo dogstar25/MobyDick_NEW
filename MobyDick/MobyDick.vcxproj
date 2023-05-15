@@ -81,6 +81,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <SourcePath>$(SourcePath)</SourcePath>
+    <ExternalIncludePath>c:\projects\thirdparty\SDL\src;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(IncludePath)</IncludePath>
@@ -90,6 +91,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <SourcePath>$(SourcePath)</SourcePath>
+    <ExternalIncludePath>c:\projects\thirdparty\SDL\src;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>

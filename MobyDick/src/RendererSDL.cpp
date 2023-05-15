@@ -64,7 +64,7 @@ void RendererSDL::drawPoints(SDL_FPoint* points, SDL_Color color)
 //}
 
 
-void RendererSDL::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
+void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
 	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
 {
 
@@ -83,6 +83,8 @@ void RendererSDL::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* textu
 	else{
 		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_NONE);
 	}
+
+	//SDL_SetRenderDrawBlendMode(m_sdlRenderer, SDL_BLENDMODE_BLEND);
 
 	SDL_SetTextureAlphaMod(texture->sdlTexture, color.a);
 	SDL_SetTextureColorMod(texture->sdlTexture, color.r, color.g, color.b);
