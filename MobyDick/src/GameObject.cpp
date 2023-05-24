@@ -28,6 +28,7 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 
 	//Build components
 	definitionJSON = GameObjectManager::instance().getDefinition(gameObjectType)->definitionJSON();
+	m_gameObjectDefinition = definitionJSON;
 
 	//Category Id and Object Type
 	m_type = gameObjectType;
@@ -705,6 +706,16 @@ void GameObject::setColor(SDL_Color color)
 
 	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 	renderComponent->setColor(color);
+
+}
+
+void GameObject::setSize(b2Vec2 size)
+{
+
+	//This should really only be used for non-physics objects because it will not affect the 
+	//physics size of the object (cant dynamically change a physics objects size)
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	transformComponent->setSize(size);
 
 }
 

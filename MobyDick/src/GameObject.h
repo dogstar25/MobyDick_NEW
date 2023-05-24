@@ -53,7 +53,8 @@ public:
 	GameObject(GameObject&&) = default;
 	GameObject& operator=(GameObject&&) = default;
 
-	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, int layer=GameLayer::MAIN, bool cameraFollow=false, std::string name="");
+	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, int layer=GameLayer::MAIN, 
+		bool cameraFollow=false, std::string name="");
 
 	virtual void update();
 	virtual void render();
@@ -78,6 +79,7 @@ public:
 	void setContainerResapwnTimer(float containerResapwnTimer);
 	void setContainerStartCount(int containerStartCount);
 	void setContainerCapacity(int containerCapacity);
+	void setSize(b2Vec2 size);
 	bool intersectsWith(GameObject* gameObject);
 
 
@@ -224,7 +226,7 @@ private:
 	std::bitset<32> m_traitTags{};
 	std::bitset<8> m_stateTags{};
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_touchingGameObjects{};
-	std::shared_ptr<GameObjectDefinition> m_gameObjectDefinition;
+	GameObjectDefinition m_gameObjectDefinition;
 
 	int m_layer;
 
