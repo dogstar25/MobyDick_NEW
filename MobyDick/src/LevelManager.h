@@ -24,6 +24,7 @@ struct LevelObject
 	int angleAdjustment {};
 	bool cameraFollow{ false };
 	std::string name{};
+	std::optional<b2Vec2>size;
 	std::optional<SDL_Color> color;
 	std::optional<int> disabledType;
 	std::optional<float> weaponForce;

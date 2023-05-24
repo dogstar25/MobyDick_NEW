@@ -86,7 +86,7 @@ void RenderComponent::postInit()
 	//if it is a physics object, we cannot parallax it because it will cause weird visual issues
 	//with how stuff collides
 
-	//if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) 
+	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) 
 	{
 
 		auto parallax = parent()->parentScene()->getParallax(parent()->layer());

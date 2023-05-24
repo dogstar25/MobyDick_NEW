@@ -32,10 +32,6 @@ std::chrono::duration<float> Timer::timeRemaining()
     auto timeRemaining =  std::max((m_targetDuration - timeElapsed()).count(), (float)0);
     //auto timeRemaining = m_targetDuration - timeElapsed();
 
-    if (timeRemaining != 0) {
-        int todd = 1;
-    }
-
     return std::chrono::duration<float>(timeRemaining);
 }
 

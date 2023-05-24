@@ -8,7 +8,7 @@
 #include <assert.h>
 #include "BaseConstants.h"
 #include "SoundManager.h"
-
+#include "components/PhysicsComponent.h"
 
 
 extern std::unique_ptr<Game> game;
@@ -531,6 +531,10 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 			if (locationItemJSON.isMember("layer")) {
 				levelObject.layer = game->enumMap()->toEnum(locationItemJSON["layer"].asString());
 			}
+			if (locationItemJSON.isMember("size")) {
+				b2Vec2 size = { locationItemJSON["size"]["width"].asFloat(), locationItemJSON["size"]["height"].asFloat() };
+				levelObject.size = size;
+			}
 			if (locationItemJSON.isMember("cameraFollow")) {
 				levelObject.cameraFollow = locationItemJSON["cameraFollow"].asBool();
 			}
@@ -788,10 +792,20 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 				auto gameObject = scene->addGameObject(levelObject.gameObjectType, levelObject.layer,
 					(float)x, (float)y, (float)levelObject.angleAdjustment, levelObject.cameraFollow, levelObject.name);
 
+				//Apply size override - CANNOT DO A SIZE OVERRIDE FOR PHYSICS OBEJCTS
+				if (levelObject.size.has_value()) {
+
+					assert(!gameObject->hasComponent(ComponentTypes::PHYSICS_COMPONENT) && "Cannot override the GameObject size if it is a physics object");
+
+					gameObject->setSize(levelObject.size.value());
+
+				}
+				
 				//Apply color override
 				if (levelObject.color.has_value()) {
 					gameObject->setColor(levelObject.color.value());
 				}
+
 
 				//Apply disabled override
 				if (levelObject.disabledType.has_value()) {

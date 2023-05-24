@@ -53,6 +53,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 			centeredOnLocation = itrChild["centeredOnLocation"].asBool();
 		}
 
+
 		Child child{};
 		ChildLocation location{};
 
@@ -83,6 +84,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 
 	}
 }
+
 
 ChildrenComponent::~ChildrenComponent()
 {
@@ -170,6 +172,19 @@ void ChildrenComponent::postInit()
 
 		child.gameObject->setLayer(parent()->layer());
 		child.gameObject->postInit();
+
+		//Child Size Override
+		GameObjectDefinition gameObjectDefinition = parent()->gameObjectDefinition();
+		Json::Value componentDefinition = util::getComponentConfig(gameObjectDefinition.definitionJSON(), ComponentTypes::CHILDREN_COMPONENT);
+		if (componentDefinition.isMember("size")) {
+
+			assert(!child.gameObject->hasComponent(ComponentTypes::PHYSICS_COMPONENT) && "Cannot override the GameObject size if it is a physics object");
+
+			b2Vec2 size = { componentDefinition ["size"]["width"].asFloat(), componentDefinition["size"]["height"].asFloat() };
+			child.gameObject->setSize(size);
+
+		}
+
 	}
 
 
