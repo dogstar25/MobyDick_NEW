@@ -18,6 +18,7 @@ class LightedTreatmentComponent : public Component
 	private:
 		std::vector<std::weak_ptr<GameObject>> m_lights{};
 		std::shared_ptr<Texture> m_lightCompositeTexture{};
+		bool _hasLineOfSightToLitArea(GameObject* lightObject);
 
 
 };

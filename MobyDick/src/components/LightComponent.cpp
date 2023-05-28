@@ -31,8 +31,8 @@ void LightComponent::update()
 		//if (m_flickerTimer.hasMetTargetDuration()) {
 			
 			//std::cout << "Time" << count++ << std::endl;
-			_applyFlicker2(m_flicker);
-			auto timerValue = util::generateRandomNumber((float).016, (float).03);
+			_applyFlicker(m_flicker);
+			auto timerValue = util::generateRandomNumber((float).033, (float).066);
 			m_flickerTimer = Timer(timerValue);
 		//}
 	}
@@ -43,34 +43,12 @@ void LightComponent::update()
 void LightComponent::_applyFlicker(float flickerValue)
 {
 
-	auto brightLevel = util::generateRandomNumber(-m_flicker, m_flicker);
-
-	auto currentColor = parent()->getColor();
-	if(currentColor.a + brightLevel > 255){
-		currentColor.a = 255;
-	}
-	else if (currentColor.a + brightLevel < 100) {
-		currentColor.a = 100;
-	}
-	else {
-		currentColor.a += brightLevel;
-	}
-
-	parent()->setColor(currentColor);
-
-	std::cout << "Color" << (float)parent()->getColor().a << std::endl;
-
-}
-
-void LightComponent::_applyFlicker2(float flickerValue)
-{
-
 	auto currentColor = parent()->getColor();
 
 	//Have we reached the taget brightness
 	if (currentColor.a == m_flickerTargetBrightness) {
 
-		m_flickerTargetBrightness = util::generateRandomNumber(200, 255);
+		m_flickerTargetBrightness = util::generateRandomNumber(100, 255);
 	}
 	else {
 		if (m_flickerTargetBrightness > parent()->getColor().a) {
