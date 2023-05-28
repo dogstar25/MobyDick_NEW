@@ -1,5 +1,7 @@
 #include "LightedTreatmentComponent.h"
 #include "../GameObject.h"
+#include "../RayCastCallBack.h"
+
 #include "../game.h"
 
 extern std::unique_ptr<Game> game;
@@ -42,14 +44,26 @@ void LightedTreatmentComponent::update()
 	const auto& lights = parent()->parentScene()->getGameObjectsByTrait(TraitTag::light);
 	for (auto& light : lights) {
 
-		if (light->intersectsWith(parent())) {
+		SDL_FPoint lightPoint = light->getCenterPosition();
+		SDL_FRect litAreaRect = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
+
+		//If the center of the light is inside of the lit area then add it
+		if (SDL_PointInFRect(&lightPoint, &litAreaRect)) {
 
 			m_lights.push_back(light);
 		}
+		//if this light's area of lumination crosses into the lit area AND the light has direct line 
+		// of sight to the lit area's center, then allow it to be added
+		//This allows light from other rooms shine into adjacent rooms to a degree
+		else if (parent()->intersectsWith(light.get())) {
+
+			if (_hasLineOfSightToLitArea(light.get())) {
+				m_lights.push_back(light);
+			}
+		}
+
 
 	}
-
-
 
 }
 
@@ -85,8 +99,8 @@ void LightedTreatmentComponent::render()
 		SDL_FPoint newLightPosition = { lightDestPosition.x - baseObjectDestPosition.x,  lightDestPosition.y - baseObjectDestPosition.y };
 
 		//Now position on center of light
-		newLightPosition.x -= lightDestRect.w/2;
-		newLightPosition.y -= lightDestRect.h/2;
+		//newLightPosition.x -= lightDestRect.w/2;
+		//newLightPosition.y -= lightDestRect.h/2;
 
 		lightRenderComponent->render(newLightPosition);
 
@@ -101,6 +115,42 @@ void LightedTreatmentComponent::render()
 
 }
 
+bool LightedTreatmentComponent::_hasLineOfSightToLitArea(GameObject* lightObject)
+{
+	bool clearPath{true};
+
+	b2Vec2 begin = { lightObject->getCenterPosition().x, lightObject->getCenterPosition().y};
+	b2Vec2 end = { parent()->getCenterPosition().x, parent()->getCenterPosition().y};
+
+	util::toBox2dPoint(begin);
+	util::toBox2dPoint(end);
+
+	//cast a physics raycast from the light object to the center of this lightedArea's center
+	parent()->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), begin, end);
+
+	//Loop through all objects hit between the brain owner and the detected object
+	//If there is a clear line of sight then store it in seenObjects
+	//We must sort the raycast hit objects by distance because they are not guarenteed to return in
+	//distance order
+	//std::sort(RayCastCallBack::instance().intersectionItems().begin(),
+	//	RayCastCallBack::instance().intersectionItems().end(),
+	//	intersection_sort_compare());
+
+	for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
+
+		//Is this a barrier and also NOT its own body and the object is not physicsdisabled
+		if (rayHitObject.gameObject->hasTrait(TraitTag::barrier) &&
+			rayHitObject.gameObject != parent()) {
+			clearPath = false;
+			break;
+		}
+	}
+
+	RayCastCallBack::instance().reset();
+
+	return clearPath;
+
+}
 
 //void LightedTreatmentComponent::render()
 //{

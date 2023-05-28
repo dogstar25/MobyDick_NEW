@@ -171,6 +171,7 @@ EnumMap::EnumMap()
 	//OpenGL Texture Index values
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0;
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2;
 	m_enumMap["GL_TextureIndexType::IMGUI_TEXTURE_ATLAS"] = (int)GL_TextureIndexType::IMGUI_TEXTURE_ATLAS;
 	
 	//Texure Blend Modes

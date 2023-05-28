@@ -23,6 +23,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 	bool centeredOnLocation{true};
 
 	m_isDependentObjectOwner = true;
+	std::optional<b2Vec2> sizeOverride{};
 
 	int childCount{};
 	for (Json::Value itrChild : componentJSON["childObjects"])
@@ -53,6 +54,11 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 			centeredOnLocation = itrChild["centeredOnLocation"].asBool();
 		}
 
+		//Size override
+		if (itrChild.isMember("size")) {
+			sizeOverride = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
+		}
+
 
 		Child child{};
 		ChildLocation location{};
@@ -76,6 +82,12 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 		child.location = location;
 		std::string name = _buildChildName(parentName, childCount);
 		auto gameObject = std::make_shared<GameObject>(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name );
+
+		//Was there a sizeOverride
+		if (sizeOverride.has_value()) {
+			gameObject.get()->setSize(sizeOverride.value());
+		}
+
 		child.gameObject = gameObject;
 		m_childObjects.push_back(child);
 
@@ -108,7 +120,6 @@ void ChildrenComponent::update()
 
 		//Calculate child position based on what type of location the child uses
 		SDL_FPoint parentCenterPosition = transformComponent->getCenterPosition();
-		SDL_FPoint parentTopLeftPosition = transformComponent->getTopLeftPosition();
 		float parentAngle = transformComponent->angle();
 
 		if (childObject.location.locationType == ChildLocationType::SLOT) {
@@ -116,7 +127,7 @@ void ChildrenComponent::update()
 		}
 		else if (childObject.location.locationType == ChildLocationType::ABSOLUTE_POSITION) {
 
-			newChildPosition = _calcChildPosition(childTransformComponent->size(), childObject.location, parentTopLeftPosition, parentAngle);
+			newChildPosition = _calcChildPosition(childTransformComponent->size(), childObject.location, parentCenterPosition, parentAngle);
 
 		}
 	
@@ -251,6 +262,7 @@ b2Vec2 ChildrenComponent::_calcChildPosition(b2Vec2 childSize, int childCount, C
 
 	//Adjust the position if there are multiple children in the same position
 	if (m_childSlotCount[location.slot-1] > 1)
+	//if (false)
 	{
 		float oddEvenadjustValue = 0;
 		int stepCount = 0;

@@ -504,7 +504,7 @@ std::optional<LevelObject> LevelManager::_determineColorDefinedObject(SDL_Color 
 	}
 
 	if (levelObject.has_value() == false) {
-		std::cout << "WARNING: Color Defined Blueprint LevelObject found with no definition.\n";
+		//std::cout << "WARNING: Color Defined Blueprint LevelObject found with no definition.\n";
 	}
 	
 	return levelObject;
@@ -534,6 +534,10 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 			if (locationItemJSON.isMember("size")) {
 				b2Vec2 size = { locationItemJSON["size"]["width"].asFloat(), locationItemJSON["size"]["height"].asFloat() };
 				levelObject.size = size;
+			}
+			if (locationItemJSON.isMember("locationAdjust")) {
+				b2Vec2 locationAdjust = { locationItemJSON["locationAdjust"]["x"].asFloat(), locationItemJSON["locationAdjust"]["y"].asFloat() };
+				levelObject.locationAdjust = locationAdjust;
 			}
 			if (locationItemJSON.isMember("cameraFollow")) {
 				levelObject.cameraFollow = locationItemJSON["cameraFollow"].asBool();
@@ -577,7 +581,7 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 		}
 
 		if (levelObjects.empty() == true) {
-			std::cout << "WARNING: Blueprint LevelObject found at " << x << " " << y << " " << " found with no definition.\n";
+			//std::cout << "WARNING: Blueprint LevelObject found at " << x << " " << y << " " << " found with no definition.\n";
 		}
 
 	}
@@ -798,6 +802,11 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 					assert(!gameObject->hasComponent(ComponentTypes::PHYSICS_COMPONENT) && "Cannot override the GameObject size if it is a physics object");
 
 					gameObject->setSize(levelObject.size.value());
+					//Since we are changing the size after the gameObject was already built, then we have to adjust the
+					//spawn Position also, since the position was calulated previously using the original size
+					//ToDo: add a sizeOverride that can be passed in at the gameObject constructor level
+					gameObject->setPosition(util::tileToPixelPlacementLocation(
+						(float)x, (float)y, gameObject->getSize().x, gameObject->getSize().y));
 
 				}
 				
@@ -806,6 +815,12 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 					gameObject->setColor(levelObject.color.value());
 				}
 
+				//Apply location adjustment
+				if (levelObject.locationAdjust.has_value()) {
+					auto currentPosition = gameObject->getCenterPosition();
+					gameObject->setPosition(currentPosition.x + levelObject.locationAdjust.value().x, 
+						currentPosition.y + levelObject.locationAdjust.value().y);
+				}
 
 				//Apply disabled override
 				if (levelObject.disabledType.has_value()) {

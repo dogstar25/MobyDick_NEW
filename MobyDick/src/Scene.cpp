@@ -205,15 +205,15 @@ void Scene::clear()
 	//Clear everything
 	m_objectPoolManager.clear();
 	m_levelTriggers.clear();
-
 	m_levelObjectives.clear();
-	m_gameObjectLookup.clear();
 	m_navigationMap.clear();
 
 	for (int x = 0; x < MAX_GAMEOBJECT_LAYERS; x++)
 	{
 		m_gameObjects[x].clear();
 	}
+
+	m_gameObjectLookup.clear();
 
 	if (m_hasPhysics) {
 		delete m_physicsWorld;
