@@ -36,7 +36,6 @@ public:
 	~SoundComponent();
 
 	void update() override;
-	void render();
 	void postInit() override;
 
 	std::optional<SoundItem> getSound(std::string soundId);

@@ -67,6 +67,7 @@ namespace Colors {
 	inline SDL_Color PURPLE = { 255, 0, 255, 255 };
 	inline SDL_Color ORANGE = { 255, 127, 0, 255 };
 	inline SDL_Color GREY = { 127, 127, 127, 255 };
+	inline SDL_Color LIGHT_GREY = { 127, 127, 127, 255 };
 	inline SDL_Color BROWN = { 102, 57, 49, 255 };
 	inline SDL_Color CYAN = { 0, 255, 255, 255 };
 	
@@ -105,16 +106,19 @@ namespace TraitTag {
 	inline constexpr int gui = 5;
 	inline constexpr int waypoint = 6;
 	inline constexpr int abstract = 7;
-	inline constexpr int interactive = 8;
-	inline constexpr int debug = 9;
-	inline constexpr int pooled = 10;
-	inline constexpr int fragment = 11;
-	inline constexpr int objective = 12;
-	inline constexpr int impasse = 13;
-	inline constexpr int conditional_impasse = 14;
-	inline constexpr int complex_impasse = 15;
-	inline constexpr int mobile = 16;
-	inline constexpr int light = 17;
+	inline constexpr int contact_interface = 8;
+	inline constexpr int mouse_interface = 9;
+	inline constexpr int debug = 10;
+	inline constexpr int pooled = 11;
+	inline constexpr int fragment = 12;
+	inline constexpr int objective = 13;
+	inline constexpr int impasse = 14;
+	inline constexpr int conditional_impasse = 15;
+	inline constexpr int complex_impasse = 16;
+	inline constexpr int mobile = 17;
+	inline constexpr int light = 18;
+	inline constexpr int door_portal = 19;
+	inline constexpr int puzzle = 20;
 
 }
 
@@ -220,7 +224,7 @@ namespace DebugSceneSettings {
 
 //Component Types
 namespace ComponentTypes {
-	inline constexpr int MAX_COMPONENT_TYPES = 32;
+	inline constexpr int MAX_COMPONENT_TYPES = 42;
 
 	inline constexpr int NONE = 0;
 	inline constexpr int ACTION_COMPONENT = 1;
@@ -232,25 +236,27 @@ namespace ComponentTypes {
 	inline constexpr int CONTAINER_COMPONENT = 7;
 	inline constexpr int CHECKPOINT_COMPONENT = 8;
 	inline constexpr int HUD_COMPONENT = 9;
-	inline constexpr int INVENTORY_COMPONENT = 10;
-	inline constexpr int IMGUI_COMPONENT = 11;
-	inline constexpr int PARTICLE_COMPONENT = 12;
-	inline constexpr int NAVIGATION_COMPONENT = 13;
-	inline constexpr int PARTICLE_X_COMPONENT = 14;
-	inline constexpr int PHYSICS_COMPONENT = 15;
-	inline constexpr int PLAYER_CONTROL_COMPONENT = 16;
-	inline constexpr int POOL_COMPONENT = 17;
-	inline constexpr int RENDER_COMPONENT = 18;
-	inline constexpr int SOUND_COMPONENT = 19;
-	inline constexpr int TEXT_COMPONENT = 20;
-	inline constexpr int TRANSFORM_COMPONENT = 21;
-	inline constexpr int UICONTROL_COMPONENT = 22;
-	inline constexpr int VITALITY_COMPONENT = 23;
-	inline constexpr int WEAPON_COMPONENT = 24;
-	inline constexpr int LIGHT_COMPONENT = 25;
-	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 26;
+	inline constexpr int INTERFACE_COMPONENT = 10;
+	inline constexpr int INVENTORY_COMPONENT = 11;
+	inline constexpr int IMGUI_COMPONENT = 12;
+	inline constexpr int PARTICLE_COMPONENT = 13;
+	inline constexpr int NAVIGATION_COMPONENT = 14;
+	inline constexpr int PARTICLE_X_COMPONENT = 15;
+	inline constexpr int PHYSICS_COMPONENT = 16;
+	inline constexpr int PLAYER_CONTROL_COMPONENT = 17;
+	inline constexpr int POOL_COMPONENT = 18;
+	inline constexpr int PUZZLE_COMPONENT = 19;
+	inline constexpr int RENDER_COMPONENT = 20;
+	inline constexpr int SOUND_COMPONENT = 21;
+	inline constexpr int TEXT_COMPONENT = 22;
+	inline constexpr int TRANSFORM_COMPONENT = 23;
+	inline constexpr int UICONTROL_COMPONENT = 24;
+	inline constexpr int VITALITY_COMPONENT = 25;
+	inline constexpr int WEAPON_COMPONENT = 26;
+	inline constexpr int LIGHT_COMPONENT = 27;
+	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 28;
 	
-	inline constexpr int LAST_BASE_COMPONENT = 26;
+	inline constexpr int LAST_BASE_COMPONENT = 28;
 
 }
 
@@ -285,8 +291,8 @@ namespace Actions {
 	inline constexpr int ROTATE = 2;
 	inline constexpr int USE = 3;
 	inline constexpr int USAGE = 4;
-	inline constexpr int INTERACT = 5;
-	inline constexpr int INTERACTION = 6;
+	//inline constexpr int INTERACT = 5;
+	inline constexpr int INTERFACE = 6;
 	inline constexpr int ON_HOVER = 7;
 	inline constexpr int ON_CLICK = 8;
 	inline constexpr int ON_HOVER_OUT = 9;

@@ -91,6 +91,7 @@ public:
 	float getAngleInDegrees();
 	SDL_FPoint getCenterPosition();
 	SDL_FPoint getTopLeftPosition();
+	SDL_FRect getPositionRect();
 	SDL_FPoint getOriginalPosition();
 	SDL_FPoint getOriginalTilePosition();
 	std::vector<SeenObjectDetails> getSeenObjects();
@@ -129,6 +130,9 @@ public:
 	std::string id() { return m_id; }
 	std::string name() { return m_name; }
 	std::string type() { return m_type; }
+	std::string description() {return m_description; }
+	std::string clue() { return m_clue; }
+
 
 	auto removeFromWorld() { return m_removeFromWorld; }
 	
@@ -216,6 +220,8 @@ private:
 	std::string m_id{};
 	std::string m_name{};
 	std::string m_type{};
+	std::string m_description{};
+	std::string m_clue{};
 	int m_contactTag{ 0 };
 
 	std::optional<GameObject*> m_parentObject{};

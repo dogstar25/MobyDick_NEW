@@ -216,6 +216,8 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\components\InterfaceComponent.cpp" />
+    <ClCompile Include="src\components\PuzzleComponent.cpp" />
     <ClCompile Include="src\components\LightComponent.cpp" />
     <ClCompile Include="src\components\LightedTreatmentComponent.cpp" />
     <ClCompile Include="src\actions\ActionFactory.cpp" />
@@ -255,6 +257,8 @@
     <ClCompile Include="src\opengl\Shader.cpp" />
     <ClCompile Include="src\opengl\DrawBatch.cpp" />
     <ClCompile Include="src\particleEffects\ParticleEffectsFactory.cpp" />
+    <ClCompile Include="src\puzzles\Puzzle.cpp" />
+    <ClCompile Include="src\puzzles\PuzzleFactory.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\triggers\TriggerFactory.cpp" />
     <ClCompile Include="src\actions\DroneMoveAction.cpp" />
@@ -310,9 +314,12 @@
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\opengl\Vertex.cpp" />
     <ClCompile Include="src\ContextManager.cpp" />
+    <ClCompile Include="src\puzzles\UnLockDoorPuzzle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MobyDick.h" />
+    <ClInclude Include="src\components\InterfaceComponent.h" />
+    <ClInclude Include="src\components\PuzzleComponent.h" />
     <ClInclude Include="src\components\LightComponent.h" />
     <ClInclude Include="src\components\LightedTreatmentComponent.h" />
     <ClInclude Include="src\actions\ActionFactory.h" />
@@ -349,6 +356,8 @@
     <ClInclude Include="src\opengl\Shader.h" />
     <ClInclude Include="src\opengl\DrawBatch.h" />
     <ClInclude Include="src\particleEffects\ParticleEffectsFactory.h" />
+    <ClInclude Include="src\puzzles\Puzzle.h" />
+    <ClInclude Include="src\puzzles\PuzzleFactory.h" />
     <ClInclude Include="src\triggers\TriggerFactory.h" />
     <ClInclude Include="src\ComponentFactory.h" />
     <ClInclude Include="src\actions\DroneMoveAction.h" />
@@ -410,6 +419,7 @@
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\opengl\Vertex.h" />
     <ClInclude Include="src\ContextManager.h" />
+    <ClInclude Include="src\puzzles\UnLockDoorPuzzle.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ExtraLibs\SDL2main.lib" />

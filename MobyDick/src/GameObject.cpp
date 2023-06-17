@@ -34,6 +34,10 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 	m_type = gameObjectType;
 	m_removeFromWorld = false;
 
+	//Description and clue
+	m_description = definitionJSON["description"].asString();
+	m_clue = definitionJSON["clue"].asString();
+
 	//Layer
 	m_layer = layer;
 
@@ -294,9 +298,9 @@ void GameObject::render()
 		}
 
 		//If you have aa Action component, then render possible interaction menus
-		if (hasComponent(ComponentTypes::ACTION_COMPONENT)) {
+		if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
 
-			getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT)->render();
+			getComponent<ActionComponent>(ComponentTypes::INTERFACE_COMPONENT)->render();
 		}
 
 		//If you have a Container component, then render the container content items
@@ -474,6 +478,14 @@ SDL_FPoint GameObject::getCenterPosition()
 
 	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	return(transformComponent->getCenterPosition());
+
+}
+
+SDL_FRect GameObject::getPositionRect()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	return(transformComponent->getPositionRect());
 
 }
 

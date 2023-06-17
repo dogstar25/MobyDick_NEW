@@ -273,6 +273,7 @@ void Scene::render() {
 
 	int gameLayerIndex{0};
 
+
 	//Render all of the layers
 	for (auto& gameLayer : m_gameObjects)
 	{
@@ -335,10 +336,11 @@ void Scene::deleteCutScene()
 
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle, bool cameraFollow,std::string name)
+GameObject* Scene::addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle, bool cameraFollow, std::string name)
 {
 
-	auto& gameObject = m_gameObjects[layer].emplace_back(std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, name));
+	auto& gameObject = m_gameObjects[layer].emplace_back(
+		std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, name));
 
 	//Add index
 	addGameObjectIndex(gameObject);
@@ -347,10 +349,13 @@ GameObject* Scene::addGameObject(std::string gameObjectType, int layer, float xM
 
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, int layer, PositionAlignment windowPosition, float adjustX, float adjustY, float angle, bool cameraFollow)
+GameObject* Scene::addGameObject(std::string gameObjectType, int layer, PositionAlignment windowPosition, float adjustX, float adjustY, 
+	float angle, bool cameraFollow, std::string name)
 {
 
-	auto& gameObject = m_gameObjects[layer].emplace_back(std::make_shared<GameObject>(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow));
+	auto& gameObject = m_gameObjects[layer].emplace_back(
+		std::make_shared<GameObject>(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow, name));
+
 	gameObject->setPosition(windowPosition, adjustX, adjustY);
 
 	//Set the window position override
@@ -454,6 +459,7 @@ void Scene::_processGameObjectInterdependecies()
 			gameObject->postInit();
 
 			//Now that all gameobjects are created we can set the shared pointer for the object to follow for the camera
+			//ToDo:Maybe this should move to the postInit() of the gameObject
 			if (gameObject->name() == Camera::instance().getFollowMeName() && !Camera::instance().getFollowMeObject()) {
 				Camera::instance().setFollowMe(gameObject);
 			}
@@ -499,6 +505,9 @@ void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 
 		auto layer = game->enumMap()->toEnum(gameObjectJSON["layer"].asString());
 
+		//name
+		std::string name = gameObjectJSON["name"].asString();
+
 		//Determine location
 		auto locationJSON = gameObjectJSON["location"];
 		if (locationJSON.isMember("windowPosition")) {
@@ -508,17 +517,17 @@ void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 			if (locationJSON.isMember("adjust")) {
 				auto adjustX = locationJSON["adjust"]["x"].asFloat();
 				auto adjustY = locationJSON["adjust"]["y"].asFloat();
-				gameObject = addGameObject(gameObjectType, layer, windowPosition, adjustX, adjustY);
+				gameObject = addGameObject(gameObjectType, layer, windowPosition, adjustX, adjustY, 0.,false,name);
 			}
 			else {
-				gameObject = addGameObject(gameObjectType, layer, windowPosition);
+				gameObject = addGameObject(gameObjectType, layer, windowPosition, 0., 0., 0., false, name);
 			}
 			
 		}
 		else {
 			auto locationX = gameObjectJSON["location"]["x"].asFloat();
 			auto locationY = gameObjectJSON["location"]["y"].asFloat();
-			gameObject = addGameObject(gameObjectType, layer, locationX, locationY, 0);
+			gameObject = addGameObject(gameObjectType, layer, locationX, locationY, 0., false, name);
 		}
 
 		gameObject->postInit();
@@ -598,6 +607,24 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByTrait(int 
 	while (it != m_gameObjectLookup.end()) {
 
 		if (it->second.lock()->hasTrait(trait)) {
+			foundGameObject = it->second.lock();
+			break;
+		}
+
+		++it;
+	}
+
+	return foundGameObject;
+}
+
+std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByType(std::string type)
+{
+	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
+
+	auto it = m_gameObjectLookup.begin();
+	while (it != m_gameObjectLookup.end()) {
+
+		if (it->second.lock()->type() == type) {
 			foundGameObject = it->second.lock();
 			break;
 		}
