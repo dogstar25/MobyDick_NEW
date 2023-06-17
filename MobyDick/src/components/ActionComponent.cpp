@@ -4,6 +4,7 @@
 
 #include "../EnumMap.h"
 #include "../game.h"
+#include "../Util.h"
 
 #include "../actions/DefaultMoveAction.h"
 #include "../actions/DefaultRotateAction.h"
@@ -28,115 +29,12 @@ ActionComponent::ActionComponent(Json::Value componentJSON, Scene* parentScene)
 
 		m_actions[actionId] = game->actionFactory()->create(actionClass);
 
-	}
+		//Label
+		if (itrAction.isMember("label")) {
 
-	//Interactive object if exists
-	if (componentJSON.isMember("interactiveMenuObject")) {
-		auto interactiveMenuObjectId = componentJSON["interactiveMenuObject"].asString();
-		m_interactiveMenuObject = std::make_shared<GameObject>(interactiveMenuObjectId, -5.f, -5.f, 0.f, parentScene);
+			m_actions[actionId]->setLabel(itrAction["label"].asString());
 
-		m_interactionMenuRequiresPointingAt = componentJSON["interactionMenuRequiresPointingAt"].asBool();
-
-	}
-
-}
-
-ActionComponent::~ActionComponent()
-{
-
-	m_actions.clear();
-
-}
-
-void ActionComponent::update()
-{
-
-
-}
-
-void ActionComponent::postInit()
-{
-
-	if (m_interactiveMenuObject) {
-		m_interactiveMenuObject->setLayer(parent()->layer());
-	}
-
-}
-
-void ActionComponent::render()
-{
-
-	//If this an interactiveObject and a playerObject is touching it, then display its interactive menu, if one exists
-	if (parent()->hasTrait(TraitTag::interactive)) {
-
-		for (const auto& touchingObject : parent()->getTouchingObjects()) {
-
-			if(touchingObject.second.expired() == false && touchingObject.second.lock()->hasTrait(TraitTag::player)) {
-
-				GameObject* interactingObject = touchingObject.second.lock().get();
-
-				//Is the interactingObject(player) pointing at this interactive object?
-				if (m_interactionMenuRequiresPointingAt == false ||
-					(m_interactionMenuRequiresPointingAt == true && interactingObject->isPointingAt(parent()->getCenterPosition()))) {
-
-					//If there is a menu then display the interaction menu and it will execute the selected action
-					if (m_interactiveMenuObject) {
-						SDL_FPoint position = determineInteractionMenuLocation(interactingObject, parent(), m_interactiveMenuObject.get());
-						m_interactiveMenuObject->setPosition(position);
-						m_interactiveMenuObject->render();
-					}
-
-				}
-			}
 		}
-
-	}
-
-}
-
-
-SDL_FPoint ActionComponent::determineInteractionMenuLocation(GameObject* interactingObject, GameObject* contactGameObject, GameObject* menuObject)
-{
-
-	//is the ineteracting object(player) on the left or right side of the interaction object
-	float orientationAngle = atan2(interactingObject->getCenterPosition().y - contactGameObject->getCenterPosition().y, 
-		interactingObject->getCenterPosition().x - contactGameObject->getCenterPosition().x);
-	float orientationAngleDegrees = util::radiansToDegrees(orientationAngle);
-
-	bool rightside = false;
-	if (abs(orientationAngleDegrees) < 90) {
-
-		rightside = true;
-	}
-
-	float xPos{};
-	float yPos{};
-	if (rightside == false) {
-
-		xPos = contactGameObject->getCenterPosition().x + (contactGameObject->getSize().x/2) + (menuObject->getSize().x / 2);
-		yPos = contactGameObject->getCenterPosition().y + (contactGameObject->getSize().y / 2);
-
-	}
-	else {
-		xPos = contactGameObject->getCenterPosition().x - (contactGameObject->getSize().x/2) - (menuObject->getSize().x / 2);
-		yPos = contactGameObject->getCenterPosition().y + (contactGameObject->getSize().y / 2);
-
-	}
-
-
-	return SDL_FPoint{xPos, yPos};
-
-
-}
-
-void ActionComponent::setParent(GameObject* gameObject)
-{
-	//Call base component setParent
-	Component::setParent(gameObject);
-
-	//Parent for this interactionMenuObject if it exists
-	if (m_interactiveMenuObject) {
-		m_interactiveMenuObject->setParent(gameObject);
 
 	}
 
@@ -155,6 +53,7 @@ bool ActionComponent::hasAction(int actionId)
 		return true;
 	}
 
+	return false;
 }
 
 

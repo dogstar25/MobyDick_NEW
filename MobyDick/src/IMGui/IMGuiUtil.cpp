@@ -13,6 +13,7 @@ namespace ImGui
 		ImGui::CreateContext();
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 		io.IniFilename = NULL;
 
@@ -111,6 +112,44 @@ namespace ImGui
 		auto textWidth = itemToCenterSize;
 
 		ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+	}
+
+	ImGuiKey getNumKey(int keyInt)
+	{
+		switch (keyInt) {
+
+		case 1:
+			return ImGuiKey_1;
+			break;
+
+		case 2:
+			return ImGuiKey_2;
+			break;
+
+		case 3:
+			return ImGuiKey_3;
+			break;
+
+		case 4:
+			return ImGuiKey_4;
+			break;
+
+
+		}
+
+	}
+
+	void adjustCursorPosition(float x, float y)
+	{
+		//Display the Key letter
+		ImVec2 cursorPos = ImGui::GetCursorPos();
+
+		// Calculate the new cursor position
+		ImVec2 newCursorPos = { cursorPos.x + x, cursorPos.y + y };
+
+		// Set the cursor position to the new position
+		ImGui::SetCursorPos(newCursorPos);
+
 	}
 
 	

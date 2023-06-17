@@ -90,6 +90,10 @@ void SceneManager::run()
 		//Clear the screen
 		game->renderer()->clear();
 
+		//Set the default cursor
+		auto cursor = TextureManager::instance().getMouseCursor("CURSOR_ARROW");
+		SDL_SetCursor(cursor);
+
 		//Render every scene, active or not
 		for (auto& scene : m_scenes) {
 			scene.render();

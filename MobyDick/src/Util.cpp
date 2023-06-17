@@ -16,20 +16,18 @@ extern std::unique_ptr<Game> game;
 namespace util
 {
 
-	//bool isMouseButtonPressed(uint8 button) {
+	bool isMouseOverGameObject(SDL_FRect gameObjectRenderDest)
+	{
 
-	//	int mouseX, mouseY;
-	//	auto mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
-	//	if (mouseButtons & button) {
-	//		return true;
-	//	}
-	//	else {
-	//		return false;
-	//	}
+		int mouseX;
+		int mouseY;
 
-	//	
+		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
+		SDL_FPoint mouseLocation = { (float)mouseX , (float)mouseY };
 
-	//}
+		return  SDL_PointInFRect(&mouseLocation, &gameObjectRenderDest);
+
+	}
 
 	void sendSceneEvent(const int sceneActionCode, const std::string& sceneActionCodeId)
 	{

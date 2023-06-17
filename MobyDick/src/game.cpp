@@ -22,8 +22,9 @@ Game::~Game()
 
 bool Game::init(std::shared_ptr<ContactListener> contactListener, std::shared_ptr<ContactFilter> contactFilter,
 	std::shared_ptr<ComponentFactory> componentFactory, std::shared_ptr<ActionFactory> actionFactory, std::shared_ptr<ParticleEffectsFactory> particleEffectsFactory,
-	std::shared_ptr<CutSceneFactory> cutSceneFactory, std::shared_ptr<IMGuiFactory> iMGuiFactory, std::shared_ptr<TriggerFactory> triggerFactory, 
-	std::shared_ptr<ContextManager> contextManager, std::shared_ptr<EnumMap> enumMap, std::shared_ptr<ColorMap> colorMap)
+	std::shared_ptr<CutSceneFactory> cutSceneFactory, std::shared_ptr<IMGuiFactory> iMGuiFactory, std::shared_ptr<TriggerFactory> triggerFactory,
+	std::shared_ptr<PuzzleFactory> puzzleFactory, std::shared_ptr<ContextManager> contextManager, std::shared_ptr<EnumMap> enumMap, 
+	std::shared_ptr<ColorMap> colorMap)
 {
 
 	//Set all of our game specific factories and managers
@@ -36,6 +37,7 @@ bool Game::init(std::shared_ptr<ContactListener> contactListener, std::shared_pt
 	m_contextMananger = contextManager;
 	m_iMGUIFactory = iMGuiFactory;
 	m_triggerFactory = triggerFactory;
+	m_puzzleFactory = puzzleFactory;
 	m_enumMap = enumMap;
 	m_colorMap = colorMap;
 
@@ -102,9 +104,8 @@ void Game::setWorldParams(SDL_Rect gameWorldBounds, SDL_Point gameTileSize)
 void Game::play()
 {
 
+
 	while (m_gameState != GameState::QUIT) {
-
-
 
 		//Test spot for detecting if user has alt tabbed out of game
 		//SDL_GetWindowFlags

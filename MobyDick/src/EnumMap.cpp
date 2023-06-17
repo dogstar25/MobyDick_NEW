@@ -20,6 +20,7 @@ EnumMap::EnumMap()
 	m_enumMap["CONTAINER_COMPONENT"] = (int)ComponentTypes::CONTAINER_COMPONENT;
 	m_enumMap["HUD_COMPONENT"] = (int)ComponentTypes::HUD_COMPONENT;
 	m_enumMap["INVENTORY_COMPONENT"] = (int)ComponentTypes::INVENTORY_COMPONENT;
+	m_enumMap["INTERFACE_COMPONENT"] = (int)ComponentTypes::INTERFACE_COMPONENT;
 	m_enumMap["IMGUI_COMPONENT"] = (int)ComponentTypes::IMGUI_COMPONENT;
 	m_enumMap["PARTICLE_COMPONENT"] = (int)ComponentTypes::PARTICLE_COMPONENT;
 	m_enumMap["NAVIGATION_COMPONENT"] = (int)ComponentTypes::NAVIGATION_COMPONENT;
@@ -27,6 +28,7 @@ EnumMap::EnumMap()
 	m_enumMap["PHYSICS_COMPONENT"] = (int)ComponentTypes::PHYSICS_COMPONENT;
 	m_enumMap["PLAYER_CONTROL_COMPONENT"] = (int)ComponentTypes::PLAYER_CONTROL_COMPONENT;
 	m_enumMap["POOL_COMPONENT"] = (int)ComponentTypes::POOL_COMPONENT;
+	m_enumMap["PUZZLE_COMPONENT"] = (int)ComponentTypes::PUZZLE_COMPONENT;
 	m_enumMap["RENDER_COMPONENT"] = (int)ComponentTypes::RENDER_COMPONENT;
 	m_enumMap["SOUND_COMPONENT"] = (int)ComponentTypes::SOUND_COMPONENT;
 	m_enumMap["TEXT_COMPONENT"] = (int)ComponentTypes::TEXT_COMPONENT;
@@ -106,8 +108,8 @@ EnumMap::EnumMap()
 	m_enumMap["Actions::ROTATE"] = Actions::ROTATE;
 	m_enumMap["Actions::USE"] = Actions::USE;
 	m_enumMap["Actions::USAGE"] = Actions::USAGE;
-	m_enumMap["Actions::INTERACT"] = Actions::INTERACT;
-	m_enumMap["Actions::INTERACTION"] = Actions::INTERACTION;
+	//m_enumMap["Actions::INTERACT"] = Actions::INTERACT;
+	m_enumMap["Actions::INTERFACE"] = Actions::INTERFACE;
 	m_enumMap["Actions::ON_HOVER"] = Actions::ON_HOVER;
 	m_enumMap["Actions::ON_HOVER_OUT"] = Actions::ON_HOVER_OUT;
 	m_enumMap["Actions::ON_CLICK"] = Actions::ON_CLICK;
@@ -194,7 +196,8 @@ EnumMap::EnumMap()
 	m_enumMap["gui"] = TraitTag::gui;
 	m_enumMap["waypoint"] = TraitTag::waypoint;
 	m_enumMap["abstract"] = TraitTag::abstract;
-	m_enumMap["interactive"] = TraitTag::interactive;
+	m_enumMap["contact_interface"] = TraitTag::contact_interface;
+	m_enumMap["mouse_interface"] = TraitTag::mouse_interface;
 	m_enumMap["debug"] = TraitTag::debug;
 	m_enumMap["pooled"] = TraitTag::pooled;
 	m_enumMap["fragment"] = TraitTag::fragment;
@@ -204,6 +207,8 @@ EnumMap::EnumMap()
 	m_enumMap["complex_impasse"] = TraitTag::complex_impasse;
 	m_enumMap["mobile"] = TraitTag::mobile;
 	m_enumMap["light"] = TraitTag::light;
+	m_enumMap["door_portal"] = TraitTag::door_portal;
+	m_enumMap["puzzle"] = TraitTag::puzzle;
 
 	//Hud Item Types
 	m_enumMap["HudItemTypes::STATUS_SINGLE"] = (int)HudItemTypes::STATUS_SINGLE;

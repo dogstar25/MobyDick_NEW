@@ -40,8 +40,8 @@ RenderComponent::RenderComponent(Json::Value componentJSON)
 	{
 
 		setColor(Colors::WHITE);
-		if (componentJSON["color"].isMember("alpha")) {
-			util::colorApplyAlpha(m_color, componentJSON["color"]["alpha"].asInt());
+		if (componentJSON.isMember("alpha")) {
+			util::colorApplyAlpha(m_color, componentJSON["alpha"].asInt());
 		}
 		else {
 			util::colorApplyAlpha(m_color, 255);

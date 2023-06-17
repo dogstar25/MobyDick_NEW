@@ -53,6 +53,10 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::HUD_COMPONENT);
 			component = std::make_shared<HudComponent>(componentJSON, scene);
 			break;
+		case ComponentTypes::INTERFACE_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::INTERFACE_COMPONENT);
+			component = std::make_shared<InterfaceComponent>(componentJSON, scene);
+			break;
 		case ComponentTypes::INVENTORY_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::INVENTORY_COMPONENT);
 			component = std::make_shared<InventoryComponent>(componentJSON, name, scene);
@@ -94,6 +98,10 @@ std::shared_ptr<Component> ComponentFactory::create(
 		case ComponentTypes::POOL_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::POOL_COMPONENT);
 			component = std::make_shared<PoolComponent>(componentJSON);
+			break;
+		case ComponentTypes::PUZZLE_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PUZZLE_COMPONENT);
+			component = std::make_shared<PuzzleComponent>(componentJSON);
 			break;
 		case ComponentTypes::RENDER_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::RENDER_COMPONENT);
