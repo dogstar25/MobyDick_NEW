@@ -9,16 +9,17 @@ InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentS
 	if (componentJSON.isMember("menuObject")) {
 		auto interfaceMenuObjectId = componentJSON["menuObject"].asString();
 		m_interfaceMenuObject = std::make_shared<GameObject>(interfaceMenuObjectId, -5.f, -5.f, 0.f, parentScene);
-
-		m_interfaceMenuRequiresPointingAt = componentJSON["interfaceMenuRequiresPointingAt"].asBool();
-
 	}
+
+	m_interfaceMenuRequiresPointingAt = componentJSON["interfaceMenuRequiresPointingAt"].asBool();
+
+	m_LocationHintDistance = componentJSON["locationHintDistance"].asFloat();
 
 }
 
 void InterfaceComponent::postInit()
 {
-	//The interactiveMenuObject Lives in the actionCOmponent, so we are responsible for its
+	//The interfaceMenuObject Lives in the interfaceComponent, so we are responsible for its
 	//creation and destruction and setting its layer
 	if (m_interfaceMenuObject.has_value()) {
 		m_interfaceMenuObject.value()->setLayer(parent()->layer());
@@ -39,6 +40,12 @@ void InterfaceComponent::postInit()
 
 void InterfaceComponent::render()
 {
+
+	//Do not render any Interface items if the item is in a scene that is paused
+	if (parent()->parentScene()->state() != SceneState::RUN) {
+
+		return;
+	}
 
 	SDL_FPoint position{ parent()->getCenterPosition() };
 
@@ -80,11 +87,11 @@ void InterfaceComponent::render()
 		const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 		if (util::isMouseOverGameObject(renderComponent->getRenderDestRect())) {
 
-			auto cursor = TextureManager::instance().getMouseCursor("CURSOR_DOOR_CLOSE");
-			SDL_SetCursor(cursor);
+			//If the player is within reach then show the interface 
+			if (parent()->isTouchingByTrait(TraitTag::player)) {
 
-			//If there is a menu then display the interaction menu and it will execute the selected action
-			if (m_interfaceMenuObject) {
+				setCursor(parent(), true);
+
 				if (m_remoteLocationObject) {
 					position = m_remoteLocationObject.value().lock()->getCenterPosition();
 				}
@@ -95,12 +102,32 @@ void InterfaceComponent::render()
 
 				m_interfaceMenuObject.value()->setPosition(position);
 				m_interfaceMenuObject.value()->render();
-
 			}
 
 		}
+		else if (m_LocationHintDistance.has_value() == true && _mouseWithinHintRange()) {
+
+			setCursor(parent(), false);
+
+		}
+		else {
+
+			setCursor(parent(), false);
+
+		}
+
 	}
 
+}
+
+bool InterfaceComponent::_mouseWithinHintRange()
+{
+
+	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+	//Make a rectangle that is size of hint reveal area
+
+	return false;
 }
 
 SDL_FPoint InterfaceComponent::determineInterfaceMenuLocation(GameObject* playerObject, GameObject* contactGameObject, GameObject* menuObject)

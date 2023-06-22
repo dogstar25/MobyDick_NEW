@@ -183,6 +183,7 @@ void ChildrenComponent::postInit()
 
 		child.gameObject->setLayer(parent()->layer());
 		child.gameObject->postInit();
+		child.gameObject->setParent(parent());
 
 		//Child Size Override
 		GameObjectDefinition gameObjectDefinition = parent()->gameObjectDefinition();

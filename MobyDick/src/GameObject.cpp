@@ -34,9 +34,8 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 	m_type = gameObjectType;
 	m_removeFromWorld = false;
 
-	//Description and clue
+	//Description
 	m_description = definitionJSON["description"].asString();
-	m_clue = definitionJSON["clue"].asString();
 
 	//Layer
 	m_layer = layer;
@@ -816,7 +815,8 @@ void GameObject::_updateTouchingObjects()
 	m_touchingGameObjects.clear();
 
 	//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
-	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
+	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT) &&
+		this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->isTouchingObjectsCapturedRequired() == true) {
 
 		const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
@@ -876,18 +876,79 @@ std::vector<SeenObjectDetails> GameObject::getSeenObjects()
 
 }
 
-std::vector<GameObject*> GameObject::getTouchingByTrait(const int trait)
+std::vector<std::weak_ptr<GameObject>> GameObject::getTouchingByTrait(const int trait)
 {
-	std::vector<GameObject*>touchingObjects{};
+	std::vector<std::weak_ptr<GameObject>>touchingObjects{};
 
 	for (auto& gameObject : m_touchingGameObjects) {
 
 		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
-			touchingObjects.push_back(gameObject.second.lock().get());
+			touchingObjects.push_back(gameObject.second.lock());
 		}
 
 	}
 
 	return touchingObjects;
+
+}
+
+std::optional<std::weak_ptr<GameObject>> GameObject::getFirstTouchingByTrait(const int trait)
+{
+	std::optional<std::weak_ptr<GameObject>> foundGameObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
+			foundGameObject = gameObject.second.lock();
+		}
+
+	}
+
+	return foundGameObject;
+
+}
+
+bool GameObject::isTouchingByTrait(const int trait)
+{
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+bool GameObject::isTouchingByType(const std::string type)
+{
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->type() == type) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+bool GameObject::isTouchingByName(const std::string name)
+{
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->name() == name) {
+			return true;
+		}
+
+	}
+
+	return false;
 
 }

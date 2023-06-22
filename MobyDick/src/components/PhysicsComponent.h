@@ -57,6 +57,7 @@ public:
 	b2Vec2 position() { return m_physicsBody->GetPosition(); }
 	float angle() { return m_physicsBody->GetAngle(); }
 	b2Body* physicsBody() {	return m_physicsBody; }
+	bool isTouchingObjectsCapturedRequired() { return m_touchingObjectsCapturedRequired; }
 
 private:
 
@@ -67,6 +68,7 @@ private:
 	uint16 m_physicsType{ 0 };
 	b2Vec2 m_objectAnchorPoint{ 0 , 0 };
 	std::optional<b2Vec2> m_changePositionPosition{};
+	bool m_touchingObjectsCapturedRequired{ true };
 
 };
 
