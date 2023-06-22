@@ -94,10 +94,15 @@ void IMGuiComponent::update()
 
 void IMGuiComponent::render()
 {
-	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 
-	glm::vec2 imGuiWindowSize = m_IMGuiItem->render();
-	transform->setSize(b2Vec2{ imGuiWindowSize.x,imGuiWindowSize.y });
+	//Do not render any IMGui items if the item is in a scene that is paused
+	if (parent()->parentScene()->state() == SceneState::RUN) {
 
+		const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+		glm::vec2 imGuiWindowSize = m_IMGuiItem->render();
+		transform->setSize(b2Vec2{ imGuiWindowSize.x,imGuiWindowSize.y });
+
+	}
 
 }

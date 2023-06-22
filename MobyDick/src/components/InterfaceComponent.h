@@ -23,11 +23,12 @@ public:
 	void postInit() override;
 
 	void setParent(GameObject* gameObject) override;
+	virtual void setCursor(GameObject*, bool) {};
 
 	bool isAutoInteractOnPuzzleComplete() { return m_autoInteractOnPuzzleComplete; }
 
 
-private:
+protected:
 
 	std::optional<std::shared_ptr<GameObject>> m_interfaceMenuObject{};
 	bool m_interfaceMenuRequiresPointingAt{};
@@ -38,6 +39,10 @@ private:
 	//objects' interactive menus appear in same HUD spot
 	std::optional<std::weak_ptr<GameObject>> m_remoteLocationObject{};
 	bool m_autoInteractOnPuzzleComplete{};
+	std::optional<float> m_LocationHintDistance{};
+
+private:
+	bool _mouseWithinHintRange();
 
 
 };
