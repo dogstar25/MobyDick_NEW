@@ -215,8 +215,9 @@ EnumMap::EnumMap()
 	m_enumMap["complex_impasse"] = TraitTag::complex_impasse;
 	m_enumMap["mobile"] = TraitTag::mobile;
 	m_enumMap["light"] = TraitTag::light;
-	m_enumMap["door_portal"] = TraitTag::door_portal;
 	m_enumMap["puzzle"] = TraitTag::puzzle;
+	m_enumMap["vertical_movement"] = TraitTag::vertical_movement;
+	
 
 	//Hud Item Types
 	m_enumMap["HudItemTypes::STATUS_SINGLE"] = (int)HudItemTypes::STATUS_SINGLE;

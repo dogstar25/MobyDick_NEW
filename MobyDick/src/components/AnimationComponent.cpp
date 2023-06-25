@@ -56,15 +56,18 @@ void AnimationComponent::setToDefaultAnimation()
 void AnimationComponent::update()
 {
 
-	auto animationFrame = m_animations[m_currentAnimationState].animate(parent());
+	if (m_animations.size() > 0) {
 
-	//If this animation has completed and it was a one-time animate, then reset the current
-	//animation to the default, and put it in continuous mode (probably IDLE)
+		auto animationFrame = m_animations[m_currentAnimationState].animate(parent());
+
+		//If this animation has completed and it was a one-time animate, then reset the current
+		//animation to the default, and put it in continuous mode (probably IDLE)
 		if (animationFrame == 0) {
 
-		if (m_currentAnimationMode == ANIMATE_ONE_TIME) {
-			m_currentAnimationState = m_defaultAnimationState;
-			m_currentAnimationMode = ANIMATE_CONTINUOUS;
+			if (m_currentAnimationMode == ANIMATE_ONE_TIME) {
+				m_currentAnimationState = m_defaultAnimationState;
+				m_currentAnimationMode = ANIMATE_CONTINUOUS;
+			}
 		}
 	}
 

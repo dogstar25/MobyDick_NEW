@@ -131,7 +131,6 @@ public:
 	std::string name() { return m_name; }
 	std::string type() { return m_type; }
 	std::string description() {return m_description; }
-	std::string clue() { return m_clue; }
 
 
 	auto removeFromWorld() { return m_removeFromWorld; }
@@ -147,7 +146,11 @@ public:
 
 	void reset();
 	void addInventoryItem(GameObject* gameObject);
-	std::vector<GameObject*> getTouchingByTrait(const int trait);
+	std::vector<std::weak_ptr<GameObject>> getTouchingByTrait(const int trait);
+	std::optional<std::weak_ptr<GameObject>> getFirstTouchingByTrait(const int trait);
+	bool isTouchingByTrait(const int trait);
+	bool isTouchingByType(const std::string type);
+	bool isTouchingByName(std::string name);
 	void addTouchingObject(std::shared_ptr<GameObject> touchingObject);
 	void setParent(GameObject* parentObject);
 	std::optional<GameObject*> parent() { return m_parentObject; }
@@ -221,12 +224,11 @@ private:
 	std::string m_name{};
 	std::string m_type{};
 	std::string m_description{};
-	std::string m_clue{};
 	int m_contactTag{ 0 };
 
 	std::optional<GameObject*> m_parentObject{};
 	
-	
+	bool m_isTouchCaptureRequired{};
 	bool m_removeFromWorld{ false };
 	Scene* m_parentScene{nullptr};
 	std::bitset<32> m_traitTags{};

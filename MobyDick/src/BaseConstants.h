@@ -117,8 +117,8 @@ namespace TraitTag {
 	inline constexpr int complex_impasse = 16;
 	inline constexpr int mobile = 17;
 	inline constexpr int light = 18;
-	inline constexpr int door_portal = 19;
-	inline constexpr int puzzle = 20;
+	inline constexpr int puzzle = 19;
+	inline constexpr int vertical_movement = 20;
 
 }
 

@@ -34,9 +34,8 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 	m_type = gameObjectType;
 	m_removeFromWorld = false;
 
-	//Description and clue
+	//Description
 	m_description = definitionJSON["description"].asString();
-	m_clue = definitionJSON["clue"].asString();
 
 	//Layer
 	m_layer = layer;
@@ -820,7 +819,8 @@ void GameObject::_updateTouchingObjects()
 	m_touchingGameObjects.clear();
 
 	//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
-	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
+	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT) &&
+		this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->isTouchingObjectsCapturedRequired() == true) {
 
 		const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
@@ -880,68 +880,18 @@ std::vector<SeenObjectDetails> GameObject::getSeenObjects()
 
 }
 
-std::vector<GameObject*> GameObject::getTouchingByTrait(const int trait)
+std::vector<std::weak_ptr<GameObject>> GameObject::getTouchingByTrait(const int trait)
 {
-	std::vector<GameObject*>touchingObjects{};
+	std::vector<std::weak_ptr<GameObject>>touchingObjects{};
 
 	for (auto& gameObject : m_touchingGameObjects) {
 
 		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
-			touchingObjects.push_back(gameObject.second.lock().get());
+			touchingObjects.push_back(gameObject.second.lock());
 		}
 
 	}
 
 	return touchingObjects;
-
-}
-
-void GameObject::_imGuiDebugObject()
-{
-
-	if (type() == "FULL_HOUSE_EXTERIOR") {
-
-		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-
-
-		ImGui::Begin("test");
-
-		ImGui::Text("House Adjustments");
-
-		//Alpha
-		static int alpha = 255;
-		ImGui::InputInt("#mouseSensitivity", &alpha, 3, 500);
-		renderComponent->setColorAlpha(alpha);
-
-		//Width
-		static int width = transformComponent->getPositionRect().w;
-		ImGui::InputInt("#width", &width,3, 100);
-
-		//Height
-		static int height = transformComponent->getPositionRect().h;
-		ImGui::InputInt("#height", &height, 3, 100);
-		transformComponent->setSize(width, height);
-
-		//XPos
-		static int xPos = transformComponent->getCenterPosition().x;
-		ImGui::InputInt("#xPos", &xPos, 3, 100);
-
-		//yPos
-		static int yPos = transformComponent->getCenterPosition().y;
-		ImGui::InputInt("#yPos", &yPos, 3, 100);
-
-		transformComponent->setPosition(SDL_FPoint{(float)xPos,(float)yPos});
-
-
-
-		ImGui::End();
-	}
-
-
-
-
-
-
 
 }
