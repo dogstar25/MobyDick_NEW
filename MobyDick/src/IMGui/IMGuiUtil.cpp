@@ -134,6 +134,9 @@ namespace ImGui
 			return ImGuiKey_4;
 			break;
 
+		default:
+			return ImGuiKey_0;
+			break;
 
 		}
 

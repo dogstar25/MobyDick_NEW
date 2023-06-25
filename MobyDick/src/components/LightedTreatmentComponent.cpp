@@ -27,11 +27,13 @@ LightedTreatmentComponent::~LightedTreatmentComponent()
 void LightedTreatmentComponent::postInit()
 {
 
-	m_lightCompositeTexture->textureAtlasQuad = SDL_Rect(0, 0, parent()->getSize().x, parent()->getSize().y);
+	m_lightCompositeTexture->textureAtlasQuad = SDL_Rect(0, 0, 
+		(int)parent()->getSize().x, 
+		(int)parent()->getSize().y);
 
 	//Make an SDL texture
 	m_lightCompositeTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET, parent()->getSize().x, parent()->getSize().y);
+		SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
 
 }
 

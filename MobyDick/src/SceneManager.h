@@ -77,8 +77,8 @@ public:
 		return m_PlayerInputEvents;
 	}
 
-	GameObject* addGameObject(std::shared_ptr<GameObject>gameObject, int layer);
-	GameObject* addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle = 0., bool cameraFollow = false);
+	GameObject* addGameObject(std::shared_ptr<GameObject>gameObject, GameLayer layer);
+	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle = 0., bool cameraFollow = false);
 
 private:
 	

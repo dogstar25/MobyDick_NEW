@@ -53,7 +53,7 @@ public:
 	GameObject(GameObject&&) = default;
 	GameObject& operator=(GameObject&&) = default;
 
-	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, int layer=GameLayer::MAIN, 
+	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer=GameLayer::MAIN,
 		bool cameraFollow=false, std::string name="");
 
 	virtual void update();
@@ -65,7 +65,7 @@ public:
 	void setPosition(float x, float y);
 	void setPosition(SDL_FPoint position);
 	void setPosition(PositionAlignment windowPosition, float adjustX=0., float adjustY=0.);
-	void setLayer(int layer) { m_layer = layer; }
+	void setLayer(GameLayer layer) { m_layer = layer; }
 	void setPhysicsActive(bool active);
 	void setParentScene(Scene* parentScene);
 	void setAngleInDegrees(float angle);
@@ -140,7 +140,7 @@ public:
 	auto& components() { return m_components; }
 	Scene* parentScene() { return m_parentScene; }
 	void setCollisionTag(int contactTag);
-	int layer() { return m_layer; }
+	GameLayer layer() { return m_layer; }
 
 	//void setCollisionTag(int contactTag) { m_contactTag = contactTag; }
 	//void resetCollisionTag() { m_contactTag = m_originalCollisionTag; }
@@ -234,7 +234,7 @@ private:
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_touchingGameObjects{};
 	GameObjectDefinition m_gameObjectDefinition;
 
-	int m_layer;
+	GameLayer m_layer;
 
 	//Components
 	//std::unordered_map<std::type_index, std::shared_ptr<Component>>m_components;
@@ -243,6 +243,7 @@ private:
 	std::string _buildId(std::string gameObjectType, float xMapPos, float yMapPos);
 	std::string _buildName(std::string rootName, std::string gameObjectType, bool isDependent);
 	void _updateTouchingObjects();
+	void _imGuiDebugObject();
 
 };
 

@@ -21,7 +21,7 @@ GameObject::~GameObject()
 
 }
 
-GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, int layer, bool cameraFollow, std::string name)
+GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer, bool cameraFollow, std::string name)
 {
 
 	Json::Value definitionJSON;
@@ -257,7 +257,11 @@ void GameObject::render(SDL_FRect destQuad)
 void GameObject::render()
 {
 
+	//Special spot to place a debug ImGui object
+	_imGuiDebugObject();
+
 	if (this->renderDisabled() == false) {
+
 		//Render yourself
 		getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render();
 
@@ -889,5 +893,55 @@ std::vector<GameObject*> GameObject::getTouchingByTrait(const int trait)
 	}
 
 	return touchingObjects;
+
+}
+
+void GameObject::_imGuiDebugObject()
+{
+
+	if (type() == "FULL_HOUSE_EXTERIOR") {
+
+		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+
+		ImGui::Begin("test");
+
+		ImGui::Text("House Adjustments");
+
+		//Alpha
+		static int alpha = 255;
+		ImGui::InputInt("#mouseSensitivity", &alpha, 3, 500);
+		renderComponent->setColorAlpha(alpha);
+
+		//Width
+		static int width = transformComponent->getPositionRect().w;
+		ImGui::InputInt("#width", &width,3, 100);
+
+		//Height
+		static int height = transformComponent->getPositionRect().h;
+		ImGui::InputInt("#height", &height, 3, 100);
+		transformComponent->setSize(width, height);
+
+		//XPos
+		static int xPos = transformComponent->getCenterPosition().x;
+		ImGui::InputInt("#xPos", &xPos, 3, 100);
+
+		//yPos
+		static int yPos = transformComponent->getCenterPosition().y;
+		ImGui::InputInt("#yPos", &yPos, 3, 100);
+
+		transformComponent->setPosition(SDL_FPoint{(float)xPos,(float)yPos});
+
+
+
+		ImGui::End();
+	}
+
+
+
+
+
+
 
 }

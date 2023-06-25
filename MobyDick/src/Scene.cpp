@@ -208,7 +208,7 @@ void Scene::clear()
 	m_levelObjectives.clear();
 	m_navigationMap.clear();
 
-	for (int x = 0; x < MAX_GAMEOBJECT_LAYERS; x++)
+	for (int x = 0; x < GameLayer::COUNT; x++)
 	{
 		m_gameObjects[x].clear();
 	}
@@ -336,7 +336,7 @@ void Scene::deleteCutScene()
 
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle, bool cameraFollow, std::string name)
+GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, bool cameraFollow, std::string name)
 {
 
 	auto& gameObject = m_gameObjects[layer].emplace_back(
@@ -349,7 +349,7 @@ GameObject* Scene::addGameObject(std::string gameObjectType, int layer, float xM
 
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, int layer, PositionAlignment windowPosition, float adjustX, float adjustY, 
+GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, float adjustX, float adjustY,
 	float angle, bool cameraFollow, std::string name)
 {
 
@@ -371,7 +371,7 @@ GameObject* Scene::addGameObject(std::string gameObjectType, int layer, Position
 /*
 Emplace the new gameObject into the collection and also return a reference ptr to the newly created object as well
 */
-void Scene::addGameObject(std::shared_ptr<GameObject> gameObject, int layer)
+void Scene::addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer)
 {
 
 	gameObject->setParentScene(this);
@@ -407,7 +407,7 @@ void Scene::applyCurrentControlMode()
 
 }
 
-std::optional<Parallax> Scene::getParallax(int layer)
+std::optional<Parallax> Scene::getParallax(GameLayer layer)
 {
 
 	if (m_parallaxRates.find(layer) != m_parallaxRates.end()) {
@@ -503,7 +503,7 @@ void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 		std::string gameObjectType = gameObjectJSON["gameObjectType"].asString();
 		assert(!gameObjectType.empty() && "Empty GameObejectType in Scene definition for scene ");
 
-		auto layer = game->enumMap()->toEnum(gameObjectJSON["layer"].asString());
+		GameLayer layer = (GameLayer)game->enumMap()->toEnum(gameObjectJSON["layer"].asString());
 
 		//name
 		std::string name = gameObjectJSON["name"].asString();

@@ -63,10 +63,12 @@ public:
 	void update();
 	void clearEvents();
 
-	GameObject* addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle=0., bool cameraFollow=false, std::string name="");
-	GameObject* addGameObject(std::string gameObjectType, int layer, PositionAlignment windowPosition, float adjustX=0., float adjustY=0., float angle=0., 
+	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, 
+		float angle=0., bool cameraFollow=false, std::string name="");
+	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, 
+		float adjustX=0., float adjustY=0., float angle=0.,
 		bool cameraFollow=false, std::string name="");
-	void addGameObject(std::shared_ptr<GameObject> gameObject, int layer);
+	void addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer);
 
 	void addGameObjectIndex(std::shared_ptr<GameObject> gameObject);
 	void addNavigationMapItem(NavigationMapItem& navigationMapItem, int x, int y);
@@ -88,7 +90,7 @@ public:
 			m_physicsConfig.positionIterations);
 	}
 
-	const std::array <std::vector<std::shared_ptr<GameObject>>, MAX_GAMEOBJECT_LAYERS>& gameObjects() {
+	const std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::COUNT>& gameObjects() {
 		return m_gameObjects;
 	}
 
@@ -119,7 +121,7 @@ public:
 	void setCutScene(std::shared_ptr<CutScene>cutScene);
 	void deleteCutScene();
 	void addParallaxItem(Parallax& parallaxItem);
-	std::optional<Parallax> getParallax(int layer);
+	std::optional<Parallax> getParallax(GameLayer layer);
 
 	void deleteIndex(std::string gameObjectIndex);
 	void setPlayerOriginalSpawnPoint(float x, float y) { m_playerOrigSpawnPoint = {x,y}; }
@@ -153,7 +155,7 @@ private:
 	ObjectPoolManager m_objectPoolManager{};
 
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_gameObjectLookup;
-	std::array <std::vector<std::shared_ptr<GameObject>>, MAX_GAMEOBJECT_LAYERS> m_gameObjects;
+	std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::COUNT> m_gameObjects;
 
 	std::vector < std::vector<NavigationMapItem>> m_navigationMap{};
 
