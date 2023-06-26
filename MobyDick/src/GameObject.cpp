@@ -896,6 +896,75 @@ std::vector<std::weak_ptr<GameObject>> GameObject::getTouchingByTrait(const int 
 
 }
 
+
+std::optional<std::weak_ptr<GameObject>> GameObject::getFirstTouchingByTrait(const int trait)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
+			return gameObject.second.lock();
+		}
+
+	}
+
+	return std::nullopt;
+
+}
+
+bool GameObject::isTouchingByTrait(const int trait)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+bool GameObject::isTouchingByType(const std::string type)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->type() == type) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+bool GameObject::isTouchingByName(const std::string name)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->name() == name) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
 void GameObject::_imGuiDebugObject()
 {
 
