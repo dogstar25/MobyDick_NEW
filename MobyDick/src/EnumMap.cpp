@@ -152,14 +152,21 @@ EnumMap::EnumMap()
 	m_enumMap["PositionAlignment::BOTTOM_RIGHT"] = (int)PositionAlignment::BOTTOM_RIGHT;
 
 	//Game Layers
-	m_enumMap["GameLayer::BACKGROUND_1"] = GameLayer::BACKGROUND_1;
+	m_enumMap["GameLayer::BACKGROUND_5"] = GameLayer::BACKGROUND_5;
+	m_enumMap["GameLayer::BACKGROUND_4"] = GameLayer::BACKGROUND_4;
+	m_enumMap["GameLayer::BACKGROUND_3"] = GameLayer::BACKGROUND_3;
 	m_enumMap["GameLayer::BACKGROUND_2"] = GameLayer::BACKGROUND_2;
+	m_enumMap["GameLayer::BACKGROUND_1"] = GameLayer::BACKGROUND_1;
 	m_enumMap["GameLayer::MAIN"] = GameLayer::MAIN;
 	m_enumMap["GameLayer::FOREGROUND_1"] = GameLayer::FOREGROUND_1;
 	m_enumMap["GameLayer::FOREGROUND_2"] = GameLayer::FOREGROUND_2;
+	m_enumMap["GameLayer::FOREGROUND_3"] = GameLayer::FOREGROUND_3;
+	m_enumMap["GameLayer::FOREGROUND_4"] = GameLayer::FOREGROUND_4;
+	m_enumMap["GameLayer::FOREGROUND_5"] = GameLayer::FOREGROUND_5;
 	m_enumMap["GameLayer::GUI"] = GameLayer::GUI;
 	m_enumMap["GameLayer::ABSTRACT"] = GameLayer::ABSTRACT;
 	m_enumMap["GameLayer::GRID_DISPLAY"] = GameLayer::GRID_DISPLAY;
+
 
 	//Game Object Display Modes
 	m_enumMap["DISPLAY_UI_MODE_STANDARD"] = DISPLAY_UI_MODE_STANDARD;
@@ -174,6 +181,7 @@ EnumMap::EnumMap()
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0;
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1;
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3;
 	m_enumMap["GL_TextureIndexType::IMGUI_TEXTURE_ATLAS"] = (int)GL_TextureIndexType::IMGUI_TEXTURE_ATLAS;
 	
 	//Texure Blend Modes

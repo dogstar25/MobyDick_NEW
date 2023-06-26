@@ -52,30 +52,27 @@ void InterfaceComponent::render()
 	//If this an interactiveObject and a playerObject is touching it, then display its interactive menu, if one exists
 	if (parent()->hasTrait(TraitTag::contact_interface)) {
 
-		for (const auto& touchingObject : parent()->getTouchingObjects()) {
+		if (parent()->isTouchingByTrait(TraitTag::player)){
 
-			if (touchingObject.second.expired() == false && touchingObject.second.lock()->hasTrait(TraitTag::player)) {
+			GameObject* interactingObject = parent()->getFirstTouchingByTrait(TraitTag::player).value().lock().get();
 
-				GameObject* interactingObject = touchingObject.second.lock().get();
+			//Is the player is pointing at this interactive object?
+			if (m_interfaceMenuRequiresPointingAt == false ||
+				(m_interfaceMenuRequiresPointingAt == true && interactingObject->isPointingAt(parent()->getCenterPosition()))) {
 
-				//Is the player is pointing at this interactive object?
-				if (m_interfaceMenuRequiresPointingAt == false ||
-					(m_interfaceMenuRequiresPointingAt == true && interactingObject->isPointingAt(parent()->getCenterPosition()))) {
+				//If there is a menu then display the interaction menu and it will execute the selected action
+				if (m_interfaceMenuObject) {
 
-					//If there is a menu then display the interaction menu and it will execute the selected action
-					if (m_interfaceMenuObject) {
-
-						if (m_remoteLocationObject) {
-							position = m_remoteLocationObject.value().lock()->getCenterPosition();
-						}
-						else {
-							position = determineInterfaceMenuLocation(interactingObject, parent(), m_interfaceMenuObject.value().get());
-						}
-
-						m_interfaceMenuObject.value()->setPosition(position);
-						m_interfaceMenuObject.value()->render();
-
+					if (m_remoteLocationObject) {
+						position = m_remoteLocationObject.value().lock()->getCenterPosition();
 					}
+					else {
+						position = determineInterfaceMenuLocation(interactingObject, parent(), m_interfaceMenuObject.value().get());
+					}
+
+					m_interfaceMenuObject.value()->setPosition(position);
+					m_interfaceMenuObject.value()->render();
+
 				}
 			}
 		}

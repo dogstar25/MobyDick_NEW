@@ -328,18 +328,30 @@ inline constexpr int SCENE_ACTION_WINDOW_UNPAUSE = 13;
 inline constexpr int SCENETAG_MENU = 1;
 
 //Game Layers
-inline constexpr int MAX_GAMEOBJECT_LAYERS = 8;
 
-namespace GameLayer {
-	inline constexpr int BACKGROUND_1 = 0;
-	inline constexpr int BACKGROUND_2 = 1;
-	inline constexpr int MAIN = 2;
-	inline constexpr int FOREGROUND_1 = 3;
-	inline constexpr int FOREGROUND_2 = 4;
-	inline constexpr int GUI = 5;
-	inline constexpr int ABSTRACT = 6;
-	inline constexpr int GRID_DISPLAY = 7;
-}
+enum GameLayer {
+
+	BACKGROUND_5,
+	BACKGROUND_4,
+	BACKGROUND_3,
+	BACKGROUND_2,
+	BACKGROUND_1,
+	MAIN,
+	FOREGROUND_1,
+	FOREGROUND_2,
+	FOREGROUND_3,
+	FOREGROUND_4,
+	FOREGROUND_5,
+	GUI,
+	ABSTRACT,
+	GRID_DISPLAY,
+
+	COUNT
+
+};
+
+
+
 
 //Game Object Display Modes
 inline constexpr int MAX_GAMEOBJECT_DISPLAY_UI_MODES = 3;

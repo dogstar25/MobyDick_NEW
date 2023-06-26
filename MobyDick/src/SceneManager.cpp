@@ -400,7 +400,7 @@ void SceneManager::respawnPlayer()
 
 }
 
-GameObject* SceneManager::addGameObject(std::shared_ptr<GameObject>gameObject, int layer)
+GameObject* SceneManager::addGameObject(std::shared_ptr<GameObject>gameObject, GameLayer layer)
 {
 	//Add the gameObject to the currently active scene using back()
 	m_scenes.back().addGameObject(gameObject, layer);
@@ -410,7 +410,7 @@ GameObject* SceneManager::addGameObject(std::shared_ptr<GameObject>gameObject, i
 
 }
 
-GameObject* SceneManager::addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle, bool cameraFollow)
+GameObject* SceneManager::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, bool cameraFollow)
 {
 	//Add the gameObject to the currently active scene using back()
 	auto& currentScene = m_scenes.back();

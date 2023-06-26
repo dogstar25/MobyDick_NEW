@@ -461,7 +461,7 @@ std::optional<LevelObject> LevelManager::_determineColorDefinedObject(SDL_Color 
 			levelObject = LevelObject();
 			levelObject->gameObjectType = colorItemJSON["gameObjectType"].asString();
 			if (colorItemJSON.isMember("layer")) {
-				levelObject->layer = game->enumMap()->toEnum(colorItemJSON["layer"].asString());
+				levelObject->layer = static_cast<GameLayer>(game->enumMap()->toEnum(colorItemJSON["layer"].asString()));
 			}
 			if (colorItemJSON.isMember("cameraFollow")) {
 				levelObject->cameraFollow = colorItemJSON["cameraFollow"].asBool();
@@ -529,7 +529,7 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 			levelObject.gameObjectType = locationItemJSON["gameObjectType"].asString();
 
 			if (locationItemJSON.isMember("layer")) {
-				levelObject.layer = game->enumMap()->toEnum(locationItemJSON["layer"].asString());
+				levelObject.layer = static_cast<GameLayer>(game->enumMap()->toEnum(locationItemJSON["layer"].asString()));
 			}
 			if (locationItemJSON.isMember("size")) {
 				b2Vec2 size = { locationItemJSON["size"]["width"].asFloat(), locationItemJSON["size"]["height"].asFloat() };
@@ -805,6 +805,11 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 					//Since we are changing the size after the gameObject was already built, then we have to adjust the
 					//spawn Position also, since the position was calulated previously using the original size
 					//ToDo: add a sizeOverride that can be passed in at the gameObject constructor level
+
+					if (gameObject->type() == "FULL_HOUSE_EXTERIOR") {
+						int todd = 1;
+					}
+
 					gameObject->setPosition(util::tileToPixelPlacementLocation(
 						(float)x, (float)y, gameObject->getSize().x, gameObject->getSize().y));
 

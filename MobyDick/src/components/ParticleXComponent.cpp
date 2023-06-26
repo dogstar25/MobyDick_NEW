@@ -14,7 +14,7 @@ ParticleXComponent::ParticleXComponent(Json::Value componentJSON)
 		m_type = game->enumMap()->toEnum(componentJSON["type"].asString());
 	}
 	if (componentJSON.isMember("emissionLayer")) {
-		m_emissionLayer = game->enumMap()->toEnum(componentJSON["emissionLayer"].asString());
+		m_emissionLayer = (GameLayer)game->enumMap()->toEnum(componentJSON["emissionLayer"].asString());
 	}
 
 	float emissionInterval = componentJSON["emissionInterval"].asFloat();
