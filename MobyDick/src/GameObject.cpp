@@ -979,7 +979,7 @@ void GameObject::_imGuiDebugObject()
 		ImGui::Text("House Adjustments");
 
 		//Alpha
-		static int alpha = 255;
+		static int alpha = renderComponent->color().a;
 		ImGui::InputInt("#mouseSensitivity", &alpha, 3, 500);
 		renderComponent->setColorAlpha(alpha);
 

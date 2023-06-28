@@ -90,7 +90,7 @@ public:
 			m_physicsConfig.positionIterations);
 	}
 
-	const std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::COUNT>& gameObjects() {
+	const std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::GameLayer_COUNT>& gameObjects() {
 		return m_gameObjects;
 	}
 
@@ -155,7 +155,7 @@ private:
 	ObjectPoolManager m_objectPoolManager{};
 
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_gameObjectLookup;
-	std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::COUNT> m_gameObjects;
+	std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::GameLayer_COUNT> m_gameObjects;
 
 	std::vector < std::vector<NavigationMapItem>> m_navigationMap{};
 

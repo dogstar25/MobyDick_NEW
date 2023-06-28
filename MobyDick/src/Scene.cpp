@@ -208,7 +208,7 @@ void Scene::clear()
 	m_levelObjectives.clear();
 	m_navigationMap.clear();
 
-	for (int x = 0; x < GameLayer::COUNT; x++)
+	for (int x = 0; x < GameLayer::GameLayer_COUNT; x++)
 	{
 		m_gameObjects[x].clear();
 	}
