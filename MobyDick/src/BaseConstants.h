@@ -346,12 +346,8 @@ enum GameLayer {
 	ABSTRACT,
 	GRID_DISPLAY,
 
-	COUNT
-
+	GameLayer_COUNT
 };
-
-
-
 
 //Game Object Display Modes
 inline constexpr int MAX_GAMEOBJECT_DISPLAY_UI_MODES = 3;

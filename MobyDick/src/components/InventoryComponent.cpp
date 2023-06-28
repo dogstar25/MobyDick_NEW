@@ -53,12 +53,12 @@ std::optional<GameObject*> InventoryComponent::getItem(const int traitTag)
 
 
 
-int InventoryComponent::addCollectible(const int collectibleType, int count)
+int InventoryComponent::addCollectible(const CollectibleTypes collectableType, int count)
 {
 
-	m_collectibles.at(collectibleType) += count;
+	m_collectibles.at(collectableType) += count;
 
-	return m_collectibles.at(collectibleType);
+	return m_collectibles.at(collectableType);
 }
 
 void InventoryComponent::render()
