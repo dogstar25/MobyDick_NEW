@@ -25,10 +25,9 @@ public:
 	~InventoryComponent();
 
 	size_t addItem(std::shared_ptr<GameObject> gameObject);
-	std::vector<std::shared_ptr<GameObject>> items() { return m_items; }
+	std::vector<std::weak_ptr<GameObject>> items() { return m_items; }
 	int activeItem() {	return m_activeItem; }
 
-	GameObject* getActiveItem();
 	std::optional<GameObject*> getItem(const int traitTag);
 	int addCollectible(const CollectibleTypes, int count);
 	
@@ -39,7 +38,7 @@ public:
 private:
 
 	int m_activeItem{ 0 };
-	std::vector<std::shared_ptr<GameObject>> m_items{};
+	std::vector<std::weak_ptr<GameObject>> m_items{};
 	std::map<CollectibleTypes, int> m_collectibles{};
 
 

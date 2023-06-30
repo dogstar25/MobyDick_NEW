@@ -139,7 +139,7 @@ std::optional<SceneAction> SceneManager::pollEvents()
 		{
 			case SDL_WINDOWEVENT:
 				count++;
-				std::cout << "Window Event" << std::endl;
+				//std::cout << "Window Event" << std::endl;
 				switch (event.window.event)
 				{
 					//case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -214,8 +214,6 @@ std::optional<SceneAction> SceneManager::pollEvents()
 			}
 			case SDL_USEREVENT:
 			{
-
-				
 				int* type = static_cast<int*>(event.user.data1);
 				sceneAction = *(static_cast<std::optional<SceneAction>*>(event.user.data1));
 				delete event.user.data1;
