@@ -29,13 +29,6 @@ size_t InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 
 }
 
-GameObject* InventoryComponent::getActiveItem() {
-
-	assert(m_activeItem < m_items.size() && "activeItem is out of range of current items");
-
-	return m_items[m_activeItem].get();
-}
-
 std::optional<GameObject*> InventoryComponent::getItem(const int traitTag)
 {
 	std::optional<GameObject*> foundItem{};
@@ -43,8 +36,8 @@ std::optional<GameObject*> InventoryComponent::getItem(const int traitTag)
 	for (auto item : m_items) {
 
 		//This assumes only one item with this trait - returns first one
-		if(item->hasTrait(traitTag)){
-			foundItem = item.get();
+		if(item.expired() == false && item.lock()->hasTrait(traitTag)) {
+			foundItem = item.lock().get();
 			break;
 		}
 	}
