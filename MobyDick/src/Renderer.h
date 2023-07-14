@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <box2d/box2d.h>
 #include "imgui.h"
+#include "BaseConstants.h"
 
 
 struct DisplayOverlay
@@ -20,12 +21,22 @@ struct DisplayOverlay
 namespace displayOverlays {
 
 	static const DisplayOverlay outline_GREEN1{
-
 		.color{},
-		.outlined{},
-		.outlineColor{}
+		.outlined{true},
+		.outlineColor{Colors::GREEN}
 	};
 
+	static const DisplayOverlay tint_RED1{
+		.color{Colors::RED},
+		.outlined{true},
+		.outlineColor{Colors::GAS}
+	};
+
+	static const DisplayOverlay outline_CLOUD{
+		.color{},
+		.outlined{true},
+		.outlineColor{Colors::PURPLE}
+	};
 	/*
 	....Add more displayOverlays here
 	*/

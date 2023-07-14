@@ -4,6 +4,17 @@
 
 #include "../GameObject.h"
 
+
+struct InterfaceEvent {
+
+	int eventId{};
+	std::string label{};
+	int actionId{};
+
+	//virtual bool isAvailable() { return true; };
+
+};
+
 class InterfaceComponent : public Component
 {
 public:
@@ -18,15 +29,18 @@ public:
 	}
 	SDL_FPoint determineInterfaceMenuLocation(GameObject* playerObject, GameObject* contactGameObject, GameObject* menuObject);
 
-	virtual void update() {};
+	virtual void update() override;
 	void render();
 	void postInit() override;
-
 	void setParent(GameObject* gameObject) override;
-	virtual void setCursor(GameObject*, bool) {};
-
 	bool isAutoInteractOnPuzzleComplete() { return m_autoInteractOnPuzzleComplete; }
+	bool isDragging() { return m_dragging; }
+	bool isHovered() { return m_hovered; }
+	SDL_FPoint dragOffset() { return m_dragOffset; }
+	std::map<int, std::shared_ptr<InterfaceEvent>> events() { return m_events; }
 
+	virtual void setCursor(GameObject*, bool) {};
+	virtual bool isEventAvailable(int eventId) { return true; }
 
 protected:
 
@@ -40,9 +54,24 @@ protected:
 	std::optional<std::weak_ptr<GameObject>> m_remoteLocationObject{};
 	bool m_autoInteractOnPuzzleComplete{};
 	std::optional<float> m_LocationHintDistance{};
+	bool m_dragging{};
+	bool m_hovered{};
+	SDL_FPoint m_dragOffset{};
+	b2MouseJoint* m_b2MouseJoint{};
+
+	virtual void handleDragging();
+	bool hasEvent(int eventId);
+	
+	std::map<int, std::shared_ptr<InterfaceEvent>> m_events{};
+
 
 private:
 	bool _mouseWithinHintRange();
+	
+	void _initializeDragging(SDL_FPoint mouseWorldPosition);
+	void _clearDragging();
+
+	
 
 
 };

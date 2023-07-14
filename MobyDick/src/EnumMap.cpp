@@ -60,7 +60,6 @@ EnumMap::EnumMap()
 	//Mouse Modes
 	m_enumMap["CONTROL_MODE_SELECT"] = CONTROL_MODE_SELECT;
 	m_enumMap["CONTROL_MODE_PLAY"] = CONTROL_MODE_PLAY;
-	m_enumMap["CONTROL_MODE_IMGUI"] = CONTROL_MODE_IMGUI;
 
 	//Renderer Types
 	m_enumMap["RendererType::SDL"] = (int)RendererType::SDL;
@@ -105,20 +104,41 @@ EnumMap::EnumMap()
 	//Game Object Actions
 	m_enumMap["Actions::NONE"] = Actions::NONE;
 	m_enumMap["Actions::MOVE"] = Actions::MOVE;
+	m_enumMap["Actions::SPRINT"] = Actions::SPRINT;
 	m_enumMap["Actions::ROTATE"] = Actions::ROTATE;
 	m_enumMap["Actions::USE"] = Actions::USE;
 	m_enumMap["Actions::USAGE"] = Actions::USAGE;
-	//m_enumMap["Actions::INTERACT"] = Actions::INTERACT;
-	m_enumMap["Actions::INTERFACE"] = Actions::INTERFACE;
-	m_enumMap["Actions::ON_HOVER"] = Actions::ON_HOVER;
-	m_enumMap["Actions::ON_HOVER_OUT"] = Actions::ON_HOVER_OUT;
-	m_enumMap["Actions::ON_CLICK"] = Actions::ON_CLICK;
-	m_enumMap["Actions::SPRINT"] = Actions::SPRINT;
-	m_enumMap["Actions::USAGE_SPECIAL"] = Actions::USAGE_SPECIAL;
+	m_enumMap["Actions::INSPECT"] = Actions::INSPECT;
+	m_enumMap["Actions::TALK"] = Actions::TALK;
+	m_enumMap["Actions::PUSH"] = Actions::PUSH;
+	m_enumMap["Actions::TAKE"] = Actions::TAKE;
+	m_enumMap["Actions::COMBINE"] = Actions::COMBINE;
+	m_enumMap["Actions::OPEN"] = Actions::OPEN;
+	m_enumMap["Actions::CLOSE"] = Actions::CLOSE;
+	m_enumMap["Actions::WARP"] = Actions::WARP;
+	m_enumMap["Actions::ENTER"] = Actions::ENTER;
+	m_enumMap["Actions::SHOW_INTERFACE"] = Actions::SHOW_INTERFACE;
+	m_enumMap["Actions::HIDE_INTERFACE"] = Actions::HIDE_INTERFACE;
 	
+	//User Events
+	m_enumMap["InterfaceEvents::ON_TOUCHING"] = InterfaceEvents::ON_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_NO_TOUCHING"] = InterfaceEvents::ON_NO_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_HOVER"] = InterfaceEvents::ON_HOVER;
+	m_enumMap["InterfaceEvents::ON_HOVER_AND_TOUCHING"] = InterfaceEvents::ON_HOVER_AND_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_NO_HOVER_AND_NO_TOUCHING"] = InterfaceEvents::ON_NO_HOVER_AND_NO_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_CLICK"] = InterfaceEvents::ON_CLICK;
+	m_enumMap["InterfaceEvents::ON_HOVER_OUT"] = InterfaceEvents::ON_HOVER_OUT;
+	m_enumMap["InterfaceEvents::ON_TRIGGER"] = InterfaceEvents::ON_TRIGGER;
+	m_enumMap["InterfaceEvents::ON_KEY_DOWN"] = InterfaceEvents::ON_KEY_DOWN;
+	m_enumMap["InterfaceEvents::ON_KEY_UP"] = InterfaceEvents::ON_KEY_UP;
+
 
 	//Keys
 	m_enumMap["SDLK_ESCAPE"] = SDLK_ESCAPE;
+	m_enumMap["SDL_SCANCODE_W"] = SDL_SCANCODE_W;
+	m_enumMap["SDL_SCANCODE_A"] = SDL_SCANCODE_A;
+	m_enumMap["SDL_SCANCODE_S"] = SDL_SCANCODE_S;
+	m_enumMap["SDL_SCANCODE_D"] = SDL_SCANCODE_D;
 	m_enumMap["SDLK_F1"] = SDLK_F1;
 	m_enumMap["SDLK_F2"] = SDLK_F2;
 	m_enumMap["SDLK_F3"] = SDLK_F3;
@@ -217,6 +237,7 @@ EnumMap::EnumMap()
 	m_enumMap["light"] = TraitTag::light;
 	m_enumMap["puzzle"] = TraitTag::puzzle;
 	m_enumMap["vertical_movement"] = TraitTag::vertical_movement;
+	m_enumMap["draggable"] = TraitTag::draggable;
 	
 
 	//Hud Item Types

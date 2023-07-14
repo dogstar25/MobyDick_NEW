@@ -353,6 +353,26 @@ void PhysicsComponent::applyAngleImpulse(float force)
 
 }
 
+b2MouseJoint* PhysicsComponent::createB2MouseJoint()
+{
+	b2MouseJointDef* mouseJointDef;
+
+	//Find the cage object that should exist for 
+	const auto& levelCageObject = parent()->parentScene()->getFirstGameObjectByType("LEVEL_CAGE");
+	const auto& cagePhysicsComponent = levelCageObject.value().get()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+	mouseJointDef = new b2MouseJointDef();
+	mouseJointDef->bodyA = cagePhysicsComponent->physicsBody();
+	mouseJointDef->bodyB = m_physicsBody;
+	mouseJointDef->target = m_physicsBody->GetPosition();
+	mouseJointDef->maxForce = 1000.0f;
+	mouseJointDef->stiffness = 5000;
+
+	b2MouseJoint* mouseJoint = static_cast<b2MouseJoint*>(parent()->parentScene()->physicsWorld()->CreateJoint(mouseJointDef));
+
+	return mouseJoint;
+
+}
 
 //void PhysicsComponent::applyMovement(float speed, int direction, int strafeDirection)
 //{
@@ -444,7 +464,7 @@ void PhysicsComponent::deleteAllJoints()
 
 }
 
-void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointType, std::optional<b2Vec2> attachLocation)
+void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointType, b2Vec2 attachLocation)
 {
 	b2JointDef* jointDef=nullptr;
 	b2WeldJointDef* weldJointDef;
@@ -452,19 +472,6 @@ void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointTyp
 
 	//Get physics component of the attachment object
 	const auto& attachObjectPhysicsComponent = attachObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-
-	//If an attach point was passed in then use it , otherwise use the anchor point defined for the object
-	b2Vec2 anchorPoint = { 0,0 };
-	if (attachLocation) {
-		anchorPoint = attachLocation.value();
-	}
-	else {
-		anchorPoint = {
-			m_objectAnchorPoint.x,
-			m_objectAnchorPoint.y
-		};
-
-	}
 
 	//Get attachment anchor point
 	b2Vec2 attachObjectAnchorPoint = {
@@ -478,7 +485,7 @@ void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointTyp
 		weldJointDef->bodyA = m_physicsBody;
 		weldJointDef->bodyB = attachObjectPhysicsComponent->m_physicsBody;
 		weldJointDef->collideConnected = false;
-		weldJointDef->localAnchorA = anchorPoint;
+		weldJointDef->localAnchorA = attachLocation;
 		weldJointDef->localAnchorB = attachObjectAnchorPoint;
 		jointDef = weldJointDef;
 	}
@@ -487,7 +494,7 @@ void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointTyp
 		revoluteJointDef->bodyA = m_physicsBody;
 		revoluteJointDef->bodyB = attachObjectPhysicsComponent->m_physicsBody;
 		revoluteJointDef->collideConnected = false;
-		revoluteJointDef->localAnchorA = anchorPoint;
+		revoluteJointDef->localAnchorA = attachLocation;
 		revoluteJointDef->localAnchorB = attachObjectAnchorPoint;
 
 		jointDef = revoluteJointDef;

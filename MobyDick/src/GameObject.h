@@ -36,7 +36,6 @@
 #include "components/TextComponent.h"
 #include "components/VitalityComponent.h"
 #include "components/WeaponComponent.h"
-#include "components/UIControlComponent.h"
 #include "components/PoolComponent.h"
 
 class Scene;

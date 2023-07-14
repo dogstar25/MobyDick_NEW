@@ -197,6 +197,24 @@ std::optional<SceneAction> SceneManager::pollEvents()
 				If no mapping was found for the keycode, then assume that
 				it is player action related and store it for later
 				*/
+
+				///////////////////////////////////////////////////
+				//
+				// Here is where we should determine if the key or mouse click goes into the 
+				//PlayerControl event list or the Interface Event List 
+				//If there is an active interface menu, then the event should get stored in that objects 
+				//interface event list
+				//
+				//otherwise it goes into the player control event list
+				//
+				////////////////////////////////////////////////////////
+
+
+
+
+
+
+
 				if (sceneAction.has_value() == false) {
 					//std::cout << "\033[1;31m Store Key\033[0m" << keyCode << "\n";
 					PlayerInputEvent& playerInputEvent = m_PlayerInputEvents.emplace_back();

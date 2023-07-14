@@ -230,6 +230,10 @@ void RenderComponent::render()
 		return;
 	}
 
+	if (parent()->hasTrait(TraitTag::draggable)) {
+		int todd = 1;
+	}
+
 	SDL_FRect destQuad = { getRenderDestRect() };
 	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
 

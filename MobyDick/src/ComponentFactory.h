@@ -17,7 +17,6 @@
 #include "components/ParticleComponent.h"
 #include "components/ParticleXComponent.h"
 #include "components/PoolComponent.h"
-#include "components/UIControlComponent.h"
 #include "components/PhysicsComponent.h"
 #include "components/PuzzleComponent.h"
 #include "components/RenderComponent.h"

@@ -29,6 +29,16 @@ namespace util
 
 	}
 
+	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition)
+	{
+		SDL_FPoint worldPosition{};
+		worldPosition.x = screenPosition.x += Camera::instance().frame().x;
+		worldPosition.y = screenPosition.y += Camera::instance().frame().y;
+
+		return  worldPosition;
+
+	}
+
 	void sendSceneEvent(const int sceneActionCode, const std::string& sceneActionCodeId)
 	{
 
@@ -318,27 +328,19 @@ namespace util
 		return point;
 	}
 
+	SDL_FPoint& toBox2dPoint(SDL_FPoint& point)
+	{
+		point.x /= (float)GameConfig::instance().scaleFactor();
+		point.y /= (float)GameConfig::instance().scaleFactor();
+
+		return point;
+	}
+
 	float& toBox2dPoint(float& value)
 	{
 		value /= (float)GameConfig::instance().scaleFactor();
 
 		return value;
-	}
-
-	b2Vec2& toRenderPoint(b2Vec2& point)
-	{
-		point.x *= (float)25;
-		point.y *= (float)25;
-
-		return point;
-	}
-
-	glm::vec2& toRenderPoint(glm::vec2& point)
-	{
-		point.x *= (float)25;
-		point.y *= (float)25;
-
-		return point;
 	}
 
 	Json::Value getComponentConfig(Json::Value definitionJSON, int componentType)

@@ -88,7 +88,6 @@
 #include "../src/components/RenderComponent.h"
 #include "../src/components/TransformComponent.h"
 #include "../src/components/TextComponent.h"
-#include "../src/components/UIControlComponent.h"
 #include "../src/components/VitalityComponent.h"
 #include "../src/components/WeaponComponent.h"
 #include "../src/cutScenes/CutScene.h"

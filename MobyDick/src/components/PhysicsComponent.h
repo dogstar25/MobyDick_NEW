@@ -49,8 +49,9 @@ public:
 	//This is when we want to chnage the position of the object from within a box2d callback
 	void setChangePositionPosition(b2Vec2 position) { m_changePositionPosition = position; }
 	
-	void attachItem(GameObject* inventoryObject, b2JointType jointType, std::optional<b2Vec2> attachLocation = std::nullopt);
+	void attachItem(GameObject* inventoryObject, b2JointType jointType, b2Vec2 attachLocation = {0,0});
 	void deleteAllJoints();
+	b2MouseJoint* createB2MouseJoint();
 
 	//Accessor functions
 	b2Vec2 objectAnchorPoint() { return m_objectAnchorPoint; }

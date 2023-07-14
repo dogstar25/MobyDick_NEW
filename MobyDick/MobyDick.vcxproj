@@ -308,7 +308,6 @@
     <ClCompile Include="src\TextureManager.cpp" />
     <ClCompile Include="src\components\TextComponent.cpp" />
     <ClCompile Include="src\components\VitalityComponent.cpp" />
-    <ClCompile Include="src\components\UIControlComponent.cpp" />
     <ClCompile Include="src\actions\UseAction.cpp" />
     <ClCompile Include="src\triggers\Trigger.cpp" />
     <ClCompile Include="src\Timer.cpp" />
@@ -412,7 +411,6 @@
     <ClInclude Include="src\TextureManager.h" />
     <ClInclude Include="src\components\TextComponent.h" />
     <ClInclude Include="src\components\VitalityComponent.h" />
-    <ClInclude Include="src\components\UIControlComponent.h" />
     <ClInclude Include="src\actions\UseAction.h" />
     <ClInclude Include="src\triggers\Trigger.h" />
     <ClInclude Include="src\Timer.h" />
