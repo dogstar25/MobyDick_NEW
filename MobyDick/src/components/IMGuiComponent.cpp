@@ -78,31 +78,14 @@ void IMGuiComponent::setParent(GameObject* parentObject)
 
 void IMGuiComponent::update()
 {
-	////////////////////////////////
-	////NEW TEST TEST
-	//const auto& interactActionComponent = getInteractionObject()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
-	//const auto& interactAction = interactActionComponent->getAction(ACTION_INTERACTION);
-
-	//if (ImGui::IsKeyPressed(ImGuiKey_E)) {
-	//	interactAction->perform(getInteractionObject().get(), SDL_SCANCODE_E);
-	//}
-	//if (ImGui::IsKeyPressed(ImGuiKey_R)) {
-	//	interactAction->perform(getInteractionObject().get(), SDL_SCANCODE_R);
-	//}
-	/////////////////////////////////////
 }
 
 void IMGuiComponent::render()
 {
 
-	//Do not render any IMGui items if the item is in a scene that is paused
-	if (parent()->parentScene()->state() == SceneState::RUN) {
+	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 
-		const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-
-		glm::vec2 imGuiWindowSize = m_IMGuiItem->render();
-		transform->setSize(b2Vec2{ imGuiWindowSize.x,imGuiWindowSize.y });
-
-	}
+	glm::vec2 imGuiWindowSize = m_IMGuiItem->render();
+	transform->setSize(b2Vec2{ imGuiWindowSize.x,imGuiWindowSize.y });
 
 }

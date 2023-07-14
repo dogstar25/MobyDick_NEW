@@ -52,6 +52,7 @@ namespace util
 	const ImVec4 JsonToImVec4Color(Json::Value JsonColor);
 	const ImVec4 SDLColorToImVec4(SDL_Color sdlColor);
 	b2Vec2& toBox2dPoint(b2Vec2& point);
+	SDL_FPoint& toBox2dPoint(SDL_FPoint& value);
 	float& toBox2dPoint(float& value);
 	b2Vec2& toRenderPoint(b2Vec2& point);
 	glm::vec2& toRenderPoint(glm::vec2& point);
@@ -71,6 +72,7 @@ namespace util
 	bool isMouseButtonPressed(uint8 button);
 	const std::string genRandomId(const int len);
 	bool isMouseOverGameObject(SDL_FRect gameObjectPositionRect);
+	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition);
 
 };
 

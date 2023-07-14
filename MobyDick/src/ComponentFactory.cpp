@@ -119,10 +119,6 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TRANSFORM_COMPONENT);
 			component = std::make_shared<TransformComponent>(componentJSON, xMapPos, yMapPos, angleAdjust);
 			break;
-		case ComponentTypes::UICONTROL_COMPONENT:
-			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::UICONTROL_COMPONENT);
-			component = std::make_shared<UIControlComponent>(componentJSON);
-			break;
 		case ComponentTypes::VITALITY_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::VITALITY_COMPONENT);
 			component = std::make_shared<VitalityComponent>(componentJSON);

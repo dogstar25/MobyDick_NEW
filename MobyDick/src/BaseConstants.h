@@ -35,7 +35,6 @@ inline constexpr int MOUSE_CLICKED = 3;
 //Mouse Modes
 inline constexpr int CONTROL_MODE_SELECT = 0;
 inline constexpr int CONTROL_MODE_PLAY = 1;
-inline constexpr int CONTROL_MODE_IMGUI = 2;
 
 namespace NavigationSizeCategory {
 	inline constexpr int SMALL = 0;
@@ -59,6 +58,7 @@ namespace Colors {
 	inline SDL_Color BLACK = { 0, 0, 0, 255 };
 	inline SDL_Color BLACKISH = { 1, 1, 1, 255 };
 	inline SDL_Color CLOUD = { 200, 200, 200, 200 };
+	inline SDL_Color GAS = { 127, 127, 127, 100 };
 
 	inline SDL_Color RED = { 255, 0, 0, 255 };
 	inline SDL_Color GREEN = { 0, 255, 0, 255 };
@@ -119,6 +119,7 @@ namespace TraitTag {
 	inline constexpr int light = 18;
 	inline constexpr int puzzle = 19;
 	inline constexpr int vertical_movement = 20;
+	inline constexpr int draggable = 21;
 
 }
 
@@ -286,20 +287,38 @@ inline constexpr int INPUT_CONTROL_CLICK = 4;
 
 //Actions
 namespace Actions {
+
 	inline constexpr int NONE = 0;
 	inline constexpr int MOVE = 1;
-	inline constexpr int ROTATE = 2;
-	inline constexpr int USE = 3;
-	inline constexpr int USAGE = 4;
-	//inline constexpr int INTERACT = 5;
-	inline constexpr int INTERFACE = 6;
-	inline constexpr int ON_HOVER = 7;
-	inline constexpr int ON_CLICK = 8;
-	inline constexpr int ON_HOVER_OUT = 9;
-	inline constexpr int ON_TRIGGER = 10;
-	inline constexpr int SPRINT = 11;
-	inline constexpr int USAGE_SPECIAL = 12;
-	
+	inline constexpr int SPRINT = 2;
+	inline constexpr int ROTATE = 3;
+	inline constexpr int USE = 4;
+	inline constexpr int USAGE = 5;
+	inline constexpr int INSPECT = 6;
+	inline constexpr int TALK = 7;
+	inline constexpr int PUSH = 9;
+	inline constexpr int TAKE = 10;
+	inline constexpr int COMBINE = 11;
+	inline constexpr int OPEN = 12;
+	inline constexpr int CLOSE = 13;	
+	inline constexpr int WARP = 14;
+	inline constexpr int ENTER = 15;
+	inline constexpr int SHOW_INTERFACE = 16;
+	inline constexpr int HIDE_INTERFACE = 17;
+}
+
+//Actions
+namespace InterfaceEvents {
+	inline constexpr int ON_TOUCHING = 1;
+	inline constexpr int ON_NO_TOUCHING = 2;
+	inline constexpr int ON_HOVER = 3;
+	inline constexpr int ON_HOVER_AND_TOUCHING = 4;
+	inline constexpr int ON_NO_HOVER_AND_NO_TOUCHING = 5;
+	inline constexpr int ON_CLICK = 6;
+	inline constexpr int ON_HOVER_OUT = 7;
+	inline constexpr int ON_TRIGGER = 8;
+	inline constexpr int ON_KEY_DOWN = 9;
+	inline constexpr int ON_KEY_UP = 10;
 }
 
 //GameSpace Types

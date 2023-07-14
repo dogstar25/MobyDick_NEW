@@ -60,18 +60,18 @@ glm::vec2 IMGuiInteractiveMenuBasic::render()
 
 	//Handle executing the interActionAction tied to what the user selects
 	//The interaction object at this point, needed by the interactAction will always be the player at this point
-	const auto& player = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
-	const auto& baseGameObject = parent()->parent();
+	//const auto& player = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
+	//const auto& baseGameObject = parent()->parent();
 
-	if (player.has_value() && baseGameObject.has_value()) {
+	//if (player.has_value() && baseGameObject.has_value()) {
 
-		const auto& baseObjectActionComponent = baseGameObject.value()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
-		const auto& interactAction = baseObjectActionComponent->getAction(Actions::INTERFACE);
+	//	const auto& baseObjectActionComponent = baseGameObject.value()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
+	//	const auto& interactAction = baseObjectActionComponent->getAction(Actions::INTERFACE);
 
-		if (ImGui::IsKeyPressed(ImGuiKey_E)) {
-			interactAction->perform(player->get(), parent()->parent().value(), SDL_SCANCODE_E);
-		}
-	}
+	//	if (ImGui::IsKeyPressed(ImGuiKey_E)) {
+	//		interactAction->perform(player->get(), parent()->parent().value(), SDL_SCANCODE_E);
+	//	}
+	//}
 
 	return windowSize;
 }

@@ -57,6 +57,34 @@ void TransformComponent::update()
 		parent()->setPosition(m_windowRelativePosition.value(), m_windowPositionAdjustment.x, m_windowPositionAdjustment.y);
 	}
 
+	////If this is a draggable object AND 
+	//// it's NOT a physics object AND 
+	//// It it is currently in "drag" mode 
+	//// then adjust position based on the mouse position
+	//if (parent()->hasTrait(TraitTag::draggable) && 
+	//	parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {
+
+	//	const auto& interfaceComponent = parent()->getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
+	//	if (interfaceComponent->isDragging()) {
+
+	//		int mouseX = 0;
+	//		int mouseY = 0;
+
+	//		SDL_Point mouseLocation{};
+	//		SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
+
+	//		SDL_FPoint newPosition{};
+	//		SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y});
+
+	//		newPosition.x = mouseWorldPosition.x + interfaceComponent->dragOffset().x;
+	//		newPosition.y = mouseWorldPosition.y + interfaceComponent->dragOffset().y;
+
+	//		setPosition(newPosition.x, newPosition.y);
+
+	//	}
+
+	//}
+
 
 }
 

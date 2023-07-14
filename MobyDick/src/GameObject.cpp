@@ -300,10 +300,10 @@ void GameObject::render()
 			getComponent<IMGuiComponent>(ComponentTypes::IMGUI_COMPONENT)->render();
 		}
 
-		//If you have aa Action component, then render possible interaction menus
+		//If you have an Interface component, then render possible interaction menus
 		if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
 
-			getComponent<ActionComponent>(ComponentTypes::INTERFACE_COMPONENT)->render();
+			getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT)->render();
 		}
 
 		//If you have a Container component, then render the container content items
