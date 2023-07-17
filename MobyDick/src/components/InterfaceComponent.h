@@ -5,13 +5,12 @@
 #include "../GameObject.h"
 
 
-struct InterfaceEvent {
+struct InterfaceAction {
 
-	int eventId{};
-	std::string label{};
 	int actionId{};
-
-	//virtual bool isAvailable() { return true; };
+	std::string label{};
+	std::vector<InterfaceEvents> conditionEvents{};
+	ConditionOperator conditionOperator{};
 
 };
 
@@ -37,7 +36,7 @@ public:
 	bool isDragging() { return m_dragging; }
 	bool isHovered() { return m_hovered; }
 	SDL_FPoint dragOffset() { return m_dragOffset; }
-	std::map<int, std::shared_ptr<InterfaceEvent>> events() { return m_events; }
+	std::map<int, std::shared_ptr<InterfaceAction>> eventActions() { return m_eventActions; }
 
 	virtual void setCursor(GameObject*, bool) {};
 	virtual bool isEventAvailable(int eventId) { return true; }
@@ -58,11 +57,11 @@ protected:
 	bool m_hovered{};
 	SDL_FPoint m_dragOffset{};
 	b2MouseJoint* m_b2MouseJoint{};
+	std::bitset<(int)InterfaceEvents::COUNT> m_currentEventsState{};
 
 	virtual void handleDragging();
-	bool hasEvent(int eventId);
 	
-	std::map<int, std::shared_ptr<InterfaceEvent>> m_events{};
+	std::map<int, std::shared_ptr<InterfaceAction>> m_eventActions{};
 
 
 private:
@@ -70,6 +69,7 @@ private:
 	
 	void _initializeDragging(SDL_FPoint mouseWorldPosition);
 	void _clearDragging();
+	bool _hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState);
 
 	
 
