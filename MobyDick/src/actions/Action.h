@@ -32,10 +32,6 @@ public:
 	virtual void perform(GameObject*, GameObject*, b2Vec2) { assert(false && "An Empty Action was executed!"); };
 	virtual void perform(GameObject*, GameObject*) { assert(false && "An Empty Action was executed!"); };
 
-	virtual bool isApplicable() { return true; }
-	virtual bool isApplicable(GameObject*) { return true; };
-	virtual bool isApplicable(GameObject*, GameObject*) { return true; };
-
 protected:
 	std::string m_label{};
 

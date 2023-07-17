@@ -51,12 +51,6 @@ EnumMap::EnumMap()
 	m_enumMap["RenderBlendMode::MODULATE"] = (int)RenderBlendMode::MODULATE;
 	m_enumMap["RenderBlendMode::NONE"] = (int)RenderBlendMode::NONE;
 
-	//Mouse State
-	m_enumMap["MOUSE_NONE"] = MOUSE_NONE;
-	m_enumMap["MOUSE_HOVER"] = MOUSE_HOVER;
-	m_enumMap["MOUSE_NONE"] = MOUSE_HOLD;
-	m_enumMap["MOUSE_HOVER"] = MOUSE_CLICKED;
-
 	//Mouse Modes
 	m_enumMap["CONTROL_MODE_SELECT"] = CONTROL_MODE_SELECT;
 	m_enumMap["CONTROL_MODE_PLAY"] = CONTROL_MODE_PLAY;
@@ -121,16 +115,12 @@ EnumMap::EnumMap()
 	m_enumMap["Actions::HIDE_INTERFACE"] = Actions::HIDE_INTERFACE;
 	
 	//User Events
-	m_enumMap["InterfaceEvents::ON_TOUCHING"] = InterfaceEvents::ON_TOUCHING;
-	m_enumMap["InterfaceEvents::ON_NO_TOUCHING"] = InterfaceEvents::ON_NO_TOUCHING;
-	m_enumMap["InterfaceEvents::ON_HOVER"] = InterfaceEvents::ON_HOVER;
-	m_enumMap["InterfaceEvents::ON_HOVER_AND_TOUCHING"] = InterfaceEvents::ON_HOVER_AND_TOUCHING;
-	m_enumMap["InterfaceEvents::ON_NO_HOVER_AND_NO_TOUCHING"] = InterfaceEvents::ON_NO_HOVER_AND_NO_TOUCHING;
-	m_enumMap["InterfaceEvents::ON_CLICK"] = InterfaceEvents::ON_CLICK;
-	m_enumMap["InterfaceEvents::ON_HOVER_OUT"] = InterfaceEvents::ON_HOVER_OUT;
-	m_enumMap["InterfaceEvents::ON_TRIGGER"] = InterfaceEvents::ON_TRIGGER;
-	m_enumMap["InterfaceEvents::ON_KEY_DOWN"] = InterfaceEvents::ON_KEY_DOWN;
-	m_enumMap["InterfaceEvents::ON_KEY_UP"] = InterfaceEvents::ON_KEY_UP;
+	m_enumMap["InterfaceEvents::ON_TOUCHING"] = (int)InterfaceEvents::ON_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_NO_TOUCHING"] = (int)InterfaceEvents::ON_NO_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_HOVER"] = (int)InterfaceEvents::ON_HOVER;
+	m_enumMap["InterfaceEvents::ON_HOVER_OUT"] = (int)InterfaceEvents::ON_HOVER_OUT;
+	m_enumMap["InterfaceEvents::ON_CLICK"] = (int)InterfaceEvents::ON_CLICK;
+	m_enumMap["InterfaceEvents::ON_KEY_DOWN"] = (int)InterfaceEvents::ON_KEY_DOWN;
 
 
 	//Keys
@@ -263,6 +253,10 @@ EnumMap::EnumMap()
 	m_enumMap["NavigationSizeCategory::SMALL"] = NavigationSizeCategory::SMALL;
 	m_enumMap["NavigationSizeCategory::MEDIUM"] = NavigationSizeCategory::MEDIUM;
 	m_enumMap["NavigationSizeCategory::LARGE"] = NavigationSizeCategory::LARGE;
+
+
+	m_enumMap["ConditionOperator::AND"] = (int)ConditionOperator::AND;
+	m_enumMap["ConditionOperator::OR"] = (int)ConditionOperator::OR;
 
 }
 

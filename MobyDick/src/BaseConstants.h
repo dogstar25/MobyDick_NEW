@@ -26,12 +26,6 @@ inline constexpr int MAX_OBJECT_TYPES = 5;
 inline constexpr int MAX_GL_TEXTURES = 1;
 //inline constexpr int MAX_GL_SHADER_TYPES = 5;
 
-//Mouse State
-inline constexpr int MOUSE_NONE = 0;
-inline constexpr int MOUSE_HOVER = 1;
-inline constexpr int MOUSE_HOLD = 2;
-inline constexpr int MOUSE_CLICKED = 3;
-
 //Mouse Modes
 inline constexpr int CONTROL_MODE_SELECT = 0;
 inline constexpr int CONTROL_MODE_PLAY = 1;
@@ -157,6 +151,14 @@ namespace ParticleEmitterType {
 	inline constexpr int ONETIME = 0;
 	inline constexpr int CONTINUOUS = 1;
 }
+
+enum class ConditionOperator {
+
+	NONE = 0,
+	OR = 1, 
+	AND = 2,
+
+};
 
 enum class PositionAlignment {
 
@@ -308,18 +310,17 @@ namespace Actions {
 }
 
 //Actions
-namespace InterfaceEvents {
-	inline constexpr int ON_TOUCHING = 1;
-	inline constexpr int ON_NO_TOUCHING = 2;
-	inline constexpr int ON_HOVER = 3;
-	inline constexpr int ON_HOVER_AND_TOUCHING = 4;
-	inline constexpr int ON_NO_HOVER_AND_NO_TOUCHING = 5;
-	inline constexpr int ON_CLICK = 6;
-	inline constexpr int ON_HOVER_OUT = 7;
-	inline constexpr int ON_TRIGGER = 8;
-	inline constexpr int ON_KEY_DOWN = 9;
-	inline constexpr int ON_KEY_UP = 10;
-}
+enum class InterfaceEvents {
+	ON_NONE=0,
+	ON_TOUCHING,
+	ON_NO_TOUCHING,
+	ON_HOVER,
+	ON_HOVER_OUT,
+	ON_CLICK,
+	ON_KEY_DOWN,
+
+	COUNT
+};
 
 //GameSpace Types
 inline constexpr int GAMESPACE_INTRO = 0;

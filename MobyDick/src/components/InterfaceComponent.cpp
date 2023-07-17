@@ -15,15 +15,22 @@ InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentS
 		m_interfaceMenuObject->get()->disableRender();
 	}
 
-	for (Json::Value itrAction : componentJSON["interfaceEvents"])
+	for (Json::Value actionJSON : componentJSON["interfaceActions"])
 	{
 
-		InterfaceEvent event;
-		event.eventId = game->enumMap()->toEnum(itrAction["eventId"].asString());
-		event.label = itrAction["label"].asString();
-		event.actionId = game->enumMap()->toEnum(itrAction["actionId"].asString());
+		InterfaceAction action;
+		action.actionId = game->enumMap()->toEnum(actionJSON["actionId"].asString());
+		action.label = actionJSON["label"].asString();
+		action.conditionOperator = (ConditionOperator)game->enumMap()->toEnum(actionJSON["condition"]["operator"].asString());
 
-		m_events[event.eventId] = std::make_shared< InterfaceEvent>(event);
+		for (Json::Value actionDetailsJSON : actionJSON["condition"]["events"]) {
+
+			auto eventValue = (int)game->enumMap()->toEnum(actionDetailsJSON.asString());
+			action.conditionEvents.push_back((InterfaceEvents)eventValue);
+
+		}
+
+		m_eventActions[action.actionId] = std::make_shared< InterfaceAction>(action);
 
 	}
 
@@ -53,120 +60,59 @@ void InterfaceComponent::postInit()
 
 }
 
-bool InterfaceComponent::hasEvent(int eventId)
-{
-
-	if (m_events.find(eventId) != m_events.end()) {
-
-		const auto& event = m_events.find(eventId)->second;
-		if (isEventAvailable(event->eventId)) {
-			return true;
-		}
-		else {
-			return false;
-		}
-		
-	}
-
-	return false;
-
-}
-
-
 void InterfaceComponent::update()
 {
-	bool hasMouseContact{};
-	bool hasPlayerContact{};
-	bool hasPlayerAndMouseContact{};
+
+	std::bitset<(int)InterfaceEvents::COUNT> newEventsState{};
 
 	//convenience reference to outside component(s)
 	const auto& actionComponent = parent()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
 	const auto& transformComponent = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
-	//Mouse Contact
-	hasMouseContact = util::isMouseOverGameObject(renderComponent->getRenderDestRect());
+	//Mouse Contact - ON_HOVER
+	if (util::isMouseOverGameObject(renderComponent->getRenderDestRect())) {
+		newEventsState.set((int)InterfaceEvents::ON_HOVER, true);
+	}
+	else {
+		if (m_currentEventsState.test((int)InterfaceEvents::ON_HOVER) == true) {
+			newEventsState.set((int)InterfaceEvents::ON_HOVER_OUT, true);
+		}
+	}
 
 	//Player Object Contact
-	hasPlayerContact = parent()->isTouchingByTrait(TraitTag::player);
-
-	//Player Object Contact AND Mouse Contact
-	if (hasMouseContact && hasPlayerContact) {
-		hasPlayerAndMouseContact = true;
+	if (parent()->isTouchingByTrait(TraitTag::player)) {
+		newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
 	}
+	else {
+		newEventsState.set((int)InterfaceEvents::ON_NO_TOUCHING, true);
+	}
+
 
 	//Handle dragging an object
 	if (m_dragging == true) {
 
 		handleDragging();
 	}
-	else 
-	{
 
-		//Handle Mouse OnHover
-		if (hasMouseContact) {
+	for (const auto& actionEvent : m_eventActions) {
 
-			m_hovered = true;
+		bool actionMetConditions = _hasActionMetEventRequirements(actionEvent.second.get(), newEventsState);
+		if (actionMetConditions) {
 
-			if (hasEvent(InterfaceEvents::ON_HOVER)) {
-				const auto& event = m_events[InterfaceEvents::ON_HOVER];
-				const auto& action = actionComponent->getAction(event->actionId);
+			if (isEventAvailable(actionEvent.second->actionId)) {
+
+				const auto& action = actionComponent->getAction(actionEvent.second->actionId);
 				action->perform(parent());
-
 			}
 		}
-		//Handle Mouse Hover Out
-		else {
-
-			if (m_hovered == true) {
-				if (hasEvent(InterfaceEvents::ON_HOVER_OUT)) {
-					const auto& event = m_events[InterfaceEvents::ON_HOVER_OUT];
-					const auto& action = actionComponent->getAction(event->actionId);
-					action->perform(parent());
-				}
-
-			}
-		}
-
-		//Handle Player Touching
-		if (hasPlayerContact) {
-
-			if (hasEvent(InterfaceEvents::ON_TOUCHING)) {
-				const auto& event = m_events[InterfaceEvents::ON_TOUCHING];
-				const auto& action = actionComponent->getAction(event->actionId);
-				action->perform(parent());
-
-			}
-
-		}
-
-		//Player touching AND mouse hover
-		if (hasPlayerAndMouseContact) {
-			if (hasEvent(InterfaceEvents::ON_HOVER_AND_TOUCHING)) {
-				const auto& event = m_events[InterfaceEvents::ON_HOVER_AND_TOUCHING];
-				const auto& action = actionComponent->getAction(event->actionId);
-				action->perform(parent());
-
-			}
-		}
-		else {
-
-			if (hasEvent(InterfaceEvents::ON_NO_HOVER_AND_NO_TOUCHING)) {
-				const auto& event = m_events[InterfaceEvents::ON_NO_HOVER_AND_NO_TOUCHING];
-				const auto& action = actionComponent->getAction(event->actionId);
-				action->perform(parent());
-
-			}
-
-		}
-
-
 
 	}
 
 	// Handle Mouse Clicks and Key Presses that are not part of the Player Movement Control or Scene Control
 	for (auto& inputEvent : SceneManager::instance().playerInputEvents())
 	{
+
 		switch (inputEvent.event.type)
 		{
 			case SDL_MOUSEBUTTONDOWN:
@@ -175,19 +121,16 @@ void InterfaceComponent::update()
 				SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
 				SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y });
 
-				if (hasMouseContact) {
+				//Has mouse contact then start drag if its draggable
+				//otherwise execture ON_CLICK action if one exists
+				if (newEventsState.test((int)InterfaceEvents::ON_HOVER)) {
 
 					//If this object is draggable then deal with it
 					if (parent()->hasTrait(TraitTag::draggable)) {
 						_initializeDragging(mouseWorldPosition);
 					}
 
-					//Handle On click if it exists
-					if (hasEvent(InterfaceEvents::ON_CLICK)) {
-						const auto& event = m_events[InterfaceEvents::ON_CLICK];
-						const auto& action = actionComponent->getAction(event->actionId);
-						action->perform(parent());
-					}
+					newEventsState.set((int)InterfaceEvents::ON_CLICK, true);
 				}
 
 				break;
@@ -200,27 +143,9 @@ void InterfaceComponent::update()
 			case SDL_KEYDOWN:
 			{
 				SDL_Scancode keyScanCode = SDL_GetScancodeFromKey(inputEvent.event.key.keysym.sym);
-				//Handle On Key down if it exists
-				if (hasEvent(InterfaceEvents::ON_KEY_DOWN)) {
-					const auto& event = m_events[InterfaceEvents::ON_KEY_DOWN];
-					const auto& action = actionComponent->getAction(event->actionId);
-					action->perform();
-				}
-
+				newEventsState.set((int)InterfaceEvents::ON_KEY_DOWN, true);
 				break;
 
-			}
-			case SDL_KEYUP:
-			{
-				SDL_Scancode keyScanCode = SDL_GetScancodeFromKey(inputEvent.event.key.keysym.sym);
-				//Handle On Key down if it exists
-				if (hasEvent(InterfaceEvents::ON_KEY_UP)) {
-					const auto& event = m_events[InterfaceEvents::ON_KEY_UP];
-					const auto& action = actionComponent->getAction(event->actionId);
-					action->perform();
-				}
-
-				break;
 			}
 
 			default:
@@ -229,9 +154,71 @@ void InterfaceComponent::update()
 			}
 		}
 
+
+		for (const auto& actionEvent : m_eventActions) {
+
+			bool actionMetConditions = _hasActionMetEventRequirements(actionEvent.second.get(), newEventsState);
+			if (actionMetConditions) {
+
+				if (isEventAvailable(actionEvent.second->actionId)) {
+
+					const auto& action = actionComponent->getAction(actionEvent.second->actionId);
+					action->perform(parent());
+
+				}
+			}
+		}
+
 	}
 
+	//Save the current state
+	m_currentEventsState = newEventsState;
+
+
 }
+
+
+bool InterfaceComponent::_hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState)
+{
+
+	bool hasMetEventConditions{};
+
+	//If our operator is AND, then all conditions in the conditionsEvent that are
+	//true have to match the current state of those conditions
+	if (action->conditionOperator == ConditionOperator::AND) {
+
+		hasMetEventConditions = true;
+
+		for (const auto& eventIndex : action->conditionEvents) {
+
+			if (currentEventsState[(int)eventIndex] != true) {
+
+				hasMetEventConditions = false;
+				break;
+			}
+		}
+
+	}
+
+	//If our operator is OR, then only one of the conditions in the conditionsEvent that are
+	//true have to match the current state of those conditions
+	else {
+
+		hasMetEventConditions = false;
+
+		for (const auto& eventIndex : action->conditionEvents) {
+
+			if (currentEventsState[(int)eventIndex] == true) {
+
+				hasMetEventConditions = true;
+				break;
+			}
+		}
+	}
+
+	return hasMetEventConditions;
+}
+
 
 
 void InterfaceComponent::render()
