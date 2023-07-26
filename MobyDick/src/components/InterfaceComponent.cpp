@@ -30,7 +30,7 @@ InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentS
 
 		}
 
-		m_eventActions[action.actionId] = std::make_shared< InterfaceAction>(action);
+		m_eventActions[action.actionId] = std::make_shared<InterfaceAction>(action);
 
 	}
 
@@ -48,22 +48,13 @@ void InterfaceComponent::postInit()
 		m_interfaceMenuObject.value()->setLayer(parent()->layer());
 	}
 
-	//The remoteLocationObject
-	//GameObjectDefinition gameObjectDefinition = parent()->gameObjectDefinition();
-	//Json::Value componentDefinition = util::getComponentConfig(gameObjectDefinition.definitionJSON(), ComponentTypes::INTERFACE_COMPONENT);
-	//if (componentDefinition.isMember("remoteLocationObject")) {
-
-	//	std::string name = componentDefinition["remoteLocationObject"].asString();
-	//	m_remoteLocationObject = parent()->parentScene()->getFirstGameObjectByName(name);
-
-	//}
-
 }
 
 void InterfaceComponent::update()
 {
 
 	std::bitset<(int)InterfaceEvents::COUNT> newEventsState{};
+	bool showInterfaceMenu{};
 
 	//convenience reference to outside component(s)
 	const auto& actionComponent = parent()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
@@ -88,6 +79,11 @@ void InterfaceComponent::update()
 		newEventsState.set((int)InterfaceEvents::ON_NO_TOUCHING, true);
 	}
 
+	//Always Initilize to being hidden - THIS IS NEW
+	if (actionComponent->hasAction(Actions::HIDE_INTERFACE)) {
+		const auto& action = actionComponent->getAction(Actions::HIDE_INTERFACE);
+			action->perform(parent());
+	}
 
 	//Handle dragging an object
 	if (m_dragging == true) {
@@ -95,18 +91,23 @@ void InterfaceComponent::update()
 		handleDragging();
 	}
 
-	for (const auto& actionEvent : m_eventActions) {
+	//Should we allow the interface?
+	if (shouldInterfaceBeActivated(newEventsState)) {
 
-		bool actionMetConditions = _hasActionMetEventRequirements(actionEvent.second.get(), newEventsState);
-		if (actionMetConditions) {
+		for (const auto& actionEvent : m_eventActions) {
 
-			if (isEventAvailable(actionEvent.second->actionId)) {
+			bool actionMetConditions = hasActionMetEventRequirements(actionEvent.second.get(), newEventsState);
+			if (actionMetConditions) {
 
-				const auto& action = actionComponent->getAction(actionEvent.second->actionId);
-				action->perform(parent());
+				//Cecks for any puzzles that may be connected to this action
+				if (isEventAvailable(actionEvent.second->actionId)) {
+
+					const auto& action = actionComponent->getAction(actionEvent.second->actionId);
+					action->perform(parent());
+				}
 			}
-		}
 
+		}
 	}
 
 	// Handle Mouse Clicks and Key Presses that are not part of the Player Movement Control or Scene Control
@@ -144,6 +145,9 @@ void InterfaceComponent::update()
 			{
 				SDL_Scancode keyScanCode = SDL_GetScancodeFromKey(inputEvent.event.key.keysym.sym);
 				newEventsState.set((int)InterfaceEvents::ON_KEY_DOWN, true);
+
+				//we need to specify the different key events to store here. 
+
 				break;
 
 			}
@@ -154,34 +158,49 @@ void InterfaceComponent::update()
 			}
 		}
 
+		//Loop through every possible action and see if the mouse and player touching state matches 
+		//what is required to execute
+		if (shouldInterfaceBeActivated(newEventsState)) {
 
-		for (const auto& actionEvent : m_eventActions) {
+			for (const auto& actionEvent : m_eventActions) {
 
-			bool actionMetConditions = _hasActionMetEventRequirements(actionEvent.second.get(), newEventsState);
-			if (actionMetConditions) {
+				//Check mouse and touching state
+				bool actionMetConditions = hasActionMetEventRequirements(actionEvent.second.get(), newEventsState);
+				if (actionMetConditions) {
 
-				if (isEventAvailable(actionEvent.second->actionId)) {
+					//If there is an unsolved puzzle attached
+					if (isEventAvailable(actionEvent.second->actionId)) {
 
-					const auto& action = actionComponent->getAction(actionEvent.second->actionId);
-					action->perform(parent());
+						const auto& action = actionComponent->getAction(actionEvent.second->actionId);
+						action->perform(parent());
 
+					}
 				}
 			}
 		}
+
+		//Set The cursor
+		setCursor(parent(), newEventsState);
+
 
 	}
 
 	//Save the current state
 	m_currentEventsState = newEventsState;
 
-
 }
 
 
-bool InterfaceComponent::_hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState)
+bool InterfaceComponent::hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState)
 {
 
 	bool hasMetEventConditions{};
+
+	//We need a special check here for Showing the interface Menu action
+	if (action->actionId == Actions::SHOW_INTERFACE && shouldInterfaceMenuBeShown(currentEventsState) == false) {
+
+		return false;
+	}
 
 	//If our operator is AND, then all conditions in the conditionsEvent that are
 	//true have to match the current state of those conditions
@@ -326,6 +345,11 @@ void InterfaceComponent::_clearDragging()
 			parent()->parentScene()->physicsWorld()->DestroyJoint(m_b2MouseJoint);
 			m_b2MouseJoint = nullptr;
 		}
+
+		//If there was a overlay added to the dragging somewhere then make sure its clear
+		const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		renderComponent->removeDisplayOverlay();
+
 	}
 
 }
