@@ -52,6 +52,7 @@ public:
 	GameObject(GameObject&&) = default;
 	GameObject& operator=(GameObject&&) = default;
 
+
 	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer=GameLayer::MAIN,
 		bool cameraFollow=false, std::string name="");
 
@@ -202,14 +203,9 @@ public:
 
 	bool operator==(GameObject &gameObject2) {
 
-		std::shared_ptr<TransformComponent> transformThis = this->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-		std::shared_ptr<TransformComponent> transform2 = gameObject2.getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-
 		if (this->m_id == gameObject2.m_id) {
 
-			if (transformThis->position() == transform2->position()) {
-				return true;
-			}
+			return true;
 
 		}
 		return false;

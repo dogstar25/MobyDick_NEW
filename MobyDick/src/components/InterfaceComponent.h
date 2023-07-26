@@ -29,7 +29,7 @@ public:
 	SDL_FPoint determineInterfaceMenuLocation(GameObject* playerObject, GameObject* contactGameObject, GameObject* menuObject);
 
 	virtual void update() override;
-	void render();
+	virtual void render() override;
 	void postInit() override;
 	void setParent(GameObject* gameObject) override;
 	bool isAutoInteractOnPuzzleComplete() { return m_autoInteractOnPuzzleComplete; }
@@ -38,10 +38,12 @@ public:
 	SDL_FPoint dragOffset() { return m_dragOffset; }
 	std::map<int, std::shared_ptr<InterfaceAction>> eventActions() { return m_eventActions; }
 
-	virtual void setCursor(GameObject*, bool) {};
+	virtual void setCursor(GameObject*, std::bitset<(int)InterfaceEvents::COUNT>) {};
 	virtual bool isEventAvailable(int eventId) { return true; }
+	
 
 protected:
+
 
 	std::optional<std::shared_ptr<GameObject>> m_interfaceMenuObject{};
 	bool m_interfaceMenuRequiresPointingAt{};
@@ -60,8 +62,12 @@ protected:
 	std::bitset<(int)InterfaceEvents::COUNT> m_currentEventsState{};
 
 	virtual void handleDragging();
+	bool hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState);
 	
 	std::map<int, std::shared_ptr<InterfaceAction>> m_eventActions{};
+
+	virtual bool shouldInterfaceBeActivated(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
+	virtual bool shouldInterfaceMenuBeShown(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
 
 
 private:
@@ -69,7 +75,6 @@ private:
 	
 	void _initializeDragging(SDL_FPoint mouseWorldPosition);
 	void _clearDragging();
-	bool _hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState);
 
 	
 
