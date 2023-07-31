@@ -63,27 +63,33 @@ void InterfaceComponent::update()
 
 	//Mouse Contact - ON_HOVER
 	if (util::isMouseOverGameObject(renderComponent->getRenderDestRect())) {
+
 		newEventsState.set((int)InterfaceEvents::ON_HOVER, true);
 	}
 	else {
+
 		if (m_currentEventsState.test((int)InterfaceEvents::ON_HOVER) == true) {
+
 			newEventsState.set((int)InterfaceEvents::ON_HOVER_OUT, true);
 		}
 	}
 
 	//Player Object Contact
 	if (parent()->isTouchingByTrait(TraitTag::player)) {
+
 		newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
 	}
 	else {
+
 		newEventsState.set((int)InterfaceEvents::ON_NO_TOUCHING, true);
 	}
 
 	//Always Initilize to being hidden - THIS IS NEW
-	if (actionComponent->hasAction(Actions::HIDE_INTERFACE)) {
-		const auto& action = actionComponent->getAction(Actions::HIDE_INTERFACE);
-			action->perform(parent());
-	}
+	//if (actionComponent->hasAction(Actions::HIDE_INTERFACE)) {
+
+	//	const auto& action = actionComponent->getAction(Actions::HIDE_INTERFACE);
+	//	action->perform(parent());
+	//}
 
 	//Handle dragging an object
 	if (m_dragging == true) {
@@ -91,22 +97,55 @@ void InterfaceComponent::update()
 		handleDragging();
 	}
 
-	//Should we allow the interface?
-	if (shouldInterfaceBeActivated(newEventsState)) {
+	//debug
+	ImGui::Begin("debug");
+
+	ImGui::Text("Active Interface: ");
+	ImGui::SameLine();
+	if (m_currentGameObjectInterfaceActive.has_value()) {
+		ImGui::Text(m_currentGameObjectInterfaceActive.value()->id().c_str());
+	}
+
+
+	ImGui::End();
+
+
+
+
+	//Does this interface have priority over any other possible active interfaces currently 
+	// being shown?
+	//This allows for when we want to show only one interface at a time and usually, the object
+	if (doesInterfaceHavePriority(newEventsState)) {
 
 		for (const auto& actionEvent : m_eventActions) {
 
 			bool actionMetConditions = hasActionMetEventRequirements(actionEvent.second.get(), newEventsState);
 			if (actionMetConditions) {
 
-				//Cecks for any puzzles that may be connected to this action
+				//Checks for any puzzles that may be connected to this action
 				if (isEventAvailable(actionEvent.second->actionId)) {
 
-					const auto& action = actionComponent->getAction(actionEvent.second->actionId);
-					action->perform(parent());
+					//If this is the ShowInterface action then make it the new active interface
+					if (actionEvent.second->actionId == Actions::SHOW_INTERFACE) {
+
+						m_currentGameObjectInterfaceActive = parent();
+					}
+
+					//If this is the HideInterface action and this is the current active interface, then clear
+					//out the current active interface
+					if (actionEvent.second->actionId == Actions::HIDE_INTERFACE &&
+						m_currentGameObjectInterfaceActive == parent()) {
+
+						m_currentGameObjectInterfaceActive = std::nullopt;
+					}
+
+					//Only execute actions that are NOT tied to a user input like mouse click or keydown
+					if (isUserInputTiedAction(actionEvent.second->actionId) == false) {
+						const auto& action = actionComponent->getAction(actionEvent.second->actionId);
+						action->perform(parent());
+					}
 				}
 			}
-
 		}
 	}
 
@@ -160,7 +199,7 @@ void InterfaceComponent::update()
 
 		//Loop through every possible action and see if the mouse and player touching state matches 
 		//what is required to execute
-		if (shouldInterfaceBeActivated(newEventsState)) {
+		//if (doesInterfaceHavePriority(newEventsState)) {
 
 			for (const auto& actionEvent : m_eventActions) {
 
@@ -171,13 +210,17 @@ void InterfaceComponent::update()
 					//If there is an unsolved puzzle attached
 					if (isEventAvailable(actionEvent.second->actionId)) {
 
-						const auto& action = actionComponent->getAction(actionEvent.second->actionId);
-						action->perform(parent());
+						//Only execute actions that are NOT tied to a user input like mouse click or keydown
+						if (isUserInputTiedAction(actionEvent.second->actionId) == true) {
+
+							const auto& action = actionComponent->getAction(actionEvent.second->actionId);
+							action->perform(parent());
+						}
 
 					}
 				}
 			}
-		}
+		//}
 
 		//Set The cursor
 		setCursor(parent(), newEventsState);
@@ -195,12 +238,6 @@ bool InterfaceComponent::hasActionMetEventRequirements(InterfaceAction* action, 
 {
 
 	bool hasMetEventConditions{};
-
-	//We need a special check here for Showing the interface Menu action
-	if (action->actionId == Actions::SHOW_INTERFACE && shouldInterfaceMenuBeShown(currentEventsState) == false) {
-
-		return false;
-	}
 
 	//If our operator is AND, then all conditions in the conditionsEvent that are
 	//true have to match the current state of those conditions
@@ -238,98 +275,48 @@ bool InterfaceComponent::hasActionMetEventRequirements(InterfaceAction* action, 
 	return hasMetEventConditions;
 }
 
+bool InterfaceComponent::isUserInputTiedAction(int actionId)
+{
+
+	if (m_eventActions.find(actionId) != m_eventActions.end()) {
+
+		for (auto event : m_eventActions.find(actionId)->second->conditionEvents) {
+
+			if (event == InterfaceEvents::ON_CLICK ||
+				event == InterfaceEvents::ON_KEY_DOWN) {
+				return true;
+			}
+
+		}
+
+	}
+
+	return false;
+
+}
+
+
+bool InterfaceComponent::doesInterfaceHavePriority(std::bitset<(int)InterfaceEvents::COUNT>)
+{
+
+	return true;
+}
+
 
 
 void InterfaceComponent::render()
 {
 
-	if (m_interfaceMenuObject) {
+	//if (m_interfaceMenuObject) {
+	//	m_interfaceMenuObject.value()->render();
+	//}
+
+	////new
+	if (m_currentGameObjectInterfaceActive.has_value() && 
+		m_currentGameObjectInterfaceActive.value() == this->parent()) {
+
 		m_interfaceMenuObject.value()->render();
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//SDL_FPoint position{ parent()->getCenterPosition() };
-
-	////If this an interactiveObject and a playerObject is touching it, then display its interactive menu, if one exists
-	//if (parent()->hasTrait(TraitTag::contact_interface)) {
-
-	//	if (parent()->isTouchingByTrait(TraitTag::player)){
-
-	//		GameObject* interactingObject = parent()->getFirstTouchingByTrait(TraitTag::player).value().lock().get();
-
-	//		//Is the player is pointing at this interactive object?
-	//		if (m_interfaceMenuRequiresPointingAt == false ||
-	//			(m_interfaceMenuRequiresPointingAt == true && interactingObject->isPointingAt(parent()->getCenterPosition()))) {
-
-	//			//If there is a menu then display the interaction menu and it will execute the selected action
-	//			if (m_interfaceMenuObject) {
-
-	//				if (m_remoteLocationObject) {
-	//					position = m_remoteLocationObject.value().lock()->getCenterPosition();
-	//				}
-	//				else {
-	//					position = determineInterfaceMenuLocation(interactingObject, parent(), m_interfaceMenuObject.value().get());
-	//				}
-
-	//				m_interfaceMenuObject.value()->setPosition(position);
-	//				m_interfaceMenuObject.value()->render();
-
-	//			}
-	//		}
-	//	}
-
-	//}
-	//else if (parent()->hasTrait(TraitTag::mouse_interface)) {
-
-	//	//Is the mouse touching this area
-	//	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-	//	if (util::isMouseOverGameObject(renderComponent->getRenderDestRect())) {
-
-	//		//If the player is within reach then show the interface 
-	//		if (parent()->isTouchingByTrait(TraitTag::player)) {
-
-	//			setCursor(parent(), true);
-
-	//			if (m_remoteLocationObject) {
-	//				position = m_remoteLocationObject.value().lock()->getCenterPosition();
-	//			}
-	//			else {
-	//				const auto& player = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
-	//				position = determineInterfaceMenuLocation(player.value().get(), parent(), m_interfaceMenuObject.value().get());
-	//			}
-
-	//			m_interfaceMenuObject.value()->setPosition(position);
-	//			m_interfaceMenuObject.value()->render();
-	//		}
-
-	//	}
-	//	else if (m_LocationHintDistance.has_value() == true && _mouseWithinHintRange()) {
-
-	//		setCursor(parent(), false);
-
-	//	}
-	//	else {
-
-	//		setCursor(parent(), false);
-
-	//	}
-
-	//}
 
 }
 
