@@ -66,8 +66,17 @@ protected:
 	
 	std::map<int, std::shared_ptr<InterfaceAction>> m_eventActions{};
 
-	virtual bool shouldInterfaceBeActivated(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
-	virtual bool shouldInterfaceMenuBeShown(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
+	virtual bool doesInterfaceHavePriority(std::bitset<(int)InterfaceEvents::COUNT>);
+	virtual bool isUserInputTiedAction(int actionId);
+	//virtual bool shouldInterfaceMenuBeShown(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
+
+	void setCurrentGameObjectInterfaceActive(GameObject* gameObject) { m_currentGameObjectInterfaceActive = gameObject; }
+
+	////////Static Variables
+
+	static inline std::optional<GameObject*> m_currentGameObjectInterfaceActive{};
+
+	/////////////////////
 
 
 private:
