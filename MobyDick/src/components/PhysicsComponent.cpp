@@ -150,7 +150,21 @@ void PhysicsComponent::update()
 		currentPosition = { m_changePositionPosition->x , m_changePositionPosition->y };
 		m_changePositionPosition.reset();
 	}
-	
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	//if (parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->absolutePositioning() == true) {
+
+	//	SDL_FPoint cameraPosition = { Camera::instance().frame().x, Camera::instance().frame().y };
+	//	SDL_FPoint convertedCameraPosition = util::toBox2dPoint(cameraPosition);
+
+	//	currentPosition = { currentPosition.x + convertedCameraPosition.x, currentPosition.y + convertedCameraPosition.y};
+
+	//}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 	//Set the transform
 	m_physicsBody->SetTransform(currentPosition, normalizedAngle);
 

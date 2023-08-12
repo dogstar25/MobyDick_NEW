@@ -19,6 +19,10 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 
 	m_childPadding = componentJSON["childPadding"].asFloat();
 	m_childPositionRelative = componentJSON["childPositionRelative"].asBool();
+	if (componentJSON.isMember("sameSlotTreatment")) {
+		m_childSameSlotTreatment = (ChildSlotTreatment)game->enumMap()->toEnum(componentJSON["sameSlotTreatment"].asString());
+	}
+
 	std::optional<int> locationSlot{};
 	bool centeredOnLocation{true};
 
@@ -163,9 +167,14 @@ void ChildrenComponent::_removeFromWorldPass()
 			//Remove object from gloabl index collection
 			parent()->parentScene()->deleteIndex(it->gameObject->id());
 
+			//Decreate slot count
+			m_childSlotCount[it->location.slot - (int)1]--;
+
 			//it->pieceObject->reset();
 			//std::cout << "Erased from Children collection " << it->gameObject->id() << std::endl;
 			it = m_childObjects.erase(it);
+
+
 		}
 		else {
 			++it;
@@ -201,6 +210,40 @@ void ChildrenComponent::postInit()
 
 
 }
+
+GameObject* ChildrenComponent::addChild(std::shared_ptr<GameObject> gameObject, int slot)
+{
+
+	ChildLocation childLocation;
+	childLocation.slot = slot;
+	childLocation.positionAlignment = PositionAlignment::CENTER;
+	childLocation.centeredOnLocation = true;
+
+	Child child;
+	child.gameObject = gameObject;
+	child.location = childLocation;
+
+	m_childObjects.insert(m_childObjects.begin(), child);
+
+	//Increase the slot count
+	m_childSlotCount[slot-(int)1]++;
+
+	return nullptr;
+}
+
+void ChildrenComponent::removeChild(std::string id)
+{
+
+	for (auto& child : m_childObjects) {
+
+		if (child.gameObject->id() == id) {
+			child.gameObject->setRemoveFromWorld(true);
+			break;
+		}
+	}
+
+}
+
 
 void ChildrenComponent::render()
 {
@@ -263,7 +306,6 @@ b2Vec2 ChildrenComponent::_calcChildPosition(b2Vec2 childSize, int childCount, C
 
 	//Adjust the position if there are multiple children in the same position
 	if (m_childSlotCount[location.slot-1] > 1)
-	//if (false)
 	{
 		float oddEvenadjustValue = 0;
 		int stepCount = 0;
@@ -273,29 +315,56 @@ b2Vec2 ChildrenComponent::_calcChildPosition(b2Vec2 childSize, int childCount, C
 		if (m_childSlotCount[location.slot-1] % 2 == 0)
 		{
 			//isEvenNumber
-			oddEvenadjustValue = (childSize.y + m_childPadding) / 2;
+			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
+				oddEvenadjustValue = (childSize.y + m_childPadding) / 2;
+			}
+			else {
+				oddEvenadjustValue = (childSize.x + m_childPadding) / 2;
+			}
 		}
 		else
 		{
-			oddEvenadjustValue = childSize.y + m_childPadding;
+			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
+				oddEvenadjustValue = childSize.y + m_childPadding;
+			}
+			else {
+				oddEvenadjustValue = childSize.x + m_childPadding;
+			}
 		}
 
 		//calculate number of steps to take to place 1st child object
 		stepCount = m_childSlotCount[location.slot-1] / 2;
 
-		//Calculate 1st child object position based on the previous childPosition calculated
-		//values based on location slot
-		firstChildPosition.x = childCenterPosition.x;
-		firstChildPosition.y = 
-			childCenterPosition.y -
-			oddEvenadjustValue -
-			((childSize.y + m_childPadding) * stepCount);
+		if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
+			//Calculate 1st child object position based on the previous childPosition calculated
+			//values based on location slot
+			firstChildPosition.x = childCenterPosition.x;
+			firstChildPosition.y =
+				childCenterPosition.y -
+				oddEvenadjustValue -
+				((childSize.y + m_childPadding) * stepCount);
 
-		//Calculate our current child object position using the stepSize and the
-		//position of the first child position
-		childCenterPosition.x = firstChildPosition.x;
-		childCenterPosition.y =
-			firstChildPosition.y + ((childSize.y + m_childPadding) * childCount);
+			//Calculate our current child object position using the stepSize and the
+			//position of the first child position
+			childCenterPosition.x = firstChildPosition.x;
+			childCenterPosition.y =
+				firstChildPosition.y + ((childSize.y + m_childPadding) * childCount);
+		}
+		else {
+			//Calculate 1st child object position based on the previous childPosition calculated
+			//values based on location slot
+			firstChildPosition.x =
+				childCenterPosition.x -
+				oddEvenadjustValue -
+				((childSize.x + m_childPadding) * stepCount);
+			firstChildPosition.y = childCenterPosition.y;
+
+			//Calculate our current child object position using the stepSize and the
+			//position of the first child position
+			childCenterPosition.x = firstChildPosition.x + ((childSize.x + m_childPadding) * childCount);
+			childCenterPosition.y =	firstChildPosition.y;
+
+		}
 
 	}
 

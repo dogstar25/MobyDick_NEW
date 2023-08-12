@@ -87,6 +87,7 @@ public:
 
 	b2Vec2 getSize();
 	SDL_Color getColor();
+	bool hasIgnoreTouchTrait(GameObject* gameObject);
 	float getAngle();
 	float getAngleInDegrees();
 	SDL_FPoint getCenterPosition();
@@ -109,6 +110,8 @@ public:
 	int brainState();
 	bool isAlive();
 	bool isCompositeEmpty();
+	void setOffGrid();
+	bool isOffGrid();
 
 	void disableUpdate();
 	void enableUpdate();
@@ -229,6 +232,8 @@ private:
 	std::bitset<32> m_traitTags{};
 	std::bitset<8> m_stateTags{};
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_touchingGameObjects{};
+
+
 	GameObjectDefinition m_gameObjectDefinition;
 
 	GameLayer m_layer;

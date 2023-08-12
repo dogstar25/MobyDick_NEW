@@ -51,6 +51,10 @@ EnumMap::EnumMap()
 	m_enumMap["RenderBlendMode::MODULATE"] = (int)RenderBlendMode::MODULATE;
 	m_enumMap["RenderBlendMode::NONE"] = (int)RenderBlendMode::NONE;
 
+	//Child slot treatment
+	m_enumMap["ChildSlotTreatment::HORIZONTAL"] = (int)ChildSlotTreatment::HORIZONTAL;
+	m_enumMap["ChildSlotTreatment::VERTICAL"] = (int)ChildSlotTreatment::VERTICAL;
+
 	//Mouse Modes
 	m_enumMap["CONTROL_MODE_SELECT"] = CONTROL_MODE_SELECT;
 	m_enumMap["CONTROL_MODE_PLAY"] = CONTROL_MODE_PLAY;
@@ -124,16 +128,18 @@ EnumMap::EnumMap()
 
 
 	//Keys
-	m_enumMap["SDLK_ESCAPE"] = SDLK_ESCAPE;
-	m_enumMap["SDL_SCANCODE_W"] = SDL_SCANCODE_W;
-	m_enumMap["SDL_SCANCODE_A"] = SDL_SCANCODE_A;
-	m_enumMap["SDL_SCANCODE_S"] = SDL_SCANCODE_S;
-	m_enumMap["SDL_SCANCODE_D"] = SDL_SCANCODE_D;
-	m_enumMap["SDLK_F1"] = SDLK_F1;
-	m_enumMap["SDLK_F2"] = SDLK_F2;
-	m_enumMap["SDLK_F3"] = SDLK_F3;
-	m_enumMap["SDLK_F4"] = SDLK_F4;
-	m_enumMap["SDLK_F12"] = SDLK_F12;
+	m_enumMap["Key::SDLK_ESCAPE"] = SDLK_ESCAPE;
+	m_enumMap["Key::SDL_SCANCODE_W"] = SDL_SCANCODE_W;
+	m_enumMap["Key::SDL_SCANCODE_A"] = SDL_SCANCODE_A;
+	m_enumMap["Key::SDL_SCANCODE_S"] = SDL_SCANCODE_S;
+	m_enumMap["Key::SDL_SCANCODE_D"] = SDL_SCANCODE_D;
+	m_enumMap["Key::SDL_SCANCODE_I"] = SDL_SCANCODE_I;
+
+	m_enumMap["Key::SDLK_F1"] = SDLK_F1;
+	m_enumMap["Key::SDLK_F2"] = SDLK_F2;
+	m_enumMap["Key::SDLK_F3"] = SDLK_F3;
+	m_enumMap["Key::SDLK_F4"] = SDLK_F4;
+	m_enumMap["Key::SDLK_F12"] = SDLK_F12;
 
 	//Scene Action Codes
 	m_enumMap["SCENE_ACTION_QUIT"] = SCENE_ACTION_QUIT;

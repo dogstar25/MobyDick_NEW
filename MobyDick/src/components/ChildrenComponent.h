@@ -24,6 +24,12 @@ enum class ChildLocationType {
 	ABSOLUTE_POSITION
 };
 
+enum class ChildSlotTreatment {
+
+	HORIZONTAL,
+	VERTICAL
+};
+
 struct ChildLocation {
 
 	ChildLocationType locationType{};
@@ -48,6 +54,9 @@ public:
 	void update() override;
 	void render();
 	void postInit();
+	GameObject* addChild(std::shared_ptr<GameObject> gameObject, int slot);
+	GameObject* addChild(std::shared_ptr<GameObject> gameObject, b2Vec2 absolutePosition);
+	void removeChild(std::string id);
 
 	const auto& childObjects() { return m_childObjects; }
 
@@ -55,6 +64,7 @@ private:
 	int	  m_childCount {};
 	float m_childPadding {};
 	bool  m_childPositionRelative {};
+	ChildSlotTreatment m_childSameSlotTreatment{ ChildSlotTreatment ::VERTICAL};
 	std::array<int, CHILD_POSITIONS> m_childSlotCount{};
 
 	std::vector<Child> m_childObjects;

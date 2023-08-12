@@ -310,17 +310,19 @@ namespace Actions {
 }
 
 //Actions
+//We need plenty of room using the SDL Keycodes
+inline constexpr int MAX_EVENT_STATES = 105;
 enum class InterfaceEvents {
 	ON_NONE=0,
-	ON_TOUCHING,
-	ON_NO_TOUCHING,
-	ON_HOVER,
-	ON_HOVER_OUT,
-	ON_CLICK,
-	ON_KEY_DOWN,
-
-	COUNT
+	ON_TOUCHING=100,
+	ON_NO_TOUCHING=101,
+	ON_HOVER=102,
+	ON_HOVER_OUT=103,
+	ON_CLICK=104,
+	ON_KEY_DOWN=105
 };
+
+
 
 //GameSpace Types
 inline constexpr int GAMESPACE_INTRO = 0;

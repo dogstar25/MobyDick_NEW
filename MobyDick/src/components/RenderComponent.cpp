@@ -138,15 +138,21 @@ SDL_FRect RenderComponent::getRenderDestRect()
 {
 	SDL_FRect destRect;
 
+	if (parent()->type() == "OIL_CAN") {
+		int todd = 1;
+	}
+
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 
 	//Get its current position. Should be center of object
 	destRect = transform->getPositionRect();
 
 	//Adjust position based on current camera position - offset
-	if (transform->absolutePositioning() == false)
+	//Physics object always need camera adjustment to render
+	if (transform->absolutePositioning() == false )
 	{
 		//Include application of Camera adjustment and Parallax rate
+
 		destRect = getRenderDestRect(destRect);
 
 	}

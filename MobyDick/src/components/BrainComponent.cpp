@@ -1,10 +1,10 @@
 #include "BrainComponent.h"
 
-
 #include "../game.h"
 #include "../RayCastCallBack.h"
 #include "../EnumMap.h"
 
+#include <algorithm>
 
 
 extern std::unique_ptr<Game> game;

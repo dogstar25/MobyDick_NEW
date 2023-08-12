@@ -35,11 +35,21 @@ public:
 	void render();
 	void update();
 
+	void showInventory(std::string hudName);
+	void showInventory(b2Vec2 offset);
+	void hideInventory();
+	bool isOpen() { return m_displayInventoryObjectId.has_value(); }
+	std::optional<std::string> getDisplayInventoryObjectId() {	return m_displayInventoryObjectId;}
+	void clearDisplayInventoryObjectId() { m_displayInventoryObjectId = std::nullopt; }
+
 private:
 
 	int m_activeItem{ 0 };
 	std::vector<std::weak_ptr<GameObject>> m_items{};
 	std::map<CollectibleTypes, int> m_collectibles{};
+	std::string m_displayObjectType{};
+	std::optional<std::shared_ptr<GameObject>> m_displayInventoryObject{};
+	std::optional<std::string> m_displayInventoryObjectId{};
 
 
 

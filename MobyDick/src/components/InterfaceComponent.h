@@ -38,7 +38,7 @@ public:
 	SDL_FPoint dragOffset() { return m_dragOffset; }
 	std::map<int, std::shared_ptr<InterfaceAction>> eventActions() { return m_eventActions; }
 
-	virtual void setCursor(GameObject*, std::bitset<(int)InterfaceEvents::COUNT>) {};
+	virtual void setCursor(GameObject*, std::bitset<MAX_EVENT_STATES>) {};
 	virtual bool isEventAvailable(int eventId) { return true; }
 	
 
@@ -59,14 +59,14 @@ protected:
 	bool m_hovered{};
 	SDL_FPoint m_dragOffset{};
 	b2MouseJoint* m_b2MouseJoint{};
-	std::bitset<(int)InterfaceEvents::COUNT> m_currentEventsState{};
+	std::bitset<MAX_EVENT_STATES> m_currentEventsState{};
 
 	virtual void handleDragging();
-	bool hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState);
+	bool hasActionMetEventRequirements(InterfaceAction* action, std::bitset<MAX_EVENT_STATES> currentEventsState);
 	
 	std::map<int, std::shared_ptr<InterfaceAction>> m_eventActions{};
 
-	virtual bool doesInterfaceHavePriority(std::bitset<(int)InterfaceEvents::COUNT>);
+	virtual bool doesInterfaceHavePriority(std::bitset<MAX_EVENT_STATES>);
 	virtual bool isUserInputTiedAction(int actionId);
 	//virtual bool shouldInterfaceMenuBeShown(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
 
