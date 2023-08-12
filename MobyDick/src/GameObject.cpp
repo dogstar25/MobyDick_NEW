@@ -270,7 +270,7 @@ void GameObject::render()
 			getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT)->render();
 		}
 
-		//Render your attached inventory items
+		//Render your attached items
 		if (hasComponent(ComponentTypes::ATTACHMENTS_COMPONENT)) {
 
 			getComponent<AttachmentsComponent>(ComponentTypes::ATTACHMENTS_COMPONENT)->render();
@@ -310,6 +310,12 @@ void GameObject::render()
 		if (hasComponent(ComponentTypes::CONTAINER_COMPONENT)) {
 
 			getComponent<ContainerComponent>(ComponentTypes::CONTAINER_COMPONENT)->render();
+		}
+
+		//Render Inventory
+		if (hasComponent(ComponentTypes::INVENTORY_COMPONENT)) {
+
+			getComponent<ContainerComponent>(ComponentTypes::INVENTORY_COMPONENT)->render();
 		}
 
 		//If you have a Light treatment component, then render it
@@ -605,6 +611,37 @@ bool GameObject::isCompositeEmpty()
 	return false;
 }
 
+bool GameObject::isOffGrid()
+{
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	if (transformComponent->getCenterPosition().x < 0 && transformComponent->getCenterPosition().y < 0) {
+		return true;
+	}
+
+	return false;
+}
+
+void GameObject::setOffGrid()
+{
+
+	b2Vec2 positionVector = b2Vec2(-50, -50);
+
+	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
+		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		b2Vec2 velocityVector = b2Vec2(0, 0);
+		
+
+		physicsComponent->physicsBody()->SetTransform(positionVector, 0);
+		physicsComponent->physicsBody()->SetLinearVelocity(velocityVector);
+		physicsComponent->physicsBody()->SetEnabled(false);
+
+	}
+	else {
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+		transformComponent->setPosition(positionVector);
+	}
+
+}
 
 void GameObject::dispatch(SDL_FPoint destination)
 {
@@ -819,40 +856,66 @@ void GameObject::_updateTouchingObjects()
 	m_touchingGameObjects.clear();
 
 	//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
-	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT) &&
-		this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->isTouchingObjectsCapturedRequired() == true) {
+	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
 
-		const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		if (this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->isTouchingObjectsCapturedRequired() == true) {
 
-		for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
-		{
-			b2Contact* contact = edge->contact;
+			const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-			//One of these fixtures being reported as a contact is the object itself, so we dont care about that one. 
-			// We only care about the objects are are not this object itself
-			GameObject* contactGameObject = reinterpret_cast<GameObject*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
-			GameObject* contactGameObject2 = reinterpret_cast<GameObject*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
+			for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
+			{
+				b2Contact* contact = edge->contact;
 
-			if (contact->IsTouching()) {
+				//One of these fixtures being reported as a contact is the object itself, so we dont care about that one. 
+				// We only care about the objects are are not this object itself
+				GameObject* contactGameObject = reinterpret_cast<GameObject*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+				GameObject* contactGameObject2 = reinterpret_cast<GameObject*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
 
-				//const auto manifold = contact->GetManifold();
-				//manifold->localNormal;
+				if (contact->IsTouching()) {
 
-				if (contactGameObject != this && contactGameObject->hasTrait(TraitTag::fragment) == false) {
+					//const auto manifold = contact->GetManifold();
+					//manifold->localNormal;
 
-					auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject->id());
-					this->addTouchingObject(contactGameObjectSharedPtr.value());
-				
+					if (contactGameObject != this && contactGameObject->hasTrait(TraitTag::fragment) == false) {
+
+						auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject->id());
+						this->addTouchingObject(contactGameObjectSharedPtr.value());
+
+					}
+					else if (contactGameObject2 != this && contactGameObject2->hasTrait(TraitTag::fragment) == false) {
+
+						auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject2->id());
+						this->addTouchingObject(contactGameObjectSharedPtr.value());
+
+					}
+
 				}
-				else if (contactGameObject2 != this && contactGameObject2->hasTrait(TraitTag::fragment) == false) {
-
-					auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject2->id());
-					this->addTouchingObject(contactGameObjectSharedPtr.value());
-						
-				}
-
 			}
 		}
+	}
+	else {
+
+		//NOT a physics object so spin through the entire gameIndex map and see if this object intersects with
+		//any other non-physics object
+		static Timer touchTimer{ 0.25, true };
+
+		if (touchTimer.hasMetTargetDuration()) {
+
+			//std::cout << "Touch refresh happened" << std::endl;
+
+			std::vector<std::shared_ptr<GameObject>> foundGameObjects;
+
+
+			for (auto it = m_parentScene->getGameObjectLookup().begin(); it != m_parentScene->getGameObjectLookup().end(); ++it) {
+				// Access it->first (key) and it->second (value) here
+			}
+		}
+
+
+
+
+
+
 	}
 
 
@@ -866,6 +929,18 @@ SDL_Color GameObject::getColor()
 
 }
 
+//bool GameObject::hasIgnoreTouchTrait(GameObject* gameObject)
+//{
+//
+//	if (gameObject->hasTrait(TraitTag::fragment) ||
+//		gameObject->hasTrait(TraitTag::fragment))
+//	{
+//		return true;
+//	}
+//	else {
+//		return false;
+//	}
+//}
 
 std::vector<SeenObjectDetails> GameObject::getSeenObjects()
 {
@@ -967,6 +1042,73 @@ bool GameObject::isTouchingByName(const std::string name)
 
 void GameObject::_imGuiDebugObject()
 {
+
+	if (type() == "MAIN_HUD_HOLDER") {
+
+		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+
+		ImGui::Begin("Main Hud Position");
+
+		ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
+		ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
+
+		ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
+		ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+
+
+		ImGui::End();
+
+	}
+
+	if (type() == "HUD_INTERFACE_FRAME") {
+
+		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+		//const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+
+		ImGui::Begin("BOBBY_INVENTORY_DISPLAY Position");
+
+		ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
+		ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
+
+		/*ImGui::Value("Physics Position X", physicsComponent->position().x);
+		ImGui::Value("Physics Position Y", physicsComponent->position().y);*/
+
+		ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
+		ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+
+		
+
+		ImGui::End();
+
+	}
+
+	if (type() == "BOBBY") {
+
+		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+
+		ImGui::Begin("BOBBY Position");
+
+		ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
+		ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
+
+		ImGui::Value("Physics Position X", physicsComponent->position().x);
+		ImGui::Value("Physics Position Y", physicsComponent->position().y);
+
+		ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
+		ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+
+
+
+		ImGui::End();
+
+	}
 
 	if (type() == "FULL_HOUSE_EXTERIOR") {
 

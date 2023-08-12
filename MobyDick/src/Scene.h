@@ -133,6 +133,8 @@ public:
 	void resetGridDisplay();
 	void updateGridDisplay(int xPos, int yPos, int operation, SDL_Color color);
 
+	std::unordered_map<std::string, std::weak_ptr<GameObject>>& getGameObjectLookup() { return m_gameObjectLookup; }
+
 	bool navigationMapChanged() {
 		return m_navigationMapChanged;
 	}

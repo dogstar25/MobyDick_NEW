@@ -53,7 +53,7 @@ void InterfaceComponent::postInit()
 void InterfaceComponent::update()
 {
 
-	std::bitset<(int)InterfaceEvents::COUNT> newEventsState{};
+	std::bitset<MAX_EVENT_STATES> newEventsState{};
 	bool showInterfaceMenu{};
 
 	//convenience reference to outside component(s)
@@ -183,9 +183,9 @@ void InterfaceComponent::update()
 			case SDL_KEYDOWN:
 			{
 				SDL_Scancode keyScanCode = SDL_GetScancodeFromKey(inputEvent.event.key.keysym.sym);
-				newEventsState.set((int)InterfaceEvents::ON_KEY_DOWN, true);
-
-				//we need to specify the different key events to store here. 
+				if (keyScanCode < MAX_EVENT_STATES) {
+					newEventsState.set((int)keyScanCode, true);
+				}
 
 				break;
 
@@ -201,6 +201,9 @@ void InterfaceComponent::update()
 		//what is required to execute
 		//if (doesInterfaceHavePriority(newEventsState)) {
 
+		if (parent()->hasTrait(TraitTag::player)) {
+			int todd = 1;
+		}
 			for (const auto& actionEvent : m_eventActions) {
 
 				//Check mouse and touching state
@@ -210,7 +213,7 @@ void InterfaceComponent::update()
 					//If there is an unsolved puzzle attached
 					if (isEventAvailable(actionEvent.second->actionId)) {
 
-						//Only execute actions that are NOT tied to a user input like mouse click or keydown
+						//Only execute actions that ARE tied to a user input like mouse click or keydown
 						if (isUserInputTiedAction(actionEvent.second->actionId) == true) {
 
 							const auto& action = actionComponent->getAction(actionEvent.second->actionId);
@@ -234,7 +237,7 @@ void InterfaceComponent::update()
 }
 
 
-bool InterfaceComponent::hasActionMetEventRequirements(InterfaceAction* action, std::bitset<(int)InterfaceEvents::COUNT> currentEventsState)
+bool InterfaceComponent::hasActionMetEventRequirements(InterfaceAction* action, std::bitset<MAX_EVENT_STATES> currentEventsState)
 {
 
 	bool hasMetEventConditions{};
@@ -283,7 +286,8 @@ bool InterfaceComponent::isUserInputTiedAction(int actionId)
 		for (auto event : m_eventActions.find(actionId)->second->conditionEvents) {
 
 			if (event == InterfaceEvents::ON_CLICK ||
-				event == InterfaceEvents::ON_KEY_DOWN) {
+				((int)event > 0 && (int)event < 100)) {
+
 				return true;
 			}
 
@@ -296,7 +300,7 @@ bool InterfaceComponent::isUserInputTiedAction(int actionId)
 }
 
 
-bool InterfaceComponent::doesInterfaceHavePriority(std::bitset<(int)InterfaceEvents::COUNT>)
+bool InterfaceComponent::doesInterfaceHavePriority(std::bitset<MAX_EVENT_STATES>)
 {
 
 	return true;
@@ -361,6 +365,9 @@ void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)
 		//Build a mouse joint for physics dragging
 		const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		m_b2MouseJoint = physicsComponent->createB2MouseJoint();
+		//m_b2MouseJoint->SetStiffness(500);
+		//m_b2MouseJoint->SetDamping(500);
+		//m_b2MouseJoint->SetMaxForce(500);
 
 	}
 
