@@ -17,6 +17,7 @@ extern std::unique_ptr<Game> game;
 GameObject::~GameObject()
 {
 
+	//m_shouldThreadStop = true;
 	//std::cout << this->m_id << " GameObject Destructor called" << std::endl;
 
 }
@@ -226,6 +227,11 @@ void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, fl
 void GameObject::update()
 {
 
+	if (type() == "OIL_CAN") {
+		int todd = 1;
+
+	}
+
 	if (this->updateDisabled() == false) {
 		for (auto& component : m_components)
 		{
@@ -234,7 +240,6 @@ void GameObject::update()
 			}
 		}
 
-		//Update touching GameObject
 		_updateTouchingObjects();
 
 	}
@@ -329,8 +334,36 @@ void GameObject::render()
 
 bool GameObject::intersectsWith(GameObject* gameObject)
 {
-	SDL_FRect compareObjectRect = gameObject->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
-	SDL_FRect thisObjectRect = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
+
+	//Do not store yourself as a touching object
+	if (this == gameObject) {
+		return false;
+	}
+
+	const auto& compareObjectTransformComponent = gameObject->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	const auto& thisObjectTransformComponent = this->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+	SDL_FRect compareObjectRect{};
+	SDL_FRect thisObjectRect{};
+
+	//If either one of the objects are absolute positioned, then use there render rectangle to determin eif touching
+	//otherwise use there worl position
+	if (compareObjectTransformComponent->absolutePositioning() == true ||
+		thisObjectTransformComponent->absolutePositioning() == true) {
+
+		const auto& compareObjectRenderComponent = gameObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& thisObjectRenderComponent = this->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+		compareObjectRect = compareObjectRenderComponent->getRenderDestRect();
+		thisObjectRect = thisObjectRenderComponent->getRenderDestRect();
+
+	}
+	else
+	{
+		compareObjectRect = compareObjectTransformComponent->getPositionRect();
+		thisObjectRect = thisObjectTransformComponent->getPositionRect();
+
+	}
 
 	if (SDL_HasIntersectionF(&compareObjectRect, &thisObjectRect) ) {
 		return true;
@@ -384,6 +417,36 @@ void GameObject::setAngleInRadians(float angle)
 	if (physicsComponent) {
 
 		physicsComponent->setAngle(angle);
+	}
+
+}
+
+void GameObject::setAbsolutePositionaing(bool absolutePositionaing)
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	if (transformComponent) {
+
+		transformComponent->setAbsolutePositioning(absolutePositionaing);
+	}
+
+}
+
+bool GameObject::absolutePositioning()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	return transformComponent->absolutePositioning();
+
+}
+
+void GameObject::revertToOriginalAbsolutePositionaing()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	if (transformComponent) {
+
+		transformComponent->setAbsolutePositioning(transformComponent->originalAbsolutePositioning());
 	}
 
 }
@@ -853,71 +916,88 @@ void GameObject::setOperatingSound(std::string soundAssetId)
 void GameObject::_updateTouchingObjects()
 {
 
-	m_touchingGameObjects.clear();
 
-	//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
-	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
 
-		if (this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->isTouchingObjectsCapturedRequired() == true) {
+		if (type() == "OIL_CAN") {
+			int todd = 1;
 
-			const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		}
 
-			for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
-			{
-				b2Contact* contact = edge->contact;
+		m_touchingGameObjects.clear();
 
-				//One of these fixtures being reported as a contact is the object itself, so we dont care about that one. 
-				// We only care about the objects are are not this object itself
-				GameObject* contactGameObject = reinterpret_cast<GameObject*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
-				GameObject* contactGameObject2 = reinterpret_cast<GameObject*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
+		//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
+		if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
 
-				if (contact->IsTouching()) {
+			if (this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->isTouchingObjectsCapturedRequired() == true) {
 
-					//const auto manifold = contact->GetManifold();
-					//manifold->localNormal;
+				const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-					if (contactGameObject != this && contactGameObject->hasTrait(TraitTag::fragment) == false) {
+				for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
+				{
+					b2Contact* contact = edge->contact;
 
-						auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject->id());
-						this->addTouchingObject(contactGameObjectSharedPtr.value());
+					//One of these fixtures being reported as a contact is the object itself, so we dont care about that one. 
+					// We only care about the objects are are not this object itself
+					GameObject* contactGameObject = reinterpret_cast<GameObject*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+					GameObject* contactGameObject2 = reinterpret_cast<GameObject*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
+
+					if (contact->IsTouching()) {
+
+						//const auto manifold = contact->GetManifold();
+						//manifold->localNormal;
+
+						if (contactGameObject != this && contactGameObject->hasTrait(TraitTag::fragment) == false) {
+
+							auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject->id());
+							this->addTouchingObject(contactGameObjectSharedPtr.value());
+
+						}
+						else if (contactGameObject2 != this && contactGameObject2->hasTrait(TraitTag::fragment) == false) {
+
+							auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject2->id());
+							this->addTouchingObject(contactGameObjectSharedPtr.value());
+
+						}
 
 					}
-					else if (contactGameObject2 != this && contactGameObject2->hasTrait(TraitTag::fragment) == false) {
-
-						auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject2->id());
-						this->addTouchingObject(contactGameObjectSharedPtr.value());
-
-					}
-
 				}
+
+				//Now see what non-physics objects it touches
+				//for (auto it = m_parentScene->getGameObjectLookup().begin(); it != m_parentScene->getGameObjectLookup().end(); ++it) {
+
+
+				//	if (it->second.lock().get()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false && this->intersectsWith(it->second.lock().get())) {
+
+				//		if (type() == "OIL_CAN") {
+				//			int todd = 1;
+				//			//std::cout << "Found " << it->second.lock().get()->type() << std::endl;
+				//			this->addTouchingObject(it->second.lock());
+
+				//		}
+
+				//	}
+
+				//}
+
 			}
 		}
-	}
-	else {
+		else {
 
-		//NOT a physics object so spin through the entire gameIndex map and see if this object intersects with
-		//any other non-physics object
-		static Timer touchTimer{ 0.25, true };
+			//NOT a physics object so spin through the entire gameIndex map and see if this object intersects with
+			//any other non-physics object
 
-		if (touchTimer.hasMetTargetDuration()) {
-
-			//std::cout << "Touch refresh happened" << std::endl;
-
-			std::vector<std::shared_ptr<GameObject>> foundGameObjects;
+			//for (auto it = m_parentScene->getGameObjectLookup().begin(); it != m_parentScene->getGameObjectLookup().end(); ++it) {
 
 
-			for (auto it = m_parentScene->getGameObjectLookup().begin(); it != m_parentScene->getGameObjectLookup().end(); ++it) {
-				// Access it->first (key) and it->second (value) here
-			}
+			//	if (this->intersectsWith(it->second.lock().get())) {
+
+			//		this->addTouchingObject(it->second.lock());
+			//	}
+
+			//}
 		}
 
-
-
-
-
-
-	}
-
+		
 
 }
 
@@ -957,6 +1037,7 @@ std::vector<SeenObjectDetails> GameObject::getSeenObjects()
 
 std::vector<std::weak_ptr<GameObject>> GameObject::getTouchingByTrait(const int trait)
 {
+
 	std::vector<std::weak_ptr<GameObject>>touchingObjects{};
 
 	for (auto& gameObject : m_touchingGameObjects) {
@@ -1043,68 +1124,66 @@ bool GameObject::isTouchingByName(const std::string name)
 void GameObject::_imGuiDebugObject()
 {
 
-	if (type() == "MAIN_HUD_HOLDER") {
+	//if (type() == "MAIN_HUD_HOLDER") {
 
-		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-
-
-		ImGui::Begin("Main Hud Position");
-
-		ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
-		ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
-
-		ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
-		ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+	//	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	//	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 
 
-		ImGui::End();
+	//	ImGui::Begin("MAIN_HUD_HOLDER");
 
-	}
+	//	ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
+	//	ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
 
-	if (type() == "HUD_INTERFACE_FRAME") {
-
-		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-		//const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+	//	ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
+	//	ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
 
 
-		ImGui::Begin("BOBBY_INVENTORY_DISPLAY Position");
+	//	ImGui::End();
 
-		ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
-		ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
+	//}
 
-		/*ImGui::Value("Physics Position X", physicsComponent->position().x);
-		ImGui::Value("Physics Position Y", physicsComponent->position().y);*/
+	//if (type() == "HUD_INTERFACE_FRAME") {
 
-		ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
-		ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+	//	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	//	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	//	//const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-		
 
-		ImGui::End();
+	//	ImGui::Begin("HUD_INTERFACE_FRAME Position");
 
-	}
+	//	ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
+	//	ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
 
-	if (type() == "BOBBY") {
+	//	/*ImGui::Value("Physics Position X", physicsComponent->position().x);
+	//	ImGui::Value("Physics Position Y", physicsComponent->position().y);*/
+
+	//	ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
+	//	ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+
+	//	
+
+	//	ImGui::End();
+
+	//}
+
+	if (type() == "OIL_CAN") {
 
 		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
 
-		ImGui::Begin("BOBBY Position");
+		ImGui::Begin("OILCAN Touching");
 
-		ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
-		ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
+		for (const auto& touchingObject : m_touchingGameObjects) {
 
-		ImGui::Value("Physics Position X", physicsComponent->position().x);
-		ImGui::Value("Physics Position Y", physicsComponent->position().y);
+			ImGui::Text(touchingObject.second.lock()->type().c_str());
+			//ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
 
-		ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
-		ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+			//std::cout << "Touching " << touchingObject.second.lock()->type() << std::endl;
 
-
+		}
 
 		ImGui::End();
 

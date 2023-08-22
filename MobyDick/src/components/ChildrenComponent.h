@@ -54,9 +54,10 @@ public:
 	void update() override;
 	void render();
 	void postInit();
-	GameObject* addChild(std::shared_ptr<GameObject> gameObject, int slot);
-	GameObject* addChild(std::shared_ptr<GameObject> gameObject, b2Vec2 absolutePosition);
+	GameObject* addStepChild(std::shared_ptr<GameObject> gameObject, int slot);
+	void removeStepChild(std::string id);
 	void removeChild(std::string id);
+	
 
 	const auto& childObjects() { return m_childObjects; }
 
@@ -77,6 +78,7 @@ private:
 	b2Vec2 _calcChildPosition(b2Vec2 childSize, ChildLocation location, SDL_FPoint parentPositionRec, float parentAngle);
 	std::string _buildChildName(std::string parentName, int childCount);
 	void _removeFromWorldPass();
+	void _removeAllChildren(GameObject* gameObject);
 
 
 };

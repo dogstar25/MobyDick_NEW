@@ -305,13 +305,17 @@ namespace Actions {
 	inline constexpr int CLOSE = 13;	
 	inline constexpr int WARP = 14;
 	inline constexpr int ENTER = 15;
+
 	inline constexpr int SHOW_INTERFACE = 16;
 	inline constexpr int HIDE_INTERFACE = 17;
+	inline constexpr int DRAG_TREATMENT = 18;
+	inline constexpr int DROP = 19;
+
 }
 
 //Actions
 //We need plenty of room using the SDL Keycodes
-inline constexpr int MAX_EVENT_STATES = 105;
+inline constexpr int MAX_EVENT_STATES = 107;
 enum class InterfaceEvents {
 	ON_NONE=0,
 	ON_TOUCHING=100,
@@ -319,7 +323,8 @@ enum class InterfaceEvents {
 	ON_HOVER=102,
 	ON_HOVER_OUT=103,
 	ON_CLICK=104,
-	ON_KEY_DOWN=105
+	ON_DRAG=105,
+	ON_DROP = 106
 };
 
 
@@ -364,7 +369,9 @@ enum GameLayer {
 	FOREGROUND_3,
 	FOREGROUND_4,
 	FOREGROUND_5,
-	GUI,
+	GUI_1, 
+	GUI_2,
+	GUI_3,
 	ABSTRACT,
 	GRID_DISPLAY,
 

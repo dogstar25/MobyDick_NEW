@@ -112,9 +112,14 @@ void Camera::setFramePosition(float x, float y)
 	//m_frame.x = std::ceil(x * 10.0) / 10.0;
 	//m_frame.y = std::ceil(y * 10.0) / 10.0;
 
+	//REMOVED THIS BECAUSE WAS MAKING ABSOLUTE POSITION ITEMS JITTERRY
+	// DURING BOBBY BURDEN DEV
 	//Trunc to fix micro screen jittering on camera moving
 	m_frame.x = trunc(x);
 	m_frame.y = trunc(y);
+
+	//m_frame.x = (x);
+	//m_frame.y = (y);
 
 }
 

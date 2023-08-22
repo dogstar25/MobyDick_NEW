@@ -22,7 +22,7 @@ TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos,
 		m_originalPosition = m_position;
 		m_size.Set(componentJSON["size"]["width"].asFloat(), componentJSON["size"]["height"].asFloat());
 
-		m_absolutePositioning = componentJSON["absolutePositioning"].asBool();
+		m_absolutePositioning = m_originalAbsolutePositioning = componentJSON["absolutePositioning"].asBool();
 
 		//Determine location
 		auto locationJSON = componentJSON["location"];
@@ -51,39 +51,33 @@ TransformComponent::~TransformComponent()
 void TransformComponent::update()
 {
 
+
+	if (parent()->type() == "OIL_CAN") {
+
+		int todd = 1;
+
+	}
+
 	//If this is using the window relative positioning, then we may need to adjust the position
 	//because the object may have changed size, i.e ImGui Window
 	if (m_windowRelativePosition) {
 		parent()->setPosition(m_windowRelativePosition.value(), m_windowPositionAdjustment.x, m_windowPositionAdjustment.y);
 	}
 
-	////If this is a draggable object AND 
-	//// it's NOT a physics object AND 
-	//// It it is currently in "drag" mode 
-	//// then adjust position based on the mouse position
-	//if (parent()->hasTrait(TraitTag::draggable) && 
-	//	parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {
+	if (parent()->type() == "HUD_INTERFACE_FRAME" ||
+		parent()->type() == "MAIN_HUD_HOLDER") {
 
-	//	const auto& interfaceComponent = parent()->getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
-	//	if (interfaceComponent->isDragging()) {
+		int todd = 1;
 
-	//		int mouseX = 0;
-	//		int mouseY = 0;
+	}
 
-	//		SDL_Point mouseLocation{};
-	//		SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
+	if (m_absolutePositioning == true && parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {
 
-	//		SDL_FPoint newPosition{};
-	//		SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y});
+		SDL_FPoint cameraPosition = { Camera::instance().frame().x, Camera::instance().frame().y };
 
-	//		newPosition.x = mouseWorldPosition.x + interfaceComponent->dragOffset().x;
-	//		newPosition.y = mouseWorldPosition.y + interfaceComponent->dragOffset().y;
+		m_position = { m_position.x + cameraPosition.x, m_position.y + cameraPosition.y};
 
-	//		setPosition(newPosition.x, newPosition.y);
-
-	//	}
-
-	//}
+	}
 
 
 }
