@@ -38,6 +38,7 @@
 #include "components/WeaponComponent.h"
 #include "components/PoolComponent.h"
 
+
 class Scene;
 struct SeenObjectDetails;
 
@@ -70,6 +71,8 @@ public:
 	void setParentScene(Scene* parentScene);
 	void setAngleInDegrees(float angle);
 	void setAngleInRadians(float angle);
+	void setAbsolutePositionaing(bool absolutePositionaing);
+	void revertToOriginalAbsolutePositionaing();
 	void setColor(SDL_Color color);
 	void setWeaponForce(float force);
 	void setWeaponColor(SDL_Color color);
@@ -82,6 +85,7 @@ public:
 	void setSize(b2Vec2 size);
 	bool intersectsWith(GameObject* gameObject);
 
+	bool isChild {};
 
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);
 
@@ -134,6 +138,7 @@ public:
 	std::string name() { return m_name; }
 	std::string type() { return m_type; }
 	std::string description() {return m_description; }
+	bool absolutePositioning();
 
 
 	auto removeFromWorld() { return m_removeFromWorld; }
@@ -215,6 +220,7 @@ public:
 
 	}
 
+	
 
 private:
 
@@ -223,6 +229,7 @@ private:
 	std::string m_type{};
 	std::string m_description{};
 	int m_contactTag{ 0 };
+	Timer m_touchUpdateTimer{ 0.25 , true};
 
 	std::optional<GameObject*> m_parentObject{};
 	
@@ -244,8 +251,9 @@ private:
 
 	std::string _buildId(std::string gameObjectType, float xMapPos, float yMapPos);
 	std::string _buildName(std::string rootName, std::string gameObjectType, bool isDependent);
-	void _updateTouchingObjects();
+	
 	void _imGuiDebugObject();
+	void _updateTouchingObjects();
 
 };
 

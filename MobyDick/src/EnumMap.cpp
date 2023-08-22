@@ -117,14 +117,17 @@ EnumMap::EnumMap()
 	m_enumMap["Actions::ENTER"] = Actions::ENTER;
 	m_enumMap["Actions::SHOW_INTERFACE"] = Actions::SHOW_INTERFACE;
 	m_enumMap["Actions::HIDE_INTERFACE"] = Actions::HIDE_INTERFACE;
-	
+	m_enumMap["Actions::DRAG_TREATMENT"] = Actions::DRAG_TREATMENT;
+	m_enumMap["Actions::DROP"] = Actions::DROP;
+
 	//User Events
 	m_enumMap["InterfaceEvents::ON_TOUCHING"] = (int)InterfaceEvents::ON_TOUCHING;
 	m_enumMap["InterfaceEvents::ON_NO_TOUCHING"] = (int)InterfaceEvents::ON_NO_TOUCHING;
 	m_enumMap["InterfaceEvents::ON_HOVER"] = (int)InterfaceEvents::ON_HOVER;
 	m_enumMap["InterfaceEvents::ON_HOVER_OUT"] = (int)InterfaceEvents::ON_HOVER_OUT;
 	m_enumMap["InterfaceEvents::ON_CLICK"] = (int)InterfaceEvents::ON_CLICK;
-	m_enumMap["InterfaceEvents::ON_KEY_DOWN"] = (int)InterfaceEvents::ON_KEY_DOWN;
+	m_enumMap["InterfaceEvents::ON_DRAG"] = (int)InterfaceEvents::ON_DRAG;
+	m_enumMap["InterfaceEvents::ON_DROP"] = (int)InterfaceEvents::ON_DROP;
 
 
 	//Keys
@@ -179,7 +182,9 @@ EnumMap::EnumMap()
 	m_enumMap["GameLayer::FOREGROUND_3"] = GameLayer::FOREGROUND_3;
 	m_enumMap["GameLayer::FOREGROUND_4"] = GameLayer::FOREGROUND_4;
 	m_enumMap["GameLayer::FOREGROUND_5"] = GameLayer::FOREGROUND_5;
-	m_enumMap["GameLayer::GUI"] = GameLayer::GUI;
+	m_enumMap["GameLayer::GUI_1"] = GameLayer::GUI_1;
+	m_enumMap["GameLayer::GUI_2"] = GameLayer::GUI_2;
+	m_enumMap["GameLayer::GUI_3"] = GameLayer::GUI_3;
 	m_enumMap["GameLayer::ABSTRACT"] = GameLayer::ABSTRACT;
 	m_enumMap["GameLayer::GRID_DISPLAY"] = GameLayer::GRID_DISPLAY;
 

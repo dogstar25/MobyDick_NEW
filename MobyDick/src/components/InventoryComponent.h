@@ -15,6 +15,13 @@ enum class CollectibleTypes {
 	CollectibleTypes_COUNT
 };
 
+struct InventoryItem {
+
+	SDL_FPoint displayOffset{};
+	std::optional <std::shared_ptr<GameObject>> gameObject{};
+
+};
+
 
 class InventoryComponent : public Component
 {
@@ -24,32 +31,41 @@ public:
 	InventoryComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene);
 	~InventoryComponent();
 
-	size_t addItem(std::shared_ptr<GameObject> gameObject);
-	std::vector<std::weak_ptr<GameObject>> items() { return m_items; }
+	bool addItem(std::shared_ptr<GameObject> gameObject);
+	bool addItem(std::string gameObjectType);
+	std::vector<InventoryItem> items() { return m_items; }
 	int activeItem() {	return m_activeItem; }
 
-	std::optional<GameObject*> getItem(const int traitTag);
+	std::optional<std::shared_ptr<GameObject>> getItem(const int traitTag);
 	int addCollectible(const CollectibleTypes, int count);
 	
 	const std::map<CollectibleTypes, int>& collectibles() { return m_collectibles; }
 	void render();
 	void update();
 
-	void showInventory(std::string hudName);
-	void showInventory(b2Vec2 offset);
+	void showInventory(GameObject* parentObject);
+	void showInventory();
 	void hideInventory();
-	bool isOpen() { return m_displayInventoryObjectId.has_value(); }
-	std::optional<std::string> getDisplayInventoryObjectId() {	return m_displayInventoryObjectId;}
-	void clearDisplayInventoryObjectId() { m_displayInventoryObjectId = std::nullopt; }
+	bool isOpen() { return m_isOpen; }
+	std::optional<std::shared_ptr<GameObject>> getDisplayBackdropObject() { return m_displayBackdropObject; }
 
 private:
 
 	int m_activeItem{ 0 };
-	std::vector<std::weak_ptr<GameObject>> m_items{};
+	bool m_isOpen{};
+	std::vector<InventoryItem> m_items{};
 	std::map<CollectibleTypes, int> m_collectibles{};
-	std::string m_displayObjectType{};
-	std::optional<std::shared_ptr<GameObject>> m_displayInventoryObject{};
-	std::optional<std::string> m_displayInventoryObjectId{};
+	std::string m_displayBackdropObjectType{};
+	std::optional<std::shared_ptr<GameObject>> m_displayBackdropObject{};
+	SDL_FPoint m_displayStartOffset{};
+	float m_itemDisplaySize{};
+	float m_itemDisplayPadding{};
+	float m_displayRows{};
+	float m_displayColumns{};
+	float m_maxCapacity{};
+
+	void _calculateSlotOffsets();
+
 
 
 

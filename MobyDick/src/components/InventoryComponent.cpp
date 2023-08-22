@@ -12,8 +12,28 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string pa
 {
 
 	m_componentType = ComponentTypes::INVENTORY_COMPONENT;
-	m_displayObjectType = componentJSON["displayObject"].asString();
+	m_displayBackdropObjectType = componentJSON["display"]["backdropObject"].asString();
+	m_displayStartOffset.x = componentJSON["display"]["startOffset"]["x"].asFloat();
+	m_displayStartOffset.y = componentJSON["display"]["startOffset"]["y"].asFloat();
+	m_itemDisplaySize = componentJSON["display"]["itemSize"].asFloat();
+	m_itemDisplayPadding = componentJSON["display"]["itemPadding"].asFloat();
+	m_displayRows = componentJSON["display"]["rows"].asFloat();
+	m_displayColumns = componentJSON["display"]["columns"].asFloat();
+	m_maxCapacity = componentJSON["maxCapacity"].asFloat();
 	m_activeItem = 0;
+
+	//Create the Backdrop object
+	m_displayBackdropObject = std::make_shared<GameObject>(m_displayBackdropObjectType, -50.0F, -50.0F, 0.F,
+		parentScene, GameLayer::GUI_1);
+
+	//Add index 
+	parentScene->addGameObjectIndex(m_displayBackdropObject.value());
+
+	//Calculate slot position offsets
+	_calculateSlotOffsets();
+
+	//Reserve max inventory slots
+	assert(m_displayRows * m_displayColumns == m_maxCapacity && "MaxCapacity inventory setting does not match display rows and columns!");
 
 }
 
@@ -22,28 +42,83 @@ InventoryComponent::~InventoryComponent()
 
 }
 
-size_t InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
+
+void InventoryComponent::_calculateSlotOffsets()
 {
 
-	m_items.emplace_back(gameObject);
+	int totalSlots = m_displayRows * m_displayColumns;
 
-	return(m_items.size());
+	//SDL_FPoint displayObjectPosition{};
+	//if (m_displayBackdropObject.has_value()) {
+
+	//	displayObjectPosition = { displayObjectPosition };
+
+	//}
+
+
+
+	for (auto col=0; col < m_displayColumns; col++) {
+		for (auto row = 0; row < m_displayRows; row++) {
+
+			InventoryItem item;
+			item.displayOffset.x = m_displayStartOffset.x + (col * m_itemDisplayPadding) + (col * m_itemDisplaySize);
+			item.displayOffset.y = m_displayStartOffset.y + (row * m_itemDisplayPadding) + (row * m_itemDisplaySize);
+			
+			m_items.insert(m_items.end(), item);
+		}
+
+		
+
+	}
 
 }
 
-std::optional<GameObject*> InventoryComponent::getItem(const int traitTag)
+
+bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 {
-	std::optional<GameObject*> foundItem{};
+
+	//Find first available inventory slot
+	bool slotFound{};
+	for (auto& item : m_items) {
+
+		if (item.gameObject.has_value() == false) {
+			item.gameObject = gameObject;
+			slotFound = true;
+			break;
+		}
+	}
+
+	return slotFound;
+
+}
+
+bool InventoryComponent::addItem(std::string gameObjectType)
+{
+
+	auto gameObject = std::make_shared<GameObject>(gameObjectType, -50.0F, -50.0F, 0.F,
+		parent()->parentScene(), GameLayer::GUI_2);
+
+	//Add index 
+	parent()->parentScene()->addGameObjectIndex(gameObject);
+
+
+	return addItem(gameObject);
+
+}
+
+
+std::optional<std::shared_ptr<GameObject>> InventoryComponent::getItem(const int traitTag)
+{
 
 	for (auto item : m_items) {
 
 		//This assumes only one item with this trait - returns first one
-		if(item.expired() == false && item.lock()->hasTrait(traitTag)) {
-			foundItem = item.lock().get();
-			break;
+		if(item.gameObject.has_value() && item.gameObject.value()->hasTrait(traitTag)) {
+			return item.gameObject;
+			
 		}
 	}
-	return foundItem;
+	return std::nullopt;
 }
 
 
@@ -59,17 +134,23 @@ int InventoryComponent::addCollectible(const CollectibleTypes collectableType, i
 void InventoryComponent::render()
 {
 
-	if (m_displayInventoryObject.has_value()) {
+	if (m_isOpen) {
 
-		m_displayInventoryObject.value()->render();
+		//Display the backdrop object
+		//if (m_displayBackdropObject.has_value()) {
 
-	}
+		//	m_displayBackdropObject.value()->render();
 
-	for (const auto& inventoryObject : m_items) {
+		//}
 
-		if (inventoryObject.expired() == false) {
+		//Display all inventory items
+		for (const auto& inventoryObject : m_items) {
 
-			inventoryObject.lock()->render();
+			if (inventoryObject.gameObject.has_value() == true) {
+
+				inventoryObject.gameObject.value()->render();
+			}
+
 		}
 
 	}
@@ -78,79 +159,125 @@ void InventoryComponent::render()
 
 void InventoryComponent::update()
 {
-	//Have each inventory game object update itself
-	/*for (auto& item : m_items)
-	{
-		item.gameObject->update();
-	}*/
+
+
+	SDL_FPoint displayObjectPosition{};
+	if (m_displayBackdropObject.has_value()) {
+
+		displayObjectPosition = { 
+			m_displayBackdropObject.value()->getTopLeftPosition().x, 
+			m_displayBackdropObject.value()->getTopLeftPosition().y 
+		};
+
+	}
+
+	//Calculate the positions of the displayed inventory items
+	if (m_isOpen) {
+
+		for (const auto& inventoryObject : m_items) {
+
+			if (inventoryObject.gameObject.has_value() == true) {
+
+				inventoryObject.gameObject.value()->setPosition(
+					displayObjectPosition.x + inventoryObject.displayOffset.x,
+					displayObjectPosition.y + inventoryObject.displayOffset.y
+				);
+
+				inventoryObject.gameObject.value()->update();
+			}
+
+		}
+
+	}
+}
+
+//Show the inventory as a child of a specific object that is not the inventory holder
+void InventoryComponent::showInventory(GameObject* proxyObject)
+{
+	m_isOpen = true;
+
+	const auto& childrenComponent = proxyObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+	childrenComponent->addStepChild(m_displayBackdropObject.value(), 5);
 
 }
 
-void InventoryComponent::showInventory(std::string mainHudHolderType)
+
+//Show the inventory as a child of the inventory holding object
+void InventoryComponent::showInventory()
 {
+	m_isOpen = true;
 
-	//Create a local inventory display object
-	auto displayInventoryObject = std::make_shared<GameObject>(m_displayObjectType, -50.0F, -50.0F, 0.F,
-		parent()->parentScene(), GameLayer::GUI);
-
-	m_displayInventoryObjectId = displayInventoryObject.get()->id();
-
-	//Add index 
-	parent()->parentScene()->addGameObjectIndex(displayInventoryObject);
-
-	//Add the inventory items to its children component's center slot
-	const auto& displayObjectChildrenComponent = displayInventoryObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-	for (auto& inventoryObject : m_items) {
-
-		if (inventoryObject.expired() == false) {
-			displayObjectChildrenComponent->addChild(inventoryObject.lock(), 5);
-		}
-	}
-
-	//Add the m_displayInventoryObject to the hud object that is named in the paramter as a child of that hud object
-	const auto& mainHudHolder = parent()->parentScene()->getFirstGameObjectByType(mainHudHolderType);
-	if (mainHudHolder.has_value()) {
-		const auto& mainHudChildrenComponent = mainHudHolder.value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-		mainHudChildrenComponent->addChild(displayInventoryObject, 5);
-	}
-
-	
-
-}
-
-void InventoryComponent::showInventory(b2Vec2 offset)
-{
-
-	//Create the inventory display object
-	m_displayInventoryObject = std::make_shared<GameObject>(m_displayObjectType, -50.0F, -50.0F, 0.F,
-		parent()->parentScene(), GameLayer::GUI);
-
-	//Add index 
-	parent()->parentScene()->addGameObjectIndex(m_displayInventoryObject.value());
-
-	//Add the inventory items to its children component's center slot
-	const auto& displayObjectChildrenComponent = m_displayInventoryObject.value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-	for (auto& inventoryObject : m_items) {
-
-		if (inventoryObject.expired() == false) {
-			displayObjectChildrenComponent->addChild(inventoryObject.lock(), 5);
-		}
-	}
+	const auto& childrenComponent = parent()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+	childrenComponent->addStepChild(m_displayBackdropObject.value(), 2);
 
 }
 
 void InventoryComponent::hideInventory()
 {
 
-	for (auto& inventoryObject : m_items) {
-
-		if (inventoryObject.expired() == false) {
-			inventoryObject.lock()->setOffGrid();
-		}
-	}
-
-	m_displayInventoryObject.reset();
-	clearDisplayInventoryObjectId();
+	m_isOpen = false;
 
 }
+
+
+//void InventoryComponent::showInventory(std::string mainHudHolderType)
+//{
+//
+//	//Create a local inventory display object
+//
+//	//Add the inventory items to its children component's center slot
+//	const auto& displayObjectChildrenComponent = displayInventoryObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+//	for (auto& inventoryObject : m_items) {
+//
+//		if (inventoryObject.expired() == false) {
+//			displayObjectChildrenComponent->addChild(inventoryObject.lock(), 5);
+//		}
+//	}
+//
+//	//Add the m_displayInventoryObject to the hud object that is named in the paramter as a child of that hud object
+//	const auto& mainHudHolder = parent()->parentScene()->getFirstGameObjectByType(mainHudHolderType);
+//	if (mainHudHolder.has_value()) {
+//		const auto& mainHudChildrenComponent = mainHudHolder.value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+//		mainHudChildrenComponent->addChild(displayInventoryObject, 5);
+//	}
+//
+//	
+//
+//}
+//
+//void InventoryComponent::showInventory(b2Vec2 offset)
+//{
+//
+//	//Create the inventory display object
+//	m_displayInventoryObject = std::make_shared<GameObject>(m_displayObjectType, -50.0F, -50.0F, 0.F,
+//		parent()->parentScene(), GameLayer::GUI);
+//
+//	//Add index 
+//	parent()->parentScene()->addGameObjectIndex(m_displayInventoryObject.value());
+//
+//	//Add the inventory items to its children component's center slot
+//	const auto& displayObjectChildrenComponent = m_displayInventoryObject.value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+//	for (auto& inventoryObject : m_items) {
+//
+//		if (inventoryObject.expired() == false) {
+//			displayObjectChildrenComponent->addChild(inventoryObject.lock(), 5);
+//		}
+//	}
+//
+//}
+//
+//void InventoryComponent::hideInventory()
+//{
+//
+//	for (auto& inventoryObject : m_items) {
+//
+//		if (inventoryObject.expired() == false) {
+//			inventoryObject.lock()->setOffGrid();
+//		}
+//	}
+//
+//	m_displayInventoryObject.reset();
+//	clearDisplayInventoryObjectId();
+//
+//}
 

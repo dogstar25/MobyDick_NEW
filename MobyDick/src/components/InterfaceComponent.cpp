@@ -53,8 +53,17 @@ void InterfaceComponent::postInit()
 void InterfaceComponent::update()
 {
 
+
+
 	std::bitset<MAX_EVENT_STATES> newEventsState{};
 	bool showInterfaceMenu{};
+
+	if (m_currentEventsState.test((int)InterfaceEvents::ON_DRAG) == true) {
+		int todd = 1;
+	}
+
+	//Need to carry over the ON_DRAG event sense it only stars on a mouse click and end on mouse release
+	newEventsState.set( (int)InterfaceEvents::ON_DRAG, m_currentEventsState.test((int)InterfaceEvents::ON_DRAG));
 
 	//convenience reference to outside component(s)
 	const auto& actionComponent = parent()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
@@ -81,36 +90,19 @@ void InterfaceComponent::update()
 	}
 	else {
 
-		newEventsState.set((int)InterfaceEvents::ON_NO_TOUCHING, true);
+		if (m_currentEventsState.test((int)InterfaceEvents::ON_TOUCHING) == true) {
+			newEventsState.set((int)InterfaceEvents::ON_NO_TOUCHING, true);
+		}
 	}
 
-	//Always Initilize to being hidden - THIS IS NEW
-	//if (actionComponent->hasAction(Actions::HIDE_INTERFACE)) {
-
-	//	const auto& action = actionComponent->getAction(Actions::HIDE_INTERFACE);
-	//	action->perform(parent());
-	//}
-
 	//Handle dragging an object
-	if (m_dragging == true) {
-
+	if (m_currentEventsState.test((int)InterfaceEvents::ON_DRAG) == true) {
 		handleDragging();
 	}
 
-	//debug
-	ImGui::Begin("debug");
-
-	ImGui::Text("Active Interface: ");
-	ImGui::SameLine();
-	if (m_currentGameObjectInterfaceActive.has_value()) {
-		ImGui::Text(m_currentGameObjectInterfaceActive.value()->id().c_str());
-	}
 
 
-	ImGui::End();
-
-
-
+	
 
 	//Does this interface have priority over any other possible active interfaces currently 
 	// being shown?
@@ -167,6 +159,7 @@ void InterfaceComponent::update()
 
 					//If this object is draggable then deal with it
 					if (parent()->hasTrait(TraitTag::draggable)) {
+						newEventsState.set((int)InterfaceEvents::ON_DRAG, true);
 						_initializeDragging(mouseWorldPosition);
 					}
 
@@ -177,7 +170,14 @@ void InterfaceComponent::update()
 			}
 			case SDL_MOUSEBUTTONUP:
 			{
-				_clearDragging();
+				if (m_currentEventsState.test((int)InterfaceEvents::ON_DRAG)) {
+
+					newEventsState.set((int)InterfaceEvents::ON_DROP, true);
+					newEventsState.set((int)InterfaceEvents::ON_DRAG, false);
+
+					_clearDragging();
+
+				}
 				break;
 			}
 			case SDL_KEYDOWN:
@@ -199,11 +199,8 @@ void InterfaceComponent::update()
 
 		//Loop through every possible action and see if the mouse and player touching state matches 
 		//what is required to execute
-		//if (doesInterfaceHavePriority(newEventsState)) {
+		if (doesInterfaceHavePriority(newEventsState)) {
 
-		if (parent()->hasTrait(TraitTag::player)) {
-			int todd = 1;
-		}
 			for (const auto& actionEvent : m_eventActions) {
 
 				//Check mouse and touching state
@@ -223,11 +220,10 @@ void InterfaceComponent::update()
 					}
 				}
 			}
-		//}
+		}
 
 		//Set The cursor
 		setCursor(parent(), newEventsState);
-
 
 	}
 
@@ -286,6 +282,7 @@ bool InterfaceComponent::isUserInputTiedAction(int actionId)
 		for (auto event : m_eventActions.find(actionId)->second->conditionEvents) {
 
 			if (event == InterfaceEvents::ON_CLICK ||
+				event == InterfaceEvents::ON_DROP ||
 				((int)event > 0 && (int)event < 100)) {
 
 				return true;
@@ -328,19 +325,10 @@ void InterfaceComponent::_clearDragging()
 {
 	SDL_ShowCursor(SDL_TRUE);
 
-	if (m_dragging == true) {
+	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 
-		m_dragging = false;
-		if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
-
-			parent()->parentScene()->physicsWorld()->DestroyJoint(m_b2MouseJoint);
-			m_b2MouseJoint = nullptr;
-		}
-
-		//If there was a overlay added to the dragging somewhere then make sure its clear
-		const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-		renderComponent->removeDisplayOverlay();
-
+		parent()->parentScene()->physicsWorld()->DestroyJoint(m_b2MouseJoint);
+		m_b2MouseJoint = nullptr;
 	}
 
 }
@@ -348,7 +336,7 @@ void InterfaceComponent::_clearDragging()
 void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)
 {
 
-	m_dragging = true;
+	//m_dragging = true;
 
 	SDL_ShowCursor(SDL_FALSE);
 
@@ -365,9 +353,6 @@ void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)
 		//Build a mouse joint for physics dragging
 		const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		m_b2MouseJoint = physicsComponent->createB2MouseJoint();
-		//m_b2MouseJoint->SetStiffness(500);
-		//m_b2MouseJoint->SetDamping(500);
-		//m_b2MouseJoint->SetMaxForce(500);
 
 	}
 

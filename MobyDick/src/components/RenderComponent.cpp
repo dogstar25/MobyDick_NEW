@@ -149,7 +149,7 @@ SDL_FRect RenderComponent::getRenderDestRect()
 
 	//Adjust position based on current camera position - offset
 	//Physics object always need camera adjustment to render
-	if (transform->absolutePositioning() == false )
+	//if (transform->absolutePositioning() == false || (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) && transform->absolutePositioning() == true) )
 	{
 		//Include application of Camera adjustment and Parallax rate
 

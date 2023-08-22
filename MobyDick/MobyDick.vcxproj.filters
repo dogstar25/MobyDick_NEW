@@ -309,6 +309,9 @@
     <ClCompile Include="src\puzzles\UnLockDoorPuzzle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\actions\ShowInventoryAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -615,6 +618,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\puzzles\UnLockDoorPuzzle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\actions\ShowInventoryAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

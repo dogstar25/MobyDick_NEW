@@ -86,7 +86,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 		child.location = location;
 		std::string name = _buildChildName(parentName, childCount);
 		auto gameObject = std::make_shared<GameObject>(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name );
-
+		gameObject->isChild = true;
 		//Was there a sizeOverride
 		if (sizeOverride.has_value()) {
 			gameObject.get()->setSize(sizeOverride.value());
@@ -117,7 +117,19 @@ void ChildrenComponent::update()
 	
 	for (auto& childObject : m_childObjects)
 	{
+
+
+		if (childObject.gameObject->type() == "OIL_CAN") {
+			int todd = 1;
+		}
+
+		//if (childObject.gameObject->removeFromWorld() == true) {
+		//	continue;
+		//}
+
 		childCount++;
+
+
 
 		const auto& transformComponent = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 		const auto& childTransformComponent = childObject.gameObject->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
@@ -173,7 +185,7 @@ void ChildrenComponent::_removeFromWorldPass()
 			//it->pieceObject->reset();
 			//std::cout << "Erased from Children collection " << it->gameObject->id() << std::endl;
 			it = m_childObjects.erase(it);
-
+			
 
 		}
 		else {
@@ -211,7 +223,9 @@ void ChildrenComponent::postInit()
 
 }
 
-GameObject* ChildrenComponent::addChild(std::shared_ptr<GameObject> gameObject, int slot)
+//A stepChild is an object that is added as a child later and does not get the same naming
+//and removal treatment. If a stepChild has other children, they are not removed
+GameObject* ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, int slot)
 {
 
 	ChildLocation childLocation;
@@ -222,6 +236,7 @@ GameObject* ChildrenComponent::addChild(std::shared_ptr<GameObject> gameObject, 
 	Child child;
 	child.gameObject = gameObject;
 	child.location = childLocation;
+	gameObject->isChild = true;
 
 	m_childObjects.insert(m_childObjects.begin(), child);
 
@@ -238,12 +253,54 @@ void ChildrenComponent::removeChild(std::string id)
 
 		if (child.gameObject->id() == id) {
 			child.gameObject->setRemoveFromWorld(true);
+			_removeAllChildren(child.gameObject.get());
 			break;
 		}
 	}
 
 }
 
+//A stepChild lives outside of the parent so we just remove him as a child and do not delete its 
+//index from the main lookup tanle
+void ChildrenComponent::removeStepChild(std::string id)
+{
+
+	auto it = m_childObjects.begin();
+	while (it != m_childObjects.end()) {
+
+		if (it->gameObject->id() == id) {
+
+			//Decreate slot count
+			m_childSlotCount[it->location.slot - (int)1]--;
+
+			//it->pieceObject->reset();
+			//std::cout << "Erased from Children collection " << it->gameObject->id() << std::endl;
+			it = m_childObjects.erase(it);
+
+		}
+		else {
+			++it;
+		}
+		
+	}
+
+}
+
+void ChildrenComponent::_removeAllChildren(GameObject* gameObject)
+{
+	if (gameObject->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+
+		const auto& childsChildrenComponent = gameObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+
+		for (auto& child : childsChildrenComponent->childObjects()) {
+
+			child.gameObject->setRemoveFromWorld(true);
+			_removeAllChildren(child.gameObject.get());
+			break;
+		}
+	}
+
+}
 
 void ChildrenComponent::render()
 {

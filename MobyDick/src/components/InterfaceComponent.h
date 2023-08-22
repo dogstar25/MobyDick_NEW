@@ -33,8 +33,6 @@ public:
 	void postInit() override;
 	void setParent(GameObject* gameObject) override;
 	bool isAutoInteractOnPuzzleComplete() { return m_autoInteractOnPuzzleComplete; }
-	bool isDragging() { return m_dragging; }
-	bool isHovered() { return m_hovered; }
 	SDL_FPoint dragOffset() { return m_dragOffset; }
 	std::map<int, std::shared_ptr<InterfaceAction>> eventActions() { return m_eventActions; }
 
@@ -55,8 +53,6 @@ protected:
 	std::optional<std::weak_ptr<GameObject>> m_remoteLocationObject{};
 	bool m_autoInteractOnPuzzleComplete{};
 	std::optional<float> m_LocationHintDistance{};
-	bool m_dragging{};
-	bool m_hovered{};
 	SDL_FPoint m_dragOffset{};
 	b2MouseJoint* m_b2MouseJoint{};
 	std::bitset<MAX_EVENT_STATES> m_currentEventsState{};

@@ -82,7 +82,6 @@ Scene::Scene(std::string sceneId)
 
 Scene::~Scene()
 {
-
 	clear();
 
 }

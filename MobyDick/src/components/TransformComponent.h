@@ -38,6 +38,7 @@ public:
 	float originalAngle() { return m_originalAngle; }
 	float angle() {	return m_angle;	}
 	bool absolutePositioning() { return m_absolutePositioning; }
+	bool originalAbsolutePositioning() { return m_originalAbsolutePositioning; }
 	bool centeredPositioning() { return m_centeredPositioning; }
 	b2Vec2 lineStart() { return m_lineStart; }
 	b2Vec2 lineEnd() { return m_lineEnd; }
@@ -55,6 +56,7 @@ private:
 	b2Vec2 m_originalPosition;
 
 	bool m_absolutePositioning;
+	bool m_originalAbsolutePositioning{};
 	bool m_centeredPositioning;
 	
 	std::optional<PositionAlignment>m_windowRelativePosition{};

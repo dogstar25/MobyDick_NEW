@@ -15,6 +15,8 @@
 #include "ObjectPoolManager.h"
 #include "triggers/Trigger.h"
 
+#include <thread>
+
 class CutScene;
 struct Objective;
 
