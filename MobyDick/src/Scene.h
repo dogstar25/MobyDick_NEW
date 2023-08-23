@@ -65,12 +65,14 @@ public:
 	void update();
 	void clearEvents();
 
+	std::shared_ptr<GameObject> createGameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer = GameLayer::MAIN,
+		bool cameraFollow = false, std::string name = "");
 	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, 
 		float angle=0., bool cameraFollow=false, std::string name="");
 	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, 
 		float adjustX=0., float adjustY=0., float angle=0.,
 		bool cameraFollow=false, std::string name="");
-	void addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer);
+	void addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer);
 
 	void addGameObjectIndex(std::shared_ptr<GameObject> gameObject);
 	void addNavigationMapItem(NavigationMapItem& navigationMapItem, int x, int y);

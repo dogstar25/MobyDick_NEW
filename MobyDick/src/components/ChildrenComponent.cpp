@@ -85,7 +85,8 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 		location.centeredOnLocation = centeredOnLocation;
 		child.location = location;
 		std::string name = _buildChildName(parentName, childCount);
-		auto gameObject = std::make_shared<GameObject>(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name );
+		auto gameObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
+
 		gameObject->isChild = true;
 		//Was there a sizeOverride
 		if (sizeOverride.has_value()) {
@@ -94,9 +95,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 
 		child.gameObject = gameObject;
 		m_childObjects.push_back(child);
-
-		//Add index 
-		parentScene->addGameObjectIndex(gameObject);
 
 	}
 }

@@ -27,13 +27,10 @@ AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::strin
 
 		m_isDependentObjectOwner = true;
 
-		//tOdO: PUT A CHECK HER THAT WILL NOT ALLOW A STATIC OBJECT BE ATTACHED TO A DYNAMIC OBJECT
+		//TODO: PUT A CHECK HER THAT WILL NOT ALLOW A STATIC OBJECT BE ATTACHED TO A DYNAMIC OBJECT
 
 		std::string name = _buildAttachmentName(parentName, attachmentCount);
-		auto gameObject = std::make_shared<GameObject>(gameObjectType, - 1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
-
-		//Add index 
-		parentScene->addGameObjectIndex(gameObject);
+		auto gameObject = parentScene->createGameObject(gameObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
 
 		Attachment attachment = { id, addToInventory, attachB2JointType, attachLocation, gameObject };
 		m_attachments.emplace_back(attachment);

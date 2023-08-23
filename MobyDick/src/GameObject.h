@@ -249,7 +249,7 @@ private:
 	//std::unordered_map<std::type_index, std::shared_ptr<Component>>m_components;
 	std::array<std::shared_ptr<Component>, static_cast<int>(ComponentTypes::MAX_COMPONENT_TYPES)>m_components;
 
-	std::string _buildId(std::string gameObjectType, float xMapPos, float yMapPos);
+	std::string _buildId(GameLayer layer, std::string gameObjectType, float xMapPos, float yMapPos);
 	std::string _buildName(std::string rootName, std::string gameObjectType, bool isDependent);
 	
 	void _imGuiDebugObject();

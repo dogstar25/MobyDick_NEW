@@ -42,7 +42,7 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 	m_layer = layer;
 
 	//Build the unique id
-	m_id = _buildId(gameObjectType, xMapPos, yMapPos);
+	m_id = _buildId(layer, gameObjectType, xMapPos, yMapPos);
 
 	//Build the unique name if a name wasnt given
 	if (name.empty()) {
@@ -630,10 +630,10 @@ std::string GameObject::_buildName(std::string rootName, std::string gameObjectT
 
 }
 
-std::string GameObject::_buildId(std::string id, float xMapPos, float yMapPos)
+std::string GameObject::_buildId(GameLayer layer, std::string id, float xMapPos, float yMapPos)
 {
 	std::string randomid = util::genRandomId(16);
-	auto name = std::format("{}_{:.0f}_{:.0f}_{}", id, xMapPos, yMapPos, randomid);
+	auto name = std::format("{:02}_{}_{:.0f}_{:.0f}_{}", (int)layer, id, xMapPos, yMapPos, randomid);
 
 	return name;
 

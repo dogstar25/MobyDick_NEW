@@ -151,9 +151,8 @@ ContainerItem ContainerComponent::addItem(std::string gameObjectType, float spaw
 
 	//Create off screen
 	std::string name = _buildItemName(parentName, itemCount);
-	auto gameObject = std::make_shared<GameObject>(gameObjectType, (float)-50.0, (float)-50.0, (float)0, parentScene, GameLayer::MAIN, false, name);
+	auto gameObject = parentScene->createGameObject(gameObjectType, (float)-50.0, (float)-50.0, (float)0, parentScene, GameLayer::MAIN, false, name);
 	containerItem.gameObject = gameObject;
-	parentScene->addGameObjectIndex(gameObject);
 
 	//If this is on the container construction we have to wait and let the postinit set the final destination
 	//otherwise we can set it now

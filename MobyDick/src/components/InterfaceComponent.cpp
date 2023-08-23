@@ -11,7 +11,8 @@ InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentS
 	//Interactive object if exists
 	if (componentJSON.isMember("menuObject")) {
 		auto interfaceMenuObjectId = componentJSON["menuObject"].asString();
-		m_interfaceMenuObject = std::make_shared<GameObject>(interfaceMenuObjectId, -5.f, -5.f, 0.f, parentScene);
+		m_interfaceMenuObject = parentScene->createGameObject(interfaceMenuObjectId, -5.f, -5.f, 0.f, parentScene);
+
 		m_interfaceMenuObject->get()->disableRender();
 	}
 
