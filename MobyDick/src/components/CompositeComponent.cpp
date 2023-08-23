@@ -210,9 +210,7 @@ void CompositeComponent::_buildPiece(CompositeLegendItem legendItem, int xPos, i
 	*/
 	_buildPieceName(parentName, pieceCount);
 
-	const auto& pieceObject = std::make_shared<GameObject>(legendItem.gameObjectType, -5.f, -5.f, 0.f, parentScene);
-	parentScene->addGameObjectIndex(pieceObject);
-
+	const auto& pieceObject = parentScene->createGameObject(legendItem.gameObjectType, -5.f, -5.f, 0.f, parentScene);
 	piece.pieceObject = pieceObject;
 
 	//calculate the X,Y offset position in relating to the base object
@@ -224,9 +222,6 @@ void CompositeComponent::_buildPiece(CompositeLegendItem legendItem, int xPos, i
 	piece.parentPositionOffset.y = yOffset;
 
 	m_pieces.push_back(piece);
-
-	//Add index 
-	parentScene->addGameObjectIndex(pieceObject);
 
 }
 

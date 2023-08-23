@@ -23,11 +23,7 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string pa
 	m_activeItem = 0;
 
 	//Create the Backdrop object
-	m_displayBackdropObject = std::make_shared<GameObject>(m_displayBackdropObjectType, -50.0F, -50.0F, 0.F,
-		parentScene, GameLayer::GUI_1);
-
-	//Add index 
-	parentScene->addGameObjectIndex(m_displayBackdropObject.value());
+	m_displayBackdropObject = parentScene->createGameObject(m_displayBackdropObjectType, -50.0F, -50.0F, 0.F, parentScene, GameLayer::GUI_1);
 
 	//Calculate slot position offsets
 	_calculateSlotOffsets();
@@ -95,12 +91,8 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 bool InventoryComponent::addItem(std::string gameObjectType)
 {
 
-	auto gameObject = std::make_shared<GameObject>(gameObjectType, -50.0F, -50.0F, 0.F,
+	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, -50.0F, -50.0F, 0.F,
 		parent()->parentScene(), GameLayer::GUI_2);
-
-	//Add index 
-	parent()->parentScene()->addGameObjectIndex(gameObject);
-
 
 	return addItem(gameObject);
 
@@ -219,65 +211,4 @@ void InventoryComponent::hideInventory()
 
 }
 
-
-//void InventoryComponent::showInventory(std::string mainHudHolderType)
-//{
-//
-//	//Create a local inventory display object
-//
-//	//Add the inventory items to its children component's center slot
-//	const auto& displayObjectChildrenComponent = displayInventoryObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-//	for (auto& inventoryObject : m_items) {
-//
-//		if (inventoryObject.expired() == false) {
-//			displayObjectChildrenComponent->addChild(inventoryObject.lock(), 5);
-//		}
-//	}
-//
-//	//Add the m_displayInventoryObject to the hud object that is named in the paramter as a child of that hud object
-//	const auto& mainHudHolder = parent()->parentScene()->getFirstGameObjectByType(mainHudHolderType);
-//	if (mainHudHolder.has_value()) {
-//		const auto& mainHudChildrenComponent = mainHudHolder.value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-//		mainHudChildrenComponent->addChild(displayInventoryObject, 5);
-//	}
-//
-//	
-//
-//}
-//
-//void InventoryComponent::showInventory(b2Vec2 offset)
-//{
-//
-//	//Create the inventory display object
-//	m_displayInventoryObject = std::make_shared<GameObject>(m_displayObjectType, -50.0F, -50.0F, 0.F,
-//		parent()->parentScene(), GameLayer::GUI);
-//
-//	//Add index 
-//	parent()->parentScene()->addGameObjectIndex(m_displayInventoryObject.value());
-//
-//	//Add the inventory items to its children component's center slot
-//	const auto& displayObjectChildrenComponent = m_displayInventoryObject.value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-//	for (auto& inventoryObject : m_items) {
-//
-//		if (inventoryObject.expired() == false) {
-//			displayObjectChildrenComponent->addChild(inventoryObject.lock(), 5);
-//		}
-//	}
-//
-//}
-//
-//void InventoryComponent::hideInventory()
-//{
-//
-//	for (auto& inventoryObject : m_items) {
-//
-//		if (inventoryObject.expired() == false) {
-//			inventoryObject.lock()->setOffGrid();
-//		}
-//	}
-//
-//	m_displayInventoryObject.reset();
-//	clearDisplayInventoryObjectId();
-//
-//}
 

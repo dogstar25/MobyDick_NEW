@@ -273,6 +273,15 @@ void Scene::render() {
 	int gameLayerIndex{0};
 
 
+
+	//for (const auto& gameObject : m_gameObjectLookup) {
+
+	//	if (gameObject.second.expired() == false) {
+	//		gameObject.second.lock()->render();
+	//	}
+
+	//}
+
 	//Render all of the layers
 	for (auto& gameLayer : m_gameObjects)
 	{
@@ -335,14 +344,26 @@ void Scene::deleteCutScene()
 
 }
 
+std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, 
+	GameLayer layer, bool cameraFollow, std::string name)
+{
+
+	std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name);
+
+	//Add index
+	const auto gameObjectPair = m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
+
+	
+	return gameObject;
+}
+
 GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, bool cameraFollow, std::string name)
 {
 
-	auto& gameObject = m_gameObjects[layer].emplace_back(
-		std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, name));
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, name);
 
-	//Add index
-	addGameObjectIndex(gameObject);
+	m_gameObjects[layer].emplace_back(gameObject);
+		
 
 	return gameObject.get();
 
@@ -352,16 +373,12 @@ GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, Po
 	float angle, bool cameraFollow, std::string name)
 {
 
-	auto& gameObject = m_gameObjects[layer].emplace_back(
-		std::make_shared<GameObject>(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow, name));
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow, name);
 
 	gameObject->setPosition(windowPosition, adjustX, adjustY);
+	gameObject->setWindowRelativePosition(windowPosition, adjustX, adjustY);
 
-	//Set the window position override
-	gameObject->setWindowRelativePosition( windowPosition, adjustX, adjustY);
-
-	//Add index 
-	addGameObjectIndex(gameObject);
+	m_gameObjects[layer].emplace_back(gameObject);
 
 	return gameObject.get();
 
@@ -370,28 +387,18 @@ GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, Po
 /*
 Emplace the new gameObject into the collection and also return a reference ptr to the newly created object as well
 */
-void Scene::addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer)
+void Scene::addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer)
 {
 
 	gameObject->setParentScene(this);
 	this->m_gameObjects[layer].push_back(gameObject);
 
 	//Add index 
-	addGameObjectIndex(gameObject);
-
-	return;;
-
-}
-
-void Scene::addGameObjectIndex(std::shared_ptr<GameObject> gameObject)
-{
-
-	const auto gameObjectPair = m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
+	m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
 
 	return;
 
 }
-
 
 
 void Scene::addKeyAction(SDL_Keycode keyCode, SceneAction sceneAction)

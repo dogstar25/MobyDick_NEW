@@ -138,7 +138,7 @@ void ParticleXComponent::update()
 
 					//Add the particle to the game world
 					//ToDo:Make Layer configurable
-					parent()->parentScene()->addGameObject(particle.value(), m_emissionLayer);
+					parent()->parentScene()->addGameObjectFromPool(particle.value(), m_emissionLayer);
 
 				}
 				else {
