@@ -54,6 +54,7 @@ EnumMap::EnumMap()
 	//Child slot treatment
 	m_enumMap["ChildSlotTreatment::HORIZONTAL"] = (int)ChildSlotTreatment::HORIZONTAL;
 	m_enumMap["ChildSlotTreatment::VERTICAL"] = (int)ChildSlotTreatment::VERTICAL;
+	m_enumMap["ChildSlotTreatment::STACKED"] = (int)ChildSlotTreatment::STACKED;
 
 	//Mouse Modes
 	m_enumMap["CONTROL_MODE_SELECT"] = CONTROL_MODE_SELECT;

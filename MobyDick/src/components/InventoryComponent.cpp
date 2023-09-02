@@ -189,7 +189,7 @@ void InventoryComponent::showInventory(GameObject* proxyObject)
 	m_isOpen = true;
 
 	const auto& childrenComponent = proxyObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-	childrenComponent->addStepChild(m_displayBackdropObject.value(), 5);
+	//childrenComponent->addStepChild(m_displayBackdropObject.value(), 5);
 
 }
 
@@ -200,7 +200,7 @@ void InventoryComponent::showInventory()
 	m_isOpen = true;
 
 	const auto& childrenComponent = parent()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-	childrenComponent->addStepChild(m_displayBackdropObject.value(), 2);
+	//childrenComponent->addStepChild(m_displayBackdropObject.value(), 2);
 
 }
 

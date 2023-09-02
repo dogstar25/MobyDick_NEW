@@ -130,7 +130,6 @@ protected:
 	std::shared_ptr<Renderer> m_renderer;
 
 	std::optional<SDL_Point> _determineScreenResolution();
-	
 
 };
 
