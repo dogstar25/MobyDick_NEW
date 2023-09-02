@@ -272,16 +272,6 @@ void Scene::render() {
 
 	int gameLayerIndex{0};
 
-
-
-	//for (const auto& gameObject : m_gameObjectLookup) {
-
-	//	if (gameObject.second.expired() == false) {
-	//		gameObject.second.lock()->render();
-	//	}
-
-	//}
-
 	//Render all of the layers
 	for (auto& gameLayer : m_gameObjects)
 	{
@@ -539,7 +529,7 @@ std::optional<std::shared_ptr<GameObject>> Scene::getGameObject(std::string id)
 
 
 	auto search = m_gameObjectLookup.find(id);
-	if (search != m_gameObjectLookup.end()) {
+	if (search != m_gameObjectLookup.end() && search->second.expired() == false) {
 		foundGameObject = search->second.lock();
 	}
 
@@ -553,7 +543,7 @@ std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByName(std::string
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->name() == name) {
+		if (it->second.expired() == false && it->second.lock()->name() == name) {
 			foundGameObjects.push_back(it->second.lock());
 		}
 
@@ -570,7 +560,7 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByName(std::
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->name() == name) {
+		if (it->second.expired() == false && it->second.lock()->name() == name) {
 			foundGameObject = it->second.lock();
 			break;
 		}
@@ -588,7 +578,7 @@ std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByTrait(int trait)
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->hasTrait(trait)) {
+		if (it->second.expired() == false && it->second.lock()->hasTrait(trait)) {
 			foundGameObjects.push_back(it->second.lock());
 		}
 
@@ -605,7 +595,7 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByTrait(int 
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->hasTrait(trait)) {
+		if (it->second.expired() == false && it->second.lock()->hasTrait(trait)) {
 			foundGameObject = it->second.lock();
 			break;
 		}
@@ -621,7 +611,7 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByType(std::
 	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
 
 	auto it = m_gameObjectLookup.begin();
-	while (it != m_gameObjectLookup.end()) {
+	while (it->second.expired() == false && it != m_gameObjectLookup.end()) {
 
 		if (it->second.lock()->type() == type) {
 			foundGameObject = it->second.lock();

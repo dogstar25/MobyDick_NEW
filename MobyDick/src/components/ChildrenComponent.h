@@ -3,6 +3,7 @@
 
 #include <array>
 #include <vector>
+#include <optional>
 #include <SDL2/SDL.h>
 
 #include <box2d/box2d.h>
@@ -12,37 +13,41 @@
 #include "../Util.h"
 #include "../BaseConstants.h"
 
+#include <unordered_map>
+
 
 class GameObject;
 class Scene;
 class TransformComponent;
 
 
-enum class ChildLocationType {
+enum class ChildSlotType {
 
-	SLOT,
+	STANDARD_SLOT,
 	ABSOLUTE_POSITION
 };
 
 enum class ChildSlotTreatment {
 
 	HORIZONTAL,
-	VERTICAL
+	VERTICAL,
+	STACKED
 };
 
-struct ChildLocation {
-
-	ChildLocationType locationType{};
-	b2Vec2 absolutePosition{};
-	int slot{};
-	PositionAlignment positionAlignment{ PositionAlignment::CENTER };
-	bool centeredOnLocation{true};
+struct SlotMeasure {
+	b2Vec2 sizeTotal{};
+	b2Vec2 maxDimension{};
 };
 
 struct Child {
-	ChildLocation location{};
-	std::shared_ptr<GameObject> gameObject{};
+	SDL_FPoint absolutePositionOffset{};
+	SDL_FPoint calculatedOffset{};
+	bool isStepChild{};
+	std::optional<std::shared_ptr<GameObject>> gameObject{};
 };
+
+
+
 
 class ChildrenComponent : public Component
 {
@@ -54,31 +59,44 @@ public:
 	void update() override;
 	void render();
 	void postInit();
-	GameObject* addStepChild(std::shared_ptr<GameObject> gameObject, int slot);
-	void removeStepChild(std::string id);
+	void addStepChild(std::shared_ptr<GameObject> gameObject, PositionAlignment positionAlignment);
+	void addStepChild(std::shared_ptr<GameObject> gameObject, SDL_FPoint position);
 	void removeChild(std::string id);
-	
-
-	const auto& childObjects() { return m_childObjects; }
+	std::unordered_map<std::string, std::vector<Child>> childSlots() { return m_childSlots; }
 
 private:
-	int	  m_childCount {};
-	float m_childPadding {};
-	bool  m_childPositionRelative {};
-	ChildSlotTreatment m_childSameSlotTreatment{ ChildSlotTreatment ::VERTICAL};
+	int	  m_childCount{};
+	float m_childPadding{};
+	bool  m_matchParentRotation{};
+	ChildSlotTreatment m_childSameSlotTreatment{ ChildSlotTreatment::VERTICAL };
 	std::array<int, CHILD_POSITIONS> m_childSlotCount{};
 
-	std::vector<Child> m_childObjects;
-
-	b2Vec2 _matchParentRotation(SDL_FPoint childPosition, SDL_FPoint parentPosition, float); //Move to Transform? Child objects can have a reference to their parent
-	//b2Vec2 _calcChildPosition(b2Vec2 childSize,
-	//	int locationSlot, int locationAlignment, int childNumber, int childCount, SDL_FPoint parentPositionRec, float parentAngle);
-
-	b2Vec2 _calcChildPosition(b2Vec2 childSize, int childCount, ChildLocation location, SDL_FPoint parentPositionRec, float parentAngle);
-	b2Vec2 _calcChildPosition(b2Vec2 childSize, ChildLocation location, SDL_FPoint parentPositionRec, float parentAngle);
 	std::string _buildChildName(std::string parentName, int childCount);
 	void _removeFromWorldPass();
 	void _removeAllChildren(GameObject* gameObject);
+
+	std::string _determineSlotKey(PositionAlignment positionAlignment);
+	std::string _determineSlotKey(SDL_FPoint position);
+	std::string _addChild(std::shared_ptr<GameObject> childObject, PositionAlignment positionAlignment);
+	std::string _addChild(std::shared_ptr<GameObject> childObject, int gridSlot);
+	std::string _addChild(std::shared_ptr<GameObject> childObject, SDL_FPoint position);
+
+	ChildSlotType _getSlotType(std::string slotKey);
+	int  _getSlotIndex(std::string slotKey);
+	void _buildStandardSlots();
+	void _buildGridSlots();
+	PositionAlignment _translateStandardSlotPositionAlignment(std::string slotKey);
+
+	void _calculateStandardSlotPositions(std::vector<Child>& childObjects, PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotMeasurements);
+	void _calculateAbsoluteSlotPositions(std::vector<Child>& childObjects, int slot, std::vector<SlotMeasure>& slotMeasurements);
+
+	std::map<ChildSlotType, std::vector<SlotMeasure>> _calculateSlotMeasurements();
+	SDL_FPoint _calculateStandardSlotCenterPosition(PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotSize);
+	SDL_FPoint _calculateAbsoluteSlotCenterPosition(SDL_FPoint position, int slot, std::vector<SlotMeasure>& slotSize);
+	SDL_FPoint _calculateSlotMultiChild(SDL_FPoint slotCenterPositionOffset, int slotGameObjectNumber, int totalSlotObjectCount, GameObject* childGameObject);
+
+	//Every slot has to support multiple children since standrad slots you can have more than one child which gets spread out
+	std::unordered_map<std::string, std::vector<Child>> m_childSlots{};
 
 
 };
