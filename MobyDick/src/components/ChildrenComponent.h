@@ -59,8 +59,8 @@ public:
 	void update() override;
 	void render();
 	void postInit();
-	void addStepChild(std::shared_ptr<GameObject> gameObject, PositionAlignment positionAlignment);
-	void addStepChild(std::shared_ptr<GameObject> gameObject, SDL_FPoint position);
+	void addStepChild(std::shared_ptr<GameObject> gameObject, PositionAlignment positionAlignment, bool addToEnd=true);
+	void addStepChild(std::shared_ptr<GameObject> gameObject, SDL_FPoint position, bool addToEnd = true);
 	void removeChild(std::string id);
 	std::unordered_map<std::string, std::vector<Child>> childSlots() { return m_childSlots; }
 
@@ -78,7 +78,6 @@ private:
 	std::string _determineSlotKey(PositionAlignment positionAlignment);
 	std::string _determineSlotKey(SDL_FPoint position);
 	std::string _addChild(std::shared_ptr<GameObject> childObject, PositionAlignment positionAlignment);
-	std::string _addChild(std::shared_ptr<GameObject> childObject, int gridSlot);
 	std::string _addChild(std::shared_ptr<GameObject> childObject, SDL_FPoint position);
 
 	ChildSlotType _getSlotType(std::string slotKey);
@@ -91,7 +90,7 @@ private:
 	void _calculateAbsoluteSlotPositions(std::vector<Child>& childObjects, int slot, std::vector<SlotMeasure>& slotMeasurements);
 
 	std::map<ChildSlotType, std::vector<SlotMeasure>> _calculateSlotMeasurements();
-	SDL_FPoint _calculateStandardSlotCenterPosition(PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotSize);
+	SDL_FPoint _calculateStandardSlotCenterPosition(PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotSize, int slotChildCount);
 	SDL_FPoint _calculateAbsoluteSlotCenterPosition(SDL_FPoint position, int slot, std::vector<SlotMeasure>& slotSize);
 	SDL_FPoint _calculateSlotMultiChild(SDL_FPoint slotCenterPositionOffset, int slotGameObjectNumber, int totalSlotObjectCount, GameObject* childGameObject);
 

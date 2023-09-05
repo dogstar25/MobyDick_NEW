@@ -19,6 +19,7 @@ EnumMap::EnumMap()
 	m_enumMap["COMPOSITE_COMPONENT"] = (int)ComponentTypes::COMPOSITE_COMPONENT;
 	m_enumMap["CONTAINER_COMPONENT"] = (int)ComponentTypes::CONTAINER_COMPONENT;
 	m_enumMap["HUD_COMPONENT"] = (int)ComponentTypes::HUD_COMPONENT;
+	m_enumMap["GRID_DISPLAY_COMPONENT"] = (int)ComponentTypes::GRID_DISPLAY_COMPONENT;
 	m_enumMap["INVENTORY_COMPONENT"] = (int)ComponentTypes::INVENTORY_COMPONENT;
 	m_enumMap["INTERFACE_COMPONENT"] = (int)ComponentTypes::INTERFACE_COMPONENT;
 	m_enumMap["IMGUI_COMPONENT"] = (int)ComponentTypes::IMGUI_COMPONENT;

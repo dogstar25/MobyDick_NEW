@@ -38,10 +38,10 @@ public:
 
 	virtual void setCursor(GameObject*, std::bitset<MAX_EVENT_STATES>) {};
 	virtual bool isEventAvailable(int eventId) { return true; }
-	
+
+	bool isDragging();
 
 protected:
-
 
 	std::optional<std::shared_ptr<GameObject>> m_interfaceMenuObject{};
 	bool m_interfaceMenuRequiresPointingAt{};

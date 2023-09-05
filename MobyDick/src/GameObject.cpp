@@ -96,6 +96,18 @@ void GameObject::setParent(GameObject* parentObject)
 
 }
 
+bool GameObject::isDragging()
+{
+	if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+
+		return getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT)->isDragging();
+
+	}
+
+	return false;
+
+}
+
 void GameObject::setPosition(float x, float y)
 {
 
@@ -257,6 +269,13 @@ void GameObject::render(SDL_FRect destQuad)
 
 }
 
+void GameObject::render(SDL_FPoint locationPoint)
+{
+
+	//Render yourself
+	getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(locationPoint);
+
+}
 
 void GameObject::render()
 {
@@ -318,9 +337,9 @@ void GameObject::render()
 		}
 
 		//Render Inventory
-		if (hasComponent(ComponentTypes::INVENTORY_COMPONENT)) {
+		if (hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
 
-			getComponent<ContainerComponent>(ComponentTypes::INVENTORY_COMPONENT)->render();
+			getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT)->render();
 		}
 
 		//If you have a Light treatment component, then render it
