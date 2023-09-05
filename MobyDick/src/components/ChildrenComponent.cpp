@@ -237,23 +237,6 @@ void ChildrenComponent::_removeFromWorldPass()
 
 
 
-//A stepChild is an object that is added as a child later and does not get the same naming
-//and removal treatment. If a stepChild has other children, they are not removed
-void ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, PositionAlignment positionAlignment)
-{
-
-	std::string slotKey = _determineSlotKey(positionAlignment);
-
-	Child child;
-	child.gameObject = gameObject;
-
-	std::vector<Child> children = { child };
-
-	//Insert will not insert if the key is already there
-	m_childSlots.insert(std::pair<std::string, std::vector<Child>>(slotKey, children));
-
-}
-
 //A stepChild lives outside of the parent so we just remove him as a child and do not delete its 
 //index from the main lookup tanle
 void ChildrenComponent::removeChild(std::string id)
@@ -270,6 +253,7 @@ void ChildrenComponent::removeChild(std::string id)
 				if (childItr->isStepChild == false) {
 
 					childItr->gameObject.value()->setRemoveFromWorld(true);
+					_removeAllChildren(childItr->gameObject.value().get());
 				}
 
 				//Erase the object from the map unless its the last item. there should always be one item
@@ -284,7 +268,7 @@ void ChildrenComponent::removeChild(std::string id)
 
 				}
 
-				_removeAllChildren(childItr->gameObject.value().get());
+				
 
 				break;
 
@@ -397,6 +381,64 @@ std::string ChildrenComponent::_addChild(std::shared_ptr<GameObject> childObject
 	return std::string();
 }
 
+//A stepChild is an object that is added as a child later and does not get the same naming
+//and removal treatment. If a stepChild has other children, they are not removed
+void ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, PositionAlignment positionAlignment, bool addToEnd)
+{
+
+	std::string slotKey = _determineSlotKey(positionAlignment);
+
+	Child child;
+	child.isStepChild = true;
+	child.gameObject = gameObject;
+
+	if (m_childSlots.contains(slotKey)) {
+
+		if (addToEnd) {
+			m_childSlots.at(slotKey).push_back(child);
+		}
+		else {
+			m_childSlots.at(slotKey).insert(m_childSlots.at(slotKey).begin(), child);
+		}
+	}
+	else {
+
+		std::vector<Child> children = { child };
+		m_childSlots.emplace(std::pair<std::string, std::vector<Child>>(slotKey, children));
+
+	}
+
+}
+
+//A stepChild is an object that is added as a child later and does not get the same naming
+//and removal treatment. If a stepChild has other children, they are not removed
+void ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, SDL_FPoint position, bool addToEnd)
+{
+
+	std::string slotKey = _determineSlotKey(position);
+
+	Child child;
+	child.gameObject = gameObject;
+	child.isStepChild = true;
+	child.absolutePositionOffset = position;
+
+	if (m_childSlots.contains(slotKey)) {
+
+		if (addToEnd) {
+			m_childSlots.at(slotKey).push_back(child);
+		}
+		else {
+			m_childSlots.at(slotKey).insert(m_childSlots.at(slotKey).begin(), child);
+		}
+	}
+	else {
+
+		std::vector<Child> children = { child };
+		m_childSlots.emplace(std::pair<std::string, std::vector<Child>>(slotKey, children));
+
+	}
+
+}
 std::string ChildrenComponent::_determineSlotKey(SDL_FPoint absolutePosition)
 {
 	int count{};
@@ -644,7 +686,7 @@ void ChildrenComponent::_calculateStandardSlotPositions(std::vector<Child>& chil
 		if (child.gameObject.has_value()) {
 
 			//Calcualte the center point for this slot which takes into account is there are multiple gameObjects in the slot
-			SDL_FPoint slotCenterPositionOffset = _calculateStandardSlotCenterPosition(positionAlignment, slotMeasurements);
+			SDL_FPoint slotCenterPositionOffset = _calculateStandardSlotCenterPosition(positionAlignment, slotMeasurements, childObjects.size());
 
 			//If there is only ONE gameObject in this slot, then the center position calculated above is our value
 			if (childObjects.size() == 1 || m_childSameSlotTreatment == ChildSlotTreatment::STACKED) {
@@ -742,7 +784,7 @@ SDL_FPoint ChildrenComponent::_calculateSlotMultiChild(SDL_FPoint slotCenterPosi
 
 }
 
-SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotSizes)
+SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotSizes, int slotChildCount)
 {
 	SDL_FPoint slotCenterPositionOffset{};
 
@@ -755,11 +797,11 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
 
 				slotCenterPositionOffset.x = 0 - (slotSizes[slot].maxDimension.x );
-				slotCenterPositionOffset.y = 0 - (slotSizes[slot].sizeTotal.y );
+				slotCenterPositionOffset.y = 0 - (slotSizes[slot].sizeTotal.y / slotChildCount);
 			}
 			else {
 
-				slotCenterPositionOffset.x = 0 - (slotSizes[slot].sizeTotal.x );
+				slotCenterPositionOffset.x = 0 - (slotSizes[slot].sizeTotal.x / slotChildCount);
 				slotCenterPositionOffset.y = 0 - (slotSizes[slot].maxDimension.y);
 			}
 
@@ -770,7 +812,7 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
 
 				slotCenterPositionOffset.x = 0;
-				slotCenterPositionOffset.y = 0 - (slotSizes[slot].sizeTotal.y);
+				slotCenterPositionOffset.y = 0 - (slotSizes[slot].sizeTotal.y / slotChildCount);
 			}
 			else {
 
@@ -785,11 +827,11 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
 
 				slotCenterPositionOffset.x = 0 + (slotSizes[slot].maxDimension.x);
-				slotCenterPositionOffset.y = 0 - (slotSizes[slot].sizeTotal.y);
+				slotCenterPositionOffset.y = 0 - (slotSizes[slot].sizeTotal.y / slotChildCount);
 			}
 			else {
 
-				slotCenterPositionOffset.x = 0 + (slotSizes[slot].sizeTotal.x);
+				slotCenterPositionOffset.x = 0 + (slotSizes[slot].sizeTotal.x / slotChildCount);
 				slotCenterPositionOffset.y = 0 - (slotSizes[slot].maxDimension.y);
 			}
 
@@ -804,7 +846,7 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			}
 			else {
 
-				slotCenterPositionOffset.x = 0 - (slotSizes[slot].sizeTotal.x);
+				slotCenterPositionOffset.x = 0 - (slotSizes[slot].sizeTotal.x / slotChildCount);
 				slotCenterPositionOffset.y = 0;
 			}
 
@@ -812,8 +854,17 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 
 		case PositionAlignment::CENTER:
 
-			slotCenterPositionOffset.x = 0;
-			slotCenterPositionOffset.y = 0;
+			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
+
+				slotCenterPositionOffset.x = 0;
+				slotCenterPositionOffset.y = 0;
+			}
+			else {
+
+				slotCenterPositionOffset.x = 0;
+				slotCenterPositionOffset.y = 0;
+			}
+
 			break;
 
 		case PositionAlignment::CENTER_RIGHT:
@@ -825,7 +876,7 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			}
 			else {
 
-				slotCenterPositionOffset.x = 0 + (slotSizes[slot].sizeTotal.x);
+				slotCenterPositionOffset.x = 0 + (slotSizes[slot].sizeTotal.x / slotChildCount);
 				slotCenterPositionOffset.y = 0;
 			}
 
@@ -836,12 +887,12 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
 
 				slotCenterPositionOffset.x = 0 - (slotSizes[slot].maxDimension.x);
-				slotCenterPositionOffset.y = 0 + (slotSizes[slot].sizeTotal.y);
+				slotCenterPositionOffset.y = 0 + (slotSizes[slot].sizeTotal.y / slotChildCount);
 			}
 			else {
 
 				slotCenterPositionOffset.x = 0 - (slotSizes[slot].sizeTotal.x);
-				slotCenterPositionOffset.y = 0 + (slotSizes[slot].maxDimension.y);
+				slotCenterPositionOffset.y = 0 + (slotSizes[slot].maxDimension.y / slotChildCount);
 			}
 
 			break;
@@ -851,7 +902,7 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
 
 				slotCenterPositionOffset.x = 0;
-				slotCenterPositionOffset.y = 0 + (slotSizes[slot].sizeTotal.y);
+				slotCenterPositionOffset.y = 0 + (slotSizes[slot].sizeTotal.y / slotChildCount);
 			}
 			else {
 
@@ -866,11 +917,11 @@ SDL_FPoint ChildrenComponent::_calculateStandardSlotCenterPosition(PositionAlign
 			if (m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
 
 				slotCenterPositionOffset.x = 0 + (slotSizes[slot].maxDimension.x);
-				slotCenterPositionOffset.y = 0 + (slotSizes[slot].sizeTotal.y);
+				slotCenterPositionOffset.y = 0 + (slotSizes[slot].sizeTotal.y / slotChildCount);
 			}
 			else {
 
-				slotCenterPositionOffset.x = 0 + (slotSizes[slot].sizeTotal.x);
+				slotCenterPositionOffset.x = 0 + (slotSizes[slot].sizeTotal.x / slotChildCount);
 				slotCenterPositionOffset.y = 0 + (slotSizes[slot].maxDimension.y);
 			}
 

@@ -60,6 +60,7 @@ public:
 	virtual void update();
 	virtual void render();
 	virtual void render(SDL_FRect destQuad);
+	void render(SDL_FPoint locationPoint);
 
 	void setRemoveFromWorld(bool removeFromWorld) { m_removeFromWorld = removeFromWorld; }
 	void setPosition(b2Vec2 position, float angle);
@@ -84,9 +85,6 @@ public:
 	void setContainerCapacity(int containerCapacity);
 	void setSize(b2Vec2 size);
 	bool intersectsWith(GameObject* gameObject);
-
-	bool isChild {};
-
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);
 
 	b2Vec2 getSize();
@@ -140,6 +138,7 @@ public:
 	std::string description() {return m_description; }
 	bool absolutePositioning();
 
+	bool isChild{};
 
 	auto removeFromWorld() { return m_removeFromWorld; }
 	
@@ -162,6 +161,7 @@ public:
 	void addTouchingObject(std::shared_ptr<GameObject> touchingObject);
 	void setParent(GameObject* parentObject);
 	std::optional<GameObject*> parent() { return m_parentObject; }
+	bool isDragging();
 
 	const std::unordered_map<std::string, std::weak_ptr<GameObject>>& getTouchingObjects() {
 		return m_touchingGameObjects;

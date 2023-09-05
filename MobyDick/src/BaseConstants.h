@@ -238,28 +238,29 @@ namespace ComponentTypes {
 	inline constexpr int COMPOSITE_COMPONENT = 6;
 	inline constexpr int CONTAINER_COMPONENT = 7;
 	inline constexpr int CHECKPOINT_COMPONENT = 8;
-	inline constexpr int HUD_COMPONENT = 9;
-	inline constexpr int INTERFACE_COMPONENT = 10;
-	inline constexpr int INVENTORY_COMPONENT = 11;
-	inline constexpr int IMGUI_COMPONENT = 12;
-	inline constexpr int PARTICLE_COMPONENT = 13;
-	inline constexpr int NAVIGATION_COMPONENT = 14;
-	inline constexpr int PARTICLE_X_COMPONENT = 15;
-	inline constexpr int PHYSICS_COMPONENT = 16;
-	inline constexpr int PLAYER_CONTROL_COMPONENT = 17;
-	inline constexpr int POOL_COMPONENT = 18;
-	inline constexpr int PUZZLE_COMPONENT = 19;
-	inline constexpr int RENDER_COMPONENT = 20;
-	inline constexpr int SOUND_COMPONENT = 21;
-	inline constexpr int TEXT_COMPONENT = 22;
-	inline constexpr int TRANSFORM_COMPONENT = 23;
-	inline constexpr int UICONTROL_COMPONENT = 24;
-	inline constexpr int VITALITY_COMPONENT = 25;
-	inline constexpr int WEAPON_COMPONENT = 26;
-	inline constexpr int LIGHT_COMPONENT = 27;
-	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 28;
+	inline constexpr int GRID_DISPLAY_COMPONENT = 9;
+	inline constexpr int HUD_COMPONENT = 10;
+	inline constexpr int INTERFACE_COMPONENT = 11;
+	inline constexpr int INVENTORY_COMPONENT = 12;
+	inline constexpr int IMGUI_COMPONENT = 13;
+	inline constexpr int PARTICLE_COMPONENT = 14;
+	inline constexpr int NAVIGATION_COMPONENT = 15;
+	inline constexpr int PARTICLE_X_COMPONENT = 16;
+	inline constexpr int PHYSICS_COMPONENT = 17;
+	inline constexpr int PLAYER_CONTROL_COMPONENT = 18;
+	inline constexpr int POOL_COMPONENT = 19;
+	inline constexpr int PUZZLE_COMPONENT = 20;
+	inline constexpr int RENDER_COMPONENT = 21;
+	inline constexpr int SOUND_COMPONENT = 22;
+	inline constexpr int TEXT_COMPONENT = 23;
+	inline constexpr int TRANSFORM_COMPONENT = 24;
+	inline constexpr int UICONTROL_COMPONENT = 25;
+	inline constexpr int VITALITY_COMPONENT = 26;
+	inline constexpr int WEAPON_COMPONENT = 27;
+	inline constexpr int LIGHT_COMPONENT = 28;
+	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 29;
 	
-	inline constexpr int LAST_BASE_COMPONENT = 28;
+	inline constexpr int LAST_BASE_COMPONENT = 29;
 
 }
 

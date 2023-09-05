@@ -471,3 +471,14 @@ void InterfaceComponent::setParent(GameObject* gameObject)
 
 }
 
+bool InterfaceComponent::isDragging()
+{
+
+	if (m_currentEventsState.test((int)InterfaceEvents::ON_DRAG)) {
+
+		return true;
+	}
+
+	return false;
+}
+
