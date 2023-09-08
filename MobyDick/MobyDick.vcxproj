@@ -217,6 +217,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\actions\ShowInventoryAction.cpp" />
+    <ClCompile Include="src\actions\ToggleInventory.cpp" />
     <ClCompile Include="src\components\GridDisplayComponent.cpp" />
     <ClCompile Include="src\components\InterfaceComponent.cpp" />
     <ClCompile Include="src\components\PuzzleComponent.cpp" />
@@ -320,6 +321,7 @@
   <ItemGroup>
     <ClInclude Include="include\MobyDick.h" />
     <ClInclude Include="src\actions\ShowInventoryAction.h" />
+    <ClInclude Include="src\actions\ToggleInventory.h" />
     <ClInclude Include="src\components\GridDisplayComponent.h" />
     <ClInclude Include="src\components\InterfaceComponent.h" />
     <ClInclude Include="src\components\PuzzleComponent.h" />

@@ -80,6 +80,7 @@ public:
 	void addLevelTrigger(std::shared_ptr<Trigger> trigger);
 	void addKeyAction(SDL_Keycode, SceneAction);
 	void applyCurrentControlMode();
+	
 	std::optional<std::shared_ptr<GameObject>> getGameObject(std::string id);
 	std::vector<std::shared_ptr<GameObject>> getGameObjectsByName(std::string name);
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByName(std::string name);
@@ -146,6 +147,8 @@ public:
 private:
 
 	std::string m_id;
+
+	
 
 	int m_gameObjectCount{};
 	int m_inputControlMode{};

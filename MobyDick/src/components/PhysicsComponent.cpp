@@ -207,7 +207,13 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 	if (physicsComponentJSON.isMember("isBullet")) {
 		body->SetBullet(physicsComponentJSON["isBullet"].asBool());
 	}
+	//Size Override will only apply to an object that has one fixure and it is a box/polygon shape
+	std::optional<b2Vec2> sizeOverride{};
 
+	//finish here
+
+	 
+	
 	//Build fixtures
 	for (const auto& fixtureJSON : physicsComponentJSON["fixtures"]) {
 

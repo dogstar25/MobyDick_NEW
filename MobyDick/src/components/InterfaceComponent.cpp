@@ -108,6 +108,11 @@ void InterfaceComponent::update()
 	//Does this interface have priority over any other possible active interfaces currently 
 	// being shown?
 	//This allows for when we want to show only one interface at a time and usually, the object
+	//"in front" of the other object(s)
+	if (parent()->type() == "BOBBYS_BEDSHEET") {
+		int todd = 1;
+	}
+
 	if (doesInterfaceHavePriority(newEventsState)) {
 
 		for (const auto& actionEvent : m_eventActions) {
@@ -223,10 +228,10 @@ void InterfaceComponent::update()
 			}
 		}
 
-		//Set The cursor
-		setCursor(parent(), newEventsState);
-
 	}
+
+	//Set The cursor
+	//setCursor(parent(), newEventsState);
 
 	//Save the current state
 	m_currentEventsState = newEventsState;

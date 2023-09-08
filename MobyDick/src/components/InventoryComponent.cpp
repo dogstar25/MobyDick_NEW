@@ -17,7 +17,7 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string pa
 	m_activeItem = 0;
 
 	//Create the Backdrop object
-	m_displayBackdropObject = parentScene->createGameObject(m_displayBackdropObjectType, -50.0F, -50.0F, 0.F, parentScene, GameLayer::GUI_1);
+	m_displayBackdropObject = parentScene->createGameObject(m_displayBackdropObjectType, -50.0F, -50.0F, 0.F, parentScene, GameLayer::GUI_2);
 
 	m_items = std::vector<std::optional<std::shared_ptr<GameObject>>>(m_maxCapacity);
 }
@@ -27,33 +27,52 @@ InventoryComponent::~InventoryComponent()
 
 }
 
+void InventoryComponent::setParent(GameObject* gameObject)
+{
+	//Call base component setParent
+	Component::setParent(gameObject);
+
+	//Parent for this interactionMenuObject if it exists
+	if (m_displayBackdropObject) {
+		m_displayBackdropObject.value()->setParent(gameObject);
+
+	}
+
+}
+
 int InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 {
 
 	//Find first available inventory slot
-	bool slotFound{};
+	int slotIndexFound{-1};
 	for (int i = 0; i < m_items.size();i++) {
 
 		if (m_items[i].has_value() == false) {
 			m_items[i] = gameObject;
-			slotFound = i;
+			slotIndexFound = i;
 			break;
 		}
 	}
 
-	return slotFound;
+	addItem(gameObject, slotIndexFound);
+
+	return slotIndexFound;
 
 }
 
 
-int InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slot)
+bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slot)
 {
-
-	if (slot <= m_items.size()) {
+	bool itemAdded = false;
+	if (slot <= (m_items.size() - 1) && slot != -1) {
 		m_items[slot] = gameObject;
+		itemAdded = true;
+
+		//Set this items new parent to this inventory holding object
+		gameObject->setParent(parent());
 	}
 
-	return slot;
+	return itemAdded;
 
 }
 
@@ -77,6 +96,35 @@ bool InventoryComponent::addItem(std::string gameObjectType, int slot)
 
 }
 
+std::shared_ptr<GameObject> InventoryComponent::removeItem(int slot)
+{
+	std::shared_ptr<GameObject> removedObject{};
+	removedObject = m_items[slot].value();
+	removedObject->setParent(nullptr);
+	m_items[slot] = std::nullopt;
+
+	return removedObject;
+}
+
+
+std::shared_ptr<GameObject> InventoryComponent::removeItem(GameObject* gameObject)
+{
+
+	std::shared_ptr<GameObject> removedObject{};
+
+	for (auto& slot : m_items) {
+
+		if (slot.has_value() && slot.value().get() == gameObject) {
+			removedObject = slot.value();
+			removedObject->setParent(nullptr);
+			slot = std::nullopt;
+			break;
+		}
+	}
+
+	return removedObject;
+
+}
 
 std::optional<std::shared_ptr<GameObject>> InventoryComponent::getItem(const int traitTag)
 {
@@ -91,8 +139,6 @@ std::optional<std::shared_ptr<GameObject>> InventoryComponent::getItem(const int
 	}
 	return std::nullopt;
 }
-
-
 
 int InventoryComponent::addCollectible(const CollectibleTypes collectableType, int count)
 {
@@ -120,12 +166,25 @@ void InventoryComponent::update()
 
 }
 
+void InventoryComponent::refreshInventoryDisplay() {
+
+	if (m_displayBackdropObject) {
+
+		//Get displayObjects grid display component
+		const auto& gridDisplayComponent = m_displayBackdropObject.value()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+		gridDisplayComponent->clear();
+
+		showInventory();
+	}
+
+}
+
 //Show the inventory as a child of a specific object that is not the inventory holder
-void InventoryComponent::showInventory(GameObject* proxyObject)
+void InventoryComponent::showInventory()
 {
 	m_isOpen = true;
 
-	const auto& gridDisplayComponent = proxyObject->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+	const auto& gridDisplayComponent = m_displayBackdropObject.value()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
 
 	for (int i = 0; i < m_items.size(); i++) {
 
@@ -135,10 +194,8 @@ void InventoryComponent::showInventory(GameObject* proxyObject)
 			gridDisplayComponent->addItem(m_items[i].value(), i);
 		}
 	}
-	
 
 }
-
 
 void InventoryComponent::hideInventory()
 {

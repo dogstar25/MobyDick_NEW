@@ -79,6 +79,12 @@ void SceneManager::run()
 		//IMGui framerate calc - R.I.P MobyDick Framerate code 2018 - 2022
 		ImGui::MobyDickFPSFrame();
 
+		//Set the mouse cursor to whatever the last loop decided
+		SDL_SetCursor(m_currentMouseCursor);
+
+		//Set the default mouse cursor for the next loop to be the ARROW cursor
+		m_currentMouseCursor = TextureManager::instance().getMouseCursor("CURSOR_ARROW");
+
 		//Run update for every active scene
 		for (auto& scene : m_scenes) {
 
@@ -89,10 +95,6 @@ void SceneManager::run()
 
 		//Clear the screen
 		game->renderer()->clear();
-
-		//Set the default cursor
-		auto cursor = TextureManager::instance().getMouseCursor("CURSOR_ARROW");
-		SDL_SetCursor(cursor);
 
 		//Render every scene, active or not
 		for (auto& scene : m_scenes) {

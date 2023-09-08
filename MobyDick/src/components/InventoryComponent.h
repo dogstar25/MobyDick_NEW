@@ -23,10 +23,14 @@ public:
 	InventoryComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene);
 	~InventoryComponent();
 
+	void setParent(GameObject* gameObject) override;
+
+	bool addItem(std::shared_ptr<GameObject> gameObject, int slot);
 	int addItem(std::shared_ptr<GameObject> gameObject);
-	int addItem(std::shared_ptr<GameObject> gameObject, int slot);
 	bool addItem(std::string gameObjectType);
 	bool addItem(std::string gameObjectType, int slot);
+	std::shared_ptr<GameObject> removeItem(int slot);
+	std::shared_ptr<GameObject> removeItem(GameObject* gameObject);
 	std::vector<std::optional<std::shared_ptr<GameObject>>> items() { return m_items; }
 	int activeItem() {	return m_activeItem; }
 
@@ -36,7 +40,7 @@ public:
 	const std::map<CollectibleTypes, int>& collectibles() { return m_collectibles; }
 	void update();
 
-	void showInventory(GameObject* parentObject);
+	void refreshInventoryDisplay();
 	void showInventory();
 	void hideInventory();
 	bool isOpen() { return m_isOpen; }
