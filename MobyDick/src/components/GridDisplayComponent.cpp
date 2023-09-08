@@ -53,7 +53,7 @@ GridDisplayComponent::~GridDisplayComponent()
 void GridDisplayComponent::postInit()
 {
 
-	
+
 
 }
 
@@ -78,15 +78,15 @@ void GridDisplayComponent::_buildGridSlots()
 	m_gridSlots[0] = GridSlot(topLeftGridLocation, std::nullopt);
 
 	//Now calculate the rest of the grid locations
-	for (int row = 0; row < m_rows;row++) {
+	for (int row = 0; row < m_rows; row++) {
 		for (int column = 0; column < m_columns; column++) {
 
 			//skip first top left slot since its already calculated
 			if (row == 0 && column == 0) continue;
 
 			SDL_FPoint location =
-			{ topLeftGridLocation.x + column * ((m_itemSize) + (m_itemPadding)),
-				topLeftGridLocation.y + row * ((m_itemSize) + (m_itemPadding)) };
+			{ topLeftGridLocation.x + column * ((m_itemSize)+(m_itemPadding)),
+				topLeftGridLocation.y + row * ((m_itemSize)+(m_itemPadding)) };
 
 			int slotIndex = row * m_columns + column;
 			m_gridSlots[slotIndex] = GridSlot(location, std::nullopt);
@@ -115,7 +115,7 @@ void GridDisplayComponent::_buildGridSlots()
 void GridDisplayComponent::update()
 {
 
-	
+
 
 	for (auto& gridSlot : m_gridSlots)
 	{
@@ -135,9 +135,30 @@ void GridDisplayComponent::update()
 
 	}
 
-	
+
 }
 
+std::optional<int> GridDisplayComponent::getClosestSlot(SDL_FPoint position)
+{
+
+	int slotIndex{};
+	for (const auto& slot : m_gridSlots) {
+
+		//calc the world position of the center of this slot
+		SDL_FPoint slotWorldPosition =
+		{ parent()->getCenterPosition().x + slot.positionOffset.x, parent()->getCenterPosition().y + slot.positionOffset.y };
+
+		if (abs(slotWorldPosition.x - position.x) < (m_itemSize / 2) &&
+			abs(slotWorldPosition.y - position.y) < (m_itemSize / 2) ) {
+			return slotIndex;
+			}
+
+		slotIndex++;
+	}
+
+	return std::nullopt;
+
+}
 
 void GridDisplayComponent::addItem(std::shared_ptr<GameObject> itemObject, int slot)
 {
@@ -151,6 +172,17 @@ void GridDisplayComponent::addItem(std::shared_ptr<GameObject> itemObject, SDL_F
 
 	int slotIndex = gridLocation.y * m_columns + gridLocation.x;
 	m_gridSlots[slotIndex].gameObject = itemObject;
+
+}
+
+void GridDisplayComponent::clear()
+{
+
+	for (auto& slot : m_gridSlots) {
+
+		slot.gameObject = std::nullopt;
+
+	}
 
 }
 

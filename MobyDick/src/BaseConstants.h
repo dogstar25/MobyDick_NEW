@@ -114,6 +114,7 @@ namespace TraitTag {
 	inline constexpr int puzzle = 19;
 	inline constexpr int vertical_movement = 20;
 	inline constexpr int draggable = 21;
+	inline constexpr int inventory = 22;
 
 }
 

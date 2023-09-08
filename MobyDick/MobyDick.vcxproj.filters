@@ -315,6 +315,9 @@
     <ClCompile Include="src\components\GridDisplayComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\actions\ToggleInventory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -627,6 +630,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\GridDisplayComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\actions\ToggleInventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

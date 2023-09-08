@@ -984,20 +984,13 @@ void GameObject::_updateTouchingObjects()
 				//Now see what non-physics objects it touches
 				//for (auto it = m_parentScene->getGameObjectLookup().begin(); it != m_parentScene->getGameObjectLookup().end(); ++it) {
 
-
 				//	if (it->second.lock().get()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false && this->intersectsWith(it->second.lock().get())) {
 
-				//		if (type() == "OIL_CAN") {
-				//			int todd = 1;
-				//			//std::cout << "Found " << it->second.lock().get()->type() << std::endl;
-				//			this->addTouchingObject(it->second.lock());
-
-				//		}
+				//		this->addTouchingObject(it->second.lock());
 
 				//	}
 
 				//}
-
 			}
 		}
 		else {

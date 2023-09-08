@@ -41,10 +41,15 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 		childCount++;
 
 		std::string childObjectType = itrChild["gameObjectType"].asString();
-		std::string name = _buildChildName(parentName, childCount);
+		std::string name{};
+		if (itrChild.isMember("name")) {
+			name = itrChild["name"].asString();
+		}
+		else {
+			name = _buildChildName(parentName, childCount);
+		}
 
 		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
-
 
 		//Child Size Override
 		if (itrChild.isMember("size")) {

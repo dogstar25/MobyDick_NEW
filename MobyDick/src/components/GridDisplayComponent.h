@@ -36,6 +36,8 @@ public:
 	void addItem(std::shared_ptr<GameObject> gameObject, int slot);
 	void addItem(std::shared_ptr<GameObject> itemObject, SDL_FPoint gridLocation);
 	void removeItem(std::string id);
+	void clear();
+	std::optional<int> getClosestSlot(SDL_FPoint position);
 	std::vector<GridSlot> gridSlots() { return m_gridSlots; }
 
 private:

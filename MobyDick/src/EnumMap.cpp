@@ -241,6 +241,7 @@ EnumMap::EnumMap()
 	m_enumMap["puzzle"] = TraitTag::puzzle;
 	m_enumMap["vertical_movement"] = TraitTag::vertical_movement;
 	m_enumMap["draggable"] = TraitTag::draggable;
+	m_enumMap["inventory"] = TraitTag::inventory;
 	
 
 	//Hud Item Types
