@@ -22,7 +22,8 @@ GameObject::~GameObject()
 
 }
 
-GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer, bool cameraFollow, std::string name)
+GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer, 
+	bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
 	Json::Value definitionJSON;
@@ -69,7 +70,8 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 
 		int componentType = game->enumMap()->toEnum(componentJSON["id"].asString());
 
-		component = game->componentFactory()->create(definitionJSON, m_name, gameObjectType, parentScene, xMapPos, yMapPos, angleAdjust, componentType);
+		component = game->componentFactory()->create(
+			definitionJSON, m_name, gameObjectType, parentScene, xMapPos, yMapPos, angleAdjust, sizeOverride, componentType);
 		component->setParent(this);
 		addComponent(component);
 

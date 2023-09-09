@@ -7,7 +7,8 @@
 
 extern std::unique_ptr<Game> game;
 
-PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust)
+PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, 
+	b2Vec2 sizeOverride)
 {
 
 	m_componentType = ComponentTypes::PHYSICS_COMPONENT;
@@ -22,14 +23,20 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScen
 		physicsComponentJSON["anchorPoint"]["y"].asFloat());
 
 	//Build the physics body
-	m_physicsBody = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld());
+	m_physicsBody = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld(), sizeOverride);
 
 	//Calculate the spawn position
 	b2Vec2 position{};
 
 	//Get size of the object
-	float objectWidth = transformComponentJSON["size"]["width"].asFloat();
-	float objectHeight = transformComponentJSON["size"]["height"].asFloat();
+	b2Vec2 size = b2Vec2_zero;
+	if (sizeOverride != b2Vec2_zero) {
+		size = sizeOverride;
+	}
+	else {
+		size = { transformComponentJSON["size"]["width"].asFloat(),
+			transformComponentJSON["size"]["height"].asFloat() };
+	}
 
 	//We want to mostly always capture a list of other objects that this one is touching, but we can turn it off
 	// for some objects to save processing
@@ -41,8 +48,8 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScen
 	float newAngle = util::degreesToRadians(angleAdjust);
 
 	//The width and height can change when a rectangle shape is rotated
-	float objectWidthAfterAngle = abs(sin(newAngle) * objectHeight + cos(newAngle) * objectWidth);
-	float objectHeightAfterAngle = abs(sin(newAngle) * objectWidth + cos(newAngle) * objectHeight);
+	float objectWidthAfterAngle = abs(sin(newAngle) * size.y + cos(newAngle) * size.x);
+	float objectHeightAfterAngle = abs(sin(newAngle) * size.x + cos(newAngle) * size.y);
 
 	//Get the pixel position of where we are placing the object. Divide by 2 to get the center
 	position.x = (xMapPos * game->worldTileSize().x + (objectWidthAfterAngle / 2));
@@ -185,7 +192,8 @@ void PhysicsComponent::update()
 	parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->setPosition(convertedPosition, convertedAngle);
 }
 
-b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld)
+b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, 
+	b2Vec2 sizeOverride)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = static_cast<b2BodyType>(m_physicsType);
@@ -208,9 +216,18 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 		body->SetBullet(physicsComponentJSON["isBullet"].asBool());
 	}
 	//Size Override will only apply to an object that has one fixure and it is a box/polygon shape
-	std::optional<b2Vec2> sizeOverride{};
+	bool isSizeOverrideAllowed{};
 
-	//finish here
+	if (physicsComponentJSON["fixtures"].size() == 1) {
+		
+		auto checkCollisionShape = game->enumMap()->toEnum(physicsComponentJSON["fixtures"][0]["collisionShape"].asString());
+
+		if (checkCollisionShape == b2Shape::e_polygon && sizeOverride != b2Vec2_zero) {
+
+			isSizeOverrideAllowed = true;
+
+		}
+	}
 
 	 
 	
@@ -256,15 +273,24 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 			float sizeX{};
 			float sizeY{};
 			//If a size is not specified for the fixture then default to the transform size of the object
-			if (fixtureJSON.isMember("size")) {
-				sizeX = fixtureJSON["size"]["width"].asFloat() / GameConfig::instance().scaleFactor() / 2;
-				sizeY = fixtureJSON["size"]["height"].asFloat() / GameConfig::instance().scaleFactor() / 2;
+			//Also, apply the override if there is one
+			if (isSizeOverrideAllowed) {
+				sizeX = sizeOverride.x;
+				sizeY = sizeOverride.y;
+			}
+			else if (fixtureJSON.isMember("size")) {
+				sizeX = fixtureJSON["size"]["width"].asFloat();
+				sizeY = fixtureJSON["size"]["height"].asFloat();
 			}
 			else {
-				sizeX = transformComponentJSON["size"]["width"].asFloat() / GameConfig::instance().scaleFactor() / 2;
-				sizeY = transformComponentJSON["size"]["height"].asFloat() / GameConfig::instance().scaleFactor() / 2;
+				sizeX = transformComponentJSON["size"]["width"].asFloat();
+				sizeY = transformComponentJSON["size"]["height"].asFloat();
 			}
-			
+
+			//Convert to what box2d needs
+			sizeX = util::toBox2dPoint(sizeX) / 2;
+			sizeY = util::toBox2dPoint(sizeY) / 2;
+
 			box.SetAsBox(sizeX, sizeY);
 			b2Vec2 offsetLocation = { xOffset, yOffset };
 			box.SetAsBox(sizeX, sizeY, offsetLocation, 0);

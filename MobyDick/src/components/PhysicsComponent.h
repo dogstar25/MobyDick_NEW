@@ -20,7 +20,7 @@ class PhysicsComponent : public Component
 
 public:
 	PhysicsComponent() {};
-	PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust);
+	PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride);
 	~PhysicsComponent();
 
 	void update() override;
@@ -62,7 +62,7 @@ public:
 
 private:
 
-	b2Body* _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld);
+	b2Body* _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, b2Vec2 sizeOverride);
 	uint16 _setCollisionMask(Json::Value physicsComponentJSON);
 
 	b2Body* m_physicsBody{ nullptr };

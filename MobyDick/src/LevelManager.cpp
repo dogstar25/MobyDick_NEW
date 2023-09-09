@@ -352,8 +352,8 @@ void LevelManager::_buildLevelCage(Scene* scene)
 	//Add the transform component
 	const auto& transformComponent =
 		std::static_pointer_cast<TransformComponent>(
-			game->componentFactory()->create(componentsDefinition, "", "", scene, 0, 0, 0, ComponentTypes::TRANSFORM_COMPONENT)
-			);
+			game->componentFactory()->create(
+				componentsDefinition, "", "", scene, 0, 0, 0, b2Vec2_zero, ComponentTypes::TRANSFORM_COMPONENT)	);
 	transformComponent->setParent(levelCageObject);
 	levelCageObject->addComponent(transformComponent);
 
@@ -361,7 +361,7 @@ void LevelManager::_buildLevelCage(Scene* scene)
 	//Add the physics component
 	const auto& physicsComponent =
 		std::static_pointer_cast<PhysicsComponent>(
-			game->componentFactory()->create(componentsDefinition, "", "", scene, 0, 0, 0, ComponentTypes::PHYSICS_COMPONENT)
+			game->componentFactory()->create(componentsDefinition, "", "", scene, 0, 0, 0, b2Vec2_zero, ComponentTypes::PHYSICS_COMPONENT)
 			);
 	physicsComponent->setParent(levelCageObject);
 	levelCageObject->addComponent(physicsComponent);
@@ -793,28 +793,17 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 			//Loop through all level objects to build for each x,y location
 			for (auto& levelObject : m_levelObjects[x][y]) {
 
-				auto gameObject = scene->addGameObject(levelObject.gameObjectType, levelObject.layer,
-					(float)x, (float)y, (float)levelObject.angleAdjustment, levelObject.cameraFollow, levelObject.name);
-
-				//Apply size override - CANNOT DO A SIZE OVERRIDE FOR PHYSICS OBEJCTS
+				//Set the size override if we have one
+				b2Vec2 sizeOverride{ 0.f, 0.f };
 				if (levelObject.size.has_value()) {
 
-					assert(!gameObject->hasComponent(ComponentTypes::PHYSICS_COMPONENT) && "Cannot override the GameObject size if it is a physics object");
-
-					gameObject->setSize(levelObject.size.value());
-					//Since we are changing the size after the gameObject was already built, then we have to adjust the
-					//spawn Position also, since the position was calulated previously using the original size
-					//ToDo: add a sizeOverride that can be passed in at the gameObject constructor level
-
-					if (gameObject->type() == "FULL_HOUSE_EXTERIOR") {
-						int todd = 1;
-					}
-
-					gameObject->setPosition(util::tileToPixelPlacementLocation(
-						(float)x, (float)y, gameObject->getSize().x, gameObject->getSize().y));
-
+					sizeOverride = levelObject.size.value();
 				}
-				
+
+				//Create the gameObject
+				auto gameObject = scene->addGameObject(levelObject.gameObjectType, levelObject.layer,
+					(float)x, (float)y, (float)levelObject.angleAdjustment, levelObject.cameraFollow, levelObject.name, sizeOverride);
+
 				//Apply color override
 				if (levelObject.color.has_value()) {
 					gameObject->setColor(levelObject.color.value());

@@ -49,15 +49,16 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 			name = _buildChildName(parentName, childCount);
 		}
 
-		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
-
 		//Child Size Override
+		b2Vec2 sizeOverride{ 0.f, 0.f };
 		if (itrChild.isMember("size")) {
 
-			b2Vec2 size = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
-			childObject->setSize(size);
-
+			sizeOverride = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
 		}
+
+		//Create the child gameObject
+		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name, sizeOverride);
+
 
 		//Child Color Override
 		if (itrChild.isMember("color")) {

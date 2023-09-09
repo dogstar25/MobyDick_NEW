@@ -55,7 +55,7 @@ public:
 
 
 	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer=GameLayer::MAIN,
-		bool cameraFollow=false, std::string name="");
+		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
 
 	virtual void update();
 	virtual void render();
@@ -132,10 +132,10 @@ public:
 	bool collisionDisabled() { return m_stateTags.test(StateTag::disabledCollision); }
 
 	//Accessor Functions
-	std::string id() { return m_id; }
-	std::string name() { return m_name; }
-	std::string type() { return m_type; }
-	std::string description() {return m_description; }
+	const std::string& id() const { return m_id; }
+	const std::string& name() const { return m_name; }
+	const std::string& type() const { return m_type; }
+	const std::string& description() const {return m_description; }
 	bool absolutePositioning();
 
 	bool isChild{};

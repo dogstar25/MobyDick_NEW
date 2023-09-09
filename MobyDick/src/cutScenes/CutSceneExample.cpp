@@ -129,7 +129,7 @@ std::shared_ptr<GameObject> CutSceneExample::_startFrank()
 
 	const auto& brainComponent =
 		std::static_pointer_cast<BrainComponent>(
-			game->componentFactory()->create(componentsDefinition, "Frank", "BOWMAN", currentScene, 0, 0, 0, ComponentTypes::BRAIN_COMPONENT)
+			game->componentFactory()->create(componentsDefinition, "Frank", "BOWMAN", currentScene, 0, 0, 0, b2Vec2_zero, ComponentTypes::BRAIN_COMPONENT)
 			);
 	brainComponent->setParent(frank.get());
 	frank->addComponent(brainComponent);

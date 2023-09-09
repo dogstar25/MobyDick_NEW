@@ -335,10 +335,14 @@ void Scene::deleteCutScene()
 }
 
 std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, 
-	GameLayer layer, bool cameraFollow, std::string name)
+	GameLayer layer, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name);
+	if (gameObjectType == "BOBBYS_BEDKNOB") {
+		int todd = 1;
+	}
+	std::shared_ptr<GameObject> gameObject = 
+		std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name, sizeOverride);
 
 	//Add index
 	const auto gameObjectPair = m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
@@ -347,23 +351,25 @@ std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, 
 	return gameObject;
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, bool cameraFollow, std::string name)
+GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, 
+	bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, name);
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, 
+		name, sizeOverride);
 
 	m_gameObjects[layer].emplace_back(gameObject);
 		
-
 	return gameObject.get();
 
 }
 
 GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, float adjustX, float adjustY,
-	float angle, bool cameraFollow, std::string name)
+	float angle, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow, name);
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow, 
+		name, sizeOverride);
 
 	gameObject->setPosition(windowPosition, adjustX, adjustY);
 	gameObject->setWindowRelativePosition(windowPosition, adjustX, adjustY);

@@ -13,7 +13,7 @@ class TransformComponent : public Component
 
 public:
 	TransformComponent();
-	TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust);
+	TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride);
 	~TransformComponent();
 
 	void update() override;

@@ -52,6 +52,7 @@ public:
 		float xMapPos,
 		float yMapPos,
 		float angleAdjust,
+		b2Vec2 sizeOverride,
 		const int componentType);
 
 };

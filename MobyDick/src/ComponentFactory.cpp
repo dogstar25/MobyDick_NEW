@@ -9,6 +9,7 @@ std::shared_ptr<Component> ComponentFactory::create(
 	float xMapPos,
 	float yMapPos,
 	float angleAdjust,
+	b2Vec2 sizeOverride,
 	const int componentType)
 {
 	std::shared_ptr<Component> component{};
@@ -90,10 +91,7 @@ std::shared_ptr<Component> ComponentFactory::create(
 			component = std::make_shared<ParticleXComponent>(componentJSON);
 			break;
 		case ComponentTypes::PHYSICS_COMPONENT:
-			//
-			//Physics component cannot be overridden right now so pass in the whole gameobject definition is needed
-			//
-			component = std::make_shared<PhysicsComponent>(definitionJSON, scene, xMapPos, yMapPos, angleAdjust);
+			component = std::make_shared<PhysicsComponent>(definitionJSON, scene, xMapPos, yMapPos, angleAdjust, sizeOverride);
 			break;
 		case ComponentTypes::PLAYER_CONTROL_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PLAYER_CONTROL_COMPONENT);
@@ -121,7 +119,7 @@ std::shared_ptr<Component> ComponentFactory::create(
 			break;
 		case ComponentTypes::TRANSFORM_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TRANSFORM_COMPONENT);
-			component = std::make_shared<TransformComponent>(componentJSON, xMapPos, yMapPos, angleAdjust);
+			component = std::make_shared<TransformComponent>(componentJSON, xMapPos, yMapPos, angleAdjust, sizeOverride);
 			break;
 		case ComponentTypes::VITALITY_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::VITALITY_COMPONENT);
