@@ -7,20 +7,27 @@ TransformComponent::TransformComponent()
 {
 }
 
-TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust)
+TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride)
 {
 		m_componentType = ComponentTypes::TRANSFORM_COMPONENT;
 
 		m_angle = m_originalAngle = angleAdjust;
+		b2Vec2 size{};
 
-		auto objectWidth = componentJSON["size"]["width"].asFloat();
-		auto objectHeight = componentJSON["size"]["height"].asFloat();
+		//Apply override if it's not zero
+		if (sizeOverride != b2Vec2_zero) {
+			size = sizeOverride;
+		}
+		else {
+			size.x = componentJSON["size"]["width"].asFloat();
+			size.y = componentJSON["size"]["height"].asFloat();
+		}
 
 		m_originalTilePosition = { xMapPos , yMapPos };
-		setPosition(util::tileToPixelPlacementLocation(xMapPos, yMapPos, objectWidth, objectHeight)	);
+		setPosition(util::tileToPixelPlacementLocation(xMapPos, yMapPos, size.x, size.y)	);
 
 		m_originalPosition = m_position;
-		m_size.Set(componentJSON["size"]["width"].asFloat(), componentJSON["size"]["height"].asFloat());
+		m_size = size;
 
 		m_absolutePositioning = m_originalAbsolutePositioning = componentJSON["absolutePositioning"].asBool();
 
@@ -62,13 +69,6 @@ void TransformComponent::update()
 	//because the object may have changed size, i.e ImGui Window
 	if (m_windowRelativePosition) {
 		parent()->setPosition(m_windowRelativePosition.value(), m_windowPositionAdjustment.x, m_windowPositionAdjustment.y);
-	}
-
-	if (parent()->type() == "HUD_INTERFACE_FRAME" ||
-		parent()->type() == "MAIN_HUD_HOLDER") {
-
-		int todd = 1;
-
 	}
 
 	if (m_absolutePositioning == true && parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {

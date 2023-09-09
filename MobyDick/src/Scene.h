@@ -66,12 +66,12 @@ public:
 	void clearEvents();
 
 	std::shared_ptr<GameObject> createGameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer = GameLayer::MAIN,
-		bool cameraFollow = false, std::string name = "");
+		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
 	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, 
-		float angle=0., bool cameraFollow=false, std::string name="");
+		float angle=0., bool cameraFollow=false, std::string name="", b2Vec2 sizeOverride = { 0.,0. });
 	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, 
 		float adjustX=0., float adjustY=0., float angle=0.,
-		bool cameraFollow=false, std::string name="");
+		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
 	void addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer);
 
 	void addGameObjectIndex(std::shared_ptr<GameObject> gameObject);
@@ -147,8 +147,6 @@ public:
 private:
 
 	std::string m_id;
-
-	
 
 	int m_gameObjectCount{};
 	int m_inputControlMode{};

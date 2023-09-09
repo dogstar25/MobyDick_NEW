@@ -30,15 +30,10 @@ GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, Scene* par
 	m_isDependentObjectOwner = true;
 	std::optional<b2Vec2> sizeOverride{};
 
-	//Build all possible Standard Slot - they will be empty
-	//_buildStandardSlots();
-
 	//Build all possible Grid Slots - they will be empty
 	_buildGridSlots();
 
 	m_slotImageObject = parentScene->createGameObject("GRID_SLOT_BOX", -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false);
-
-	
 
 }
 
