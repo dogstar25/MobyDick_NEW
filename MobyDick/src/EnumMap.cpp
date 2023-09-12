@@ -124,7 +124,7 @@ EnumMap::EnumMap()
 
 	//User Events
 	m_enumMap["InterfaceEvents::ON_TOUCHING"] = (int)InterfaceEvents::ON_TOUCHING;
-	m_enumMap["InterfaceEvents::ON_NO_TOUCHING"] = (int)InterfaceEvents::ON_NO_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_STOP_TOUCHING"] = (int)InterfaceEvents::ON_STOP_TOUCHING;
 	m_enumMap["InterfaceEvents::ON_HOVER"] = (int)InterfaceEvents::ON_HOVER;
 	m_enumMap["InterfaceEvents::ON_HOVER_OUT"] = (int)InterfaceEvents::ON_HOVER_OUT;
 	m_enumMap["InterfaceEvents::ON_CLICK"] = (int)InterfaceEvents::ON_CLICK;

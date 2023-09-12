@@ -10,6 +10,7 @@
 #include "imgui_impl_sdlrenderer.h"
 #include "Util.h"
 #include "components/LightedTreatmentComponent.h"
+#include "components/InventoryComponent.h"
 
 
 extern std::unique_ptr<Game> game;
@@ -337,6 +338,12 @@ void GameObject::render()
 
 			getComponent<ContainerComponent>(ComponentTypes::CONTAINER_COMPONENT)->render();
 		}
+
+		////Render Inventory
+		//if (hasComponent(ComponentTypes::INVENTORY_COMPONENT)) {
+
+		//	getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT)->render();
+		//}
 
 		//Render Inventory
 		if (hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
@@ -1180,29 +1187,59 @@ void GameObject::_imGuiDebugObject()
 	//	ImGui::End();
 
 	//}
+	if (type() == "DRAWER_SMALL") {
 
-	if (type() == "OIL_CAN") {
-
-		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
 
-		ImGui::Begin("OILCAN Touching");
+		ImGui::Begin("Small Drawer Inventory");
 
-		for (const auto& touchingObject : m_touchingGameObjects) {
+		for (const auto& item : inventoryComponent->items()) {
 
-			ImGui::Text(touchingObject.second.lock()->type().c_str());
-			//ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
-
-			//std::cout << "Touching " << touchingObject.second.lock()->type() << std::endl;
-
+			if (item) {
+				ImGui::Text(item.value()->type().c_str());
+			}
 		}
 
 		ImGui::End();
 
 	}
 
+	if (type() == "DRAWER_MEDIUM") {
+
+		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+
+
+		ImGui::Begin("Medium Drawer Inventory");
+
+		for (const auto& item : inventoryComponent->items()) {
+
+			if (item) {
+				ImGui::Text(item.value()->type().c_str());
+			}
+		}
+
+		ImGui::End();
+
+	}
+
+	if (type() == "BOBBY") {
+
+		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+
+
+		ImGui::Begin("Bobby Inventory");
+
+		for (const auto& item : inventoryComponent->items()) {
+
+			if (item) {
+				ImGui::Text(item.value()->type().c_str());
+			}
+		}
+
+		ImGui::End();
+
+	}
 	if (type() == "FULL_HOUSE_EXTERIOR") {
 
 		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);

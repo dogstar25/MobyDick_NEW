@@ -12,12 +12,26 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string pa
 {
 
 	m_componentType = ComponentTypes::INVENTORY_COMPONENT;
-	m_displayBackdropObjectType = componentJSON["display"]["backdropObject"].asString();
+	
 	m_maxCapacity = componentJSON["maxCapacity"].asFloat();
 	m_activeItem = 0;
 
-	//Create the Backdrop object
-	m_displayBackdropObject = parentScene->createGameObject(m_displayBackdropObjectType, -50.0F, -50.0F, 0.F, parentScene, GameLayer::GUI_2);
+	//Create the display object
+	m_displayObjectType = componentJSON["displayObject"].asString();
+	if (componentJSON.isMember("displayLayer")) {
+		m_displayLayer = (GameLayer)game->enumMap()->toEnum(componentJSON["displayLayer"].asString());
+	}
+	else {
+		m_displayLayer = GameLayer::MAIN;
+	}
+	
+
+	auto displayObject = parentScene->createGameObject(m_displayObjectType, -50.0F, -50.0F, 0.F, parentScene, m_displayLayer);
+	parentScene->addGameObject(displayObject, m_displayLayer);
+	displayObject->disablePhysics();
+	displayObject->disableRender();
+	displayObject->disableCollision();
+	m_displayObject = displayObject;
 
 	m_items = std::vector<std::optional<std::shared_ptr<GameObject>>>(m_maxCapacity);
 }
@@ -33,8 +47,8 @@ void InventoryComponent::setParent(GameObject* gameObject)
 	Component::setParent(gameObject);
 
 	//Parent for this interactionMenuObject if it exists
-	if (m_displayBackdropObject) {
-		m_displayBackdropObject.value()->setParent(gameObject);
+	if (m_displayObject) {
+		m_displayObject.value().lock()->setParent(gameObject);
 
 	}
 
@@ -148,6 +162,21 @@ int InventoryComponent::addCollectible(const CollectibleTypes collectableType, i
 	return m_collectibles.at(collectableType);
 }
 
+//void InventoryComponent::render()
+//{
+//
+//	std::shared_ptr<GridDisplayComponent> gridDisplayComponent;
+//	if (m_displayBackdropObject) {
+//		gridDisplayComponent = m_displayBackdropObject.value()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+//	}
+//	else {
+//		gridDisplayComponent = parent()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+//	}
+//
+//	gridDisplayComponent->render();
+//
+//}
+
 void InventoryComponent::update()
 {
 
@@ -168,10 +197,10 @@ void InventoryComponent::update()
 
 void InventoryComponent::refreshInventoryDisplay() {
 
-	if (m_displayBackdropObject) {
+	if (m_displayObject && m_displayObject.value().expired() == false) {
 
 		//Get displayObjects grid display component
-		const auto& gridDisplayComponent = m_displayBackdropObject.value()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+		const auto& gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
 		gridDisplayComponent->clear();
 
 		showInventory();
@@ -182,9 +211,10 @@ void InventoryComponent::refreshInventoryDisplay() {
 //Show the inventory as a child of a specific object that is not the inventory holder
 void InventoryComponent::showInventory()
 {
-	m_isOpen = true;
+	//m_isOpen = true;
 
-	const auto& gridDisplayComponent = m_displayBackdropObject.value()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+	const auto& gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+	m_displayObject.value().lock()->enablePhysics();
 
 	for (int i = 0; i < m_items.size(); i++) {
 
@@ -200,6 +230,8 @@ void InventoryComponent::showInventory()
 void InventoryComponent::hideInventory()
 {
 
+	m_displayObject.value().lock()->setOffGrid();
+
 	for (int i = 0; i < m_items.size(); i++) {
 
 		if (m_items[i].has_value()) {
@@ -208,7 +240,7 @@ void InventoryComponent::hideInventory()
 		}
 	}
 
-	m_isOpen = false;
+	//m_isOpen = false;
 
 }
 

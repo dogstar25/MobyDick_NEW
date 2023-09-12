@@ -40,6 +40,7 @@ public:
 	virtual bool isEventAvailable(int eventId) { return true; }
 
 	bool isDragging();
+	void setCurrentGameObjectInterfaceActive(GameObject* gameObject) { m_currentGameObjectInterfaceActive = gameObject; }
 
 protected:
 
@@ -66,7 +67,7 @@ protected:
 	virtual bool isUserInputTiedAction(int actionId);
 	//virtual bool shouldInterfaceMenuBeShown(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
 
-	void setCurrentGameObjectInterfaceActive(GameObject* gameObject) { m_currentGameObjectInterfaceActive = gameObject; }
+	
 
 	////////Static Variables
 

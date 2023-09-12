@@ -92,7 +92,7 @@ void InterfaceComponent::update()
 	else {
 
 		if (m_currentEventsState.test((int)InterfaceEvents::ON_TOUCHING) == true) {
-			newEventsState.set((int)InterfaceEvents::ON_NO_TOUCHING, true);
+			newEventsState.set((int)InterfaceEvents::ON_STOP_TOUCHING, true);
 		}
 	}
 
@@ -331,6 +331,9 @@ void InterfaceComponent::_clearDragging()
 {
 	SDL_ShowCursor(SDL_TRUE);
 
+	//Pass in a weak_ptr to clear out the draggingObject optional
+	parent()->parentScene()->setDraggingObject(std::weak_ptr<GameObject>());
+
 	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 
 		parent()->parentScene()->physicsWorld()->DestroyJoint(m_b2MouseJoint);
@@ -345,6 +348,13 @@ void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)
 	//m_dragging = true;
 
 	SDL_ShowCursor(SDL_FALSE);
+
+	//Get the shared pointer for this object and set it as the dragging object for the scene to 
+	//apply special treatment to dragging object to render always on top
+	const auto& gameObjectShrPtr = parent()->parentScene()->getGameObject(parent()->id());
+	if (gameObjectShrPtr.has_value()) {
+		parent()->parentScene()->setDraggingObject(gameObjectShrPtr.value());
+	}
 
 	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {
 

@@ -2,7 +2,7 @@
 
 #include "Action.h"
 
-class ToggleInventory : public Action
+class ToggleInventoryAction : public Action
 {
 
 	void perform(GameObject* doorObject) override;

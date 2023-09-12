@@ -309,13 +309,16 @@
     <ClCompile Include="src\puzzles\UnLockDoorPuzzle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\actions\ShowInventoryAction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\components\GridDisplayComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\actions\ToggleInventory.cpp">
+    <ClCompile Include="src\actions\ToggleInventoryAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\CloseInventoryAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\ButtonCloseInventoryAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -626,13 +629,16 @@
     <ClInclude Include="src\puzzles\UnLockDoorPuzzle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\actions\ShowInventoryAction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\components\GridDisplayComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\actions\ToggleInventory.h">
+    <ClInclude Include="src\actions\ToggleInventoryAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\actions\CloseInventoryAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\actions\ButtonCloseInventoryAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

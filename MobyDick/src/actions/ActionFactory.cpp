@@ -8,6 +8,9 @@
 #include "InteractAction.h"
 #include "NoAction.h"
 #include "ActorWarpAction.h"
+#include "ToggleInventoryAction.h"
+#include "CloseInventoryAction.h"
+#include "ButtonCloseInventoryAction.h"
 
 #include <iostream>
 
@@ -55,6 +58,18 @@ std::shared_ptr<Action> ActionFactory::create(std::string actionType)
     else if (actionType == "ActorWarpAction") {
 
         action = std::make_shared<ActorWarpAction>();
+    }
+    else if (actionType == "ToggleInventoryAction") {
+
+        action = std::make_shared<ToggleInventoryAction>();
+    }
+    else if (actionType == "CloseInventoryAction") {
+
+        action = std::make_shared<CloseInventoryAction>();
+    }
+    else if (actionType == "ButtonCloseInventoryAction") {
+
+        action = std::make_shared<ButtonCloseInventoryAction>();
     }
 
     else {
