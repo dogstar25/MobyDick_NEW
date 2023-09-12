@@ -44,7 +44,8 @@ public:
 	void showInventory();
 	void hideInventory();
 	bool isOpen() { return m_isOpen; }
-	std::optional<std::shared_ptr<GameObject>> getDisplayBackdropObject() { return m_displayBackdropObject; }
+	void setOpen(bool open) { m_isOpen = open; }
+	std::optional<std::weak_ptr<GameObject>> getDisplayObject() { return m_displayObject; }
 
 private:
 
@@ -52,8 +53,9 @@ private:
 	bool m_isOpen{};
 	std::vector<std::optional<std::shared_ptr<GameObject>>> m_items{};
 	std::map<CollectibleTypes, int> m_collectibles{};
-	std::string m_displayBackdropObjectType{};
-	std::optional<std::shared_ptr<GameObject>> m_displayBackdropObject{};
+	std::string m_displayObjectType{};
+	std::optional<std::weak_ptr<GameObject>> m_displayObject{};
+	GameLayer m_displayLayer{};
 	float m_maxCapacity{};
 
 };

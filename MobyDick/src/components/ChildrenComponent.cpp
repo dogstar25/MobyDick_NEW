@@ -29,12 +29,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 	m_isDependentObjectOwner = true;
 	std::optional<b2Vec2> sizeOverride{};
 
-	//Build all possible Standard Slot - they will be empty
-	//_buildStandardSlots();
-
-	//Build all possible Grid Slots - they will be empty
-	//_buildGridSlots();
-
 	int childCount{};
 	for (Json::Value itrChild : componentJSON["childObjects"])
 	{
@@ -113,10 +107,6 @@ void ChildrenComponent::postInit()
 		}
 	}
 
-	//Calculate GridSLot locationOffsets
-
-
-
 }
 
 void ChildrenComponent::update()
@@ -133,8 +123,6 @@ void ChildrenComponent::update()
 	{
 
 		//Calculate slot positions for standard slots and absolute slots
-		//Grid slot positions were already calculated and will not change and new ones cannot be added during runtime 
-		// like standard and absolute
 		//Standard slots could have a child added during runtime to an existing slot which could change the positions inside of its slot
 		//New child objects could be added as absolute slots during runtime
 		ChildSlotType slotType = _getSlotType(childSlot.first);
@@ -156,28 +144,35 @@ void ChildrenComponent::update()
 	
 		//Loop through all the children in this slot and calculate their positions based on the offsets we've already calculated
 		//and the parents position
-		for (const auto& childObject : childSlot.second) {
+		int childCount = 0;
 
-			if (childObject.gameObject.has_value()) {
+		auto childSlotItr = childSlot.second.begin();
+		while (childSlotItr != childSlot.second.end()) {
+
+		//for (const auto& childObject : childSlot.second) {
+
+			if (childSlotItr->gameObject.has_value()) {
 				b2Vec2 newPosition =
-				{ parent()->getCenterPosition().x + childObject.calculatedOffset.x,
-				parent()->getCenterPosition().y + childObject.calculatedOffset.y };
+				{ parent()->getCenterPosition().x + childSlotItr->calculatedOffset.x,
+				parent()->getCenterPosition().y + childSlotItr->calculatedOffset.y };
 
 
 				if (m_matchParentRotation == true) {
 
-					childObject.gameObject->get()->setPosition(newPosition, parent()->getAngle());
+					childSlotItr->gameObject->get()->setPosition(newPosition, parent()->getAngle());
 				}
 				else {
 
-					childObject.gameObject->get()->setPosition(newPosition, -1);
+					childSlotItr->gameObject->get()->setPosition(newPosition, -1);
 				}
 
 
-				childObject.gameObject->get()->update();
+				childSlotItr->gameObject->get()->update();
 
 			}
 
+			childCount++;
+			++childSlotItr;
 		}
 
 	}
@@ -248,11 +243,12 @@ void ChildrenComponent::_removeFromWorldPass()
 void ChildrenComponent::removeChild(std::string id)
 {
 
-	for (auto& slotItr : m_childSlots) {
+	auto childSlotItr = m_childSlots.begin();
+	while (childSlotItr != m_childSlots.end()) {
 
 		//Each child slot can have multiple gameObjects that live in a vector
-		auto childItr = slotItr.second.begin();
-		while (childItr != slotItr.second.end()) {
+		auto childItr = childSlotItr->second.begin();
+		while (childItr != childSlotItr->second.end()) {
 
 			if (childItr->gameObject.has_value() && childItr->gameObject.value()->id() == id) {
 
@@ -262,33 +258,23 @@ void ChildrenComponent::removeChild(std::string id)
 					_removeAllChildren(childItr->gameObject.value().get());
 				}
 
-				//Erase the object from the map unless its the last item. there should always be one item
-				//that has the position. This is only a problem with standard slots that can hold more than 1
-				if (slotItr.second.size() > 1) {
-
-					slotItr.second.erase(childItr);
-				}
-				else {
-
-					slotItr.second[0].gameObject = std::nullopt;
-
-				}
-
-				
-
-				break;
-
+				childItr = childSlotItr->second.erase(childItr);
+				//childItr->gameObject.value()->setRemoveFromWorld(true);
+				//++childItr;
 			}
 			else {
 
 				++childItr;
 			}
-
+			
 		}
 
-		slotItr.second.shrink_to_fit();
+		childSlotItr->second.shrink_to_fit();
+
+		++childSlotItr;
 
 	}
+
 }
 
 void ChildrenComponent::_removeAllChildren(GameObject* gameObject)
@@ -414,6 +400,7 @@ void ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, Pos
 
 	}
 
+
 }
 
 //A stepChild is an object that is added as a child later and does not get the same naming
@@ -515,9 +502,18 @@ void ChildrenComponent::render()
 		for (auto& child : slotItr.second) {
 
 			if (child.gameObject.has_value()) {
-				child.gameObject.value()->render();
-			}
 
+				if (child.isStepChild == true) {
+
+					child.gameObject.value()->enableRender();
+					child.gameObject.value()->enableCollision();
+					child.gameObject.value()->enablePhysics();
+				}
+				else {
+
+					child.gameObject.value()->render();
+				}
+			}
 		}
 	}
 
@@ -534,37 +530,6 @@ std::string ChildrenComponent::_buildChildName(std::string parentName, int child
 
 }
 
-void ChildrenComponent::_buildGridSlots()
-{
-
-	GameObjectDefinition gameObjectDefinition = parent()->gameObjectDefinition();
-	Json::Value componentDefinition = util::getComponentConfig(gameObjectDefinition.definitionJSON(), ComponentTypes::CHILDREN_COMPONENT);
-
-	//Child Size Override
-	if (componentDefinition.isMember("gridDefinition")) {
-
-		int rows = componentDefinition["gridDefinition"]["rows"].asInt();
-		int column = componentDefinition["gridDefinition"]["columns"].asInt();
-		float gridPadding = componentDefinition["gridDefinition"]["childPadding"].asFloat();
-		float marginPadding = componentDefinition["gridDefinition"]["marginPadding"].asFloat();
-
-
-
-	}
-
-
-
-
-
-
-	Child child;
-	std::vector<Child> children = { child };
-
-	m_childSlots.emplace(std::pair<std::string, std::vector<Child>>("S1", children));
-
-
-
-}
 
 PositionAlignment ChildrenComponent::_translateStandardSlotPositionAlignment(std::string slotKey)
 {
@@ -618,7 +583,7 @@ std::map<ChildSlotType, std::vector<SlotMeasure>> ChildrenComponent::_calculateS
 		//slot index for S2 is 2, A5 is 5, etc.
 		int slotIndex = _getSlotIndex(slotItr.first) - 1;
 
-		//Start with adding in the chail object padding value
+		//Start with adding in the child object padding value
 		float totalPaddingValue = fmin(0, (slotItr.second.size() - 1) * m_childPadding);
 		slotMeasurements[childSlotType][slotIndex].sizeTotal.x += totalPaddingValue;
 		slotMeasurements[childSlotType][slotIndex].sizeTotal.y += totalPaddingValue;
@@ -777,14 +742,14 @@ SDL_FPoint ChildrenComponent::_calculateSlotMultiChild(SDL_FPoint slotCenterPosi
 	}
 
 	////////////TEST///////////////////////////
-	if (totalSlotObjectCount > 1 && m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
+	//if (totalSlotObjectCount > 1 && m_childSameSlotTreatment == ChildSlotTreatment::VERTICAL) {
 
-		newPositionOffset.y / totalSlotObjectCount;
-	}
-	else {
+	//	newPositionOffset.y / totalSlotObjectCount;
+	//}
+	//else {
 
-		newPositionOffset.x / totalSlotObjectCount;
-	}
+	//	newPositionOffset.x / totalSlotObjectCount;
+	//}
 
 	return newPositionOffset;
 

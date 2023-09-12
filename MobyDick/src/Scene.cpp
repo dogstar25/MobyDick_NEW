@@ -290,6 +290,12 @@ void Scene::render() {
 
 	}
 	
+	//If we have an object being dragged then render it hewre so that it is always  on top
+	if (m_draggingObject && m_draggingObject.value().expired() == false) {
+
+		m_draggingObject.value().lock()->render();
+	}
+
 	//DebugDraw
 	if (m_hasPhysics && isDebugSetting(DebugSceneSettings::SHOW_PHYSICS_DEBUG) == true)
 	{
@@ -298,6 +304,20 @@ void Scene::render() {
 
 	//Draw primitive lines and pixels
 	game->renderer()->renderPrimitives(0);
+
+}
+
+void Scene::setDraggingObject(std::weak_ptr<GameObject> gameObject)
+{
+
+	if (gameObject.expired()) {
+
+		m_draggingObject.reset();
+	}
+	else {
+
+		m_draggingObject = gameObject;
+	}
 
 }
 
@@ -338,9 +358,6 @@ std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, 
 	GameLayer layer, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	if (gameObjectType == "BOBBYS_BEDKNOB") {
-		int todd = 1;
-	}
 	std::shared_ptr<GameObject> gameObject = 
 		std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name, sizeOverride);
 
@@ -380,9 +397,16 @@ GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, Po
 
 }
 
-/*
-Emplace the new gameObject into the collection and also return a reference ptr to the newly created object as well
-*/
+void Scene::addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer)
+{
+
+	gameObject->setParentScene(this);
+	this->m_gameObjects[layer].push_back(gameObject);
+
+	return;
+
+}
+
 void Scene::addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer)
 {
 
@@ -395,7 +419,6 @@ void Scene::addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLa
 	return;
 
 }
-
 
 void Scene::addKeyAction(SDL_Keycode keyCode, SceneAction sceneAction)
 {

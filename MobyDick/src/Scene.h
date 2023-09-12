@@ -72,6 +72,7 @@ public:
 	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, 
 		float adjustX=0., float adjustY=0., float angle=0.,
 		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
+	void addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer);
 	void addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer);
 
 	void addGameObjectIndex(std::shared_ptr<GameObject> gameObject);
@@ -138,6 +139,8 @@ public:
 	void resetGridDisplay();
 	void updateGridDisplay(int xPos, int yPos, int operation, SDL_Color color);
 
+	void setDraggingObject(std::weak_ptr<GameObject> gameObject);
+
 	std::unordered_map<std::string, std::weak_ptr<GameObject>>& getGameObjectLookup() { return m_gameObjectLookup; }
 
 	bool navigationMapChanged() {
@@ -175,6 +178,8 @@ private:
 	std::vector<std::shared_ptr<Trigger>> m_levelTriggers;
 	std::vector<Objective> m_levelObjectives;
 	std::map<int, Parallax>m_parallaxRates;
+
+	std::optional<std::weak_ptr<GameObject>> m_draggingObject{};
 
 	void _processGameObjectInterdependecies();
 	void _buildPhysicsWorld(Json::Value physicsJSON);

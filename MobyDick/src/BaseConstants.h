@@ -321,7 +321,7 @@ inline constexpr int MAX_EVENT_STATES = 107;
 enum class InterfaceEvents {
 	ON_NONE=0,
 	ON_TOUCHING=100,
-	ON_NO_TOUCHING=101,
+	ON_STOP_TOUCHING=101,
 	ON_HOVER=102,
 	ON_HOVER_OUT=103,
 	ON_CLICK=104,
