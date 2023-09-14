@@ -166,8 +166,9 @@ void ChildrenComponent::update()
 					childSlotItr->gameObject->get()->setPosition(newPosition, -1);
 				}
 
-
-				childSlotItr->gameObject->get()->update();
+				if (childSlotItr->isStepChild == false) {
+					childSlotItr->gameObject->get()->update();
+				}
 
 			}
 

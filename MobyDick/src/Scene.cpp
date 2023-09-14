@@ -470,16 +470,16 @@ void Scene::setInputControlMode(int inputControlMode)
 void Scene::_processGameObjectInterdependecies()
 {
 
-	for (auto& layer : m_gameObjects) {
+	for (auto& gameObject : m_gameObjectLookup) {
 
-		for (auto& gameObject : layer) {
+		if (gameObject.second.expired() == false) {
 
-			gameObject->postInit();
+			gameObject.second.lock()->postInit();
 
 			//Now that all gameobjects are created we can set the shared pointer for the object to follow for the camera
 			//ToDo:Maybe this should move to the postInit() of the gameObject
-			if (gameObject->name() == Camera::instance().getFollowMeName() && !Camera::instance().getFollowMeObject()) {
-				Camera::instance().setFollowMe(gameObject);
+			if (gameObject.second.lock()->name() == Camera::instance().getFollowMeName() && !Camera::instance().getFollowMeObject()) {
+				Camera::instance().setFollowMe(gameObject.second.lock());
 			}
 
 		}
