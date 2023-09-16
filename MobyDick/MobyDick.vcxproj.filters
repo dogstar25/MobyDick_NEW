@@ -321,6 +321,15 @@
     <ClCompile Include="src\actions\ButtonCloseInventoryAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\actions\ItemhHighlightApplyAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\ItemhHighlightRemoveAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\TakeItemAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -639,6 +648,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\actions\ButtonCloseInventoryAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\actions\ItemhHighlightApplyAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\actions\ItemhHighlightRemoveAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\actions\TakeItemAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

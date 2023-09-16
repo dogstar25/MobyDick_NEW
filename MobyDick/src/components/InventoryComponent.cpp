@@ -84,6 +84,10 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 
 		//Set this items new parent to this inventory holding object
 		gameObject->setParent(parent());
+
+		//Add the draggable trait to this item and remove the attainable trait
+		gameObject->addTrait(TraitTag::draggable);
+		gameObject->removeTrait(TraitTag::attainable);
 	}
 
 	return itemAdded;
@@ -230,17 +234,22 @@ void InventoryComponent::showInventory()
 void InventoryComponent::hideInventory()
 {
 
-	m_displayObject.value().lock()->setOffGrid();
+	if (m_displayObject && m_displayObject.value().expired() == false) {
 
-	for (int i = 0; i < m_items.size(); i++) {
+		//Get displayObjects grid display component
+		const auto& gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+		m_displayObject.value().lock()->stash();
+		gridDisplayComponent->clear();
 
-		if (m_items[i].has_value()) {
+		for (int i = 0; i < m_items.size(); i++) {
 
-			m_items[i].value()->setOffGrid();
+			if (m_items[i].has_value()) {
+
+				m_items[i].value()->stash();
+			}
 		}
-	}
 
-	//m_isOpen = false;
+	}
 
 }
 

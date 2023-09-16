@@ -53,6 +53,7 @@ namespace Colors {
 	inline SDL_Color BLACKISH = { 1, 1, 1, 255 };
 	inline SDL_Color CLOUD = { 200, 200, 200, 200 };
 	inline SDL_Color GAS = { 127, 127, 127, 100 };
+	inline SDL_Color SMOKE = { 40, 40, 40, 150 };
 
 	inline SDL_Color RED = { 255, 0, 0, 255 };
 	inline SDL_Color GREEN = { 0, 255, 0, 255 };
@@ -115,6 +116,7 @@ namespace TraitTag {
 	inline constexpr int vertical_movement = 20;
 	inline constexpr int draggable = 21;
 	inline constexpr int inventory = 22;
+	inline constexpr int attainable = 23;
 
 }
 
@@ -310,8 +312,9 @@ namespace Actions {
 
 	inline constexpr int SHOW_INTERFACE = 16;
 	inline constexpr int HIDE_INTERFACE = 17;
-	inline constexpr int DRAG_TREATMENT = 18;
-	inline constexpr int DROP = 19;
+	inline constexpr int APPLY_HIGHLIGHT = 18;
+	inline constexpr int REMOVE_HIGHLIGHT = 19;
+	inline constexpr int DROP = 20;
 
 }
 

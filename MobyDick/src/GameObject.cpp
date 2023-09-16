@@ -242,11 +242,6 @@ void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, fl
 void GameObject::update()
 {
 
-	if (type() == "OIL_CAN") {
-		int todd = 1;
-
-	}
-
 	if (this->updateDisabled() == false) {
 		for (auto& component : m_components)
 		{
@@ -410,7 +405,7 @@ void GameObject::reset()
 	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
-		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->setOffGrid();
+		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->stash();
 		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->update();
 	}
 
@@ -712,7 +707,8 @@ bool GameObject::isOffGrid()
 	return false;
 }
 
-void GameObject::setOffGrid()
+//Take the GameObject out of the game but dont delete it so that it can we put back easily
+void GameObject::stash()
 {
 
 	b2Vec2 positionVector = b2Vec2(-50, -50);
@@ -732,6 +728,12 @@ void GameObject::setOffGrid()
 		transformComponent->setPosition(positionVector);
 	}
 
+	//If this gameObject has a interface, then make sure that if the current active interface is this guys, then clear it out
+	if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+
+		const auto& interfaceComponent = getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
+		interfaceComponent->clearSpecificGameObjectInterface(this);
+	}
 }
 
 void GameObject::dispatch(SDL_FPoint destination)
@@ -943,13 +945,6 @@ void GameObject::setOperatingSound(std::string soundAssetId)
 
 void GameObject::_updateTouchingObjects()
 {
-
-
-
-		if (type() == "OIL_CAN") {
-			int todd = 1;
-
-		}
 
 		m_touchingGameObjects.clear();
 

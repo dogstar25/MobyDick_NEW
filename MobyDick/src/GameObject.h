@@ -112,7 +112,7 @@ public:
 	int brainState();
 	bool isAlive();
 	bool isCompositeEmpty();
-	void setOffGrid();
+	void stash();
 	bool isOffGrid();
 
 	void disableUpdate();

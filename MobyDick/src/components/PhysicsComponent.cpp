@@ -485,7 +485,7 @@ void PhysicsComponent::applyTorque(float angularVelocity)
 	m_physicsBody->ApplyTorque(angularVelocity, true);
 }
 
-void PhysicsComponent::setOffGrid()
+void PhysicsComponent::stash()
 {
 	b2Vec2 velocityVector = b2Vec2(0, 0);
 	b2Vec2 positionVector = b2Vec2(-50, -50);
