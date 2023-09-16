@@ -34,7 +34,7 @@ public:
 	void applyAngleImpulse(float force);
 	void applyRotation(float angularVelocity);
 	void applyTorque(float angularVelocity);
-	void setOffGrid();
+	void stash();
 	void setTransform(b2Vec2 positionVector, float angle);
 	void setTransform(b2Vec2 positionVector);
 	void setLinearVelocity(b2Vec2 velocityVector);

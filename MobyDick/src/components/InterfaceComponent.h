@@ -40,7 +40,9 @@ public:
 	virtual bool isEventAvailable(int eventId) { return true; }
 
 	bool isDragging();
+	bool isHovering();
 	void setCurrentGameObjectInterfaceActive(GameObject* gameObject) { m_currentGameObjectInterfaceActive = gameObject; }
+	void clearSpecificGameObjectInterface(GameObject* gameObject);
 
 protected:
 

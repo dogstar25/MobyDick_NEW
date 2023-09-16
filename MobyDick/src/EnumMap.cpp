@@ -119,7 +119,8 @@ EnumMap::EnumMap()
 	m_enumMap["Actions::ENTER"] = Actions::ENTER;
 	m_enumMap["Actions::SHOW_INTERFACE"] = Actions::SHOW_INTERFACE;
 	m_enumMap["Actions::HIDE_INTERFACE"] = Actions::HIDE_INTERFACE;
-	m_enumMap["Actions::DRAG_TREATMENT"] = Actions::DRAG_TREATMENT;
+	m_enumMap["Actions::APPLY_HIGHLIGHT"] = Actions::APPLY_HIGHLIGHT;
+	m_enumMap["Actions::REMOVE_HIGHLIGHT"] = Actions::REMOVE_HIGHLIGHT;
 	m_enumMap["Actions::DROP"] = Actions::DROP;
 
 	//User Events
@@ -205,6 +206,7 @@ EnumMap::EnumMap()
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1;
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2;
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4;
 	m_enumMap["GL_TextureIndexType::IMGUI_TEXTURE_ATLAS"] = (int)GL_TextureIndexType::IMGUI_TEXTURE_ATLAS;
 	
 	//Texure Blend Modes
@@ -242,6 +244,7 @@ EnumMap::EnumMap()
 	m_enumMap["vertical_movement"] = TraitTag::vertical_movement;
 	m_enumMap["draggable"] = TraitTag::draggable;
 	m_enumMap["inventory"] = TraitTag::inventory;
+	m_enumMap["attainable"] = TraitTag::attainable;
 	
 
 	//Hud Item Types

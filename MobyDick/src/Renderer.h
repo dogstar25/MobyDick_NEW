@@ -35,8 +35,15 @@ namespace displayOverlays {
 	static const DisplayOverlay outline_CLOUD{
 		.color{},
 		.outlined{true},
-		.outlineColor{Colors::PURPLE}
+		.outlineColor{Colors::CLOUD}
 	};
+
+	static const DisplayOverlay outline_SUBTLE_1{
+		.color{},
+		.outlined{true},
+		.outlineColor{Colors::SMOKE}
+	};
+
 	/*
 	....Add more displayOverlays here
 	*/

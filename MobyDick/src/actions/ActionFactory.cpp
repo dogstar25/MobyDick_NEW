@@ -11,6 +11,10 @@
 #include "ToggleInventoryAction.h"
 #include "CloseInventoryAction.h"
 #include "ButtonCloseInventoryAction.h"
+#include "ItemhHighlightApplyAction.h"
+#include "ItemhHighlightRemoveAction.h"
+#include "TakeItemAction.h"
+
 
 #include <iostream>
 
@@ -71,6 +75,20 @@ std::shared_ptr<Action> ActionFactory::create(std::string actionType)
 
         action = std::make_shared<ButtonCloseInventoryAction>();
     }
+    else if (actionType == "ItemhHighlightApplyAction") {
+
+        action = std::make_shared<ItemhHighlightApplyAction>();
+    }
+    else if (actionType == "ItemhHighlightRemoveAction") {
+
+        action = std::make_shared<ItemhHighlightRemoveAction>();
+    }
+    else if (actionType == "TakeItemAction") {
+
+        action = std::make_shared<TakeItemAction>();
+    }
+
+    
 
     else {
         std::cout << "No Action was Matched" << std::endl;

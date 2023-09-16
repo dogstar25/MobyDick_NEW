@@ -218,6 +218,9 @@
   <ItemGroup>
     <ClCompile Include="src\actions\ButtonCloseInventoryAction.cpp" />
     <ClCompile Include="src\actions\CloseInventoryAction.cpp" />
+    <ClCompile Include="src\actions\ItemhHighlightApplyAction.cpp" />
+    <ClCompile Include="src\actions\ItemhHighlightRemoveAction.cpp" />
+    <ClCompile Include="src\actions\TakeItemAction.cpp" />
     <ClCompile Include="src\actions\ToggleInventoryAction.cpp" />
     <ClCompile Include="src\components\GridDisplayComponent.cpp" />
     <ClCompile Include="src\components\InterfaceComponent.cpp" />
@@ -323,6 +326,9 @@
     <ClInclude Include="include\MobyDick.h" />
     <ClInclude Include="src\actions\ButtonCloseInventoryAction.h" />
     <ClInclude Include="src\actions\CloseInventoryAction.h" />
+    <ClInclude Include="src\actions\ItemhHighlightApplyAction.h" />
+    <ClInclude Include="src\actions\ItemhHighlightRemoveAction.h" />
+    <ClInclude Include="src\actions\TakeItemAction.h" />
     <ClInclude Include="src\actions\ToggleInventoryAction.h" />
     <ClInclude Include="src\components\GridDisplayComponent.h" />
     <ClInclude Include="src\components\InterfaceComponent.h" />

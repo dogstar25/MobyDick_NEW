@@ -51,6 +51,18 @@ void InterfaceComponent::postInit()
 
 }
 
+void InterfaceComponent::clearSpecificGameObjectInterface(GameObject* gameObject)
+{
+
+	if (m_currentGameObjectInterfaceActive.has_value() && m_currentGameObjectInterfaceActive.value() == gameObject) {
+
+		m_currentGameObjectInterfaceActive = std::nullopt;
+	}
+
+
+}
+
+
 void InterfaceComponent::update()
 {
 
@@ -497,3 +509,13 @@ bool InterfaceComponent::isDragging()
 	return false;
 }
 
+bool InterfaceComponent::isHovering()
+{
+
+	if (m_currentEventsState.test((int)InterfaceEvents::ON_HOVER)) {
+
+		return true;
+	}
+
+	return false;
+}

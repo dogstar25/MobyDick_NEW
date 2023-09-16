@@ -276,10 +276,19 @@ void Scene::render() {
 	for (auto& gameLayer : m_gameObjects)
 	{
 
+		//Disable rendering of the object being dragged because we render it later on top of everything and
+		//we dont want it rendering twice
+		if (m_draggingObject && m_draggingObject.value().expired() == false) {
+
+			m_draggingObject.value().lock()->disableRender();
+		}
+
 		//Render all of the GameObjects in this layer
 		for (auto& gameObject : gameLayer)
 		{
+
 			gameObject->render();
+
 		}
 
 		//Render any primitive object for this layer (lines and single pixels/points)
@@ -293,6 +302,7 @@ void Scene::render() {
 	//If we have an object being dragged then render it hewre so that it is always  on top
 	if (m_draggingObject && m_draggingObject.value().expired() == false) {
 
+		m_draggingObject.value().lock()->enableRender();
 		m_draggingObject.value().lock()->render();
 	}
 
@@ -310,9 +320,13 @@ void Scene::render() {
 void Scene::setDraggingObject(std::weak_ptr<GameObject> gameObject)
 {
 
+	//When we stop dragging the dragged object then we have to reset it and make sure it
+	//render is enabled because we turn off rendering fron the main loop so that it doesnt render twice
 	if (gameObject.expired()) {
 
+		m_draggingObject.value().lock()->enableRender();
 		m_draggingObject.reset();
+
 	}
 	else {
 
