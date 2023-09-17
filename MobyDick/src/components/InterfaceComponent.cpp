@@ -357,8 +357,6 @@ void InterfaceComponent::_clearDragging()
 void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)
 {
 
-	//m_dragging = true;
-
 	SDL_ShowCursor(SDL_FALSE);
 
 	//Get the shared pointer for this object and set it as the dragging object for the scene to 

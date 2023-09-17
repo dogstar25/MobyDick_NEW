@@ -26,9 +26,11 @@ public:
 	void setParent(GameObject* gameObject) override;
 
 	bool addItem(std::shared_ptr<GameObject> gameObject, int slot);
-	int addItem(std::shared_ptr<GameObject> gameObject);
+	std::optional<int> addItem(std::shared_ptr<GameObject> gameObject);
 	bool addItem(std::string gameObjectType);
 	bool addItem(std::string gameObjectType, int slot);
+	bool hasItem(int slot);
+	std::optional<int> getSlot(GameObject* gameObject);
 	std::shared_ptr<GameObject> removeItem(int slot);
 	std::shared_ptr<GameObject> removeItem(GameObject* gameObject);
 	std::vector<std::optional<std::shared_ptr<GameObject>>> items() { return m_items; }

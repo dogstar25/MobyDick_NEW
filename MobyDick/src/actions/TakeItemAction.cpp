@@ -4,25 +4,25 @@
 
 extern std::unique_ptr<Game> game;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// gameObject is the object that has the inventory to be shown or hidden
-//		We have a separate CLOSE action that we want to reuse. Grab this action from this gameObject and perform it, passing in 
-//		this gameObject as the parameter
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void TakeItemAction::perform(GameObject* gameObject)
 {
 
-	//Get the players inventory
-	const auto& player = gameObject->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
-	const auto& inventoryComponent = player.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+	//Only if this object is obtainable. This action can fire for inventory items that are sometime in inventory and NOT obtainable
+	 
+	if (gameObject->hasTrait(TraitTag::obtainable)) {
+		//Get the players inventory
+		const auto& player = gameObject->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
+		const auto& inventoryComponent = player.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
-	const auto& gameObjectShrPtr = gameObject->parentScene()->getGameObject(gameObject->id());
+		const auto& gameObjectShrPtr = gameObject->parentScene()->getGameObject(gameObject->id());
 
-	gameObjectShrPtr.value()->setRemoveFromWorld(true);
-	inventoryComponent->addItem(gameObjectShrPtr.value());
-	//gameObjectShrPtr.value()->setRemoveFromWorld(true);
-	inventoryComponent->refreshInventoryDisplay();
+		
+		if(inventoryComponent->addItem(gameObjectShrPtr.value()) != std::nullopt){
 
+			gameObjectShrPtr.value()->setRemoveFromWorld(true);
+			//gameObjectShrPtr.value()->setRemoveFromWorld(true);
+			inventoryComponent->refreshInventoryDisplay();
+		}
+	}
 }
 
