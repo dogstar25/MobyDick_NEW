@@ -54,11 +54,11 @@ void InventoryComponent::setParent(GameObject* gameObject)
 
 }
 
-int InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
+std::optional<int> InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 {
 
 	//Find first available inventory slot
-	int slotIndexFound{-1};
+	std::optional<int> slotIndexFound{};
 	for (int i = 0; i < m_items.size();i++) {
 
 		if (m_items[i].has_value() == false) {
@@ -68,7 +68,9 @@ int InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 		}
 	}
 
-	addItem(gameObject, slotIndexFound);
+	if (slotIndexFound) {
+		addItem(gameObject, slotIndexFound.value());
+	}
 
 	return slotIndexFound;
 
@@ -85,9 +87,9 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 		//Set this items new parent to this inventory holding object
 		gameObject->setParent(parent());
 
-		//Add the draggable trait to this item and remove the attainable trait
+		//Add the draggable trait to this item and remove the obtainable trait
 		gameObject->addTrait(TraitTag::draggable);
-		gameObject->removeTrait(TraitTag::attainable);
+		gameObject->removeTrait(TraitTag::obtainable);
 	}
 
 	return itemAdded;
@@ -100,7 +102,12 @@ bool InventoryComponent::addItem(std::string gameObjectType)
 	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, -50.0F, -50.0F, 0.F,
 		parent()->parentScene(), GameLayer::GUI_2);
 
-	return addItem(gameObject);
+	if (addItem(gameObject) == std::nullopt) {
+		return false;
+	}
+	else {
+		return true;
+	}
 
 }
 
@@ -124,6 +131,10 @@ std::shared_ptr<GameObject> InventoryComponent::removeItem(int slot)
 	return removedObject;
 }
 
+bool InventoryComponent::hasItem(int slot)
+{
+	return m_items[slot].has_value();
+}
 
 std::shared_ptr<GameObject> InventoryComponent::removeItem(GameObject* gameObject)
 {
@@ -211,6 +222,23 @@ void InventoryComponent::refreshInventoryDisplay() {
 	}
 
 }
+
+std::optional<int> InventoryComponent::getSlot(GameObject* gameObject)
+{
+	int slotIndex{};
+	for (auto& slot : m_items) {
+
+		if (slot.has_value() && slot.value().get() == gameObject) {
+			return slotIndex;
+		}
+
+		slotIndex++;
+	}
+
+	return std::nullopt;
+
+}
+
 
 //Show the inventory as a child of a specific object that is not the inventory holder
 void InventoryComponent::showInventory()

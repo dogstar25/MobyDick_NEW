@@ -244,7 +244,7 @@ EnumMap::EnumMap()
 	m_enumMap["vertical_movement"] = TraitTag::vertical_movement;
 	m_enumMap["draggable"] = TraitTag::draggable;
 	m_enumMap["inventory"] = TraitTag::inventory;
-	m_enumMap["attainable"] = TraitTag::attainable;
+	m_enumMap["obtainable"] = TraitTag::obtainable;
 	
 
 	//Hud Item Types

@@ -116,7 +116,7 @@ namespace TraitTag {
 	inline constexpr int vertical_movement = 20;
 	inline constexpr int draggable = 21;
 	inline constexpr int inventory = 22;
-	inline constexpr int attainable = 23;
+	inline constexpr int obtainable = 23;
 
 }
 
