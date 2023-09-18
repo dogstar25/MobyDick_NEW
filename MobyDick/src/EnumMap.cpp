@@ -128,7 +128,8 @@ EnumMap::EnumMap()
 	m_enumMap["InterfaceEvents::ON_STOP_TOUCHING"] = (int)InterfaceEvents::ON_STOP_TOUCHING;
 	m_enumMap["InterfaceEvents::ON_HOVER"] = (int)InterfaceEvents::ON_HOVER;
 	m_enumMap["InterfaceEvents::ON_HOVER_OUT"] = (int)InterfaceEvents::ON_HOVER_OUT;
-	m_enumMap["InterfaceEvents::ON_CLICK"] = (int)InterfaceEvents::ON_CLICK;
+	m_enumMap["InterfaceEvents::ON_LCLICK"] = (int)InterfaceEvents::ON_LCLICK;
+	m_enumMap["InterfaceEvents::ON_RCLICK"] = (int)InterfaceEvents::ON_RCLICK;
 	m_enumMap["InterfaceEvents::ON_DRAG"] = (int)InterfaceEvents::ON_DRAG;
 	m_enumMap["InterfaceEvents::ON_DROP"] = (int)InterfaceEvents::ON_DROP;
 
@@ -245,6 +246,8 @@ EnumMap::EnumMap()
 	m_enumMap["draggable"] = TraitTag::draggable;
 	m_enumMap["inventory"] = TraitTag::inventory;
 	m_enumMap["obtainable"] = TraitTag::obtainable;
+	m_enumMap["loose"] = TraitTag::loose;
+	m_enumMap["stored"] = TraitTag::stored;
 	
 
 	//Hud Item Types

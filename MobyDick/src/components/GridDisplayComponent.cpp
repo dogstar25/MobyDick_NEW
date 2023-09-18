@@ -157,8 +157,9 @@ std::optional<int> GridDisplayComponent::getClosestSlot(SDL_FPoint position)
 
 void GridDisplayComponent::addItem(std::shared_ptr<GameObject> itemObject, int slot)
 {
-
-	m_gridSlots[slot].gameObject = itemObject;
+	if (slot <= m_gridSlots.size() - 1) {
+		m_gridSlots[slot].gameObject = itemObject;
+	}
 
 }
 
