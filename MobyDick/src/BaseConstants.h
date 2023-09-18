@@ -117,8 +117,6 @@ namespace TraitTag {
 	inline constexpr int draggable = 21;
 	inline constexpr int inventory = 22;
 	inline constexpr int obtainable = 23;
-	inline constexpr int loose = 24;
-	inline constexpr int stored = 25;
 
 }
 
@@ -322,17 +320,16 @@ namespace Actions {
 
 //Actions
 //We need plenty of room using the SDL Keycodes
-inline constexpr int MAX_EVENT_STATES = 108;
+inline constexpr int MAX_EVENT_STATES = 107;
 enum class InterfaceEvents {
 	ON_NONE=0,
 	ON_TOUCHING=100,
 	ON_STOP_TOUCHING=101,
 	ON_HOVER=102,
 	ON_HOVER_OUT=103,
-	ON_LCLICK=104,
-	ON_RCLICK=105,
-	ON_DRAG=106,
-	ON_DROP = 107
+	ON_CLICK=104,
+	ON_DRAG=105,
+	ON_DROP = 106
 };
 
 

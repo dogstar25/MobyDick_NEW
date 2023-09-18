@@ -113,6 +113,10 @@ void InterfaceComponent::update()
 		handleDragging();
 	}
 
+
+
+	
+
 	//Does this interface have priority over any other possible active interfaces currently 
 	// being shown?
 	//This allows for when we want to show only one interface at a time and usually, the object
@@ -164,32 +168,20 @@ void InterfaceComponent::update()
 			case SDL_MOUSEBUTTONDOWN:
 			{
 				SDL_Point mouseLocation{};
-				auto buttonState = SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
+				SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
 				SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y });
 
-
-
 				//Has mouse contact then start drag if its draggable
-				//otherwise execture ON_LCLICK action if one exists
+				//otherwise execture ON_CLICK action if one exists
 				if (newEventsState.test((int)InterfaceEvents::ON_HOVER)) {
 
-
-					//If this object is draggable and we have a left click then deal with it
-					if (parent()->hasTrait(TraitTag::draggable) && (buttonState & SDL_BUTTON(SDL_BUTTON_LEFT)) ) {
+					//If this object is draggable then deal with it
+					if (parent()->hasTrait(TraitTag::draggable)) {
 						newEventsState.set((int)InterfaceEvents::ON_DRAG, true);
 						_initializeDragging(mouseWorldPosition);
 					}
 
-					//Set click state
-					if (buttonState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-
-						newEventsState.set((int)InterfaceEvents::ON_LCLICK, true);
-
-					} else if (buttonState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-
-						newEventsState.set((int)InterfaceEvents::ON_RCLICK, true);
-					}
-
+					newEventsState.set((int)InterfaceEvents::ON_CLICK, true);
 				}
 
 				break;
@@ -250,6 +242,9 @@ void InterfaceComponent::update()
 
 	}
 
+	//Set The cursor
+	//setCursor(parent(), newEventsState);
+
 	//Save the current state
 	m_currentEventsState = newEventsState;
 
@@ -304,8 +299,7 @@ bool InterfaceComponent::isUserInputTiedAction(int actionId)
 
 		for (auto event : m_eventActions.find(actionId)->second->conditionEvents) {
 
-			if (event == InterfaceEvents::ON_LCLICK || 
-				event == InterfaceEvents::ON_RCLICK ||
+			if (event == InterfaceEvents::ON_CLICK ||
 				event == InterfaceEvents::ON_DROP ||
 				((int)event > 0 && (int)event < 100)) {
 

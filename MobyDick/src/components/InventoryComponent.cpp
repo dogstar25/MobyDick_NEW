@@ -81,25 +81,15 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 {
 	bool itemAdded = false;
 	if (slot <= (m_items.size() - 1) && slot != -1) {
-
 		m_items[slot] = gameObject;
 		itemAdded = true;
 
 		//Set this items new parent to this inventory holding object
 		gameObject->setParent(parent());
 
-		//All items in inventory are draggable and obtainable if they are not already in the players inventory
+		//Add the draggable trait to this item and remove the obtainable trait
 		gameObject->addTrait(TraitTag::draggable);
-		gameObject->removeTrait(TraitTag::loose);
-
-		if (parent()->hasTrait(TraitTag::player) == false) {
-
-			gameObject->addTrait(TraitTag::obtainable);
-		}
-		else {
-			gameObject->removeTrait(TraitTag::obtainable);
-		}
-		
+		gameObject->removeTrait(TraitTag::obtainable);
 	}
 
 	return itemAdded;
