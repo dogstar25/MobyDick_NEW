@@ -10,7 +10,7 @@ void TakeItemAction::perform(GameObject* gameObject)
 	//Only if this object is obtainable. This action can fire for inventory items that are sometime in inventory and NOT obtainable
 	 
 	if ( (gameObject->hasTrait(TraitTag::obtainable) && gameObject->hasTrait(TraitTag::loose) == false ) ||
-		(gameObject->hasTrait(TraitTag::obtainable) && gameObject->hasTrait(TraitTag::loose) == true) && gameObject->isTouchingByTrait(TraitTag::player) ) {
+		(gameObject->hasTrait(TraitTag::obtainable) && gameObject->hasTrait(TraitTag::loose) == true && gameObject->isTouchingByTrait(TraitTag::player)) ) {
 		//Get the players inventory
 		const auto& player = gameObject->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
 		const auto& inventoryComponent = player.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
@@ -20,17 +20,11 @@ void TakeItemAction::perform(GameObject* gameObject)
 		//If this item is loose then add it to the inventory and remove it from the world
 		if (gameObject->hasTrait(TraitTag::loose)) {
 
-			if (inventoryComponent->addItem(gameObjectShrPtr.value()) != std::nullopt) {
+			if (inventoryComponent->addItem(gameObjectShrPtr.value()) == true) {
 
 				gameObjectShrPtr.value()->setRemoveFromWorld(true);
 				inventoryComponent->refreshInventoryDisplay();
 
-				//Make sure we clear of this gameObject as the current object interface
-				if (gameObject->hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
-
-					const auto& interfaceComponent = gameObject->getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
-					interfaceComponent->clearSpecificGameObjectInterface(gameObject);
-				}
 
 			}
 			else {
@@ -46,7 +40,7 @@ void TakeItemAction::perform(GameObject* gameObject)
 			//First remove it
 			std::shared_ptr<GameObject> gameObjectSharedPtr = sourceInventoryObject->removeItem(gameObject);
 
-			if (inventoryComponent->addItem(gameObjectShrPtr.value()) != std::nullopt) {
+			if (inventoryComponent->addItem(gameObjectShrPtr.value()) == true) {
 				
 				inventoryComponent->refreshInventoryDisplay();
 				sourceInventoryObject->refreshInventoryDisplay();
@@ -58,6 +52,14 @@ void TakeItemAction::perform(GameObject* gameObject)
 			}
 
 		}
+
+		//Make sure we clear of this gameObject as the current object interface
+		if (gameObject->hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+
+			const auto& interfaceComponent = gameObject->getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
+			interfaceComponent->clearSpecificGameObjectInterface(gameObject);
+		}
+
 		
 
 		

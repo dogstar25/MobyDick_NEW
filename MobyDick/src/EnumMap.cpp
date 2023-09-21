@@ -247,7 +247,7 @@ EnumMap::EnumMap()
 	m_enumMap["inventory"] = TraitTag::inventory;
 	m_enumMap["obtainable"] = TraitTag::obtainable;
 	m_enumMap["loose"] = TraitTag::loose;
-	m_enumMap["stored"] = TraitTag::stored;
+	m_enumMap["puzzle_item"] = TraitTag::puzzle_item;
 	
 
 	//Hud Item Types

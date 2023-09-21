@@ -112,13 +112,13 @@ namespace TraitTag {
 	inline constexpr int complex_impasse = 16;
 	inline constexpr int mobile = 17;
 	inline constexpr int light = 18;
-	inline constexpr int puzzle = 19;
-	inline constexpr int vertical_movement = 20;
-	inline constexpr int draggable = 21;
-	inline constexpr int inventory = 22;
-	inline constexpr int obtainable = 23;
-	inline constexpr int loose = 24;
-	inline constexpr int stored = 25;
+	inline constexpr int puzzle = 19;						//Object that has puzzle(s) to solve before can be used
+	inline constexpr int vertical_movement = 20;			//Allows for the player to vertically move
+	inline constexpr int draggable = 21;					//Can be grabbed and dragged by the mouse
+	inline constexpr int inventory = 22;					//Can have a game item dropped onto it to add to its inventory
+	inline constexpr int obtainable = 23;					//Can be taken by the player
+	inline constexpr int loose = 24;						//Is NOT currently in anyones inventory
+	inline constexpr int puzzle_item = 25;					//Is an item used to solve a game puzzle
 
 }
 
