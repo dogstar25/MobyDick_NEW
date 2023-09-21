@@ -54,7 +54,7 @@ void InventoryComponent::setParent(GameObject* gameObject)
 
 }
 
-std::optional<int> InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
+bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 {
 
 	//Find first available inventory slot
@@ -72,7 +72,7 @@ std::optional<int> InventoryComponent::addItem(std::shared_ptr<GameObject> gameO
 		addItem(gameObject, slotIndexFound.value());
 	}
 
-	return slotIndexFound;
+	return slotIndexFound.has_value();
 
 }
 
@@ -112,7 +112,8 @@ bool InventoryComponent::addItem(std::string gameObjectType)
 	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, -50.0F, -50.0F, 0.F,
 		parent()->parentScene(), GameLayer::GUI_2);
 
-	if (addItem(gameObject) == std::nullopt) {
+	if (addItem(gameObject) == false) {
+
 		return false;
 	}
 	else {
