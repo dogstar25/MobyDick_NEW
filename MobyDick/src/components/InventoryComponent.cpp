@@ -62,7 +62,6 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 	for (int i = 0; i < m_items.size();i++) {
 
 		if (m_items[i].has_value() == false) {
-			m_items[i] = gameObject;
 			slotIndexFound = i;
 			break;
 		}
@@ -80,7 +79,7 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slot)
 {
 	bool itemAdded = false;
-	if (slot <= (m_items.size() - 1) && slot != -1) {
+	if (slot <= (m_items.size() - 1)) {
 
 		m_items[slot] = gameObject;
 		itemAdded = true;
@@ -213,6 +212,12 @@ void InventoryComponent::update()
 			if (inventoryObject.has_value() == true) {
 
 				inventoryObject.value()->update();
+
+				//The layer shoudl always be set to where it actually lives in the structure
+				if (inventoryObject.has_value() == true) {
+
+					inventoryObject.value()->setLayer(parent()->layer());
+				}
 			}
 
 		}

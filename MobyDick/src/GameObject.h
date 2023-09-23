@@ -12,6 +12,7 @@
 #include <typeindex>
 #include <array>
 #include <bitset>
+#include <cstdint>
 
 #include <box2d/box2d.h>
 
@@ -86,6 +87,9 @@ public:
 	void setSize(b2Vec2 size);
 	bool intersectsWith(GameObject* gameObject);
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);
+
+	std::optional<int> renderOrder() { return m_renderOrder; }
+	void setRenderOrder(int renderOrder) { m_renderOrder = renderOrder; }
 
 	b2Vec2 getSize();
 	SDL_Color getColor();
@@ -240,10 +244,10 @@ private:
 	std::bitset<8> m_stateTags{};
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_touchingGameObjects{};
 
-
 	GameObjectDefinition m_gameObjectDefinition;
 
 	GameLayer m_layer;
+	std::optional<int> m_renderOrder{};
 
 	//Components
 	//std::unordered_map<std::type_index, std::shared_ptr<Component>>m_components;

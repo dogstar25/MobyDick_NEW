@@ -84,6 +84,20 @@ void InterfaceComponent::update()
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
 	//Mouse Contact - ON_HOVER
+
+	////////////////////////////////////////////////////////////////
+
+
+	//figure out a way to only register an "on_hover: event if this object is "in front of"
+	// whatever object is currently considered to "on hovered" object
+
+	//This should simplify the logic for determining what objects interface is the overiding interface
+
+
+	////////////////////////////////////////////////////////////////
+
+
+
 	if (util::isMouseOverGameObject(renderComponent->getRenderDestRect())) {
 
 		newEventsState.set((int)InterfaceEvents::ON_HOVER, true);
@@ -111,14 +125,6 @@ void InterfaceComponent::update()
 	//Handle dragging an object
 	if (m_currentEventsState.test((int)InterfaceEvents::ON_DRAG) == true) {
 		handleDragging();
-	}
-
-	//Does this interface have priority over any other possible active interfaces currently 
-	// being shown?
-	//This allows for when we want to show only one interface at a time and usually, the object
-	//"in front" of the other object(s)
-	if (parent()->type() == "BOBBYS_BEDSHEET") {
-		int todd = 1;
 	}
 
 	if (doesInterfaceHavePriority(newEventsState)) {
@@ -156,18 +162,16 @@ void InterfaceComponent::update()
 	}
 
 	// Handle Mouse Clicks and Key Presses that are not part of the Player Movement Control or Scene Control
-	for (auto& inputEvent : SceneManager::instance().playerInputEvents())
+	for (auto inputEvent = SceneManager::instance().playerInputEvents().begin(); inputEvent != SceneManager::instance().playerInputEvents().end();)
 	{
 
-		switch (inputEvent.event.type)
+		switch (inputEvent->event.type)
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
 				SDL_Point mouseLocation{};
 				auto buttonState = SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
 				SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y });
-
-
 
 				//Has mouse contact then start drag if its draggable
 				//otherwise execture ON_LCLICK action if one exists
@@ -181,7 +185,7 @@ void InterfaceComponent::update()
 					}
 
 					//Set click state
-					if (buttonState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+					else if (buttonState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 
 						newEventsState.set((int)InterfaceEvents::ON_LCLICK, true);
 
@@ -189,7 +193,6 @@ void InterfaceComponent::update()
 
 						newEventsState.set((int)InterfaceEvents::ON_RCLICK, true);
 					}
-
 				}
 
 				break;
@@ -208,7 +211,7 @@ void InterfaceComponent::update()
 			}
 			case SDL_KEYDOWN:
 			{
-				SDL_Scancode keyScanCode = SDL_GetScancodeFromKey(inputEvent.event.key.keysym.sym);
+				SDL_Scancode keyScanCode = SDL_GetScancodeFromKey(inputEvent->event.key.keysym.sym);
 				if (keyScanCode < MAX_EVENT_STATES) {
 					newEventsState.set((int)keyScanCode, true);
 				}
@@ -225,6 +228,7 @@ void InterfaceComponent::update()
 
 		//Loop through every possible action and see if the mouse and player touching state matches 
 		//what is required to execute
+		bool found{};
 		if (doesInterfaceHavePriority(newEventsState)) {
 
 			for (const auto& actionEvent : m_eventActions) {
@@ -241,11 +245,21 @@ void InterfaceComponent::update()
 
 							const auto& action = actionComponent->getAction(actionEvent.second->actionId);
 							action->perform(parent());
+							inputEvent = SceneManager::instance().playerInputEvents().erase(inputEvent);
+							found = true;
+							break;
 						}
 
 					}
 				}
 			}
+
+		}
+
+		if (found == false) {
+
+			++inputEvent;
+
 		}
 
 	}

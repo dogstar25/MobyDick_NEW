@@ -147,6 +147,16 @@ std::optional<std::string> Scene::getNextLevel()
 
 }
 
+int Scene::incrementRenderSequence(GameObject* gameObject)
+{
+	m_renderSequence += 1;
+
+	gameObject->setRenderOrder(m_renderSequence);
+
+	return m_renderSequence;
+
+}
+
 void Scene::loadCurrentLevel()
 {
 
@@ -270,7 +280,6 @@ void Scene::update() {
 
 void Scene::render() {
 
-	int gameLayerIndex{0};
 
 	//Render all of the layers
 	for (auto& gameLayer : m_gameObjects)
@@ -295,11 +304,11 @@ void Scene::render() {
 		//ToDo:Make this use the layer that we are passing it
 		//game->renderer()->renderPrimitives(gameLayerIndex);
 
-		gameLayerIndex++;
-
 	}
+
+	_resetRenderSequence();
 	
-	//If we have an object being dragged then render it hewre so that it is always  on top
+	//If we have an object being dragged then render it here so that it is always  on top
 	if (m_draggingObject && m_draggingObject.value().expired() == false) {
 
 		m_draggingObject.value().lock()->enableRender();

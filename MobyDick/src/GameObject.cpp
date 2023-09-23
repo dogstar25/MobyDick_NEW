@@ -242,6 +242,10 @@ void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, fl
 void GameObject::update()
 {
 
+	if (type() == "BOBBYS_SIDETABLE") {
+		int todd = 1;
+	}
+
 	if (this->updateDisabled() == false) {
 		for (auto& component : m_components)
 		{
