@@ -89,6 +89,10 @@ public:
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByTrait(int trait); //use when you know there's only one
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByType(std::string type); //use when you know there's only one
 	std::optional<std::string> getNextLevel();
+
+	int getRenderSequence() { return m_renderSequence; }
+	int incrementRenderSequence(GameObject* gameObject);
+	
 	
 	void stepB2PhysicsWorld() {
 		m_physicsWorld->Step(m_physicsConfig.timeStep,
@@ -151,6 +155,7 @@ private:
 
 	std::string m_id;
 
+	int m_renderSequence{};
 	int m_gameObjectCount{};
 	int m_inputControlMode{};
 	int m_parentSceneIndex{};
@@ -187,6 +192,7 @@ private:
 	void _removeFromWorldPass();
 	void _showNavigationMap();
 	bool _updateNavigationMap();
+	void _resetRenderSequence() { m_renderSequence = 0; }
 	
 
 };

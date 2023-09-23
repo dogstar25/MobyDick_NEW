@@ -116,9 +116,6 @@ void ChildrenComponent::update()
 	b2Vec2 newChildPosition{};
 	
 	
-	//This is how many children we have in this slot, stored by slot type
-	std::map<ChildSlotType, std::vector<SlotMeasure>> slotMeasurements = _calculateSlotMeasurements();
-
 	for (auto& childSlot : m_childSlots)
 	{
 
@@ -127,20 +124,21 @@ void ChildrenComponent::update()
 		//New child objects could be added as absolute slots during runtime
 		ChildSlotType slotType = _getSlotType(childSlot.first);
 
+		std::vector<SlotMeasure> slotMeasurements = _calculateSlotMeasurements(childSlot.first);
+
 		if (slotType == ChildSlotType::STANDARD_SLOT) {
 
 			PositionAlignment positionAlignment = _translateStandardSlotPositionAlignment(childSlot.first);
-			_calculateStandardSlotPositions(childSlot.second, positionAlignment, slotMeasurements[ChildSlotType::STANDARD_SLOT]);
+			_calculateStandardSlotPositions(childSlot.second, positionAlignment, slotMeasurements);
 
 		}
 
 		if (slotType == ChildSlotType::ABSOLUTE_POSITION) {
 
 			int slot = _getSlotIndex(childSlot.first) - 1;
-			_calculateAbsoluteSlotPositions(childSlot.second, slot, slotMeasurements[ChildSlotType::ABSOLUTE_POSITION]);
+			_calculateAbsoluteSlotPositions(childSlot.second, slot, slotMeasurements);
 
 		}
-
 	
 		//Loop through all the children in this slot and calculate their positions based on the offsets we've already calculated
 		//and the parents position
@@ -401,6 +399,8 @@ void ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, Pos
 
 	}
 
+	gameObject->stash();
+	
 
 }
 
@@ -567,44 +567,45 @@ PositionAlignment ChildrenComponent::_translateStandardSlotPositionAlignment(std
 
 }
 
-std::map<ChildSlotType, std::vector<SlotMeasure>> ChildrenComponent::_calculateSlotMeasurements()
+std::vector<SlotMeasure> ChildrenComponent::_calculateSlotMeasurements(std::string slotKey)
 {
-	std::map<ChildSlotType, std::vector<SlotMeasure>> slotMeasurements;
-	slotMeasurements[ChildSlotType::ABSOLUTE_POSITION] = std::vector<SlotMeasure>(9);
-	slotMeasurements[ChildSlotType::STANDARD_SLOT] = std::vector<SlotMeasure>(9);
+	std::vector<SlotMeasure> slotMeasurements;
+	slotMeasurements = std::vector<SlotMeasure>(9);
 
-
-	// Loop through all of the childobjects in each slot so that we can calulate the combined WIDTH and HEIGHT MEASUREMENTS 
+	// Loop through all of the childobjects in the giev slot so that we can calulate the combined WIDTH and HEIGHT MEASUREMENTS 
 	// of all objects together including the child object padding, in order to later calculate an accurate 
 	// center point for the slot and the minimum and maximum width and height of the slot.
-	for (auto& slotItr : m_childSlots) {
+	auto slotItr = m_childSlots.find(slotKey);
+	while (slotItr != m_childSlots.end()) {
 
-		auto childSlotType = _getSlotType(slotItr.first);
+		ChildSlotType slotType = _getSlotType(slotKey);
 
 		//slot index for S2 is 2, A5 is 5, etc.
-		int slotIndex = _getSlotIndex(slotItr.first) - 1;
+		int slotIndex = _getSlotIndex(slotKey) - 1;
 
 		//Start with adding in the child object padding value
-		float totalPaddingValue = fmin(0, (slotItr.second.size() - 1) * m_childPadding);
-		slotMeasurements[childSlotType][slotIndex].sizeTotal.x += totalPaddingValue;
-		slotMeasurements[childSlotType][slotIndex].sizeTotal.y += totalPaddingValue;
+		float totalPaddingValue = fmin(0, (slotItr->second.size() - 1) * m_childPadding);
+		slotMeasurements[slotIndex].sizeTotal.x += totalPaddingValue;
+		slotMeasurements[slotIndex].sizeTotal.y += totalPaddingValue;
 
 		//Add up every objects width and height and store the maximum width and height for each slot
-		for (auto& child : slotItr.second) {
+		for (auto& child : slotItr->second) {
 
 			if (child.gameObject.has_value()) {
 
-				slotMeasurements[childSlotType][slotIndex].sizeTotal.x += child.gameObject.value()->getSize().x;
-				slotMeasurements[childSlotType][slotIndex].sizeTotal.y += child.gameObject.value()->getSize().y;
+				slotMeasurements[slotIndex].sizeTotal.x += child.gameObject.value()->getSize().x;
+				slotMeasurements[slotIndex].sizeTotal.y += child.gameObject.value()->getSize().y;
 
-				slotMeasurements[childSlotType][slotIndex].maxDimension.x =
-					fmax(slotMeasurements[childSlotType][slotIndex].maxDimension.x, child.gameObject.value()->getSize().x);
-				slotMeasurements[childSlotType][slotIndex].maxDimension.y =
-					fmax(slotMeasurements[childSlotType][slotIndex].maxDimension.y, child.gameObject.value()->getSize().y);
+				slotMeasurements[slotIndex].maxDimension.x =
+					fmax(slotMeasurements[slotIndex].maxDimension.x, child.gameObject.value()->getSize().x);
+				slotMeasurements[slotIndex].maxDimension.y =
+					fmax(slotMeasurements[slotIndex].maxDimension.y, child.gameObject.value()->getSize().y);
 
 			}
 
 		}
+
+		++slotItr;
 	}
 
 	return slotMeasurements;

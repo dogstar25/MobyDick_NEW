@@ -236,10 +236,6 @@ void RenderComponent::render()
 		return;
 	}
 
-	if (parent()->hasTrait(TraitTag::draggable)) {
-		int todd = 1;
-	}
-
 	SDL_FRect destQuad = { getRenderDestRect() };
 	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
 
@@ -302,6 +298,9 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 		transform->absolutePositioning() == true || m_parallaxRate.has_value() == true)
 	{
 
+		//One and only place to increment render sequence
+		parent()->parentScene()->incrementRenderSequence(parent());
+
 		bool outline{};
 		SDL_Color outlineColor{};
 		float angle = transform->angle();
@@ -337,58 +336,7 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 			outlineColor = m_outLineColor;
 		}
 
-		//game->renderer()->drawSprite(destQuad, color, getRenderTexture().get(), textureSourceQuad, angle, outline, outlineColor, m_textureBlendMode);
-
-		//test
-		//if (parent()->hasTrait(TraitTag::player)) {
-		if (false) {
-
-
-
-			//const std::vector< SDL_Vertex > verts =
-			//{
-			//	{ SDL_FPoint{ 400, 150 }, SDL_Color{ 255, 0, 0, 255 }, SDL_FPoint{ 0 }, },
-			//	{ SDL_FPoint{ 200, 450 }, SDL_Color{ 0, 0, 255, 255 }, SDL_FPoint{ 0 }, },
-			//	{ SDL_FPoint{ 600, 450 }, SDL_Color{ 0, 255, 0, 255 }, SDL_FPoint{ 0 }, },
-			//};
-
-			const std::vector< SDL_Vertex > verts =
-			{
-				{ SDL_FPoint{ 500,200 }, SDL_Color{ 255, 255, 255, 0 }, SDL_FPoint{ 0,0 }, },
-				{ SDL_FPoint{ 1000,200 }, SDL_Color{ 255, 255, 255, 0 }, SDL_FPoint{ 1,0 }, },
-				{ SDL_FPoint{ 500,700 }, SDL_Color{ 255, 255, 255, 0 }, SDL_FPoint{ 0,1 }, },
-			};
-
-
-			auto blendMode = SDL_ComposeCustomBlendMode(
-				SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE, SDL_BLENDOPERATION_ADD, 
-				SDL_BLENDFACTOR_ONE, SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR, SDL_BLENDOPERATION_MAXIMUM);
-			//SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 255, 255, 255, SDL_ALPHA_TRANSPARENT);
-			//SDL_SetTextureBlendMode(getRenderTexture().get()->sdlTexture, SDL_BLENDMODE_BLEND);
-			SDL_SetRenderDrawBlendMode(game->renderer()->sdlRenderer(), blendMode);
-
-
-			std::array<int, 9> indexList = { 0,1,2,2,1,3,2,4,3};
-
-			//SDL_RenderGeometry(game->renderer()->sdlRenderer(), getRenderTexture().get()->sdlTexture, verts.data(), verts.size(), indexList.data(), (int)indexList.size());
-			SDL_RenderGeometry(game->renderer()->sdlRenderer(), nullptr, verts.data(), verts.size(), nullptr, 0);
-			//SDL_RenderGeometry(game->renderer()->sdlRenderer(), nullptr, verts.data(), verts.size(), nullptr, 0);
-
-
-			//SDL_Color col{ 0xff,0xff,0xff,0xff };
-			//std::vector<SDL_Vertex> verticies{
-			//	{{300.0f,200.0f},	col,	{0.0f,0.0f}},
-			//	{{800.0f,200.0f},	col,	{1.0f,0.0f}},
-			//	{{300.0f,700.0f},	col,	{0.0f,1.0f}},
-			//	{{800.0f,700.0f},	col,	{1.0f,1.0f}},
-			//};
-			//std::array<int, 6> indexList = { 0,1,2,2,1,3 };
-			//SDL_RenderGeometry(game->renderer()->sdlRenderer(), nullptr, verticies.data(), (int)verticies.size(), indexList.data(), (int)indexList.size());
-
-		}
-		else {
-			game->renderer()->drawSprite(parent()->layer(), destQuad, color, texture, textureSourceQuad, angle, outline, outlineColor, textureBlendMode);
-		}
+		game->renderer()->drawSprite(parent()->layer(), destQuad, color, texture, textureSourceQuad, angle, outline, outlineColor, textureBlendMode);
 
 	}
 

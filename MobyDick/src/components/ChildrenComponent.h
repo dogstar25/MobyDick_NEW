@@ -89,7 +89,7 @@ private:
 	void _calculateStandardSlotPositions(std::vector<Child>& childObjects, PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotMeasurements);
 	void _calculateAbsoluteSlotPositions(std::vector<Child>& childObjects, int slot, std::vector<SlotMeasure>& slotMeasurements);
 
-	std::map<ChildSlotType, std::vector<SlotMeasure>> _calculateSlotMeasurements();
+	std::vector<SlotMeasure> _calculateSlotMeasurements(std::string slotKey);
 	SDL_FPoint _calculateStandardSlotCenterPosition(PositionAlignment positionAlignment, std::vector<SlotMeasure>& slotSize, int slotChildCount);
 	SDL_FPoint _calculateAbsoluteSlotCenterPosition(SDL_FPoint position, int slot, std::vector<SlotMeasure>& slotSize);
 	SDL_FPoint _calculateSlotMultiChild(SDL_FPoint slotCenterPositionOffset, int slotGameObjectNumber, int totalSlotObjectCount, GameObject* childGameObject);
