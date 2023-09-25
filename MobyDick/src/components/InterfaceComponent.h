@@ -30,8 +30,9 @@ public:
 
 	virtual void update() override;
 	virtual void render() override;
-	void postInit() override;
-	void setParent(GameObject* gameObject) override;
+	virtual void postInit() override;
+	virtual void setParent(GameObject* gameObject) override;
+
 	bool isAutoInteractOnPuzzleComplete() { return m_autoInteractOnPuzzleComplete; }
 	SDL_FPoint dragOffset() { return m_dragOffset; }
 	std::map<int, std::shared_ptr<InterfaceAction>> eventActions() { return m_eventActions; }
@@ -60,15 +61,15 @@ protected:
 	b2MouseJoint* m_b2MouseJoint{};
 	std::bitset<MAX_EVENT_STATES> m_currentEventsState{};
 
-	virtual void handleDragging();
+	
 	bool hasActionMetEventRequirements(InterfaceAction* action, std::bitset<MAX_EVENT_STATES> currentEventsState);
 	
 	std::map<int, std::shared_ptr<InterfaceAction>> m_eventActions{};
 
+	virtual void handleDragging();
 	virtual bool doesInterfaceHavePriority(std::bitset<MAX_EVENT_STATES>);
 	virtual bool isUserInputTiedAction(int actionId);
-	//virtual bool shouldInterfaceMenuBeShown(std::bitset<(int)InterfaceEvents::COUNT>) { return true; }
-
+	virtual bool isDraggingAllowed() { return true; }
 	
 
 	////////Static Variables

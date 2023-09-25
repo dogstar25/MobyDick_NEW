@@ -24,6 +24,7 @@ public:
 	~InventoryComponent();
 
 	void setParent(GameObject* gameObject) override;
+	void postInit() override;
 
 	bool addItem(std::shared_ptr<GameObject> gameObject, int slot);
 	bool addItem(std::shared_ptr<GameObject> gameObject);
@@ -53,9 +54,9 @@ private:
 
 	int m_activeItem{ 0 };
 	bool m_isOpen{};
+	bool m_isAlwaysOpen{};
 	std::vector<std::optional<std::shared_ptr<GameObject>>> m_items{};
 	std::map<CollectibleTypes, int> m_collectibles{};
-	std::string m_displayObjectType{};
 	std::optional<std::weak_ptr<GameObject>> m_displayObject{};
 	GameLayer m_displayLayer{};
 	float m_maxCapacity{};

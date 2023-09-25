@@ -17,21 +17,26 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string pa
 	m_activeItem = 0;
 
 	//Create the display object
-	m_displayObjectType = componentJSON["displayObject"].asString();
+	std::string displayObjectType = componentJSON["displayObject"].asString();
 	if (componentJSON.isMember("displayLayer")) {
 		m_displayLayer = (GameLayer)game->enumMap()->toEnum(componentJSON["displayLayer"].asString());
 	}
 	else {
 		m_displayLayer = GameLayer::MAIN;
 	}
-	
 
-	auto displayObject = parentScene->createGameObject(m_displayObjectType, -50.0F, -50.0F, 0.F, parentScene, m_displayLayer);
-	parentScene->addGameObject(displayObject, m_displayLayer);
-	displayObject->disablePhysics();
-	displayObject->disableRender();
-	displayObject->disableCollision();
-	m_displayObject = displayObject;
+	m_isAlwaysOpen = componentJSON["isAlwaysOpen"].asBool();
+
+	if (displayObjectType.empty() == false) {
+
+		auto displayObject = parentScene->createGameObject(displayObjectType, -50.0F, -50.0F, 0.F, parentScene, m_displayLayer);
+		parentScene->addGameObject(displayObject, m_displayLayer);
+		displayObject->disablePhysics();
+		displayObject->disableRender();
+		displayObject->disableCollision();
+		m_displayObject = displayObject;
+
+	}
 
 	m_items = std::vector<std::optional<std::shared_ptr<GameObject>>>(m_maxCapacity);
 }
@@ -40,6 +45,18 @@ InventoryComponent::~InventoryComponent()
 {
 
 }
+
+void InventoryComponent::postInit()
+{
+
+	if (m_isAlwaysOpen == true) {
+
+		refreshInventoryDisplay();
+	}
+
+
+}
+
 
 void InventoryComponent::setParent(GameObject* gameObject)
 {
@@ -89,7 +106,18 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 
 		//All items in inventory are draggable and obtainable if they are not already in the players inventory
 		gameObject->addTrait(TraitTag::draggable);
-		gameObject->removeTrait(TraitTag::loose);
+
+		//if this is a receptacle that has an inventory and gridDisplay in one, like a shelf, then the object is considered loose
+		if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT) == false) {
+
+			gameObject->removeTrait(TraitTag::loose);
+			gameObject->removeTrait(TraitTag::shelved);
+
+		}
+		else {
+			gameObject->addTrait(TraitTag::shelved);
+			gameObject->addTrait(TraitTag::loose);
+		}
 
 		if (parent()->hasTrait(TraitTag::player) == false) {
 
@@ -97,6 +125,7 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 		}
 		else {
 			gameObject->removeTrait(TraitTag::obtainable);
+			gameObject->removeTrait(TraitTag::shelved);
 		}
 		
 	}
@@ -187,23 +216,13 @@ int InventoryComponent::addCollectible(const CollectibleTypes collectableType, i
 	return m_collectibles.at(collectableType);
 }
 
-//void InventoryComponent::render()
-//{
-//
-//	std::shared_ptr<GridDisplayComponent> gridDisplayComponent;
-//	if (m_displayBackdropObject) {
-//		gridDisplayComponent = m_displayBackdropObject.value()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
-//	}
-//	else {
-//		gridDisplayComponent = parent()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
-//	}
-//
-//	gridDisplayComponent->render();
-//
-//}
-
 void InventoryComponent::update()
 {
+
+	if (m_isAlwaysOpen == true) {
+
+		m_isOpen = true;
+	}
 
 	if (m_isOpen) {
 
@@ -213,11 +232,19 @@ void InventoryComponent::update()
 
 				inventoryObject.value()->update();
 
-				//The layer shoudl always be set to where it actually lives in the structure
-				if (inventoryObject.has_value() == true) {
+				//Its possiblwe that this object was removed from this inventory during the update above
+				if (inventoryObject.has_value()) {
 
 					inventoryObject.value()->setLayer(parent()->layer());
 				}
+
+				//////////////////////////////////
+				// we should set the different traits here? loose, draggable, obtainable, etc...
+
+
+				///////////////////////////////
+
+
 			}
 
 		}
@@ -228,6 +255,7 @@ void InventoryComponent::update()
 
 void InventoryComponent::refreshInventoryDisplay() {
 
+	//If we have a separate gameObject that isued to display the inventory
 	if (m_displayObject && m_displayObject.value().expired() == false) {
 
 		//Get displayObjects grid display component
@@ -235,6 +263,16 @@ void InventoryComponent::refreshInventoryDisplay() {
 		gridDisplayComponent->clear();
 
 		showInventory();
+	}
+
+	//If this ivnetoryObject is also the inventory display object, like a shelf
+	if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
+
+		const auto& gridDisplayComponent = parent()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+		gridDisplayComponent->clear();
+
+		showInventory();
+
 	}
 
 }
@@ -259,11 +297,21 @@ std::optional<int> InventoryComponent::getSlot(GameObject* gameObject)
 //Show the inventory as a child of a specific object that is not the inventory holder
 void InventoryComponent::showInventory()
 {
-	//m_isOpen = true;
+	std::shared_ptr<GridDisplayComponent> gridDisplayComponent{};
 
-	const auto& gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
-	m_displayObject.value().lock()->enablePhysics();
+	//If we have a separate gameObject that isued to display the inventory
+	if (m_displayObject && m_displayObject.value().expired() == false) {
+		gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+		m_displayObject.value().lock()->enablePhysics();
+	}
 
+	//If this ivnetoryObject is also the inventory display object, like a shelf
+	if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
+
+		gridDisplayComponent = parent()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+	}
+
+	//Add all inventory items to the gridDisplayComponent
 	for (int i = 0; i < m_items.size(); i++) {
 
 		if (m_items[i].has_value()) {
