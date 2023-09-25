@@ -119,6 +119,8 @@ namespace TraitTag {
 	inline constexpr int obtainable = 23;					//Can be taken by the player
 	inline constexpr int loose = 24;						//Is NOT currently in anyones inventory
 	inline constexpr int puzzle_item = 25;					//Is an item used to solve a game puzzle
+	inline constexpr int shelved = 26;					    //Is an inventory item that lives on an open inventory object like a shelf
+	inline constexpr int player_inventory = 27;			    //Is an the players inventory display
 
 }
 
