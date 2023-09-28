@@ -39,6 +39,7 @@ public:
 	void clear();
 	std::optional<int> getClosestSlot(SDL_FPoint position);
 	std::vector<GridSlot> gridSlots() { return m_gridSlots; }
+	float getItemSlotSize() { return m_itemSize; }
 
 private:
 	int m_rows{};
@@ -55,7 +56,7 @@ private:
 	//Every slot has to support multiple children since standrad slots you can have more than one child which gets spread out
 	std::vector<GridSlot> m_gridSlots{};
 
-	std::shared_ptr<GameObject> m_slotImageObject{};
+	std::optional<std::shared_ptr<GameObject>> m_slotImageObject{};
 
 
 };

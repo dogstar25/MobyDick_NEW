@@ -61,6 +61,8 @@ private:
 	GameLayer m_displayLayer{};
 	float m_maxCapacity{};
 
+	void _setItemSize(std::shared_ptr<GameObject> gameObject);
+
 };
 
 #endif

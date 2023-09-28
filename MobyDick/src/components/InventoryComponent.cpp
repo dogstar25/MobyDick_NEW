@@ -113,10 +113,13 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 			gameObject->removeTrait(TraitTag::loose);
 			gameObject->removeTrait(TraitTag::shelved);
 
+			
+
 		}
 		else {
 			gameObject->addTrait(TraitTag::shelved);
 			gameObject->addTrait(TraitTag::loose);
+
 		}
 
 		if (parent()->hasTrait(TraitTag::player) == false) {
@@ -127,7 +130,8 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 			gameObject->removeTrait(TraitTag::obtainable);
 			gameObject->removeTrait(TraitTag::shelved);
 		}
-		
+
+
 	}
 
 	return itemAdded;
@@ -227,6 +231,7 @@ void InventoryComponent::update()
 	if (m_isOpen) {
 
 		for (const auto& inventoryObject : m_items) {
+
 
 			if (inventoryObject.has_value() == true) {
 
@@ -335,13 +340,40 @@ void InventoryComponent::hideInventory()
 
 		for (int i = 0; i < m_items.size(); i++) {
 
-			if (m_items[i].has_value()) {
+			if (m_items[i].has_value() ) {
 
 				m_items[i].value()->stash();
+				m_items[i].value()->clearDragging();
+
 			}
 		}
 
 	}
+
+}
+
+void InventoryComponent::_setItemSize(std::shared_ptr<GameObject> gameObject)
+{
+
+	//Is is an inventory object that also acts as its own grid display, like a shelf?
+	if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
+
+		//Get slot size
+		float slotSize = parent()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT)->getItemSlotSize();
+
+		gameObject->setSize(b2Vec2(slotSize, slotSize));
+
+	}
+	else {
+
+		if (m_displayObject.has_value()) {
+
+			float slotSize = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT)->getItemSlotSize();
+			gameObject->setSize(b2Vec2(slotSize, slotSize));
+		}
+
+	}
+
 
 }
 

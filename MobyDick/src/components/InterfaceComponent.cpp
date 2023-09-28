@@ -206,7 +206,7 @@ void InterfaceComponent::update()
 					newEventsState.set((int)InterfaceEvents::ON_DROP, true);
 					newEventsState.set((int)InterfaceEvents::ON_DRAG, false);
 
-					_clearDragging();
+					clearDragging();
 
 				}
 				break;
@@ -356,19 +356,27 @@ void InterfaceComponent::render()
 	if (m_currentGameObjectInterfaceActive.has_value() && 
 		m_currentGameObjectInterfaceActive.value() == this->parent()) {
 
-		m_interfaceMenuObject.value()->render();
+		if (m_interfaceMenuObject.has_value()) {
+			m_interfaceMenuObject.value()->render();
+		}
 	}
 
 }
 
-void InterfaceComponent::_clearDragging()
+void InterfaceComponent::clearDragging()
 {
 	SDL_ShowCursor(SDL_TRUE);
 
 	//Pass in a weak_ptr to clear out the draggingObject optional
 	parent()->parentScene()->setDraggingObject(std::weak_ptr<GameObject>());
 
-	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
+	//If there was a overlay added to the dragging somewhere then make sure its clear
+	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	renderComponent->removeDisplayOverlay();
+
+	m_currentEventsState.set((int)InterfaceEvents::ON_DRAG, false);
+
+	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true && m_b2MouseJoint != nullptr) {
 
 		parent()->parentScene()->physicsWorld()->DestroyJoint(m_b2MouseJoint);
 		m_b2MouseJoint = nullptr;
@@ -442,6 +450,9 @@ void InterfaceComponent::handleDragging()
 			parent()->setAngleInDegrees(0);
 
 		}
+
+		//Items can change displaysize in certain situations. WHen dragging we want the size to be the original size
+		parent()->revertToOriginalSize();
 
 	}
 

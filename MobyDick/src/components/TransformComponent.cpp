@@ -27,7 +27,7 @@ TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos,
 		setPosition(util::tileToPixelPlacementLocation(xMapPos, yMapPos, size.x, size.y)	);
 
 		m_originalPosition = m_position;
-		m_size = size;
+		m_originalSize = m_size = size;
 
 		m_absolutePositioning = m_originalAbsolutePositioning = componentJSON["absolutePositioning"].asBool();
 
@@ -171,4 +171,5 @@ void TransformComponent::setAbsolutePositioning(bool absolutePositioning)
 {
 	m_absolutePositioning = absolutePositioning;
 }
+
 

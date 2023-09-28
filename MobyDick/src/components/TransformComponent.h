@@ -33,6 +33,8 @@ public:
 
 	b2Vec2 size() { return m_size; }
 	b2Vec2 position() {	return m_position; }
+	b2Vec2 originalSize() { return m_originalSize; }
+	b2Vec2 revertToOriginalSize() { return m_size = m_originalSize; }
 	b2Vec2 originalPosition() {	return m_originalPosition; }
 	b2Vec2 originalTilePosition() { return m_originalTilePosition; }
 	float originalAngle() { return m_originalAngle; }
@@ -54,6 +56,7 @@ private:
 	b2Vec2 m_size;
 	b2Vec2 m_originalTilePosition;
 	b2Vec2 m_originalPosition;
+	b2Vec2 m_originalSize;
 
 	bool m_absolutePositioning;
 	bool m_originalAbsolutePositioning{};

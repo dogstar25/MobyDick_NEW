@@ -166,6 +166,8 @@ public:
 	void setParent(GameObject* parentObject);
 	std::optional<GameObject*> parent() { return m_parentObject; }
 	bool isDragging();
+	void clearDragging();
+	void revertToOriginalSize();
 
 	const std::unordered_map<std::string, std::weak_ptr<GameObject>>& getTouchingObjects() {
 		return m_touchingGameObjects;
