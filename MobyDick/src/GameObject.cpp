@@ -111,6 +111,20 @@ bool GameObject::isDragging()
 
 }
 
+void GameObject::clearDragging()
+{
+	if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+
+		getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT)->clearDragging();
+
+	}
+}
+
+void GameObject::revertToOriginalSize()
+{
+	getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->revertToOriginalSize();
+}
+
 void GameObject::setPosition(float x, float y)
 {
 
@@ -725,6 +739,9 @@ void GameObject::stash()
 		physicsComponent->physicsBody()->SetTransform(positionVector, 0);
 		physicsComponent->physicsBody()->SetLinearVelocity(velocityVector);
 		physicsComponent->physicsBody()->SetEnabled(false);
+
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+		transformComponent->setPosition(positionVector);
 
 	}
 	else {

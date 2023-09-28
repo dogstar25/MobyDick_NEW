@@ -331,7 +331,7 @@ void Scene::setDraggingObject(std::weak_ptr<GameObject> gameObject)
 
 	//When we stop dragging the dragged object then we have to reset it and make sure it
 	//render is enabled because we turn off rendering fron the main loop so that it doesnt render twice
-	if (gameObject.expired()) {
+	if (gameObject.expired() && m_draggingObject.has_value() && m_draggingObject.value().expired() == false) {
 
 		m_draggingObject.value().lock()->enableRender();
 		m_draggingObject.reset();

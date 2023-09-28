@@ -33,7 +33,11 @@ GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, Scene* par
 	//Build all possible Grid Slots - they will be empty
 	_buildGridSlots();
 
-	m_slotImageObject = parentScene->createGameObject("GRID_SLOT_BOX", -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false);
+	if (componentJSON.isMember("slotBackgroundImage")) {
+
+		std::string imageObjectType = componentJSON["slotBackgroundImage"].asString();
+		m_slotImageObject = parentScene->createGameObject(imageObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false);
+	}
 
 }
 
@@ -200,15 +204,21 @@ void GridDisplayComponent::render()
 		slotImageObjectLocation.x -= slotImageObjectLocation.w /2;
 		slotImageObjectLocation.y -= slotImageObjectLocation.h /2;
 
-		const auto& slotImageRenderComponent = m_slotImageObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-		SDL_FRect slotImageObjectRenderLocation = slotImageRenderComponent->getRenderDestRect(slotImageObjectLocation);
+		if (m_slotImageObject) {
+			const auto& slotImageRenderComponent = m_slotImageObject.value()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+			SDL_FRect slotImageObjectRenderLocation = slotImageRenderComponent->getRenderDestRect(slotImageObjectLocation);
 
-		m_slotImageObject->render(slotImageObjectRenderLocation);
+			m_slotImageObject.value()->render(slotImageObjectRenderLocation);
+		}
 
 		if (slot.gameObject.has_value()) {
 
-			const auto& renderCompo = slot.gameObject.value().lock()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-			
+			//If we are not dragging, then show the item at the size that matches the grid display slots
+			if (slot.gameObject.value().lock()->isDragging() == false) {
+
+				float slotSize = getItemSlotSize();
+				slot.gameObject.value().lock()->setSize(b2Vec2(slotSize, slotSize));
+			}
 			slot.gameObject.value().lock()->render();
 		}
 
