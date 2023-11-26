@@ -86,6 +86,7 @@
 #include "../src/components/PoolComponent.h"
 #include "../src/components/PuzzleComponent.h"
 #include "../src/components/RenderComponent.h"
+#include "../src/components/StateComponent.h"
 #include "../src/components/TransformComponent.h"
 #include "../src/components/TextComponent.h"
 #include "../src/components/VitalityComponent.h"

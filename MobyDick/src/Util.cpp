@@ -10,11 +10,24 @@
 #include "Scene.h"
 #include "Game.h"
 
+#define NOMINMAX 10000000 // need this so that the compiler doesnt find the min and max in the windows include
+#include <Windows.h>
 
 extern std::unique_ptr<Game> game;
 
+
 namespace util
 {
+
+
+	std::string wideStringToString(const std::wstring& wstr)
+	{
+		if (wstr.empty()) return std::string();
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+		std::string strTo(size_needed, 0);
+		WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+		return strTo;
+	}
 
 	bool isMouseOverGameObject(SDL_FRect gameObjectRenderDest)
 	{

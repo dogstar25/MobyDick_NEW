@@ -93,6 +93,7 @@ protected:
 	std::map<int, StatusItem> m_statusValueMap;
 	UserSettings m_userSettings{};
 
+	//std::string m_saveGamePath{};
 	std::string m_saveGamePath{};
 
 

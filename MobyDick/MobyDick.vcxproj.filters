@@ -333,6 +333,9 @@
     <ClCompile Include="src\actions\CloseShelfInventoryAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\components\StateComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -663,6 +666,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\actions\CloseShelfInventoryAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\StateComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
