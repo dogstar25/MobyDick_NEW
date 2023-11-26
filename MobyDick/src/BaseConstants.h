@@ -227,6 +227,31 @@ enum class LightType {
 	RAY_LIGHT
 };
 
+enum class GameObjectState {
+
+	ON,
+	OFF,
+	OPENED,
+	CLOSED,
+	IDLE,
+	WALK,
+	RUN,
+	SPRINT,
+	JUMP,
+	CLIMB,
+	DEAD,
+	DEPLOYED,
+	CONCEALED,
+	IMPASSABLE,
+	ITEM_OBTAINABLE,
+	ITEM_LOOSE,
+	ITEM_STORED_ENCLOSED,
+	ITEM_STORED_OPEN, 
+	ITEM_STORED_PLAYER
+
+};
+
+
 namespace DebugSceneSettings {
 	inline constexpr int SHOW_PHYSICS_DEBUG = 0;
 	inline constexpr int SHOW_NAVIGATION_DEBUG_MAP = 1;
@@ -258,16 +283,17 @@ namespace ComponentTypes {
 	inline constexpr int POOL_COMPONENT = 19;
 	inline constexpr int PUZZLE_COMPONENT = 20;
 	inline constexpr int RENDER_COMPONENT = 21;
-	inline constexpr int SOUND_COMPONENT = 22;
-	inline constexpr int TEXT_COMPONENT = 23;
-	inline constexpr int TRANSFORM_COMPONENT = 24;
-	inline constexpr int UICONTROL_COMPONENT = 25;
-	inline constexpr int VITALITY_COMPONENT = 26;
-	inline constexpr int WEAPON_COMPONENT = 27;
-	inline constexpr int LIGHT_COMPONENT = 28;
-	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 29;
+	inline constexpr int STATE_COMPONENT = 22;
+	inline constexpr int SOUND_COMPONENT = 23;
+	inline constexpr int TEXT_COMPONENT = 24;
+	inline constexpr int TRANSFORM_COMPONENT = 25;
+	inline constexpr int UICONTROL_COMPONENT = 26;
+	inline constexpr int VITALITY_COMPONENT = 27;
+	inline constexpr int WEAPON_COMPONENT = 28;
+	inline constexpr int LIGHT_COMPONENT = 29;
+	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 30;
 	
-	inline constexpr int LAST_BASE_COMPONENT = 29;
+	inline constexpr int LAST_BASE_COMPONENT = 30;
 
 }
 

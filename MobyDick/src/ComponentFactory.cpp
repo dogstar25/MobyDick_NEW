@@ -113,6 +113,10 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::SOUND_COMPONENT);
 			component = std::make_shared<SoundComponent>(componentJSON);
 			break;
+		case ComponentTypes::STATE_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::STATE_COMPONENT);
+			component = std::make_shared<StateComponent>(componentJSON);
+			break;
 		case ComponentTypes::TEXT_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TEXT_COMPONENT);
 			component = std::make_shared<TextComponent>(gameObjectTextType, componentJSON);

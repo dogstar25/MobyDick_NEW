@@ -74,6 +74,8 @@ namespace util
 	bool isMouseOverGameObject(SDL_FRect gameObjectPositionRect);
 	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition);
 
+	std::string wideStringToString(const std::wstring& wstr);
+
 };
 
 

@@ -88,4 +88,10 @@ void IMGuiComponent::render()
 	glm::vec2 imGuiWindowSize = m_IMGuiItem->render();
 	transform->setSize(b2Vec2{ imGuiWindowSize.x,imGuiWindowSize.y });
 
+	//could we render a object here? Like a guipanel that needs to display the object like an item?
+	//todd
+
+
+
+
 }

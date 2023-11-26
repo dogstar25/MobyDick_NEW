@@ -21,6 +21,7 @@
 #include "components/PuzzleComponent.h"
 #include "components/RenderComponent.h"
 #include "components/SoundComponent.h"
+#include "components/StateComponent.h"
 #include "components/TextComponent.h"
 #include "components/TransformComponent.h"
 #include "components/VitalityComponent.h"
