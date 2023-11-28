@@ -5,31 +5,20 @@
 #include <map>
 
 #include "../GameObject.h"
-#include "../stateRules/baseStateRules.h"
 
 
-struct State {
+struct StateTransition {
 
-	GameObjectState state{};
+	int fromState{};
+	int toState{};
 	float transitionDuration{};
-	Timer transitionTimer{};
-
-	// Define the less-than operator for ordering in the set
-	//Allows for using .contains and ,erase
-	bool operator<(const State& other) const {
-		return state < other.state;
-	}
+	std::optional<Timer> transitionTimer{};
 
 };
 
-//not working
-//i need to overide this in game
-inline State idleState = { GameObjectState::IDLE, 0. };
-
-
-
 class StateComponent : public Component
 {
+
 public:
 	StateComponent(Json::Value definitionJSON);
 	~StateComponent() = default;
@@ -38,14 +27,14 @@ public:
 	virtual void postInit() override;
 	virtual void setParent(GameObject* gameObject) override;
 
+	virtual void addState(int state);
+	virtual void removeState(int state);
+	virtual bool testState(int state);
+
 protected:
 
-	virtual void transitionTo(GameObjectState gameObjectState);
-	virtual void setState(GameObjectState state);
-	virtual void initializeMutuallyExclusiveStates();
-
-	std::set<State> m_states;
-	//std::unordered_map<GameObjectState, StateRules> rules;
+	std::bitset<64> m_states;
+	std::vector< StateTransition> m_transitions;
 
 private:
 	

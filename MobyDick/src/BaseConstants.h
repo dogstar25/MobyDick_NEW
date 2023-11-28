@@ -124,14 +124,6 @@ namespace TraitTag {
 
 }
 
-namespace StateTag {
-
-	inline constexpr int disabledUpdate = 1;
-	inline constexpr int disabledPhysics = 2;
-	inline constexpr int disabledRender = 3;
-	inline constexpr int disabledCollision = 4;
-}
-
 namespace BrainState {
 
 	inline constexpr auto IDLE = 0;
@@ -227,27 +219,24 @@ enum class LightType {
 	RAY_LIGHT
 };
 
-enum class GameObjectState {
+namespace GameObjectState {
 
-	ON,
-	OFF,
-	OPENED,
-	CLOSED,
-	IDLE,
-	WALK,
-	RUN,
-	SPRINT,
-	JUMP,
-	CLIMB,
-	DEAD,
-	DEPLOYED,
-	CONCEALED,
-	IMPASSABLE,
-	ITEM_OBTAINABLE,
-	ITEM_LOOSE,
-	ITEM_STORED_ENCLOSED,
-	ITEM_STORED_OPEN, 
-	ITEM_STORED_PLAYER
+	inline constexpr int ON = 1;
+	inline constexpr int OFF = 2;
+	inline constexpr int OPENED = 3;
+	inline constexpr int CLOSED = 4;
+	inline constexpr int IDLE = 5;
+	inline constexpr int WALK = 6;
+	inline constexpr int RUN = 7;
+	inline constexpr int SPRINT = 8;
+	inline constexpr int JUMP = 9;
+	inline constexpr int CLIMB = 10;
+	inline constexpr int DEAD = 11;
+	inline constexpr int DISABLED_UPDATE = 12;
+	inline constexpr int DISABLED_PHYSICS = 13;
+	inline constexpr int DISABLED_RENDER = 14;
+	inline constexpr int DISABLED_COLLISION = 15;
+
 
 };
 
@@ -295,20 +284,6 @@ namespace ComponentTypes {
 	
 	inline constexpr int LAST_BASE_COMPONENT = 30;
 
-}
-
-//Animation States
-inline constexpr int MAX_ANIMATION_STATES = 20;
-namespace AnimationState {
-
-	inline constexpr int IDLE = 0;
-	inline constexpr int RUN = 1;
-	inline constexpr int ACTIVE = 2;
-	inline constexpr int ACTION = 3;
-	inline constexpr int DEPLOY = 4;
-	inline constexpr int UNDEPLOY = 5;
-	inline constexpr int DEAD = 6;
-	inline constexpr int SPRINT = 7;
 }
 
 //Animation Modes

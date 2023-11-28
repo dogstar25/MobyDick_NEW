@@ -109,7 +109,6 @@ public:
 	void postInit();
 	bool hasTrait(int32_t trait) { return m_traitTags.test(trait); }
 	std::bitset<62> traits() {	return m_traitTags;	}
-	std::bitset<8> states() { return m_stateTags; }
 	void addTrait(int32_t trait) { m_traitTags.set(trait, true); }
 	void removeTrait(int32_t trait) { m_traitTags.set(trait, false); }
 	void dispatch(SDL_FPoint destination);
@@ -121,19 +120,19 @@ public:
 
 	void disableUpdate();
 	void enableUpdate();
-	bool updateDisabled() { return m_stateTags.test(StateTag::disabledUpdate); }
+	bool updateDisabled();
 
 	void disablePhysics();
 	void enablePhysics();
-	bool physicsDisabled() { return m_stateTags.test(StateTag::disabledPhysics); }
+	bool physicsDisabled();
 
 	void disableRender();
 	void enableRender();
-	bool renderDisabled() { return m_stateTags.test(StateTag::disabledRender); }
+	bool renderDisabled();
 
 	void disableCollision(bool includeSensors=false);
 	void enableCollision();
-	bool collisionDisabled() { return m_stateTags.test(StateTag::disabledCollision); }
+	bool collisionDisabled();
 
 	//Accessor Functions
 	const std::string& id() const { return m_id; }
@@ -243,7 +242,6 @@ private:
 	bool m_removeFromWorld{ false };
 	Scene* m_parentScene{nullptr};
 	std::bitset<62> m_traitTags{};
-	std::bitset<8> m_stateTags{};
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_touchingGameObjects{};
 
 	GameObjectDefinition m_gameObjectDefinition;

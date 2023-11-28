@@ -50,7 +50,7 @@ public:
 	void setToDefaultAnimation();
 	void setFlash(SDL_Color flashColor, float flashSpeed, int flashTimes);
 
-	std::array<Animation, MAX_ANIMATION_STATES>& animations() { return m_animations; }
+	std::unordered_map<std::string, Animation>& animations() { return m_animations; }
 
 private:
 
@@ -58,7 +58,7 @@ private:
 	int m_currentAnimationMode { ANIMATE_ONE_TIME };
 	int m_defaultAnimationState {};
 	b2Vec2 m_frameSize{};
-	std::array<Animation, MAX_ANIMATION_STATES> m_animations;
+	std::unordered_map<std::string, Animation> m_animations;
 
 	std::optional<FlashAnimation> m_flashAnimation{};
 };

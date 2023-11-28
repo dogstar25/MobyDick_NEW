@@ -773,17 +773,42 @@ int GameObject::brainState()
 
 void GameObject::disableUpdate()
 {
-	m_stateTags.set(StateTag::disabledUpdate, true);
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_UPDATE);
+	}
 
 }
 void GameObject::enableUpdate()
 {
-	m_stateTags.set(StateTag::disabledUpdate, false);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_UPDATE);
+	}
 
 }
+bool GameObject::updateDisabled()
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->testState(GameObjectState::DISABLED_UPDATE);
+	}
+
+}
+
 void GameObject::disablePhysics()
 {
-	m_stateTags.set(StateTag::disabledPhysics, true);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_PHYSICS);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 
@@ -797,7 +822,11 @@ void GameObject::disablePhysics()
 
 void GameObject::enablePhysics()
 {
-	m_stateTags.set(StateTag::disabledPhysics, false);
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_PHYSICS);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 
@@ -809,19 +838,60 @@ void GameObject::enablePhysics()
 	}
 
 }
+
+bool GameObject::physicsDisabled()
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		return stateComponent->testState(GameObjectState::DISABLED_PHYSICS);
+	}
+
+	return false;
+
+}
+
 void GameObject::disableRender()
 {
-	m_stateTags.set(StateTag::disabledRender, true);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_COLLISION);
+	}
+
 }
 
 void GameObject::enableRender()
 {
-	m_stateTags.set(StateTag::disabledRender, false);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_COLLISION);
+	}
+
+}
+
+bool GameObject::renderDisabled()
+{
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->testState(GameObjectState::DISABLED_RENDER);
+	}
+
 }
 
 void GameObject::disableCollision(bool includeSensors)
 {
-	m_stateTags.set(StateTag::disabledCollision, true);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_COLLISION);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
@@ -839,7 +909,11 @@ void GameObject::disableCollision(bool includeSensors)
 
 void GameObject::enableCollision()
 {
-	m_stateTags.set(StateTag::disabledCollision, false);
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_COLLISION);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
@@ -852,6 +926,18 @@ void GameObject::enableCollision()
 	}
 
 }
+
+bool GameObject::collisionDisabled()
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->testState(GameObjectState::DISABLED_COLLISION);
+	}
+
+}
+
 
 void GameObject::setCollisionTag( int contactTag)
 {
