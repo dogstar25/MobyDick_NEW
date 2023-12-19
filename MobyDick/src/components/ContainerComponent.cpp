@@ -1,4 +1,5 @@
 #include "ContainerComponent.h"
+#include "StateComponent.h"
 #include "../Util.h"
 
 ContainerComponent::ContainerComponent()
@@ -81,13 +82,16 @@ void ContainerComponent::update()
 
 	//Animation
 	if (parent()->hasComponent(ComponentTypes::ANIMATION_COMPONENT)) {
-		const auto& animation = parent()->getComponent<AnimationComponent>(ComponentTypes::ANIMATION_COMPONENT);
+		const auto& stateComponent = parent()->getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
 		if (isEmpty()) {
 
-			animation->setCurrentAnimationState(AnimationState::IDLE);
+			stateComponent->addState(GameObjectState::ON);
+
 		}
 		else {
-			animation->setCurrentAnimationState(AnimationState::ACTIVE);
+
+			stateComponent->addState(GameObjectState::OFF);
+
 		}
 	}
 

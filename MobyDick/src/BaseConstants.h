@@ -287,8 +287,13 @@ namespace ComponentTypes {
 }
 
 //Animation Modes
-inline constexpr int ANIMATE_ONE_TIME = 0;
-inline constexpr int ANIMATE_CONTINUOUS = 1;
+enum class AnimationMode {
+
+	ANIMATE_ONE_TIME = 0,
+	ANIMATE_CONTINUOUS,
+	ANIMATE_STILL_FRAME
+
+};
 
 //Player Control
 inline constexpr int INPUT_CONTROL_MOVEMENT = 1;

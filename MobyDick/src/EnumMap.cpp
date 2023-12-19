@@ -86,15 +86,10 @@ EnumMap::EnumMap()
 	m_enumMap["PhysicsChainType::CCW_REFLECT_IN"] = (int)PhysicsChainType::CCW_REFLECT_IN;
 	m_enumMap["PhysicsChainType::CW_REFLECT_OUT"] = (int)PhysicsChainType::CW_REFLECT_OUT;
 
-	//Animation Statessdpssss
-	m_enumMap["AnimationState::IDLE"] = AnimationState::IDLE;
-	m_enumMap["AnimationState::RUN"] = AnimationState::RUN;
-	m_enumMap["AnimationState::ACTIVE"] = AnimationState::ACTIVE;
-	m_enumMap["AnimationState::ACTION"] = AnimationState::ACTION;
-	m_enumMap["AnimationState::DEPLOY"] = AnimationState::DEPLOY;
-	m_enumMap["AnimationState::UNDEPLOY"] = AnimationState::UNDEPLOY;
-	m_enumMap["AnimationState::DEAD"] = AnimationState::DEAD;
-	m_enumMap["AnimationState::SPRINT"] = AnimationState::SPRINT;
+	//Animation Modes
+	m_enumMap["AnimationMode::ANIMATE_ONE_TIME"] = (int)AnimationMode::ANIMATE_ONE_TIME;
+	m_enumMap["AnimationMode::ANIMATE_CONTINUOUS"] = (int)AnimationMode::ANIMATE_CONTINUOUS;
+	m_enumMap["AnimationMode::ANIMATE_STILL_FRAME"] = (int)AnimationMode::ANIMATE_STILL_FRAME;
 
 	//Player Control
 	m_enumMap["INPUT_CONTROL_MOVEMENT"] = INPUT_CONTROL_MOVEMENT;
@@ -277,9 +272,27 @@ EnumMap::EnumMap()
 	m_enumMap["NavigationSizeCategory::MEDIUM"] = NavigationSizeCategory::MEDIUM;
 	m_enumMap["NavigationSizeCategory::LARGE"] = NavigationSizeCategory::LARGE;
 
-
+	//Condition Operators
 	m_enumMap["ConditionOperator::AND"] = (int)ConditionOperator::AND;
 	m_enumMap["ConditionOperator::OR"] = (int)ConditionOperator::OR;
+
+	//GameObject States
+	m_enumMap["GameObjectState::ON"] = GameObjectState::ON;
+	m_enumMap["GameObjectState::OFF"] = GameObjectState::OFF;
+	m_enumMap["GameObjectState::OPENED"] = GameObjectState::OPENED;
+	m_enumMap["GameObjectState::CLOSED"] = GameObjectState::CLOSED;
+	m_enumMap["GameObjectState::IDLE"] = GameObjectState::IDLE;
+	m_enumMap["GameObjectState::WALK"] = GameObjectState::WALK;
+	m_enumMap["GameObjectState::RUN"] = GameObjectState::RUN;
+	m_enumMap["GameObjectState::SPRINT"] = GameObjectState::SPRINT;
+	m_enumMap["GameObjectState::JUMP"] = GameObjectState::JUMP;
+	m_enumMap["GameObjectState::CLIMB"] = GameObjectState::CLIMB;
+	m_enumMap["GameObjectState::DEAD"] = GameObjectState::DEAD;
+	m_enumMap["GameObjectState::DISABLED_UPDATE"] = GameObjectState::DISABLED_UPDATE;
+	m_enumMap["GameObjectState::DISABLED_PHYSICS"] = GameObjectState::DISABLED_PHYSICS;
+	m_enumMap["GameObjectState::DISABLED_RENDER"] = GameObjectState::DISABLED_RENDER;
+	m_enumMap["GameObjectState::DISABLED_COLLISION"] = GameObjectState::DISABLED_COLLISION;
+	
 
 }
 

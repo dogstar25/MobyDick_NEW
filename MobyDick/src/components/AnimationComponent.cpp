@@ -11,13 +11,6 @@ AnimationComponent::AnimationComponent(Json::Value componentJSON)
 {
 	m_componentType = ComponentTypes::ANIMATION_COMPONENT;
 
-	if (componentJSON.isMember("defaultState")) {
-		m_defaultAnimationState = game->enumMap()->toEnum(componentJSON["defaultState"].asString());
-	}
-	else {
-		m_defaultAnimationState=0;
-	}
-
 	m_frameSize.x = componentJSON["frameSize"]["width"].asFloat();
 	m_frameSize.y = componentJSON["frameSize"]["height"].asFloat();
 
@@ -25,19 +18,68 @@ AnimationComponent::AnimationComponent(Json::Value componentJSON)
 	for (Json::Value animItr : componentJSON["animations"])
 	{
 		i++;
-		int state = game->enumMap()->toEnum(animItr["state"].asString());
+		std::string id = animItr["id"].asString();
+		std::string textureId = animItr["textureId"].asString();
 
 		//Initialze current animation state to the first animation in the list
-		if (i == 1) {
-			m_currentAnimationState = state;
+		Animation animation;
+		
+		animation.animationMode = (AnimationMode)game->enumMap()->toEnum(animItr["animateMode"].asString());
+		animation.speed = animItr["speed"].asFloat();
+		animation.texture = TextureManager::instance().getTexture(textureId);
+		animation.frameCount = animItr["frames"].asInt();
+
+		//Calculate how many columns and rows this animation texture has
+		int rows, columns;
+		columns = (int)(animation.texture->textureAtlasQuad.w / m_frameSize.x);
+		rows = (int)(animation.texture->textureAtlasQuad.h / m_frameSize.y);
+
+		//Calculate top left corner of each animation frame
+		SDL_FPoint point;
+		int frameCount = 0;
+		for (int rowIdx = 0; rowIdx < rows; rowIdx++)
+		{
+			for (int colIdx = 0; colIdx < columns; colIdx++)
+			{
+				point.x = animation.texture->textureAtlasQuad.x + (colIdx * m_frameSize.x);
+				point.y = animation.texture->textureAtlasQuad.y + (rowIdx * m_frameSize.y);
+				animation.animationFramePositions.push_back(point);
+				//do not exceed the maximum number of frames that this texture holds
+				frameCount++;
+				if (frameCount >= animation.frameCount)
+				{
+					break;
+				}
+			}
 		}
 
-		m_animations[state] = Animation(animItr, m_frameSize);
+
+		//initialize the current texture source rect to the first frame of animation
+		animation.currentTextureAnimationSrcRect = std::make_shared <SDL_Rect>();
+		animation.currentTextureAnimationSrcRect->x = (int)animation.animationFramePositions.begin()[0].x;
+		animation.currentTextureAnimationSrcRect->y = (int)animation.animationFramePositions.begin()[0].y;
+		animation.currentTextureAnimationSrcRect->w = (int)m_frameSize.x;
+		animation.currentTextureAnimationSrcRect->h = (int)m_frameSize.y;
+
+		//Store the animation object
+		m_animations[id] = animation;
 
 	}
+
+	//If a default state is defined then set it, otherwise just use the first animation item in the map
+	if (componentJSON.isMember("defaultState")) {
+
+		std::string defaultAnimationId = componentJSON["defaultState"].asString();
+		m_defaultAnimation = m_animations[defaultAnimationId];
+
+	}
+	else {
+		auto firstEntry = *m_animations.begin();
+		m_defaultAnimation = firstEntry.second;
+	}
+
+
 }
-
-
 
 AnimationComponent::~AnimationComponent()
 {
@@ -48,88 +90,137 @@ AnimationComponent::~AnimationComponent()
 void AnimationComponent::setToDefaultAnimation()
 {
 
-	m_currentAnimationState = m_defaultAnimationState;
+	m_currentAnimation = m_defaultAnimation;
 
 }
 
+void AnimationComponent::postInit()
+{
+
+	//Make sure we have an animation set
+	if (m_currentAnimation.has_value() == false) {
+		m_currentAnimation = m_defaultAnimation;
+	}
+
+}
 
 void AnimationComponent::update()
 {
 
-	if (m_animations.size() > 0) {
+	//Execute the next animation frame in the current animation
+	if (m_currentAnimation.value().timer.hasMetTargetDuration())
+	{
 
-		auto animationFrame = m_animations[m_currentAnimationState].animate(parent());
-
-		//If this animation has completed and it was a one-time animate, then reset the current
-		//animation to the default, and put it in continuous mode (probably IDLE)
-		if (animationFrame == 0) {
-
-			if (m_currentAnimationMode == ANIMATE_ONE_TIME) {
-				m_currentAnimationState = m_defaultAnimationState;
-				m_currentAnimationMode = ANIMATE_CONTINUOUS;
-			}
+		//Increment animation frame counter and reset if it exceeds last one
+		if (m_currentAnimation.value().frameCount > 1) {
+			m_currentAnimation.value().currentAnimFrame += 1;
 		}
+
+		if (m_currentAnimation.value().currentAnimFrame >
+			m_currentAnimation.value().frameCount - 1) {
+
+			m_currentAnimation.value().currentAnimFrame = 0;
+		}
+
+		//build the rectangle that points to the current animation frame
+		std::shared_ptr<SDL_Rect> rect = std::make_shared<SDL_Rect>();
+
+		rect->x = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].x;
+		rect->y = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].y;
+
+		rect->w = (int)m_frameSize.x;
+		rect->h = (int)m_frameSize.y;
+
+		m_currentAnimation.value().currentTextureAnimationSrcRect = rect;
+	}
+
+	//If the animation frame has stared back over, and it should only execute once
+	// then set the current animation to the default animation
+	if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME &&
+		m_currentAnimation.value().currentAnimFrame == 0) {
+
+		m_currentAnimation = m_defaultAnimation;
+
 	}
 
 	//Should we flash?
 	if (m_flashAnimation.has_value()) {
 
-		const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-
-		//Have we flashed the correct number of times
-		if (m_flashAnimation.value().flashCount <= m_flashAnimation.value().flashTimes) {
-
-			//Flash at the defined speed
-			if (m_flashAnimation.value().speedTimer.hasMetTargetDuration()) {
-
-				//If the flashStatus is ON, then remove the color treatment, otherwise add it
-				if (m_flashAnimation.value().flashFlag == FlashFlag::flashOFF) {
-
-					//Build a render overlay to apply to the render component
-					DisplayOverlay displayOverlay{};
-					displayOverlay.color = m_flashAnimation.value().flashColor;
-					displayOverlay.color.value().a = m_flashAnimation.value().flashAlpha;
-
-					renderComponent->applyDisplayOverlay(displayOverlay);
-
-					m_flashAnimation.value().flashCount += 1;
-
-					m_flashAnimation.value().flashFlag = FlashFlag::flashON;
-
-				}
-				else {
-					renderComponent->removeDisplayOverlay();
-					m_flashAnimation.value().flashFlag = FlashFlag::flashOFF;
-				}
-
-				//reset flashTimer
-				m_flashAnimation.value().speedTimer.reset();
-			}
-
-		}
-		else {
-			renderComponent->removeDisplayOverlay();
-			m_flashAnimation.reset();
-		}
+		_handleFlashing();
 
 	}
 
 }
 
-void AnimationComponent::animate(int animationState, int animationMode)
+void AnimationComponent::animate(std::string animationId, float speed)
 {
 
-	m_currentAnimationState = animationState;
-	m_currentAnimationMode = animationMode;
+	if (m_animations.find(animationId) != m_animations.end()) {
+
+		m_currentAnimation = m_animations[animationId];
+
+		//If the speed was passed in then ue it as the animation speed
+		if (speed != 0.) {
+			m_currentAnimation.value().speed = speed;
+		}
+
+	}
+
 
 }
+
+void AnimationComponent::_handleFlashing()
+{
+
+
+	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+	//Have we flashed the correct number of times
+	if (m_flashAnimation.value().flashCount <= m_flashAnimation.value().flashTimes) {
+
+		//Flash at the defined speed
+		if (m_flashAnimation.value().speedTimer.hasMetTargetDuration()) {
+
+			//If the flashStatus is ON, then remove the color treatment, otherwise add it
+			if (m_flashAnimation.value().flashFlag == FlashFlag::flashOFF) {
+
+				//Build a render overlay to apply to the render component
+				DisplayOverlay displayOverlay{};
+				displayOverlay.color = m_flashAnimation.value().flashColor;
+				displayOverlay.color.value().a = m_flashAnimation.value().flashAlpha;
+
+				renderComponent->applyDisplayOverlay(displayOverlay);
+
+				m_flashAnimation.value().flashCount += 1;
+
+				m_flashAnimation.value().flashFlag = FlashFlag::flashON;
+
+			}
+			else {
+				renderComponent->removeDisplayOverlay();
+				m_flashAnimation.value().flashFlag = FlashFlag::flashOFF;
+			}
+
+			//reset flashTimer
+			m_flashAnimation.value().speedTimer.reset();
+		}
+
+	}
+	else {
+		renderComponent->removeDisplayOverlay();
+		m_flashAnimation.reset();
+	}
+
+
+}
+
 
 
 SDL_Rect* AnimationComponent::getCurrentAnimationTextureRect()
 {
 	//assert(m_animations.find(m_currentAnimationState) != m_animations.end() && "Animation State not found in animations collection");
 
-	const auto& animationTextureRect = m_animations[m_currentAnimationState].getCurrentTextureAnimationSrcRect();
+	const auto& animationTextureRect = m_currentAnimation.value().currentTextureAnimationSrcRect;
 	return animationTextureRect.get();
 
 }
@@ -138,14 +229,19 @@ std::shared_ptr<Texture> AnimationComponent::getCurrentAnimationTexture()
 {
 
 	//assert(m_animations.find(m_currentAnimationState) != m_animations.end() && "Animation State not found in animations collection");
-	return m_animations.at(m_currentAnimationState).getTexture();
+	return m_currentAnimation.value().texture;
 
 
 }
 
-void AnimationComponent::setDefaultAnimationState(int defaultAnimationState)
+void AnimationComponent::setDefaultAnimationState(std::string animationId)
 {
-	m_defaultAnimationState = defaultAnimationState;
+
+	if (m_animations.find(animationId) != m_animations.end()) {
+
+		m_defaultAnimation = m_animations[animationId];
+
+	}
 }
 
 void AnimationComponent::setFlash(SDL_Color flashColor, float flashSpeed, int flashTimes)

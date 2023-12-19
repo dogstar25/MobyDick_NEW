@@ -9,6 +9,36 @@ StateComponent::StateComponent(Json::Value componentJSON)
 
 	m_componentType = ComponentTypes::STATE_COMPONENT;
 
+	if (componentJSON.isMember("transitions")) {
+
+		for (Json::Value itrItem : componentJSON["transitions"])
+		{
+
+			StateTransition stateTransition;
+			stateTransition.fromState = game->enumMap()->toEnum(itrItem["from"].asString());
+			stateTransition.toState = game->enumMap()->toEnum(itrItem["to"].asString());
+			stateTransition.transitionDuration = itrItem["duration"].asFloat();
+			stateTransition.animationId = itrItem["animationId"].asString();
+
+			m_transitions.push_back(stateTransition);
+		}
+	}
+
+	if (componentJSON.isMember("renderStates")) {
+
+		for (Json::Value itrItem : componentJSON["renderStates"])
+		{
+
+			RenderState renderState;
+			renderState.state = game->enumMap()->toEnum(itrItem["state"].asString());
+			renderState.animationId = itrItem["animationId"].asString();
+
+			m_renderStates[renderState.state] = renderState;
+
+		}
+	}
+
+
 
 }
 
@@ -27,6 +57,23 @@ bool StateComponent::testState(int state)
 
 }
 
+void StateComponent::_addState(int state)
+{
+
+	m_states.set(state, true);
+
+	//See if there is a render state defined for this state
+	if (m_renderStates.find(state) != m_renderStates.end() && parent()->hasComponent(ComponentTypes::ANIMATION_COMPONENT)) {
+
+		const auto& renderState = m_renderStates[state];
+
+		const auto& animationComponent = parent()->getComponent<AnimationComponent>(ComponentTypes::ANIMATION_COMPONENT);
+		animationComponent->animate(renderState.animationId);
+
+	}
+
+}
+
 void StateComponent::removeState(int newState)
 {
 
@@ -38,9 +85,13 @@ void StateComponent::removeState(int newState)
 void StateComponent::addState(int newState)
 {
 
-	m_states.set(newState, true);
+	//Check to see if we have a transition defined for this state combination
+	//Also, if the gameObject already has the state, dont try to set it again
+	if (_checkTransition(newState) == false and testState(newState) == false) {
 
-	switch (newState) {
+		_addState(newState);
+
+		switch (newState) {
 
 		case GameObjectState::IDLE:
 
@@ -100,8 +151,9 @@ void StateComponent::addState(int newState)
 
 			SDL_assert(true && "No match for State!");
 
-	}
+		}
 
+	}
 
 }
 
@@ -116,7 +168,7 @@ void StateComponent::update()
 		if (transition.transitionTimer.has_value() == true &&
 			transition.transitionTimer.value().hasMetTargetDuration() == true) {
 
-			m_states.set(transition.toState, true);
+			_addState(transition.toState);
 			transition.transitionTimer = std::nullopt;
 
 		}

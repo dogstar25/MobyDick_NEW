@@ -796,8 +796,10 @@ bool GameObject::updateDisabled()
 	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
-		stateComponent->testState(GameObjectState::DISABLED_UPDATE);
+		return stateComponent->testState(GameObjectState::DISABLED_UPDATE);
 	}
+
+	return false;
 
 }
 
@@ -879,8 +881,10 @@ bool GameObject::renderDisabled()
 	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
-		stateComponent->testState(GameObjectState::DISABLED_RENDER);
+		return stateComponent->testState(GameObjectState::DISABLED_RENDER);
 	}
+
+	return false;
 
 }
 
@@ -933,8 +937,10 @@ bool GameObject::collisionDisabled()
 	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
-		stateComponent->testState(GameObjectState::DISABLED_COLLISION);
+		return stateComponent->testState(GameObjectState::DISABLED_COLLISION);
 	}
+
+	return false;
 
 }
 

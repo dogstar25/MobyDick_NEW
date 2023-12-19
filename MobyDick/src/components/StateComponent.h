@@ -3,6 +3,7 @@
 #include <optional>
 #include <set>
 #include <map>
+#include <unordered_map>
 
 #include "../GameObject.h"
 
@@ -13,6 +14,14 @@ struct StateTransition {
 	int toState{};
 	float transitionDuration{};
 	std::optional<Timer> transitionTimer{};
+	std::string animationId{};
+
+};
+
+struct RenderState {
+
+	int state{};
+	std::string animationId{};
 
 };
 
@@ -33,10 +42,16 @@ public:
 
 protected:
 
-	std::bitset<64> m_states;
+	std::bitset<128> m_states;
 	std::vector< StateTransition> m_transitions;
+	std::unordered_map<int, RenderState> m_renderStates;
+
+	void _addState(int state);
+	virtual bool _checkTransition(int state) { return false; }
 
 private:
+
+	
 	
 
 	
