@@ -17,7 +17,7 @@ class TransformComponent;
 
 struct Animation
 {
-
+	std::string id{};
 	float   speed{ 0 };
 	AnimationMode animationMode{ AnimationMode::ANIMATE_ONE_TIME };
 	int     frameCount{ 0 };
@@ -80,7 +80,7 @@ private:
 	std::optional<FlashAnimation> m_flashAnimation{};
 
 	void _handleFlashing();
-	int _animate();
+	std::string _getCurrentAnimationFromState();
 };
 
 #endif

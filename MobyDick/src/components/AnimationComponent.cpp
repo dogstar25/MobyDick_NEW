@@ -24,6 +24,7 @@ AnimationComponent::AnimationComponent(Json::Value componentJSON)
 		//Initialze current animation state to the first animation in the list
 		Animation animation;
 		
+		animation.id = id;
 		animation.animationMode = (AnimationMode)game->enumMap()->toEnum(animItr["animateMode"].asString());
 		animation.speed = animItr["speed"].asFloat();
 		animation.texture = TextureManager::instance().getTexture(textureId);
@@ -67,9 +68,9 @@ AnimationComponent::AnimationComponent(Json::Value componentJSON)
 	}
 
 	//If a default state is defined then set it, otherwise just use the first animation item in the map
-	if (componentJSON.isMember("defaultState")) {
+	if (componentJSON.isMember("default")) {
 
-		std::string defaultAnimationId = componentJSON["defaultState"].asString();
+		std::string defaultAnimationId = componentJSON["default"].asString();
 		m_defaultAnimation = m_animations[defaultAnimationId];
 
 	}
@@ -107,6 +108,21 @@ void AnimationComponent::postInit()
 void AnimationComponent::update()
 {
 
+	auto animationId = _getCurrentAnimationFromState();
+
+	if (parent()->hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		animate(animationId);
+
+	}
+
+	if (m_currentAnimation.value().timer.firstTime == true) {
+
+		m_currentAnimation.value().timer = Timer(m_currentAnimation.value().speed, true);
+		m_currentAnimation.value().timer.firstTime = false;
+
+	}
+
 	//Execute the next animation frame in the current animation
 	if (m_currentAnimation.value().timer.hasMetTargetDuration())
 	{
@@ -134,7 +150,7 @@ void AnimationComponent::update()
 		m_currentAnimation.value().currentTextureAnimationSrcRect = rect;
 	}
 
-	//If the animation frame has stared back over, and it should only execute once
+	//If the animation frame has started back over, and it should only execute once
 	// then set the current animation to the default animation
 	if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME &&
 		m_currentAnimation.value().currentAnimFrame == 0) {
@@ -152,10 +168,12 @@ void AnimationComponent::update()
 
 }
 
+// Use this directly when NOT tied to a state component
 void AnimationComponent::animate(std::string animationId, float speed)
 {
 
-	if (m_animations.find(animationId) != m_animations.end()) {
+	//If we are not already animating this particular animation then set it as our current animation
+	if (m_currentAnimation.has_value() && m_currentAnimation.value().id != animationId && m_animations.find(animationId) != m_animations.end()) {
 
 		m_currentAnimation = m_animations[animationId];
 
@@ -212,6 +230,22 @@ void AnimationComponent::_handleFlashing()
 	}
 
 
+}
+
+std::string AnimationComponent::_getCurrentAnimationFromState()
+{
+
+	const auto& stateComponent = parent()->getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+
+	auto currentanimationId = stateComponent->getCurrentAnimatedState();
+
+	if (currentanimationId.has_value()) {
+
+		return currentanimationId.value();
+
+	}
+
+	return m_defaultAnimation.id;
 }
 
 

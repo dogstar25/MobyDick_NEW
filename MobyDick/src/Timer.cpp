@@ -8,7 +8,7 @@ Timer::Timer(float targetDuration, bool autoReset) : m_targetDuration(targetDura
         m_infiniteLifetime = true;
     }
 
-    firstTime = false;
+    //firstTime = false;
 }
 
 std::chrono::duration<float> Timer::timeElapsed() 

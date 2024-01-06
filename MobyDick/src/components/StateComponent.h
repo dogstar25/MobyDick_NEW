@@ -14,7 +14,7 @@ struct StateTransition {
 	int toState{};
 	float transitionDuration{};
 	std::optional<Timer> transitionTimer{};
-	std::string animationId{};
+	std::optional<std::string> animationId{};
 
 };
 
@@ -40,14 +40,18 @@ public:
 	virtual void removeState(int state);
 	virtual bool testState(int state);
 
+	std::optional<StateTransition> getCurrentTransition();
+	std::optional<std::string> getCurrentAnimatedState();
+
 protected:
 
+	int m_beginState{};
 	std::bitset<128> m_states;
 	std::vector< StateTransition> m_transitions;
-	std::unordered_map<int, RenderState> m_renderStates;
+	std::unordered_map<int, RenderState> m_animationStates;
 
-	void _addState(int state);
-	virtual bool _checkTransition(int state) { return false; }
+	virtual bool _hasTransitionDuration(int state) { return false; }
+	void _setAndReconcileState(int State);
 
 private:
 

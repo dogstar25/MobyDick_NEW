@@ -352,29 +352,4 @@ void InventoryComponent::hideInventory()
 
 }
 
-void InventoryComponent::_setItemSize(std::shared_ptr<GameObject> gameObject)
-{
-
-	//Is is an inventory object that also acts as its own grid display, like a shelf?
-	if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
-
-		//Get slot size
-		float slotSize = parent()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT)->getItemSlotSize();
-
-		gameObject->setSize(b2Vec2(slotSize, slotSize));
-
-	}
-	else {
-
-		if (m_displayObject.has_value()) {
-
-			float slotSize = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT)->getItemSlotSize();
-			gameObject->setSize(b2Vec2(slotSize, slotSize));
-		}
-
-	}
-
-
-}
-
 
