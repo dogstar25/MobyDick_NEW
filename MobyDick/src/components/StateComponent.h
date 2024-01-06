@@ -3,33 +3,31 @@
 #include <optional>
 #include <set>
 #include <map>
+#include <unordered_map>
 
 #include "../GameObject.h"
-#include "../stateRules/baseStateRules.h"
 
 
-struct State {
+struct StateTransition {
 
-	GameObjectState state{};
+	int fromState{};
+	int toState{};
 	float transitionDuration{};
-	Timer transitionTimer{};
-
-	// Define the less-than operator for ordering in the set
-	//Allows for using .contains and ,erase
-	bool operator<(const State& other) const {
-		return state < other.state;
-	}
+	std::optional<Timer> transitionTimer{};
+	std::optional<std::string> animationId{};
 
 };
 
-//not working
-//i need to overide this in game
-inline State idleState = { GameObjectState::IDLE, 0. };
+struct RenderState {
 
+	int state{};
+	std::string animationId{};
 
+};
 
 class StateComponent : public Component
 {
+
 public:
 	StateComponent(Json::Value definitionJSON);
 	~StateComponent() = default;
@@ -38,16 +36,26 @@ public:
 	virtual void postInit() override;
 	virtual void setParent(GameObject* gameObject) override;
 
+	virtual void addState(int state);
+	virtual void removeState(int state);
+	virtual bool testState(int state);
+
+	std::optional<StateTransition> getCurrentTransition();
+	std::optional<std::string> getCurrentAnimatedState();
+
 protected:
 
-	virtual void transitionTo(GameObjectState gameObjectState);
-	virtual void setState(GameObjectState state);
-	virtual void initializeMutuallyExclusiveStates();
+	int m_beginState{};
+	std::bitset<128> m_states;
+	std::vector< StateTransition> m_transitions;
+	std::unordered_map<int, RenderState> m_animationStates;
 
-	std::set<State> m_states;
-	//std::unordered_map<GameObjectState, StateRules> rules;
+	virtual bool _hasTransitionDuration(int state) { return false; }
+	void _setAndReconcileState(int State);
 
 private:
+
+	
 	
 
 	

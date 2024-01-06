@@ -300,7 +300,6 @@
     <ClCompile Include="src\components\PhysicsComponent.cpp" />
     <ClCompile Include="src\components\RenderComponent.cpp" />
     <ClCompile Include="src\components\Component.cpp" />
-    <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Clock.cpp" />
     <ClCompile Include="src\components\TransformComponent.cpp" />
@@ -412,7 +411,6 @@
     <ClInclude Include="src\components\PhysicsComponent.h" />
     <ClInclude Include="src\components\RenderComponent.h" />
     <ClInclude Include="src\components\Component.h" />
-    <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Clock.h" />
     <ClInclude Include="src\components\TransformComponent.h" />

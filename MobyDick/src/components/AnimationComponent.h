@@ -10,10 +10,30 @@
 #include <SDL2/SDL.h>
 
 #include "Component.h"
-#include "../Animation.h"
 #include "../texture.h"
+#include "../Timer.h"
 
 class TransformComponent;
+
+struct Animation
+{
+	std::string id{};
+	float   speed{ 0 };
+	AnimationMode animationMode{ AnimationMode::ANIMATE_ONE_TIME };
+	int     frameCount{ 0 };
+	int     currentAnimFrame{ 0 };
+	b2Vec2 	frameSize{ 0,0 };
+
+	//a rectangle pointing to the animation textture of the animation frame to be displayed
+	std::shared_ptr<SDL_Rect> currentTextureAnimationSrcRect;
+
+	//Array of all x,y coordinates of the top left corner of each animation frame in the texture
+	std::vector<SDL_FPoint> animationFramePositions;
+	std::shared_ptr<Texture> texture{};
+	Timer timer;
+
+};
+
 
 enum class FlashFlag {
 	flashON,
@@ -39,28 +59,28 @@ public:
 	~AnimationComponent();
 
 	void update() override;
+	void postInit() override;
+
 	SDL_Rect* getCurrentAnimationTextureRect();
 	std::shared_ptr<Texture> getCurrentAnimationTexture();
-	void animate(int animationState, int animationMode);
+	void animate(std::string animationId, float speed=0.0);
 
-	void setCurrentAnimationState(int animationState) { m_currentAnimationState = animationState; }
-	int currentAnimationState() { return m_currentAnimationState; }
-	int defaultAnimationState() { return m_defaultAnimationState; }
-	void setDefaultAnimationState(int defaultAnimationState);
+	void setDefaultAnimationState(std::string animationId);
 	void setToDefaultAnimation();
 	void setFlash(SDL_Color flashColor, float flashSpeed, int flashTimes);
 
-	std::array<Animation, MAX_ANIMATION_STATES>& animations() { return m_animations; }
+	std::unordered_map<std::string, Animation>& animations() { return m_animations; }
 
 private:
 
-	int m_currentAnimationState {};
-	int m_currentAnimationMode { ANIMATE_ONE_TIME };
-	int m_defaultAnimationState {};
+	std::optional<Animation> m_currentAnimation {};
+	Animation m_defaultAnimation {};
 	b2Vec2 m_frameSize{};
-	std::array<Animation, MAX_ANIMATION_STATES> m_animations;
-
+	std::unordered_map<std::string, Animation> m_animations;
 	std::optional<FlashAnimation> m_flashAnimation{};
+
+	void _handleFlashing();
+	std::string _getCurrentAnimationFromState();
 };
 
 #endif

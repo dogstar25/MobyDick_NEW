@@ -24,7 +24,6 @@
 #include "imgui_impl_sdlrenderer.h"
 
 //MobyDick
-#include "../src/Animation.h"
 #include "../src/BaseConstants.h"
 #include "../src/Blueprint.h"
 #include "../src/BrainAABBCallback.h"
