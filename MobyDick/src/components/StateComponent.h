@@ -4,14 +4,15 @@
 #include <set>
 #include <map>
 #include <unordered_map>
+#include "../BaseConstants.h"
 
 #include "../GameObject.h"
 
 
 struct StateTransition {
 
-	int fromState{};
-	int toState{};
+	GameObjectState fromState{};
+	GameObjectState toState{};
 	float transitionDuration{};
 	std::optional<Timer> transitionTimer{};
 	std::optional<std::string> animationId{};
@@ -20,7 +21,7 @@ struct StateTransition {
 
 struct RenderState {
 
-	int state{};
+	GameObjectState state{};
 	std::string animationId{};
 
 };
@@ -36,9 +37,9 @@ public:
 	virtual void postInit() override;
 	virtual void setParent(GameObject* gameObject) override;
 
-	virtual void addState(int state);
-	virtual void removeState(int state);
-	virtual bool testState(int state);
+	virtual void addState(GameObjectState state);
+	virtual void removeState(GameObjectState state);
+	virtual bool testState(GameObjectState state);
 
 	std::optional<StateTransition> getCurrentTransition();
 	std::optional<std::string> getCurrentAnimatedState();
@@ -46,12 +47,12 @@ public:
 protected:
 
 	int m_beginState{};
-	std::bitset<128> m_states;
+	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> m_states;
 	std::vector< StateTransition> m_transitions;
-	std::unordered_map<int, RenderState> m_animationStates;
+	std::unordered_map<GameObjectState, RenderState> m_animationStates;
 
-	virtual bool _hasTransitionDuration(int state) { return false; }
-	void _setAndReconcileState(int State);
+	virtual bool _hasTransitionDuration(GameObjectState state);
+	void _setAndReconcileState(GameObjectState State);
 
 private:
 

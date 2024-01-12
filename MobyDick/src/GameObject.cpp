@@ -279,8 +279,6 @@ Render this object somewhere other than the GameObjects transformcomponent locat
 */
 void GameObject::render(SDL_FRect destQuad)
 {
-
-	//Render yourself
 	getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(destQuad);
 
 }
@@ -288,7 +286,6 @@ void GameObject::render(SDL_FRect destQuad)
 void GameObject::render(SDL_FPoint locationPoint)
 {
 
-	//Render yourself
 	getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(locationPoint);
 
 }
@@ -755,6 +752,46 @@ void GameObject::stash()
 		const auto& interfaceComponent = getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
 		interfaceComponent->clearSpecificGameObjectInterface(this);
 	}
+}
+
+bool GameObject::hasState(GameObjectState state)
+{
+	if (hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+
+		return stateComponent->testState(state);
+
+	}
+
+	return false;
+	
+}
+
+void GameObject::addState(GameObjectState state)
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+
+		stateComponent->addState(state);
+
+	}
+
+}
+
+void GameObject::removeState(GameObjectState state)
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+
+		stateComponent->removeState(state);
+
+	}
+
 }
 
 void GameObject::dispatch(SDL_FPoint destination)

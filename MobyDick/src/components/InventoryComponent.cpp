@@ -110,25 +110,23 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 		//if this is a receptacle that has an inventory and gridDisplay in one, like a shelf, then the object is considered loose
 		if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT) == false) {
 
-			gameObject->removeTrait(TraitTag::loose);
-			gameObject->removeTrait(TraitTag::shelved);
-
-			
+			gameObject->removeState(GameObjectState::ITEM_LOOSE);
+			gameObject->removeState(GameObjectState::ITEM_STORED_OPEN);
 
 		}
 		else {
-			gameObject->addTrait(TraitTag::shelved);
-			gameObject->addTrait(TraitTag::loose);
+			gameObject->addState(GameObjectState::ITEM_LOOSE);
+			gameObject->addState(GameObjectState::ITEM_STORED_OPEN);
 
 		}
 
 		if (parent()->hasTrait(TraitTag::player) == false) {
 
-			gameObject->addTrait(TraitTag::obtainable);
+			gameObject->addState(GameObjectState::ITEM_OBTAINABLE);
 		}
 		else {
-			gameObject->removeTrait(TraitTag::obtainable);
-			gameObject->removeTrait(TraitTag::shelved);
+			gameObject->removeState(GameObjectState::ITEM_STORED_OPEN);
+			gameObject->removeState(GameObjectState::ITEM_OBTAINABLE);
 		}
 
 

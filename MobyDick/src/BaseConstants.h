@@ -37,15 +37,6 @@ namespace NavigationSizeCategory {
 
 }
 
-namespace DISABLED_TYPE {
-	inline constexpr int RENDER = 0;
-	inline constexpr int UPDATE = 1;
-	inline constexpr int PHYSICS = 2;
-	inline constexpr int RENDER_AND_PHYSICS = 3;
-	inline constexpr int RENDER_AND_UPDATE = 4;
-	inline constexpr int PHYICS_AND_UPDATE = 5;
-}
-
 namespace Colors {
 
 	inline SDL_Color WHITE = { 255, 255, 255, 255 };
@@ -113,14 +104,16 @@ namespace TraitTag {
 	inline constexpr int mobile = 17;
 	inline constexpr int light = 18;
 	inline constexpr int puzzle = 19;						//Object that has puzzle(s) to solve before can be used
-	inline constexpr int vertical_movement = 20;			//Allows for the player to vertically move
+	inline constexpr int vertical_movement_zone = 20;			//Allows for the player to vertically move
 	inline constexpr int draggable = 21;					//Can be grabbed and dragged by the mouse
 	inline constexpr int inventory = 22;					//Can have a game item dropped onto it to add to its inventory
-	inline constexpr int obtainable = 23;					//Can be taken by the player
-	inline constexpr int loose = 24;						//Is NOT currently in anyones inventory
+	inline constexpr int player_inventory = 23;				//Is the players inventory receptacle
 	inline constexpr int puzzle_item = 25;					//Is an item used to solve a game puzzle
-	inline constexpr int shelved = 26;					    //Is an inventory item that lives on an open inventory object like a shelf
-	inline constexpr int player_inventory = 27;			    //Is an the players inventory display
+	inline constexpr int door_entry = 30;
+	inline constexpr int door = 31;
+	inline constexpr int receptacle = 33;
+
+
 
 }
 
@@ -219,24 +212,45 @@ enum class LightType {
 	RAY_LIGHT
 };
 
-namespace GameObjectState {
+enum class GameObjectState : int {
 
-	inline constexpr int ON = 1;
-	inline constexpr int OFF = 2;
-	inline constexpr int OPENED = 3;
-	inline constexpr int CLOSED = 4;
-	inline constexpr int IDLE = 5;
-	inline constexpr int WALK = 6;
-	inline constexpr int RUN = 7;
-	inline constexpr int SPRINT = 8;
-	inline constexpr int JUMP = 9;
-	inline constexpr int CLIMB = 10;
-	inline constexpr int DEAD = 11;
-	inline constexpr int DISABLED_UPDATE = 12;
-	inline constexpr int DISABLED_PHYSICS = 13;
-	inline constexpr int DISABLED_RENDER = 14;
-	inline constexpr int DISABLED_COLLISION = 15;
+	ON = 1,
+	OFF,
+	OPENED,
+	CLOSED,
+	IDLE,
+	WALK,
+	RUN,
+	SPRINT,
+	JUMP,
+	CLIMB,
+	DEAD,
+	DISABLED_UPDATE,
+	DISABLED_PHYSICS,
+	DISABLED_RENDER,
+	DISABLED_COLLISION,
+	DEPLOYED,
+	CONCEALED,
+	IMPASSABLE,
+	ITEM_OBTAINABLE,
+	ITEM_LOOSE,
+	ITEM_STORED_ENCLOSED,
+	ITEM_STORED_OPEN,
+	ITEM_STORED_PLAYER,
+	IDLE_RIGHT,
+	IDLE_LEFT,
+	IDLE_UP,
+	IDLE_DOWN,
+	WALK_RIGHT,
+	WALK_LEFT,
+	WALK_UP,
+	WALK_DOWN,
+	RUN_RIGHT,
+	RUN_LEFT,
+	RUN_UP,
+	RUN_DOWN,
 
+	GameObjectState_Count
 
 };
 

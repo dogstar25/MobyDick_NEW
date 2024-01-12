@@ -218,8 +218,12 @@ void GridDisplayComponent::render()
 
 				float slotSize = getItemSlotSize();
 				slot.gameObject.value().lock()->setSize(b2Vec2(slotSize, slotSize));
+				
 			}
+
+			//todd fix hold spot
 			slot.gameObject.value().lock()->render();
+			
 		}
 
 	}

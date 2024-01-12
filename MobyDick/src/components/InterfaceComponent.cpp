@@ -356,6 +356,12 @@ void InterfaceComponent::render()
 	if (m_currentGameObjectInterfaceActive.has_value() && 
 		m_currentGameObjectInterfaceActive.value() == this->parent()) {
 
+		if (parent()->isDragging() == true && parent()->name() == "toddcan") {
+
+			int todd = 1;
+		}
+
+
 		if (m_interfaceMenuObject.has_value()) {
 			m_interfaceMenuObject.value()->render();
 		}

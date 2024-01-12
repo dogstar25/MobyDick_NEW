@@ -107,10 +107,16 @@ public:
 	bool holdsDependentGameObjects();
 
 	void postInit();
+	
 	bool hasTrait(int32_t trait) { return m_traitTags.test(trait); }
 	std::bitset<62> traits() {	return m_traitTags;	}
 	void addTrait(int32_t trait) { m_traitTags.set(trait, true); }
 	void removeTrait(int32_t trait) { m_traitTags.set(trait, false); }
+
+	bool hasState(GameObjectState state);
+	void addState(GameObjectState state);
+	void removeState(GameObjectState state);
+
 	void dispatch(SDL_FPoint destination);
 	int brainState();
 	bool isAlive();

@@ -9,9 +9,9 @@ void TakeItemAction::perform(GameObject* gameObject)
 
 	//Only if this object is obtainable. This action can fire for inventory items that are sometime in inventory and NOT obtainable
 	 
-	if ( (gameObject->hasTrait(TraitTag::obtainable) && gameObject->hasTrait(TraitTag::loose) == false ) ||
-		(gameObject->hasTrait(TraitTag::obtainable) && gameObject->hasTrait(TraitTag::loose) == true && gameObject->isTouchingByTrait(TraitTag::player)) ||
-		(gameObject->hasTrait(TraitTag::obtainable) && gameObject->hasTrait(TraitTag::shelved) == true && gameObject->isTouchingByTrait(TraitTag::player))) {
+	if ( (gameObject->hasState(GameObjectState::ITEM_OBTAINABLE) && gameObject->hasState(GameObjectState::ITEM_LOOSE) == false ) ||
+		(gameObject->hasState(GameObjectState::ITEM_OBTAINABLE) && gameObject->hasState(GameObjectState::ITEM_LOOSE) == true && gameObject->isTouchingByTrait(TraitTag::player)) ||
+		(gameObject->hasState(GameObjectState::ITEM_OBTAINABLE) && gameObject->hasState(GameObjectState::ITEM_STORED_OPEN) == true && gameObject->isTouchingByTrait(TraitTag::player))) {
 		//Get the players inventory
 		const auto& player = gameObject->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
 		const auto& inventoryComponent = player.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
@@ -19,7 +19,7 @@ void TakeItemAction::perform(GameObject* gameObject)
 		const auto& gameObjectShrPtr = gameObject->parentScene()->getGameObject(gameObject->id());
 
 		//If this item is loose then add it to the inventory and remove it from the world
-		if (gameObject->hasTrait(TraitTag::loose) && gameObject->hasTrait(TraitTag::shelved) == false) {
+		if (gameObject->hasState(GameObjectState::ITEM_LOOSE) && gameObject->hasState(GameObjectState::ITEM_STORED_OPEN) == false) {
 
 			if (inventoryComponent->addItem(gameObjectShrPtr.value()) == true) {
 
