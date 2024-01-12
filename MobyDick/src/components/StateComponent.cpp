@@ -18,8 +18,8 @@ StateComponent::StateComponent(Json::Value componentJSON)
 		{
 
 			StateTransition stateTransition;
-			stateTransition.fromState = game->enumMap()->toEnum(itrItem["from"].asString());
-			stateTransition.toState = game->enumMap()->toEnum(itrItem["to"].asString());
+			stateTransition.fromState = (GameObjectState)game->enumMap()->toEnum(itrItem["from"].asString());
+			stateTransition.toState = (GameObjectState)game->enumMap()->toEnum(itrItem["to"].asString());
 			stateTransition.transitionDuration = itrItem["duration"].asFloat();
 			stateTransition.animationId = itrItem["animationId"].asString();
 
@@ -33,7 +33,7 @@ StateComponent::StateComponent(Json::Value componentJSON)
 		{
 
 			RenderState renderState;
-			renderState.state = game->enumMap()->toEnum(itrItem["state"].asString());
+			renderState.state = (GameObjectState)game->enumMap()->toEnum(itrItem["state"].asString());
 			renderState.animationId = itrItem["animationId"].asString();
 
 			m_animationStates[renderState.state] = renderState;
@@ -53,10 +53,10 @@ void StateComponent::postInit()
 
 }
 
-bool StateComponent::testState(int state)
+bool StateComponent::testState(GameObjectState state)
 {
 
-	return m_states.test(state);
+	return m_states.test((int)state);
 
 }
 
@@ -65,7 +65,6 @@ std::optional<StateTransition> StateComponent::getCurrentTransition()
 
 	for (auto transition : m_transitions) {
 
-		//Do we 
 		if (transition.transitionTimer.has_value() == true &&
 			transition.transitionTimer.value().hasMetTargetDuration() == false) {
 
@@ -111,15 +110,15 @@ std::optional<std::string> StateComponent::getCurrentAnimatedState()
 
 }
 
-void StateComponent::removeState(int newState)
+void StateComponent::removeState(GameObjectState newState)
 {
 
-	m_states.set(newState, false);
+	m_states.set((int)newState, false);
 
 
 }
 
-void StateComponent::addState(int newState)
+void StateComponent::addState(GameObjectState newState)
 {
 
 	//Check to see if we have a transition defined for this state combination
@@ -132,91 +131,216 @@ void StateComponent::addState(int newState)
 
 }
 
-void StateComponent::_setAndReconcileState(int newState)
+void StateComponent::_setAndReconcileState(GameObjectState newState)
 {
 
 	switch (newState) {
 
 	case GameObjectState::IDLE:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::WALK, false);
-		m_states.set(GameObjectState::RUN, false);
-		m_states.set(GameObjectState::SPRINT, false);
-		m_states.set(GameObjectState::JUMP, false);
-		m_states.set(GameObjectState::CLIMB, false);
+		m_states.set((int)GameObjectState::WALK, false);
+		m_states.set((int)GameObjectState::RUN, false);
+		m_states.set((int)GameObjectState::SPRINT, false);
+		m_states.set((int)GameObjectState::JUMP, false);
+		m_states.set((int)GameObjectState::CLIMB, false);
 		break;
 
 	case GameObjectState::WALK:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::IDLE, false);
-		m_states.set(GameObjectState::RUN, false);
-		m_states.set(GameObjectState::SPRINT, false);
-		m_states.set(GameObjectState::JUMP, false);
-		m_states.set(GameObjectState::CLIMB, false);
+		m_states.set((int)GameObjectState::IDLE, false);
+		m_states.set((int)GameObjectState::RUN, false);
+		m_states.set((int)GameObjectState::SPRINT, false);
+		m_states.set((int)GameObjectState::JUMP, false);
+		m_states.set((int)GameObjectState::CLIMB, false);
 		break;
 
 	case GameObjectState::RUN:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::WALK, false);
-		m_states.set(GameObjectState::IDLE, false);
-		m_states.set(GameObjectState::SPRINT, false);
-		m_states.set(GameObjectState::JUMP, false);
-		m_states.set(GameObjectState::CLIMB, false);
+		m_states.set((int)GameObjectState::WALK, false);
+		m_states.set((int)GameObjectState::IDLE, false);
+		m_states.set((int)GameObjectState::SPRINT, false);
+		m_states.set((int)GameObjectState::JUMP, false);
+		m_states.set((int)GameObjectState::CLIMB, false);
 		break;
 
 	case GameObjectState::SPRINT:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::WALK, false);
-		m_states.set(GameObjectState::IDLE, false);
-		m_states.set(GameObjectState::RUN, false);
-		m_states.set(GameObjectState::JUMP, false);
-		m_states.set(GameObjectState::CLIMB, false);
+		m_states.set((int)GameObjectState::WALK, false);
+		m_states.set((int)GameObjectState::IDLE, false);
+		m_states.set((int)GameObjectState::RUN, false);
+		m_states.set((int)GameObjectState::JUMP, false);
+		m_states.set((int)GameObjectState::CLIMB, false);
 		break;
 
 	case GameObjectState::JUMP:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::WALK, false);
-		m_states.set(GameObjectState::IDLE, false);
-		m_states.set(GameObjectState::RUN, false);
-		m_states.set(GameObjectState::SPRINT, false);
-		m_states.set(GameObjectState::CLIMB, false);
+		m_states.set((int)GameObjectState::WALK, false);
+		m_states.set((int)GameObjectState::IDLE, false);
+		m_states.set((int)GameObjectState::RUN, false);
+		m_states.set((int)GameObjectState::SPRINT, false);
+		m_states.set((int)GameObjectState::CLIMB, false);
 		break;
 
 	case GameObjectState::CLIMB:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::WALK, false);
-		m_states.set(GameObjectState::IDLE, false);
-		m_states.set(GameObjectState::RUN, false);
-		m_states.set(GameObjectState::SPRINT, false);
-		m_states.set(GameObjectState::JUMP, false);
+		m_states.set((int)GameObjectState::WALK, false);
+		m_states.set((int)GameObjectState::IDLE, false);
+		m_states.set((int)GameObjectState::RUN, false);
+		m_states.set((int)GameObjectState::SPRINT, false);
+		m_states.set((int)GameObjectState::JUMP, false);
 		break;
 
 	case GameObjectState::OPENED:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::CLOSED, false);
+		m_states.set((int)GameObjectState::CLOSED, false);
 		break;
 
 	case GameObjectState::CLOSED:
 
-		m_states.set(newState, true);
+		m_states.set((int)newState, true);
 
-		m_states.set(GameObjectState::OPENED, false);
+		m_states.set((int)GameObjectState::OPENED, false);
 		break;
 
+	case GameObjectState::ITEM_OBTAINABLE:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+		break;
+
+	case GameObjectState::ITEM_STORED_ENCLOSED:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+		break;
+
+	case GameObjectState::ITEM_LOOSE:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+		m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
+		break;
+
+	case GameObjectState::WALK_LEFT:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_RIGHT, false);
+		m_states.set((int)GameObjectState::WALK_UP, false);
+		m_states.set((int)GameObjectState::WALK_DOWN, false);
+		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+		m_states.set((int)GameObjectState::IDLE_LEFT, false);
+		m_states.set((int)GameObjectState::IDLE_UP, false);
+		m_states.set((int)GameObjectState::IDLE_DOWN, false);
+		break;
+
+	case GameObjectState::WALK_RIGHT:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_LEFT, false);
+		m_states.set((int)GameObjectState::WALK_UP, false);
+		m_states.set((int)GameObjectState::WALK_DOWN, false);
+		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+		m_states.set((int)GameObjectState::IDLE_LEFT, false);
+		m_states.set((int)GameObjectState::IDLE_UP, false);
+		m_states.set((int)GameObjectState::IDLE_DOWN, false);
+		break;
+
+	case GameObjectState::WALK_UP:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_LEFT, false);
+		m_states.set((int)GameObjectState::WALK_RIGHT, false);
+		m_states.set((int)GameObjectState::WALK_DOWN, false);
+		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+		m_states.set((int)GameObjectState::IDLE_LEFT, false);
+		m_states.set((int)GameObjectState::IDLE_UP, false);
+		m_states.set((int)GameObjectState::IDLE_DOWN, false);
+		break;
+
+	case GameObjectState::WALK_DOWN:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_LEFT, false);
+		m_states.set((int)GameObjectState::WALK_RIGHT, false);
+		m_states.set((int)GameObjectState::WALK_UP, false);
+		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+		m_states.set((int)GameObjectState::IDLE_LEFT, false);
+		m_states.set((int)GameObjectState::IDLE_UP, false);
+		m_states.set((int)GameObjectState::IDLE_DOWN, false);
+		break;
+
+	case GameObjectState::IDLE_RIGHT:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_LEFT, false);
+		m_states.set((int)GameObjectState::WALK_RIGHT, false);
+		m_states.set((int)GameObjectState::WALK_UP, false);
+		m_states.set((int)GameObjectState::WALK_DOWN, false);
+		m_states.set((int)GameObjectState::IDLE_LEFT, false);
+		m_states.set((int)GameObjectState::IDLE_UP, false);
+		m_states.set((int)GameObjectState::IDLE_DOWN, false);
+		break;
+
+	case GameObjectState::IDLE_LEFT:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_LEFT, false);
+		m_states.set((int)GameObjectState::WALK_RIGHT, false);
+		m_states.set((int)GameObjectState::WALK_UP, false);
+		m_states.set((int)GameObjectState::WALK_DOWN, false);
+		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+		m_states.set((int)GameObjectState::IDLE_UP, false);
+		m_states.set((int)GameObjectState::IDLE_DOWN, false);
+		break;
+
+	case GameObjectState::IDLE_UP:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_LEFT, false);
+		m_states.set((int)GameObjectState::WALK_RIGHT, false);
+		m_states.set((int)GameObjectState::WALK_UP, false);
+		m_states.set((int)GameObjectState::WALK_DOWN, false);
+		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+		m_states.set((int)GameObjectState::IDLE_LEFT, false);
+		m_states.set((int)GameObjectState::IDLE_DOWN, false);
+		break;
+
+	case GameObjectState::IDLE_DOWN:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::WALK_LEFT, false);
+		m_states.set((int)GameObjectState::WALK_RIGHT, false);
+		m_states.set((int)GameObjectState::WALK_UP, false);
+		m_states.set((int)GameObjectState::WALK_DOWN, false);
+		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+		m_states.set((int)GameObjectState::IDLE_LEFT, false);
+		m_states.set((int)GameObjectState::IDLE_UP, false);
+		break;
 	default:
 
 		SDL_assert(true && "No match for State!");
@@ -249,5 +373,29 @@ void StateComponent::setParent(GameObject* gameObject)
 	//Call base component setParent
 	Component::setParent(gameObject);
 
+}
+
+bool StateComponent::_hasTransitionDuration(GameObjectState newState)
+{
+
+	for (auto& transition : m_transitions) {
+
+		//If we have a transition defined that matches the states that we are trying to go to and from
+		if (m_states.test((int)transition.fromState) == true && transition.toState == newState) {
+
+			//If we have NOT started a transition timer then start one now
+			if (transition.transitionTimer.has_value() == false) {
+
+				transition.transitionTimer = Timer(transition.transitionDuration, false);
+
+			}
+
+			return true;
+		}
+
+	}
+
+
+	return false;
 }
 

@@ -23,6 +23,7 @@ struct LevelObject
 	GameLayer layer{ GameLayer::MAIN };
 	int angleAdjustment {};
 	bool cameraFollow{ false };
+	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> states;
 	std::string name{};
 	std::optional<b2Vec2>size;
 	std::optional<b2Vec2>locationAdjust;
@@ -35,6 +36,7 @@ struct LevelObject
 	std::optional<float> containerRespawnTimer;
 	std::optional<int> containerStartCount;
 	std::optional<int> containerCapacity;
+	
 
 };
 
@@ -112,5 +114,6 @@ private:
 	void _startBackgroundMusic();
 	bool _isColorDefinedObject(SDL_Color color);
 	void _clear();
+	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> _storeStates(Json::Value statesJSON);
 };
 

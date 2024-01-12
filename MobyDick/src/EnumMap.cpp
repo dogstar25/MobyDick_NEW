@@ -238,14 +238,15 @@ EnumMap::EnumMap()
 	m_enumMap["mobile"] = TraitTag::mobile;
 	m_enumMap["light"] = TraitTag::light;
 	m_enumMap["puzzle"] = TraitTag::puzzle;
-	m_enumMap["vertical_movement"] = TraitTag::vertical_movement;
+	m_enumMap["vertical_movement_zone"] = TraitTag::vertical_movement_zone;
 	m_enumMap["draggable"] = TraitTag::draggable;
 	m_enumMap["inventory"] = TraitTag::inventory;
-	m_enumMap["obtainable"] = TraitTag::obtainable;
-	m_enumMap["loose"] = TraitTag::loose;
 	m_enumMap["puzzle_item"] = TraitTag::puzzle_item;
-	m_enumMap["shelved"] = TraitTag::shelved;
+	m_enumMap["door"] = TraitTag::door;
 	m_enumMap["player_inventory"] = TraitTag::player_inventory;
+	m_enumMap["door_entry"] = TraitTag::door_entry;
+	m_enumMap["receptacle"] = TraitTag::receptacle;
+
 	
 
 	//Hud Item Types
@@ -255,13 +256,6 @@ EnumMap::EnumMap()
 	m_enumMap["LightType::TEXTURE_LIGHT"] = (int)LightType::TEXTURE_LIGHT;
 	m_enumMap["LightType::SHADER_LIGHT"] = (int)LightType::SHADER_LIGHT;
 	m_enumMap["LightType::RAY_LIGHT"] = (int)LightType::RAY_LIGHT;
-
-	m_enumMap["DISABLED_TYPE::RENDER"] = DISABLED_TYPE::RENDER;
-	m_enumMap["DISABLED_TYPE::UPDATE"] = DISABLED_TYPE::UPDATE;
-	m_enumMap["DISABLED_TYPE::PHYSICS"] = DISABLED_TYPE::PHYSICS;
-	m_enumMap["DISABLED_TYPE::RENDER_AND_PHYSICS"] = DISABLED_TYPE::RENDER_AND_PHYSICS;
-	m_enumMap["DISABLED_TYPE::RENDER_AND_UPDATE"] = DISABLED_TYPE::RENDER_AND_UPDATE;
-	m_enumMap["DISABLED_TYPE::PHYICS_AND_UPDATE"] = DISABLED_TYPE::PHYICS_AND_UPDATE;
 
 	//Scene Settings
 	m_enumMap["DebugSceneSettings::SHOW_PHYSICS_DEBUG"] = DebugSceneSettings::SHOW_PHYSICS_DEBUG;
@@ -277,21 +271,43 @@ EnumMap::EnumMap()
 	m_enumMap["ConditionOperator::OR"] = (int)ConditionOperator::OR;
 
 	//GameObject States
-	m_enumMap["GameObjectState::ON"] = GameObjectState::ON;
-	m_enumMap["GameObjectState::OFF"] = GameObjectState::OFF;
-	m_enumMap["GameObjectState::OPENED"] = GameObjectState::OPENED;
-	m_enumMap["GameObjectState::CLOSED"] = GameObjectState::CLOSED;
-	m_enumMap["GameObjectState::IDLE"] = GameObjectState::IDLE;
-	m_enumMap["GameObjectState::WALK"] = GameObjectState::WALK;
-	m_enumMap["GameObjectState::RUN"] = GameObjectState::RUN;
-	m_enumMap["GameObjectState::SPRINT"] = GameObjectState::SPRINT;
-	m_enumMap["GameObjectState::JUMP"] = GameObjectState::JUMP;
-	m_enumMap["GameObjectState::CLIMB"] = GameObjectState::CLIMB;
-	m_enumMap["GameObjectState::DEAD"] = GameObjectState::DEAD;
-	m_enumMap["GameObjectState::DISABLED_UPDATE"] = GameObjectState::DISABLED_UPDATE;
-	m_enumMap["GameObjectState::DISABLED_PHYSICS"] = GameObjectState::DISABLED_PHYSICS;
-	m_enumMap["GameObjectState::DISABLED_RENDER"] = GameObjectState::DISABLED_RENDER;
-	m_enumMap["GameObjectState::DISABLED_COLLISION"] = GameObjectState::DISABLED_COLLISION;
+	m_enumMap["GameObjectState::ON"] = (int)GameObjectState::ON;
+	m_enumMap["GameObjectState::OFF"] = (int)GameObjectState::OFF;
+	m_enumMap["GameObjectState::OPENED"] = (int)GameObjectState::OPENED;
+	m_enumMap["GameObjectState::CLOSED"] = (int)GameObjectState::CLOSED;
+	m_enumMap["GameObjectState::IDLE"] = (int)GameObjectState::IDLE;
+	m_enumMap["GameObjectState::WALK"] = (int)GameObjectState::WALK;
+	m_enumMap["GameObjectState::RUN"] = (int)GameObjectState::RUN;
+	m_enumMap["GameObjectState::SPRINT"] = (int)GameObjectState::SPRINT;
+	m_enumMap["GameObjectState::JUMP"] = (int)GameObjectState::JUMP;
+	m_enumMap["GameObjectState::CLIMB"] = (int)GameObjectState::CLIMB;
+	m_enumMap["GameObjectState::DEAD"] = (int)GameObjectState::DEAD;
+	m_enumMap["GameObjectState::DISABLED_UPDATE"] = (int)GameObjectState::DISABLED_UPDATE;
+	m_enumMap["GameObjectState::DISABLED_PHYSICS"] = (int)GameObjectState::DISABLED_PHYSICS;
+	m_enumMap["GameObjectState::DISABLED_RENDER"] = (int)GameObjectState::DISABLED_RENDER;
+	m_enumMap["GameObjectState::DISABLED_COLLISION"] = (int)GameObjectState::DISABLED_COLLISION;
+	m_enumMap["GameObjectState::DEPLOYED"] = (int)GameObjectState::DEPLOYED;
+	m_enumMap["GameObjectState::CONCEALED"] = (int)GameObjectState::CONCEALED;
+	m_enumMap["GameObjectState::IMPASSABLE"] = (int)GameObjectState::IMPASSABLE;
+	m_enumMap["GameObjectState::ITEM_OBTAINABLE"] = (int)GameObjectState::ITEM_OBTAINABLE;
+	m_enumMap["GameObjectState::ITEM_LOOSE"] = (int)GameObjectState::ITEM_LOOSE;
+	m_enumMap["GameObjectState::ITEM_STORED_ENCLOSED"] = (int)GameObjectState::ITEM_STORED_ENCLOSED;
+	m_enumMap["GameObjectState::ITEM_STORED_OPEN"] = (int)GameObjectState::ITEM_STORED_OPEN;
+	m_enumMap["GameObjectState::ITEM_STORED_PLAYER"] = (int)GameObjectState::ITEM_STORED_PLAYER;
+	m_enumMap["GameObjectState::IDLE_RIGHT"] = (int)GameObjectState::IDLE_RIGHT;
+	m_enumMap["GameObjectState::IDLE_LEFT"] = (int)GameObjectState::IDLE_LEFT;
+	m_enumMap["GameObjectState::IDLE_UP"] = (int)GameObjectState::IDLE_UP;
+	m_enumMap["GameObjectState::IDLE_DOWN"] = (int)GameObjectState::IDLE_DOWN;
+	m_enumMap["GameObjectState::WALK_RIGHT"] = (int)GameObjectState::WALK_RIGHT;
+	m_enumMap["GameObjectState::WALK_LEFT"] = (int)GameObjectState::WALK_LEFT;
+	m_enumMap["GameObjectState::WALK_UP"] = (int)GameObjectState::WALK_UP;
+	m_enumMap["GameObjectState::WALK_DOWN"] = (int)GameObjectState::WALK_DOWN;
+	m_enumMap["GameObjectState::RUN_RIGHT"] = (int)GameObjectState::RUN_RIGHT;
+	m_enumMap["GameObjectState::RUN_LEFT"] = (int)GameObjectState::RUN_LEFT;
+	m_enumMap["GameObjectState::RUN_UP"] = (int)GameObjectState::RUN_UP;
+	m_enumMap["GameObjectState::RUN_DOWN"] = (int)GameObjectState::RUN_DOWN;
+
+
 	
 
 }

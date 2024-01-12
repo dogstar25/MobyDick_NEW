@@ -575,6 +575,9 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 			if (locationItemJSON.isMember("containerCapacity")) {
 				levelObject.containerCapacity = locationItemJSON["containerCapacity"].asInt();
 			}
+			if (locationItemJSON.isMember("gameObjectStatus")) {
+				levelObject.states = _storeStates(locationItemJSON["gameObjectStatus"]);
+			}
 
 			levelObjects.push_back(levelObject);
 
@@ -589,6 +592,24 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 
 	return levelObjects;
 }
+
+std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> LevelManager::_storeStates(Json::Value statesJSON)
+{
+	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> states{};
+
+	for (auto stateJSON : statesJSON) {
+
+		std::string stateKey = "GameObjectState::" + stateJSON.asString();
+		GameObjectState state = (GameObjectState)game->enumMap()->toEnum(stateKey);
+
+		states.set((int)state);
+
+	}
+
+	return states;
+
+}
+
 
 LevelObject LevelManager::_determineWallObject(int x, int y, SDL_Surface* bluePrintSurface)
 {
@@ -816,33 +837,6 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 						currentPosition.y + levelObject.locationAdjust.value().y);
 				}
 
-				//Apply disabled override
-				if (levelObject.disabledType.has_value()) {
-
-					if (levelObject.disabledType.value() == DISABLED_TYPE::RENDER) {
-						gameObject->disableRender();
-					}
-					else if (levelObject.disabledType.value() == DISABLED_TYPE::UPDATE) {
-						gameObject->disableUpdate();
-					}
-					else if (levelObject.disabledType.value() == DISABLED_TYPE::PHYSICS) {
-						gameObject->disablePhysics();
-					}
-					else if (levelObject.disabledType.value() == DISABLED_TYPE::RENDER_AND_PHYSICS) {
-						gameObject->disableRender();
-						gameObject->disablePhysics();
-					}
-					else if (levelObject.disabledType.value() == DISABLED_TYPE::RENDER_AND_UPDATE) {
-						gameObject->disableRender();
-						gameObject->disableUpdate();
-					}
-					else if (levelObject.disabledType.value() == DISABLED_TYPE::PHYICS_AND_UPDATE) {
-						gameObject->disablePhysics();
-						gameObject->disableUpdate();
-					}
-
-				}
-
 				//Apply override weapon color if exists
 				if (levelObject.weaponColor.has_value()) {
 					gameObject->setWeaponColor(levelObject.weaponColor.value());
@@ -876,6 +870,19 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 				//Apply override container capacity if exists
 				if (levelObject.containerCapacity.has_value()) {
 					gameObject->setContainerCapacity(levelObject.containerCapacity.value());
+				}
+
+				//Apply override gameObjectStates if exists
+				if (levelObject.states.any()) {
+
+					for (auto i = 1; i < (int)GameObjectState::GameObjectState_Count; i++) {
+
+						if (levelObject.states.test(i)) {
+
+							gameObject->addState((GameObjectState)i);
+						}
+
+					}
 				}
 
 				//Build the navigation map item for this object
