@@ -260,6 +260,14 @@ void Game::_displayLoadingMsg()
 //
 //}
 
+SDL_FPoint Game::getMouseWorldPosition()
+{
+	b2Vec2 mouseWorldPosition{};
+
+	return util::getMouseWorldPosition();
+
+}
+
 std::optional<SDL_Point> Game::_determineScreenResolution()
 {
 

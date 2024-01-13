@@ -42,6 +42,21 @@ namespace util
 
 	}
 
+	SDL_FPoint getMouseWorldPosition()
+	{
+
+		int mouseX;
+		int mouseY;
+
+		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
+		SDL_FPoint mouseLocation = { (float)mouseX , (float)mouseY };
+
+		SDL_FPoint worldPosition = screenToWorldPosition(mouseLocation);
+
+		return worldPosition;
+
+	}
+
 	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition)
 	{
 		SDL_FPoint worldPosition{};

@@ -241,13 +241,6 @@ void InventoryComponent::update()
 					inventoryObject.value()->setLayer(parent()->layer());
 				}
 
-				//////////////////////////////////
-				// we should set the different traits here? loose, draggable, obtainable, etc...
-
-
-				///////////////////////////////
-
-
 			}
 
 		}

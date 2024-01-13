@@ -84,9 +84,13 @@ namespace ImGui
 		auto frate = ImGui::GetIO().Framerate;
 		ImGui::Value("FPS", frate);
 
-		//ImGui::Text("Todd");
-		//ImGui::PopFont();
-		//ImGui::Text("Todd2");
+		ImGui::Text("World Coords");
+		ImGui::SameLine();
+		ImGui::Value("X", game->getMouseWorldPosition().x);
+		ImGui::SameLine();
+		ImGui::Value("Y", game->getMouseWorldPosition().y);
+
+
 		int dwWidth = game->gameScreenResolution().x / 2;
 		ImGui::SetWindowPos(ImVec2(0, 0));
 		ImGui::End();
