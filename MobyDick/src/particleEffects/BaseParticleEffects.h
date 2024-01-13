@@ -16,8 +16,8 @@ struct ParticleEffect {
 	std::string poolId = "SMOKE1_POOL";
 	b2Vec2 originMin;
 	b2Vec2 originMax;
-	int forceMin = 50;
-	int forceMax = forceMin;
+	float forceMin = 50;
+	float forceMax = forceMin;
 	float lifetimeMin = 2.5;
 	float lifetimeMax = 2.5;
 	bool alphaFade = true;

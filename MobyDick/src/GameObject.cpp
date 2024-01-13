@@ -256,10 +256,6 @@ void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, fl
 void GameObject::update()
 {
 
-	if (type() == "BOBBYS_SIDETABLE") {
-		int todd = 1;
-	}
-
 	if (this->updateDisabled() == false) {
 		for (auto& component : m_components)
 		{
@@ -423,6 +419,9 @@ void GameObject::reset()
 		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->stash();
 		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->update();
 	}
+
+	//test calling the main update so that if the pooled item has a child, it needs to be moved off too
+	update();
 
 
 }
@@ -897,7 +896,7 @@ void GameObject::disableRender()
 	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
-		stateComponent->addState(GameObjectState::DISABLED_COLLISION);
+		stateComponent->addState(GameObjectState::DISABLED_RENDER);
 	}
 
 }
@@ -908,7 +907,7 @@ void GameObject::enableRender()
 	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
-		stateComponent->removeState(GameObjectState::DISABLED_COLLISION);
+		stateComponent->removeState(GameObjectState::DISABLED_RENDER);
 	}
 
 }

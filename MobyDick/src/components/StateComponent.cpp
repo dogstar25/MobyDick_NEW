@@ -230,6 +230,14 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
 		break;
 
+	case GameObjectState::ITEM_STORED_OPEN:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
+		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+		break;
+
 	case GameObjectState::ITEM_LOOSE:
 
 		m_states.set((int)newState, true);
@@ -341,9 +349,19 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		m_states.set((int)GameObjectState::IDLE_LEFT, false);
 		m_states.set((int)GameObjectState::IDLE_UP, false);
 		break;
+
+	case GameObjectState::DISABLED_COLLISION:
+	case GameObjectState::DISABLED_PHYSICS:
+	case GameObjectState::DISABLED_RENDER:
+	case GameObjectState::DISABLED_UPDATE:
+
+		m_states.set((int)newState, true);
+
+		break;
+
 	default:
 
-		SDL_assert(true && "No match for State!");
+		SDL_assert(false && "No match for State!");
 
 	}
 }
