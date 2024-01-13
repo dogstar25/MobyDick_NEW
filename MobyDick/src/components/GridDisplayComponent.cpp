@@ -71,8 +71,14 @@ void GridDisplayComponent::_buildGridSlots()
 	//b2Vec2 topLeftGridLocation = { 0 - ((m_fullGridSize.x * m_columns) + (m_itemPadding * (m_columns-1))) / 2 + m_marginPadding.x, 
 	//	0 - ((m_fullGridSize.y * m_rows) + (m_itemPadding * (m_rows - 1))) / 2 + m_marginPadding.y };
 	SDL_FPoint topLeftGridLocation = { 0 - m_gridCenterPoint.x, 0 - m_gridCenterPoint.y };
+
+	//Apply outside margin buffer
 	topLeftGridLocation.x = topLeftGridLocation.x + m_marginPadding.x;
 	topLeftGridLocation.y = topLeftGridLocation.y + m_marginPadding.y;
+
+	//Apply object size to get the center location
+	topLeftGridLocation.x = topLeftGridLocation.x + m_itemSize / 2;
+	topLeftGridLocation.y = topLeftGridLocation.y + m_itemSize / 2;
 
 	m_gridSlots[0] = GridSlot(topLeftGridLocation, std::nullopt);
 
@@ -197,8 +203,8 @@ void GridDisplayComponent::render()
 		SDL_FRect slotImageObjectLocation{};
 		slotImageObjectLocation.x = parent()->getCenterPosition().x + slot.positionOffset.x;
 		slotImageObjectLocation.y = parent()->getCenterPosition().y + slot.positionOffset.y;
-		slotImageObjectLocation.w = m_itemSize + 3;
-		slotImageObjectLocation.h = m_itemSize + 3;
+		slotImageObjectLocation.w = m_itemSize;
+		slotImageObjectLocation.h = m_itemSize;
 
 		//Get top left for rendering
 		slotImageObjectLocation.x -= slotImageObjectLocation.w /2;

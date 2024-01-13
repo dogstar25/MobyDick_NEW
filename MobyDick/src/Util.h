@@ -54,7 +54,7 @@ namespace util
 	b2Vec2& toBox2dPoint(b2Vec2& point);
 	SDL_FPoint& toBox2dPoint(SDL_FPoint& value);
 	float& toBox2dPoint(float& value);
-	b2Vec2& toRenderPoint(b2Vec2& point);
+	SDL_FPoint getMouseWorldPosition();
 	glm::vec2& toRenderPoint(glm::vec2& point);
 	Json::Value getComponentConfig(Json::Value definitionJSON, int);
 	float calculateDistance(SDL_FPoint location1, SDL_FPoint location2);

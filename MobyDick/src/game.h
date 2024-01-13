@@ -105,6 +105,8 @@ public:
 		return m_colorMap;
 	}
 
+	SDL_FPoint getMouseWorldPosition();
+
 	Renderer* renderer() { return m_renderer.get(); }
 
 protected:
