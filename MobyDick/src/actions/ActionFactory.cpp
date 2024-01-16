@@ -15,6 +15,7 @@
 #include "ItemhHighlightRemoveAction.h"
 #include "TakeItemAction.h"
 #include "CloseShelfInventoryAction.h"
+#include "OnOffToggleAction.h"
 
 
 #include <iostream>
@@ -91,6 +92,10 @@ std::shared_ptr<Action> ActionFactory::create(std::string actionType)
     else if (actionType == "CloseShelfInventoryAction") {
 
         action = std::make_shared<CloseShelfInventoryAction>();
+    }
+    else if (actionType == "OnOffToggleAction") {
+
+        action = std::make_shared<OnOffToggleAction>();
     }
 
     

@@ -46,24 +46,32 @@ void LightedTreatmentComponent::update()
 	const auto& lights = parent()->parentScene()->getGameObjectsByTrait(TraitTag::light);
 	for (auto& light : lights) {
 
-		SDL_FPoint lightPoint = light->getCenterPosition();
-		SDL_FRect litAreaRect = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
 
-		//If the center of the light is inside of the lit area then add it
-		if (SDL_PointInFRect(&lightPoint, &litAreaRect)) {
+		//If this light has a stateCOmponent, then it can potentially be turned on or off
+		//so check if it is ON before adding it to th elist of lights
+		if (light->hasComponent(ComponentTypes::STATE_COMPONENT) == false ||
+			(light->hasComponent(ComponentTypes::STATE_COMPONENT) == true &&
+				light->hasState(GameObjectState::ON))) {
 
-			m_lights.push_back(light);
-		}
-		//if this light's area of lumination crosses into the lit area AND the light has direct line 
-		// of sight to the lit area's center, then allow it to be added
-		//This allows light from other rooms shine into adjacent rooms to a degree
-		else if (parent()->intersectsWith(light.get())) {
+			SDL_FPoint lightPoint = light->getCenterPosition();
+			SDL_FRect litAreaRect = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
 
-			if (_hasLineOfSightToLitArea(light.get())) {
+			//If the center of the light is inside of the lit area then add it
+			if (SDL_PointInFRect(&lightPoint, &litAreaRect)) {
+
 				m_lights.push_back(light);
 			}
-		}
+			//if this light's area of lumination crosses into the lit area AND the light has direct line 
+			// of sight to the lit area's center, then allow it to be added
+			//This allows light from other rooms shine into adjacent rooms to a degree
+			else if (parent()->intersectsWith(light.get())) {
 
+				if (_hasLineOfSightToLitArea(light.get())) {
+					m_lights.push_back(light);
+				}
+			}
+
+		}
 
 	}
 

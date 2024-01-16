@@ -111,7 +111,9 @@ namespace TraitTag {
 	inline constexpr int puzzle_item = 25;					//Is an item used to solve a game puzzle
 	inline constexpr int door_entry = 30;
 	inline constexpr int door = 31;
-	inline constexpr int receptacle = 33;
+	inline constexpr int door_side = 32;
+	inline constexpr int door_front = 33;
+	inline constexpr int receptacle = 34;
 
 
 
@@ -249,6 +251,7 @@ enum class GameObjectState : int {
 	RUN_LEFT,
 	RUN_UP,
 	RUN_DOWN,
+	ON_VERTICAL_MOVEMENT,
 
 	GameObjectState_Count
 

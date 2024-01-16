@@ -245,9 +245,10 @@ EnumMap::EnumMap()
 	m_enumMap["door"] = TraitTag::door;
 	m_enumMap["player_inventory"] = TraitTag::player_inventory;
 	m_enumMap["door_entry"] = TraitTag::door_entry;
+	m_enumMap["door_side"] = TraitTag::door_side;
+	m_enumMap["door_front"] = TraitTag::door_front;
 	m_enumMap["receptacle"] = TraitTag::receptacle;
 
-	
 
 	//Hud Item Types
 	m_enumMap["HudItemTypes::STATUS_SINGLE"] = (int)HudItemTypes::STATUS_SINGLE;
