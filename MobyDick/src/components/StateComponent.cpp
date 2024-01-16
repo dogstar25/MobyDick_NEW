@@ -136,6 +136,20 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 	switch (newState) {
 
+	case GameObjectState::ON:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::OFF, false);
+		break;
+
+	case GameObjectState::OFF:
+
+		m_states.set((int)newState, true);
+
+		m_states.set((int)GameObjectState::ON, false);
+		break;
+
 	case GameObjectState::IDLE:
 
 		m_states.set((int)newState, true);
@@ -354,6 +368,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 	case GameObjectState::DISABLED_PHYSICS:
 	case GameObjectState::DISABLED_RENDER:
 	case GameObjectState::DISABLED_UPDATE:
+	case GameObjectState::ON_VERTICAL_MOVEMENT:
 
 		m_states.set((int)newState, true);
 

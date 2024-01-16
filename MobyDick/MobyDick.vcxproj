@@ -221,6 +221,7 @@
     <ClCompile Include="src\actions\CloseShelfInventoryAction.cpp" />
     <ClCompile Include="src\actions\ItemhHighlightApplyAction.cpp" />
     <ClCompile Include="src\actions\ItemhHighlightRemoveAction.cpp" />
+    <ClCompile Include="src\actions\OnOffToggleAction.cpp" />
     <ClCompile Include="src\actions\TakeItemAction.cpp" />
     <ClCompile Include="src\actions\ToggleInventoryAction.cpp" />
     <ClCompile Include="src\components\GridDisplayComponent.cpp" />
@@ -330,6 +331,7 @@
     <ClInclude Include="src\actions\CloseShelfInventoryAction.h" />
     <ClInclude Include="src\actions\ItemhHighlightApplyAction.h" />
     <ClInclude Include="src\actions\ItemhHighlightRemoveAction.h" />
+    <ClInclude Include="src\actions\OnOffToggleAction.h" />
     <ClInclude Include="src\actions\TakeItemAction.h" />
     <ClInclude Include="src\actions\ToggleInventoryAction.h" />
     <ClInclude Include="src\components\GridDisplayComponent.h" />
