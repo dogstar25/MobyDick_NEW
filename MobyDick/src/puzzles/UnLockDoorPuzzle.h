@@ -4,9 +4,11 @@ class UnLockDoorPuzzle : public Puzzle
 {
 public:
 	UnLockDoorPuzzle() = default;
-	virtual bool hasBeenSolved() override;
+	UnLockDoorPuzzle(std::string name, std::string clue, int pieceCount);
+
 	virtual bool isPuzzlePieceApplicable(GameObject* puzzlePieceObject) override;
-	virtual void applyPuzzlePiece(std::string puzzlePieceId) override;
+	virtual void applyPuzzlePiece(GameObject* puzzleObject, GameObject* puzzlePieceObject) override;
+
 private:
 
 };

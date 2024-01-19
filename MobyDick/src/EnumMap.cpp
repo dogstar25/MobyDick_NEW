@@ -243,7 +243,10 @@ EnumMap::EnumMap()
 	m_enumMap["inventory"] = TraitTag::inventory;
 	m_enumMap["puzzle_item"] = TraitTag::puzzle_item;
 	m_enumMap["door"] = TraitTag::door;
-	m_enumMap["player_inventory"] = TraitTag::player_inventory;
+	m_enumMap["inventory_player"] = TraitTag::inventory_player;
+	m_enumMap["inventory_open"] = TraitTag::inventory_open;
+	m_enumMap["inventory_closed"] = TraitTag::inventory_closed;
+	m_enumMap["inventory_display"] = TraitTag::inventory_display;
 	m_enumMap["door_entry"] = TraitTag::door_entry;
 	m_enumMap["door_side"] = TraitTag::door_side;
 	m_enumMap["door_front"] = TraitTag::door_front;

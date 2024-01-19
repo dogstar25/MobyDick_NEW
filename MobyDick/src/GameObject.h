@@ -109,7 +109,7 @@ public:
 	void postInit();
 	
 	bool hasTrait(int32_t trait) { return m_traitTags.test(trait); }
-	std::bitset<62> traits() {	return m_traitTags;	}
+	std::bitset<100> traits() {	return m_traitTags;	}
 	void addTrait(int32_t trait) { m_traitTags.set(trait, true); }
 	void removeTrait(int32_t trait) { m_traitTags.set(trait, false); }
 
@@ -247,7 +247,7 @@ private:
 	bool m_isTouchCaptureRequired{};
 	bool m_removeFromWorld{ false };
 	Scene* m_parentScene{nullptr};
-	std::bitset<62> m_traitTags{};
+	std::bitset<100> m_traitTags{};
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_touchingGameObjects{};
 
 	GameObjectDefinition m_gameObjectDefinition;

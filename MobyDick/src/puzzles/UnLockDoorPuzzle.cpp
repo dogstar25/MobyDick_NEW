@@ -1,34 +1,25 @@
 #include "UnLockDoorPuzzle.h"
 
-bool UnLockDoorPuzzle::hasBeenSolved()
-{
-	return false;
+UnLockDoorPuzzle::UnLockDoorPuzzle(std::string name, std::string clue, int pieceCount) : 
+	Puzzle(name, clue, pieceCount) {
+
 }
+
 
 bool UnLockDoorPuzzle::isPuzzlePieceApplicable(GameObject* puzzlePieceObject)
 {
 
-	if (m_pieces.find(puzzlePieceObject->name()) != m_pieces.end()) {
-		return true;
-	}
+	bool isApplicable = false;
 
-	return false;
+
+	return isApplicable;
 
 }
 
-void UnLockDoorPuzzle::applyPuzzlePiece(std::string puzzlePieceId)
+void UnLockDoorPuzzle::applyPuzzlePiece(GameObject* puzzleObject, GameObject* puzzlePieceObject)
 {
-	Puzzle::applyPuzzlePiece(puzzlePieceId);
 
-
-	auto iter = m_pieces.find(puzzlePieceId);
-	iter->second.isSolved = true;
-
-	//execute the keys "USE" action
-	//which will play key unlock sound and animate the key
-
-	//Do other stuff
-
+	//Piece 1
 
 
 }

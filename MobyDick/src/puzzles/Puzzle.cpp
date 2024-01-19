@@ -1,22 +1,35 @@
 #include "Puzzle.h"
 
-void Puzzle::applyPuzzlePiece(std::string puzzlePieceId)
+Puzzle::Puzzle(std::string name, std::string clue, int pieceCount)
 {
 
-	if (m_pieces.find(puzzlePieceId) != m_pieces.end()) {
+	m_puzzleName = name;
+	m_clue = clue;
 
-		m_pieces[puzzlePieceId].isSolved = true;
+	m_pieces = std::vector<bool>(pieceCount, false);
+
+
+}
+
+bool Puzzle::hasBeenSolved()
+{
+	for (auto pieceFlag : m_pieces) {
+
+		if (pieceFlag == false) {
+			return false;
+		}
 
 	}
 
+	return true;
 }
 
-void Puzzle::addPuzzlePiece(std::string pieceId) 
+void Puzzle::applyPuzzlePiece(std::string puzzlePieceId)
 {
 
-	PuzzlePiece puzzlePiece;
-	puzzlePiece.id = pieceId;
-	puzzlePiece.isSolved = false;
-	m_pieces[pieceId] = puzzlePiece;
+
+
+
 }
+
 
