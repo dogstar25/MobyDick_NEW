@@ -68,17 +68,19 @@ AnimationComponent::AnimationComponent(Json::Value componentJSON)
 	}
 
 	//If a default state is defined then set it, otherwise just use the first animation item in the map
-	if (componentJSON.isMember("default")) {
+	//A;so this component could be used only for flashing
+	if (m_animations.empty() == false) {
+		if (componentJSON.isMember("default")) {
 
-		std::string defaultAnimationId = componentJSON["default"].asString();
-		m_defaultAnimation = m_animations[defaultAnimationId];
+			std::string defaultAnimationId = componentJSON["default"].asString();
+			m_defaultAnimation = m_animations[defaultAnimationId];
 
+		}
+		else {
+			auto firstEntry = *m_animations.begin();
+			m_defaultAnimation = firstEntry.second;
+		}
 	}
-	else {
-		auto firstEntry = *m_animations.begin();
-		m_defaultAnimation = firstEntry.second;
-	}
-
 
 }
 
@@ -108,55 +110,59 @@ void AnimationComponent::postInit()
 void AnimationComponent::update()
 {
 
-	auto animationId = _getCurrentAnimationFromState();
+	//This animation component may be used only for flashing
+	if (m_animations.empty() == false) {
 
-	if (parent()->hasComponent(ComponentTypes::STATE_COMPONENT)) {
+		auto animationId = _getCurrentAnimationFromState();
 
-		animate(animationId);
+		if (parent()->hasComponent(ComponentTypes::STATE_COMPONENT)) {
 
-	}
+			animate(animationId);
 
-	if (m_currentAnimation.value().timer.firstTime == true) {
-
-		m_currentAnimation.value().timer = Timer(m_currentAnimation.value().speed, true);
-		m_currentAnimation.value().timer.firstTime = false;
-
-	}
-
-	//Execute the next animation frame in the current animation
-	if (m_currentAnimation.value().timer.hasMetTargetDuration())
-	{
-
-		//Increment animation frame counter and reset if it exceeds last one
-		if (m_currentAnimation.value().frameCount > 1) {
-			m_currentAnimation.value().currentAnimFrame += 1;
 		}
 
-		if (m_currentAnimation.value().currentAnimFrame >
-			m_currentAnimation.value().frameCount - 1) {
+		if (m_currentAnimation.value().timer.firstTime == true) {
 
-			m_currentAnimation.value().currentAnimFrame = 0;
+			m_currentAnimation.value().timer = Timer(m_currentAnimation.value().speed, true);
+			m_currentAnimation.value().timer.firstTime = false;
+
 		}
 
-		//build the rectangle that points to the current animation frame
-		std::shared_ptr<SDL_Rect> rect = std::make_shared<SDL_Rect>();
+		//Execute the next animation frame in the current animation
+		if (m_currentAnimation.value().timer.hasMetTargetDuration())
+		{
 
-		rect->x = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].x;
-		rect->y = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].y;
+			//Increment animation frame counter and reset if it exceeds last one
+			if (m_currentAnimation.value().frameCount > 1) {
+				m_currentAnimation.value().currentAnimFrame += 1;
+			}
 
-		rect->w = (int)m_frameSize.x;
-		rect->h = (int)m_frameSize.y;
+			if (m_currentAnimation.value().currentAnimFrame >
+				m_currentAnimation.value().frameCount - 1) {
 
-		m_currentAnimation.value().currentTextureAnimationSrcRect = rect;
-	}
+				m_currentAnimation.value().currentAnimFrame = 0;
+			}
 
-	//If the animation frame has started back over, and it should only execute once
-	// then set the current animation to the default animation
-	if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME &&
-		m_currentAnimation.value().currentAnimFrame == 0) {
+			//build the rectangle that points to the current animation frame
+			std::shared_ptr<SDL_Rect> rect = std::make_shared<SDL_Rect>();
 
-		m_currentAnimation = m_defaultAnimation;
+			rect->x = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].x;
+			rect->y = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].y;
 
+			rect->w = (int)m_frameSize.x;
+			rect->h = (int)m_frameSize.y;
+
+			m_currentAnimation.value().currentTextureAnimationSrcRect = rect;
+		}
+
+		//If the animation frame has started back over, and it should only execute once
+		// then set the current animation to the default animation
+		if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME &&
+			m_currentAnimation.value().currentAnimFrame == 0) {
+
+			m_currentAnimation = m_defaultAnimation;
+
+		}
 	}
 
 	//Should we flash?

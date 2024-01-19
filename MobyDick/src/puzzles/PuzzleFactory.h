@@ -11,7 +11,7 @@ class PuzzleFactory
 public:
 	PuzzleFactory() = default;
 
-	virtual std::shared_ptr<Puzzle> create(std::string puzzleType);
+	virtual std::shared_ptr<Puzzle> create(Json::Value);
 
 private:
 

@@ -15,22 +15,27 @@ class Puzzle
 public:
 
 	Puzzle() = default;
+	Puzzle(std::string name, std::string clue, int pieceCount);
 
-	virtual bool hasBeenSolved() = 0;
+	bool hasBeenSolved();
+	virtual void applyPuzzlePiece(std::string puzzlePieceId);
+	virtual bool isPuzzlePieceApplicable(GameObject* puzzlePieceObject) = 0;
+	virtual void applyPuzzlePiece(GameObject* puzzleObject, GameObject* puzzlePieceObject) = 0;
+
 	std::string name() { return m_puzzleName; }
 	void setName(std::string name) { m_puzzleName = name; }
 	std::string clue() { return m_clue; }
 	void setClue(std::string clue) { m_clue = clue; }
-	virtual void applyPuzzlePiece(std::string puzzlePieceId);
-	virtual bool isPuzzlePieceApplicable(GameObject* puzzlePieceObject) = 0;
-	void addPuzzlePiece(std::string piece);
-	std::map<std::string, PuzzlePiece> pieces() { return m_pieces; }
-	
+
+	std::vector<bool>& pieces() { return m_pieces; }
+
 
 protected:
+
 	std::string m_puzzleName;
 	std::string m_clue{};
-	std::map<std::string, PuzzlePiece> m_pieces{};
+
+	std::vector<bool>m_pieces{};
 
 public:
 

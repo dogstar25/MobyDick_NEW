@@ -3,13 +3,20 @@
 
 
 
-std::shared_ptr<Puzzle> PuzzleFactory::create(std::string puzzleType)
+std::shared_ptr<Puzzle> PuzzleFactory::create(Json::Value puzzleJSON)
 {
 	std::shared_ptr<Puzzle> puzzle;
 
+	std::string name = puzzleJSON["name"].asString();
+	std::string clue = puzzleJSON["clue"].asString();
+	int puzzlePieces = puzzleJSON["pieces"].asInt();
+	std::string puzzleType = puzzleJSON["puzzleType"].asString();
+
+
+
 	if (puzzleType == "UnlockDoorPuzzle") {
 
-		puzzle = std::make_shared<UnLockDoorPuzzle>();
+		puzzle = std::make_shared<UnLockDoorPuzzle>(name, clue, puzzlePieces);
 	}
 	else {
 

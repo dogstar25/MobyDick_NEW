@@ -378,6 +378,12 @@ namespace util
 			std::string id = componentJSON["id"].asString();
 			int type = game->enumMap()->toEnum(id);
 			if (type == componentType) {
+
+				///////////////////////////////////////////////
+				//ToDo:If componentJSON hasMember "useModel", then get the value such as [item_TRANSFORM_COMPONENT]
+				//and retrieve it from the models/directory and return it instead of whats in componentJSON
+				///////////////////////////////////////////////
+
 				return componentJSON;
 			}
 

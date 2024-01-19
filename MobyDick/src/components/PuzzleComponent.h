@@ -10,17 +10,16 @@ public:
 	PuzzleComponent(Json::Value definitionJSON);
 	~PuzzleComponent() = default;
 
-	bool hasBeenSolved();
-	std::optional<std::shared_ptr<Puzzle>> isApplicable(GameObject* puzzlePieceObject);
-	std::map<std::string, std::shared_ptr<Puzzle>> puzzles() { return m_puzzles; }
+	std::shared_ptr<Puzzle> puzzle{};
 
+	bool hasBeenSolved();
+	bool isApplicable(GameObject* puzzlePieceObject);
 
 	void update() override;
 	void render();
 
 private:
 
-	std::map<std::string, std::shared_ptr<Puzzle>> m_puzzles{};
 
 };
 
