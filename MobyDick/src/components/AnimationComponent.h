@@ -54,7 +54,7 @@ struct FlashAnimation
 class AnimationComponent : public Component
 {
 public:
-	AnimationComponent() {};
+	//AnimationComponent();
 	AnimationComponent(Json::Value definitionJSON);
 	~AnimationComponent();
 

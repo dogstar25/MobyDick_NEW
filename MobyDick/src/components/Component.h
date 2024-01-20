@@ -14,7 +14,7 @@ class Component
 
 public:
 
-	Component();
+	Component(int componentType);
 	~Component();
 	virtual void update() = 0;
 	virtual void render() {};
@@ -30,6 +30,7 @@ public:
 	int componentType() { return m_componentType; }
 
 protected:
+	std::string m_name{};
 	GameObject* m_parentGameObject{ nullptr };
 	int m_componentType{};
 	bool disabled{ false };

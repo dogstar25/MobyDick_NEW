@@ -9,10 +9,9 @@
 extern std::unique_ptr<Game> game;
 
 
-AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene)
+AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::ATTACHMENTS_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::ATTACHMENTS_COMPONENT;
 
 	int attachmentCount{};
 	for (Json::Value itrItem : componentJSON["attachments"])

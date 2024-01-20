@@ -10,10 +10,9 @@
 
 extern std::unique_ptr<Game> game;
 
-SoundComponent::SoundComponent(Json::Value componentJSON)
+SoundComponent::SoundComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::SOUND_COMPONENT)
 {
-	m_componentType = ComponentTypes::SOUND_COMPONENT;
-
 	for (Json::Value itr: componentJSON["sounds"])
 	{
 		SoundItem soundItem{};

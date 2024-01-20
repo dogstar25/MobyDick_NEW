@@ -55,7 +55,6 @@ namespace util
 	SDL_FPoint& toBox2dPoint(SDL_FPoint& value);
 	float& toBox2dPoint(float& value);
 	SDL_FPoint getMouseWorldPosition();
-	glm::vec2& toRenderPoint(glm::vec2& point);
 	Json::Value getComponentConfig(Json::Value definitionJSON, int);
 	float calculateDistance(SDL_FPoint location1, SDL_FPoint location2);
 	float calculateDistance(SDL_Point location1, SDL_Point location2);
@@ -67,9 +66,10 @@ namespace util
 	SDL_FPoint tileToPixelPlacementLocation(float tileX, float tileY, float objectWidth, float objectHeight);
 	SDL_Point pixelToTileLocation(float pixelX, float pixelY);
 	std::string locationToString(float x, float y);
+	Json::Value getModelComponent(std::string componentId, std::string modelId);
+	std::string getComponentType(Json::Value configJSON);
 
 	b2Vec2 matchParentRotation(SDL_FPoint childPosition, SDL_FPoint parentPosition, float);
-	bool isMouseButtonPressed(uint8 button);
 	const std::string genRandomId(const int len);
 	bool isMouseOverGameObject(SDL_FRect gameObjectPositionRect);
 	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition);

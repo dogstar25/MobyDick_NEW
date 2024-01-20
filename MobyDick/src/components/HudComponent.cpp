@@ -7,9 +7,9 @@
 
 extern std::unique_ptr<Game> game;
 
-HudComponent::HudComponent(Json::Value componentJSON, Scene* parentScene)
+HudComponent::HudComponent(Json::Value componentJSON, Scene* parentScene) :
+	Component(ComponentTypes::HUD_COMPONENT)
 {
-	m_componentType = ComponentTypes::HUD_COMPONENT;
 
 	std::string labelObjectId = componentJSON["labelObjectId"].asString();
 	std::string statusObjectId = componentJSON["statusObjectId"].asString();

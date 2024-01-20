@@ -3,7 +3,8 @@
 
 extern std::unique_ptr<Game> game;
 
-LightComponent::LightComponent(Json::Value componentJSON)
+LightComponent::LightComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::LIGHT_COMPONENT)
 {
 
 	m_componentType = ComponentTypes::LIGHT_COMPONENT;

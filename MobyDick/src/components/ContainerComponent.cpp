@@ -2,16 +2,15 @@
 #include "StateComponent.h"
 #include "../Util.h"
 
-ContainerComponent::ContainerComponent()
+ContainerComponent::ContainerComponent() :
+	Component(ComponentTypes::CONTAINER_COMPONENT)
 {
 
 }
 
-ContainerComponent::ContainerComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene)
+ContainerComponent::ContainerComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::CONTAINER_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::CONTAINER_COMPONENT;
-
 
 	m_capacity = componentJSON["capacity"].asInt();
 	if (componentJSON.isMember("refillTimer")) {

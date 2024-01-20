@@ -10,7 +10,8 @@
 
 extern std::unique_ptr<Game> game;
 
-RenderComponent::RenderComponent(Json::Value componentJSON)
+RenderComponent::RenderComponent(Json::Value componentJSON):
+	Component(ComponentTypes::RENDER_COMPONENT)
 {
 
 	m_componentType = ComponentTypes::RENDER_COMPONENT;

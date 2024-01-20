@@ -3,14 +3,14 @@
 
 extern std::unique_ptr<Game> game;
 
-TransformComponent::TransformComponent()
+TransformComponent::TransformComponent() :
+	Component(ComponentTypes::TRANSFORM_COMPONENT)
 {
 }
 
-TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride)
+TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride) :
+	Component(ComponentTypes::TRANSFORM_COMPONENT)
 {
-		m_componentType = ComponentTypes::TRANSFORM_COMPONENT;
-
 		m_angle = m_originalAngle = angleAdjust;
 		b2Vec2 size{};
 
@@ -57,13 +57,6 @@ TransformComponent::~TransformComponent()
 
 void TransformComponent::update()
 {
-
-
-	if (parent()->type() == "OIL_CAN") {
-
-		int todd = 1;
-
-	}
 
 	//If this is using the window relative positioning, then we may need to adjust the position
 	//because the object may have changed size, i.e ImGui Window

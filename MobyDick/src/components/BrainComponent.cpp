@@ -9,14 +9,14 @@
 
 extern std::unique_ptr<Game> game;
 
-BrainComponent::BrainComponent()
+BrainComponent::BrainComponent() :
+	Component(ComponentTypes::BRAIN_COMPONENT)
 {
 }
 
-BrainComponent::BrainComponent(Json::Value componentJSON)
+BrainComponent::BrainComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::BRAIN_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::BRAIN_COMPONENT;
 
 	m_sightSensorSize = componentJSON["sightSensorSize"].asInt();
 

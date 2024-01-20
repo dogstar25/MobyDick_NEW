@@ -4,10 +4,9 @@
 
 extern std::unique_ptr<Game> game;
 
-StateComponent::StateComponent(Json::Value componentJSON)
+StateComponent::StateComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::STATE_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::STATE_COMPONENT;
 
 	m_beginState = game->enumMap()->toEnum(componentJSON["beginState"].asString());
 	m_states.set(m_beginState, true);

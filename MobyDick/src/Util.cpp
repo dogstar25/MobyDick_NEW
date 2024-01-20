@@ -249,6 +249,31 @@ namespace util
 		return position;
 	}
 
+	Json::Value getModelComponent(std::string componentId, std::string modelId)
+	{
+		std::string definitionFilename = "assets/gameObjectDefinitions/models/" + componentId + "_models.json";
+
+		Json::Value root;
+		std::ifstream definitionFile(definitionFilename);
+		definitionFile >> root;
+
+		if (root.isMember(modelId)) {
+
+			if (root[modelId]["id"].asString() == componentId) {
+
+				return root[modelId];
+			}
+			else {
+				SDL_assert(false && "Component model is wrong type!");
+			}
+		}
+		else {
+			SDL_assert(false && "Component model name not found!");
+		}
+
+		return Json::Value();
+	}
+
 	const ImVec4 JsonToImVec4Color(Json::Value JsonColor) 
 	{
 
@@ -371,20 +396,51 @@ namespace util
 		return value;
 	}
 
+
+
+	std::string getComponentType(Json::Value configJSON)
+	{
+
+		std::string id = configJSON["id"].asString();
+		std::string extractedId{};
+
+		// Find the position of '[' in the string if it exists then we are dealing with a template
+		size_t bracketPos = id.find('[');
+
+		if (id.contains('[')) {
+
+			auto underScorePos = id.find_first_of('_');
+			extractedId = id.substr(underScorePos + 1, id.size() - underScorePos - 2);
+		}
+		else {
+
+			extractedId = id;
+		}
+
+		return extractedId;
+	}
+
 	Json::Value getComponentConfig(Json::Value definitionJSON, int componentType)
 	{
 		for (Json::Value componentJSON : definitionJSON["components"]) {
 
-			std::string id = componentJSON["id"].asString();
-			int type = game->enumMap()->toEnum(id);
+			std::string origComponentId = componentJSON["id"].asString();
+			std::string  componentId = getComponentType(componentJSON);
+
+			int type = game->enumMap()->toEnum(componentId);
+
 			if (type == componentType) {
 
-				///////////////////////////////////////////////
-				//ToDo:If componentJSON hasMember "useModel", then get the value such as [item_TRANSFORM_COMPONENT]
+				//If componentJSON has a "[" then get the value such as [item_TRANSFORM_COMPONENT]
 				//and retrieve it from the models/directory and return it instead of whats in componentJSON
-				///////////////////////////////////////////////
+				if (origComponentId.contains('[')) {
+
+					componentJSON = getModelComponent(componentId, origComponentId);
+
+				}
 
 				return componentJSON;
+
 			}
 
 		}

@@ -6,16 +6,15 @@
 
 extern std::unique_ptr<Game> game;
 
-GridDisplayComponent::GridDisplayComponent()
+GridDisplayComponent::GridDisplayComponent() :
+	Component(ComponentTypes::GRID_DISPLAY_COMPONENT)
 {
 
 }
 
-GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, Scene* parentScene)
+GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, Scene* parentScene) :
+	Component(ComponentTypes::GRID_DISPLAY_COMPONENT)
 {
-
-
-	m_componentType = ComponentTypes::GRID_DISPLAY_COMPONENT;
 
 	m_itemPadding = componentJSON["itemPadding"].asFloat();
 
