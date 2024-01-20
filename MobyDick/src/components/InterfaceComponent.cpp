@@ -4,9 +4,9 @@
 
 extern std::unique_ptr<Game> game;
 
-InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentScene)
+InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentScene) :
+	Component(ComponentTypes::INTERFACE_COMPONENT)
 {
-	m_componentType = ComponentTypes::INTERFACE_COMPONENT;
 
 	//Interactive object if exists
 	if (componentJSON.isMember("menuObject")) {

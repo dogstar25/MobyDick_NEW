@@ -1,9 +1,9 @@
 #include "PoolComponent.h"
 
 
-PoolComponent::PoolComponent(Json::Value componentJSON)
+PoolComponent::PoolComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::POOL_COMPONENT)
 {
-	m_componentType = ComponentTypes::POOL_COMPONENT;
 
 	m_isAvailable = true;
 	m_isActive = false;

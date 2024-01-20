@@ -69,7 +69,8 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 
 	for (Json::Value componentJSON : definitionJSON["components"]){
 
-		int componentType = game->enumMap()->toEnum(componentJSON["id"].asString());
+		std::string componentTypeString = util::getComponentType(componentJSON);
+		int componentType = game->enumMap()->toEnum(componentTypeString);
 
 		component = game->componentFactory()->create(
 			definitionJSON, m_name, gameObjectType, parentScene, xMapPos, yMapPos, angleAdjust, sizeOverride, componentType);

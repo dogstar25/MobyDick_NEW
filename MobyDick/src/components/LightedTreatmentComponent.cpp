@@ -7,10 +7,9 @@
 extern std::unique_ptr<Game> game;
 
 
-LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON)
+LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::LIGHTED_TREATMENT_COMPONENT;
 
 	m_lightCompositeTexture = std::make_shared<Texture>();
 

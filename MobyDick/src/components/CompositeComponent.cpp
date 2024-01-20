@@ -5,10 +5,9 @@
 extern std::unique_ptr<Game> game;
 
 
-CompositeComponent::CompositeComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene)
+CompositeComponent::CompositeComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::COMPOSITE_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::COMPOSITE_COMPONENT;
 
 	Json::Value bluePrintJSON = componentJSON["blueprint"];
 

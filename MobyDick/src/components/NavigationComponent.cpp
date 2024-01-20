@@ -12,10 +12,9 @@ NavigationComponent::~NavigationComponent()
 
 }
 
-NavigationComponent::NavigationComponent(Json::Value componentJSON)
+NavigationComponent::NavigationComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::NAVIGATION_COMPONENT)
 {
-	m_componentType = ComponentTypes::NAVIGATION_COMPONENT;
-
 	m_passageFitSizeCategory = game->enumMap()->toEnum(componentJSON["passageFitSizeCategory"].asString());
 
 	m_pathRefreshTimer = { 0.5, true };

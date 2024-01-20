@@ -8,16 +8,16 @@ extern std::unique_ptr<Game> game;
 
 
 
-VitalityComponent::VitalityComponent()
+VitalityComponent::VitalityComponent() :
+	Component(ComponentTypes::VITALITY_COMPONENT)
 {
 
 }
 
 
-VitalityComponent::VitalityComponent(Json::Value componentJSON)
+VitalityComponent::VitalityComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::VITALITY_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::VITALITY_COMPONENT;
 
 	m_speed = componentJSON["speed"].asFloat();
 	m_rotationSpeed = componentJSON["rotationSpeed"].asFloat();

@@ -19,7 +19,7 @@ class PhysicsComponent : public Component
 {
 
 public:
-	PhysicsComponent() {};
+	//PhysicsComponent() {};
 	PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride);
 	~PhysicsComponent();
 

@@ -3,12 +3,14 @@
 
 extern std::unique_ptr<Game> game;
 
-InventoryComponent::InventoryComponent()
+InventoryComponent::InventoryComponent() :
+	Component(ComponentTypes::INVENTORY_COMPONENT)
 {
 	m_isDependentObjectOwner = true;
 }
 
-InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene)
+InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::INVENTORY_COMPONENT)
 {
 
 	m_componentType = ComponentTypes::INVENTORY_COMPONENT;

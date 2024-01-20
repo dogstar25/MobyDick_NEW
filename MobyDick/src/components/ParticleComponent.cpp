@@ -6,9 +6,9 @@
 
 extern std::unique_ptr<Game> game;
 
-ParticleComponent::ParticleComponent(Json::Value componentJSON)
+ParticleComponent::ParticleComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::PARTICLE_COMPONENT)
 {
-	m_componentType = ComponentTypes::PARTICLE_COMPONENT;
 
 	m_maxParticles = componentJSON["maxParticles"].asInt();
 	for (int i = 0; i < m_maxParticles; i++) {

@@ -8,10 +8,9 @@
 extern std::unique_ptr<Game> game;
 
 PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, 
-	b2Vec2 sizeOverride)
+	b2Vec2 sizeOverride) :
+	Component(ComponentTypes::PHYSICS_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::PHYSICS_COMPONENT;
 
 	//Get reference to the animationComponent JSON config and transformComponent JSON config
 	Json::Value physicsComponentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PHYSICS_COMPONENT);

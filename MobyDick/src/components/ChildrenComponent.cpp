@@ -6,16 +6,15 @@
 
 extern std::unique_ptr<Game> game;
 
-ChildrenComponent::ChildrenComponent()
+ChildrenComponent::ChildrenComponent() :
+	Component(ComponentTypes::CHILDREN_COMPONENT)
 {
 
 }
 
-ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene)
+ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::CHILDREN_COMPONENT)
 {
-
-
-	m_componentType = ComponentTypes::CHILDREN_COMPONENT;
 
 	m_childPadding = componentJSON["childPadding"].asFloat();
 	m_matchParentRotation = componentJSON["matchParentRotation"].asBool();

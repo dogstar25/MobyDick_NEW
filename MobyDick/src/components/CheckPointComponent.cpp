@@ -11,9 +11,9 @@ CheckPointComponent::~CheckPointComponent()
 
 }
 
-CheckPointComponent::CheckPointComponent(Json::Value componentJSON)
+CheckPointComponent::CheckPointComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::CHECKPOINT_COMPONENT)
 {
-	m_componentType = ComponentTypes::CHECKPOINT_COMPONENT;
 
 
 	if (componentJSON.isMember("reSpawnLocation")) {
