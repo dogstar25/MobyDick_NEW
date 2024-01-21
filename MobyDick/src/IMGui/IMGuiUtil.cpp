@@ -108,8 +108,15 @@ namespace ImGui
 		auto windowWidth = ImGui::GetWindowSize().x;
 		auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
 
-		ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-		ImGui::Text(text.c_str());
+		int diff = std::fmax((windowWidth - textWidth), 0.);
+		if (diff == 0.) {
+			ImGui::SetCursorPosX(10);
+		}
+		else {
+			ImGui::SetCursorPosX(diff * 0.5f);
+		}
+		
+		ImGui::TextWrapped(text.c_str());
 	}
 
 	void setCursorToCentered(float itemToCenterSize) {

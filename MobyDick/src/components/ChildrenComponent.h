@@ -62,6 +62,8 @@ public:
 	void addStepChild(std::shared_ptr<GameObject> gameObject, PositionAlignment positionAlignment, bool addToEnd=true);
 	void addStepChild(std::shared_ptr<GameObject> gameObject, SDL_FPoint position, bool addToEnd = true);
 	void removeChild(std::string id);
+	void removeChildrenByType(std::string gameObjectType);
+	std::vector<std::shared_ptr<GameObject>> getChildrenByType(std::string gameObjectType);
 	std::unordered_map<std::string, std::vector<Child>> childSlots() { return m_childSlots; }
 
 private:

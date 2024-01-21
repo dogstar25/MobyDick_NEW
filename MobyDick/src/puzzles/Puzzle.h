@@ -29,7 +29,6 @@ public:
 
 	std::vector<bool>& pieces() { return m_pieces; }
 
-
 protected:
 
 	std::string m_puzzleName;

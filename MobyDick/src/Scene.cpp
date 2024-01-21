@@ -661,9 +661,9 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByType(std::
 	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
 
 	auto it = m_gameObjectLookup.begin();
-	while (it->second.expired() == false && it != m_gameObjectLookup.end()) {
+	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->type() == type) {
+		if (it->second.expired() == false && it->second.lock()->type() == type) {
 			foundGameObject = it->second.lock();
 			break;
 		}
