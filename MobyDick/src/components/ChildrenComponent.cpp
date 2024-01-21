@@ -218,7 +218,7 @@ void ChildrenComponent::_removeFromWorldPass()
 				parent()->parentScene()->deleteIndex(childItr->gameObject.value()->id());
 
 				//Erase the object from the map
-				slotItr.second.erase(childItr);
+				childItr = slotItr.second.erase(childItr);
 
 			}
 			else {
@@ -234,6 +234,58 @@ void ChildrenComponent::_removeFromWorldPass()
 
 }
 
+
+
+void ChildrenComponent::removeChildrenByType(std::string gameObjectType)
+{
+
+	auto childSlotItr = m_childSlots.begin();
+	while (childSlotItr != m_childSlots.end()) {
+
+		//Each child slot can have multiple gameObjects that live in a vector
+		auto childItr = childSlotItr->second.begin();
+		while (childItr != childSlotItr->second.end()) {
+
+			if (childItr->gameObject.has_value() && childItr->gameObject.value()->type() == gameObjectType) {
+
+				childItr->gameObject.value()->setRemoveFromWorld(true);
+				++childItr;
+			}
+			
+		}
+
+		++childSlotItr;
+	}
+
+}
+
+std::vector<std::shared_ptr<GameObject>> ChildrenComponent::getChildrenByType(std::string gameObjectType)
+{
+
+	std::vector<std::shared_ptr<GameObject>> foundGameObjects;
+
+	auto childSlotItr = m_childSlots.begin();
+	while (childSlotItr != m_childSlots.end()) {
+
+		//Each child slot can have multiple gameObjects that live in a vector
+		auto childItr = childSlotItr->second.begin();
+		while (childItr != childSlotItr->second.end()) {
+
+			if (childItr->gameObject.has_value() && childItr->gameObject.value()->type() == gameObjectType) {
+
+				foundGameObjects.push_back(childItr->gameObject.value());
+				
+			}
+
+			++childItr;
+		}
+
+		++childSlotItr;
+	}
+
+	return foundGameObjects;
+
+}
 
 
 //A stepChild lives outside of the parent so we just remove him as a child and do not delete its 
@@ -257,8 +309,6 @@ void ChildrenComponent::removeChild(std::string id)
 				}
 
 				childItr = childSlotItr->second.erase(childItr);
-				//childItr->gameObject.value()->setRemoveFromWorld(true);
-				//++childItr;
 			}
 			else {
 
