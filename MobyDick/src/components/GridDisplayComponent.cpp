@@ -124,7 +124,7 @@ void GridDisplayComponent::update()
 	for (auto& gridSlot : m_gridSlots)
 	{
 
-		if (gridSlot.gameObject.has_value()) {
+		if (gridSlot.gameObject.has_value() && gridSlot.gameObject.value().expired() == false) {
 
 			if (gridSlot.gameObject.value().lock()->isDragging() == false) {
 				b2Vec2 newPosition =
@@ -216,7 +216,7 @@ void GridDisplayComponent::render()
 			m_slotImageObject.value()->render(slotImageObjectRenderLocation);
 		}
 
-		if (slot.gameObject.has_value()) {
+		if (slot.gameObject.has_value() && slot.gameObject.value().expired() == false) {
 
 			//If we are not dragging, then show the item at the size that matches the grid display slots
 			if (slot.gameObject.value().lock()->isDragging() == false) {

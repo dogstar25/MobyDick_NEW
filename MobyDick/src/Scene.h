@@ -83,9 +83,10 @@ public:
 	void applyCurrentControlMode();
 	
 	std::optional<std::shared_ptr<GameObject>> getGameObject(std::string id);
+	std::optional<std::shared_ptr<GameObject>> extractGameObject(std::string id);
 	std::vector<std::shared_ptr<GameObject>> getGameObjectsByName(std::string name);
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByName(std::string name);
-	std::vector<std::shared_ptr<GameObject>> getGameObjectsByTrait(int trait);
+	std::vector<std::shared_ptr<GameObject>> getGameObjectsByTrait(int trait, bool includePooled = false);
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByTrait(int trait); //use when you know there's only one
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByType(std::string type); //use when you know there's only one
 	std::optional<std::string> getNextLevel();

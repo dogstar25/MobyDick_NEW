@@ -312,8 +312,6 @@ EnumMap::EnumMap()
 	m_enumMap["GameObjectState::RUN_DOWN"] = (int)GameObjectState::RUN_DOWN;
 
 
-	
-
 }
 
 EnumMap::~EnumMap()

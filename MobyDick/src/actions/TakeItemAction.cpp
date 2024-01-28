@@ -16,16 +16,17 @@ void TakeItemAction::perform(GameObject* gameObject)
 		const auto& player = gameObject->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
 		const auto& inventoryComponent = player.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
-		const auto& gameObjectShrPtr = gameObject->parentScene()->getGameObject(gameObject->id());
-
 		//If this item is loose then add it to the inventory and remove it from the world
 		if (gameObject->hasState(GameObjectState::ITEM_LOOSE) && gameObject->hasState(GameObjectState::ITEM_STORED_OPEN) == false) {
 
-			if (inventoryComponent->addItem(gameObjectShrPtr.value()) == true) {
+			auto extractedGameObject = gameObject->parentScene()->extractGameObject(gameObject->id());
 
-				gameObjectShrPtr.value()->setRemoveFromWorld(true);
+			if (inventoryComponent->addItem(extractedGameObject.value()) == true) {
+
 				inventoryComponent->refreshInventoryDisplay();
 
+				const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+				physicsComponent->setIsSensor(true);
 
 			}
 			else {
@@ -38,6 +39,8 @@ void TakeItemAction::perform(GameObject* gameObject)
 			const auto& gameObjectParent = gameObject->parent();
 			const auto& sourceInventoryObject = gameObjectParent.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
+			const auto& gameObjectShrPtr = gameObject->parentScene()->getGameObject(gameObject->id());
+
 			//First remove it
 			std::shared_ptr<GameObject> gameObjectSharedPtr = sourceInventoryObject->removeItem(gameObject);
 
@@ -45,6 +48,10 @@ void TakeItemAction::perform(GameObject* gameObject)
 				
 				inventoryComponent->refreshInventoryDisplay();
 				sourceInventoryObject->refreshInventoryDisplay();
+
+				const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+				physicsComponent->setIsSensor(true);
+
 			}
 			else {
 				//Add it back to where we removed it from 

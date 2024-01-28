@@ -87,6 +87,7 @@ public:
 	void setSize(b2Vec2 size);
 	bool intersectsWith(GameObject* gameObject);
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);
+	void addLitHighlight(b2Vec2 size);
 
 	std::optional<int> renderOrder() { return m_renderOrder; }
 	void setRenderOrder(int renderOrder) { m_renderOrder = renderOrder; }

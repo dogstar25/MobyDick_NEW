@@ -45,6 +45,7 @@ public:
 	void setLinearDamping(float linearDamping);
 	void setAngularDamping(float angularDamping);
 	void setGravityScale(float gravityScale);
+	void setIsSensor(bool isSensor);
 
 	//This is when we want to chnage the position of the object from within a box2d callback
 	void setChangePositionPosition(b2Vec2 position) { m_changePositionPosition = position; }

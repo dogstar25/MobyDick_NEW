@@ -244,11 +244,19 @@ void Scene::update() {
 		stepB2PhysicsWorld();
 	}
 
+
 	//Update each gameObject in all layers
 	for (auto& gameObjects : m_gameObjects)
 	{
+
+
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
+
+			if (gameObjects[i]->type() == "LIGHT_ITEM_HIGHLIGHT_CIRCLE") {
+				int todd = 1;
+			}
+
 			gameObjects[i]->update();
 		}
 	}
@@ -586,6 +594,51 @@ std::optional<std::shared_ptr<GameObject>> Scene::getGameObject(std::string id)
 	return foundGameObject;
 }
 
+std::optional<std::shared_ptr<GameObject>> Scene::extractGameObject(std::string id)
+{
+	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
+
+	auto deleteMeObject = createGameObject("DELETE_ME_OBJECT", (float)-1.0, (float)-1.0, (float)0, this);
+	deleteMeObject->setRemoveFromWorld(true);
+
+
+	//Loop through all layers and remove any gameObject that has been marked to remove
+	//for (auto& gameObjectsLayers : m_gameObjects) {
+
+	//	for (auto gameObjectItr = gameObjectsLayers.begin(); gameObjectItr != gameObjectsLayers.end();) {
+
+	//		if (gameObjectItr->get()->id() == id) {
+
+	//			foundGameObject = std::make_optional(*gameObjectItr);
+	//			gameObjectItr->swap(deleteMeObject);
+	//		}
+	//		else {
+	//			++gameObjectItr;
+	//		}
+
+	//	}
+	//}
+
+	//Using a swap so that we contain all dletions of objects at the _removeFromWorldPass level
+	//This allows us to move an object from the main world collection to a parent object and it can be called from a 
+	//box2d callback
+
+	for (auto& gameObjectsLayers : m_gameObjects) {
+
+		for (auto& gameObject : gameObjectsLayers) {
+
+			if (gameObject->id() == id) {
+
+				foundGameObject = gameObject;
+				gameObject.swap(deleteMeObject);
+			}
+
+		}
+	}
+
+	return foundGameObject;
+}
+
 std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByName(std::string name)
 {
 	std::vector<std::shared_ptr<GameObject>> foundGameObjects;
@@ -621,15 +674,19 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByName(std::
 	return foundGameObject;
 }
 
-std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByTrait(int trait)
+std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByTrait(int trait, bool includePooled)
 {
 	std::vector<std::shared_ptr<GameObject>> foundGameObjects;
 
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.expired() == false && it->second.lock()->hasTrait(trait)) {
-			foundGameObjects.push_back(it->second.lock());
+		if (it->second.expired() == false && it->second.lock()->hasTrait(trait) ) {
+
+			if (includePooled == false && it->second.lock()->isOffGrid() ==false) {
+
+				foundGameObjects.push_back(it->second.lock());
+			}
 		}
 
 		++it;

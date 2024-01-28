@@ -191,6 +191,17 @@ void PhysicsComponent::update()
 	parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->setPosition(convertedPosition, convertedAngle);
 }
 
+void PhysicsComponent::setIsSensor(bool isSensor)
+{
+
+	for (auto fixture = physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext()){
+
+		fixture->SetSensor(isSensor);
+		//fixture->Refilter();
+	}
+}
+
+
 b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, 
 	b2Vec2 sizeOverride)
 {
