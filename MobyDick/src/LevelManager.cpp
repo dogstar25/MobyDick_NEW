@@ -575,8 +575,8 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 			if (locationItemJSON.isMember("containerCapacity")) {
 				levelObject.containerCapacity = locationItemJSON["containerCapacity"].asInt();
 			}
-			if (locationItemJSON.isMember("gameObjectStatus")) {
-				levelObject.states = _storeStates(locationItemJSON["gameObjectStatus"]);
+			if (locationItemJSON.isMember("gameObjectStates")) {
+				levelObject.states = _storeStates(locationItemJSON["gameObjectStates"]);
 			}
 
 			levelObjects.push_back(levelObject);

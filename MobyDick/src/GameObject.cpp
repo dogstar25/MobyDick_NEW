@@ -188,6 +188,47 @@ void GameObject::setWindowRelativePosition(PositionAlignment windowPosition, flo
 
 }
 
+void GameObject::addLitHighlight(b2Vec2 size)
+{
+
+	std::shared_ptr<ChildrenComponent> childrenComponent{};
+
+	auto lightObject = m_parentScene->addGameObject("LIGHT_ITEM_HIGHLIGHT_CIRCLE", GameLayer::FOREGROUND_5 , -1.0F, -1.0F,
+		0.F, false, "LitHightlight", size);
+	std::shared_ptr<GameObject> lightObjectShrPtr = m_parentScene->getGameObject(lightObject->id()).value();
+	lightObjectShrPtr->addState(GameObjectState::ON);
+
+
+	if (hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+
+		childrenComponent = getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+		childrenComponent->addStepChild(lightObjectShrPtr, PositionAlignment::CENTER);
+
+	}
+	else {
+		Json::Value componentsDefinition{};
+		Json::Value childrenComponentDefinition{};
+
+		childrenComponentDefinition["id"] = "CHILDREN_COMPONENT";
+		childrenComponentDefinition["sameSlotTreatment"] = "ChildSlotTreatment::STACKED";
+		componentsDefinition["components"].append(childrenComponentDefinition);
+
+
+		childrenComponent =
+			std::static_pointer_cast<ChildrenComponent>(
+				game->componentFactory()->create(componentsDefinition, m_name, "", m_parentScene, 0, 0, 0, b2Vec2_zero,
+					ComponentTypes::CHILDREN_COMPONENT)
+			);
+		childrenComponent->setParent(this);
+		addComponent(childrenComponent);
+
+		childrenComponent->addStepChild(lightObjectShrPtr, PositionAlignment::CENTER);
+
+	}
+
+
+}
+
 void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, float adjustY)
 {
 	float xMapPos{};

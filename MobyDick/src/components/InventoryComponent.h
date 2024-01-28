@@ -62,6 +62,7 @@ private:
 	float m_maxCapacity{};
 
 	void _setItemSize(std::shared_ptr<GameObject> gameObject);
+	void _removeFromWorldPass();
 
 };
 

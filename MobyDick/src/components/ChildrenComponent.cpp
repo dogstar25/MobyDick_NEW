@@ -49,9 +49,22 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 			sizeOverride = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
 		}
 
+		if (childObjectType == "ELECTRIC_ROOM_LIGHT_CIRCLE") {
+			int todd = 1;
+		}
+
 		//Create the child gameObject
 		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name, sizeOverride);
 
+
+		if (itrChild.isMember("beginStates")) {
+			Json::Value beginStates = itrChild["beginStates"];
+			for (auto& stateItr : beginStates) {
+
+				auto state = (GameObjectState)game->enumMap()->toEnum(stateItr.asString());
+				childObject->addState(state);
+			}
+		}
 
 		//Child Color Override
 		if (itrChild.isMember("color")) {

@@ -249,6 +249,8 @@ void InventoryComponent::update()
 
 	}
 
+	_removeFromWorldPass();
+
 }
 
 void InventoryComponent::refreshInventoryDisplay() {
@@ -344,5 +346,41 @@ void InventoryComponent::hideInventory()
 	}
 
 }
+
+void InventoryComponent::_removeFromWorldPass()
+{
+
+	auto inventoryItr = m_items.begin();
+	while (inventoryItr != m_items.end()) {
+
+		if (inventoryItr->has_value()) {
+
+			if (inventoryItr->value()->removeFromWorld() == true) {
+
+				//Remove object from gloabl index collection
+				parent()->parentScene()->deleteIndex(inventoryItr->value()->id());
+
+				//dont delte the item, just reset the optional and reset the shared_ptr
+				inventoryItr->value().reset();
+				inventoryItr->reset();
+
+			}
+			else {
+
+				++inventoryItr;
+			}
+
+		}
+		else {
+
+			++inventoryItr;
+		}
+
+		
+	}
+
+
+}
+
 
 

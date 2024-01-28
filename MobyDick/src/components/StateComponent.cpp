@@ -8,8 +8,14 @@ StateComponent::StateComponent(Json::Value componentJSON) :
 	Component(ComponentTypes::STATE_COMPONENT)
 {
 
-	m_beginState = game->enumMap()->toEnum(componentJSON["beginState"].asString());
-	m_states.set(m_beginState, true);
+	if (componentJSON.isMember("beginStates")) {
+		Json::Value beginStates = componentJSON["beginStates"];
+		for (auto& stateItr : beginStates) {
+
+			auto state = (GameObjectState)game->enumMap()->toEnum(stateItr.asString());
+			addState(state);
+		}
+	}
 
 	if (componentJSON.isMember("transitions")) {
 
@@ -120,6 +126,11 @@ void StateComponent::removeState(GameObjectState newState)
 void StateComponent::addState(GameObjectState newState)
 {
 
+
+	if ((int)newState == 0) {
+		int todd = 1;
+	}
+
 	//Check to see if we have a transition defined for this state combination
 	//Also, if the gameObject already has the state, dont try to set it again
 	if (_hasTransitionDuration(newState) == false and testState(newState) == false) {
@@ -135,247 +146,247 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 	switch (newState) {
 
-	case GameObjectState::ON:
+		case GameObjectState::ON:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::OFF, false);
-		break;
+			m_states.set((int)GameObjectState::OFF, false);
+			break;
 
-	case GameObjectState::OFF:
+		case GameObjectState::OFF:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::ON, false);
-		break;
+			m_states.set((int)GameObjectState::ON, false);
+			break;
 
-	case GameObjectState::IDLE:
+		case GameObjectState::IDLE:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK, false);
-		m_states.set((int)GameObjectState::RUN, false);
-		m_states.set((int)GameObjectState::SPRINT, false);
-		m_states.set((int)GameObjectState::JUMP, false);
-		m_states.set((int)GameObjectState::CLIMB, false);
-		break;
+			m_states.set((int)GameObjectState::WALK, false);
+			m_states.set((int)GameObjectState::RUN, false);
+			m_states.set((int)GameObjectState::SPRINT, false);
+			m_states.set((int)GameObjectState::JUMP, false);
+			m_states.set((int)GameObjectState::CLIMB, false);
+			break;
 
-	case GameObjectState::WALK:
+		case GameObjectState::WALK:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::IDLE, false);
-		m_states.set((int)GameObjectState::RUN, false);
-		m_states.set((int)GameObjectState::SPRINT, false);
-		m_states.set((int)GameObjectState::JUMP, false);
-		m_states.set((int)GameObjectState::CLIMB, false);
-		break;
+			m_states.set((int)GameObjectState::IDLE, false);
+			m_states.set((int)GameObjectState::RUN, false);
+			m_states.set((int)GameObjectState::SPRINT, false);
+			m_states.set((int)GameObjectState::JUMP, false);
+			m_states.set((int)GameObjectState::CLIMB, false);
+			break;
 
-	case GameObjectState::RUN:
+		case GameObjectState::RUN:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK, false);
-		m_states.set((int)GameObjectState::IDLE, false);
-		m_states.set((int)GameObjectState::SPRINT, false);
-		m_states.set((int)GameObjectState::JUMP, false);
-		m_states.set((int)GameObjectState::CLIMB, false);
-		break;
+			m_states.set((int)GameObjectState::WALK, false);
+			m_states.set((int)GameObjectState::IDLE, false);
+			m_states.set((int)GameObjectState::SPRINT, false);
+			m_states.set((int)GameObjectState::JUMP, false);
+			m_states.set((int)GameObjectState::CLIMB, false);
+			break;
 
-	case GameObjectState::SPRINT:
+		case GameObjectState::SPRINT:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK, false);
-		m_states.set((int)GameObjectState::IDLE, false);
-		m_states.set((int)GameObjectState::RUN, false);
-		m_states.set((int)GameObjectState::JUMP, false);
-		m_states.set((int)GameObjectState::CLIMB, false);
-		break;
+			m_states.set((int)GameObjectState::WALK, false);
+			m_states.set((int)GameObjectState::IDLE, false);
+			m_states.set((int)GameObjectState::RUN, false);
+			m_states.set((int)GameObjectState::JUMP, false);
+			m_states.set((int)GameObjectState::CLIMB, false);
+			break;
 
-	case GameObjectState::JUMP:
+		case GameObjectState::JUMP:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK, false);
-		m_states.set((int)GameObjectState::IDLE, false);
-		m_states.set((int)GameObjectState::RUN, false);
-		m_states.set((int)GameObjectState::SPRINT, false);
-		m_states.set((int)GameObjectState::CLIMB, false);
-		break;
+			m_states.set((int)GameObjectState::WALK, false);
+			m_states.set((int)GameObjectState::IDLE, false);
+			m_states.set((int)GameObjectState::RUN, false);
+			m_states.set((int)GameObjectState::SPRINT, false);
+			m_states.set((int)GameObjectState::CLIMB, false);
+			break;
 
-	case GameObjectState::CLIMB:
+		case GameObjectState::CLIMB:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK, false);
-		m_states.set((int)GameObjectState::IDLE, false);
-		m_states.set((int)GameObjectState::RUN, false);
-		m_states.set((int)GameObjectState::SPRINT, false);
-		m_states.set((int)GameObjectState::JUMP, false);
-		break;
+			m_states.set((int)GameObjectState::WALK, false);
+			m_states.set((int)GameObjectState::IDLE, false);
+			m_states.set((int)GameObjectState::RUN, false);
+			m_states.set((int)GameObjectState::SPRINT, false);
+			m_states.set((int)GameObjectState::JUMP, false);
+			break;
 
-	case GameObjectState::OPENED:
+		case GameObjectState::OPENED:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::CLOSED, false);
-		break;
+			m_states.set((int)GameObjectState::CLOSED, false);
+			break;
 
-	case GameObjectState::CLOSED:
+		case GameObjectState::CLOSED:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::OPENED, false);
-		break;
+			m_states.set((int)GameObjectState::OPENED, false);
+			break;
 
-	case GameObjectState::ITEM_OBTAINABLE:
+		case GameObjectState::ITEM_OBTAINABLE:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-		break;
+			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+			break;
 
-	case GameObjectState::ITEM_STORED_ENCLOSED:
+		case GameObjectState::ITEM_STORED_ENCLOSED:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-		break;
+			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+			break;
 
-	case GameObjectState::ITEM_STORED_OPEN:
+		case GameObjectState::ITEM_STORED_OPEN:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
-		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-		break;
+			m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
+			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+			break;
 
-	case GameObjectState::ITEM_LOOSE:
+		case GameObjectState::ITEM_LOOSE:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-		m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
-		break;
+			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
+			m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
+			break;
 
-	case GameObjectState::WALK_LEFT:
+		case GameObjectState::WALK_LEFT:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_RIGHT, false);
-		m_states.set((int)GameObjectState::WALK_UP, false);
-		m_states.set((int)GameObjectState::WALK_DOWN, false);
-		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
-		m_states.set((int)GameObjectState::IDLE_LEFT, false);
-		m_states.set((int)GameObjectState::IDLE_UP, false);
-		m_states.set((int)GameObjectState::IDLE_DOWN, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			break;
 
-	case GameObjectState::WALK_RIGHT:
+		case GameObjectState::WALK_RIGHT:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_LEFT, false);
-		m_states.set((int)GameObjectState::WALK_UP, false);
-		m_states.set((int)GameObjectState::WALK_DOWN, false);
-		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
-		m_states.set((int)GameObjectState::IDLE_LEFT, false);
-		m_states.set((int)GameObjectState::IDLE_UP, false);
-		m_states.set((int)GameObjectState::IDLE_DOWN, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			break;
 
-	case GameObjectState::WALK_UP:
+		case GameObjectState::WALK_UP:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_LEFT, false);
-		m_states.set((int)GameObjectState::WALK_RIGHT, false);
-		m_states.set((int)GameObjectState::WALK_DOWN, false);
-		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
-		m_states.set((int)GameObjectState::IDLE_LEFT, false);
-		m_states.set((int)GameObjectState::IDLE_UP, false);
-		m_states.set((int)GameObjectState::IDLE_DOWN, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			break;
 
-	case GameObjectState::WALK_DOWN:
+		case GameObjectState::WALK_DOWN:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_LEFT, false);
-		m_states.set((int)GameObjectState::WALK_RIGHT, false);
-		m_states.set((int)GameObjectState::WALK_UP, false);
-		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
-		m_states.set((int)GameObjectState::IDLE_LEFT, false);
-		m_states.set((int)GameObjectState::IDLE_UP, false);
-		m_states.set((int)GameObjectState::IDLE_DOWN, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			break;
 
-	case GameObjectState::IDLE_RIGHT:
+		case GameObjectState::IDLE_RIGHT:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_LEFT, false);
-		m_states.set((int)GameObjectState::WALK_RIGHT, false);
-		m_states.set((int)GameObjectState::WALK_UP, false);
-		m_states.set((int)GameObjectState::WALK_DOWN, false);
-		m_states.set((int)GameObjectState::IDLE_LEFT, false);
-		m_states.set((int)GameObjectState::IDLE_UP, false);
-		m_states.set((int)GameObjectState::IDLE_DOWN, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			break;
 
-	case GameObjectState::IDLE_LEFT:
+		case GameObjectState::IDLE_LEFT:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_LEFT, false);
-		m_states.set((int)GameObjectState::WALK_RIGHT, false);
-		m_states.set((int)GameObjectState::WALK_UP, false);
-		m_states.set((int)GameObjectState::WALK_DOWN, false);
-		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
-		m_states.set((int)GameObjectState::IDLE_UP, false);
-		m_states.set((int)GameObjectState::IDLE_DOWN, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			break;
 
-	case GameObjectState::IDLE_UP:
+		case GameObjectState::IDLE_UP:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_LEFT, false);
-		m_states.set((int)GameObjectState::WALK_RIGHT, false);
-		m_states.set((int)GameObjectState::WALK_UP, false);
-		m_states.set((int)GameObjectState::WALK_DOWN, false);
-		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
-		m_states.set((int)GameObjectState::IDLE_LEFT, false);
-		m_states.set((int)GameObjectState::IDLE_DOWN, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			break;
 
-	case GameObjectState::IDLE_DOWN:
+		case GameObjectState::IDLE_DOWN:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		m_states.set((int)GameObjectState::WALK_LEFT, false);
-		m_states.set((int)GameObjectState::WALK_RIGHT, false);
-		m_states.set((int)GameObjectState::WALK_UP, false);
-		m_states.set((int)GameObjectState::WALK_DOWN, false);
-		m_states.set((int)GameObjectState::IDLE_RIGHT, false);
-		m_states.set((int)GameObjectState::IDLE_LEFT, false);
-		m_states.set((int)GameObjectState::IDLE_UP, false);
-		break;
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			break;
 
-	case GameObjectState::DISABLED_COLLISION:
-	case GameObjectState::DISABLED_PHYSICS:
-	case GameObjectState::DISABLED_RENDER:
-	case GameObjectState::DISABLED_UPDATE:
-	case GameObjectState::ON_VERTICAL_MOVEMENT:
+		case GameObjectState::DISABLED_COLLISION:
+		case GameObjectState::DISABLED_PHYSICS:
+		case GameObjectState::DISABLED_RENDER:
+		case GameObjectState::DISABLED_UPDATE:
+		case GameObjectState::ON_VERTICAL_MOVEMENT:
 
-		m_states.set((int)newState, true);
+			m_states.set((int)newState, true);
 
-		break;
+			break;
 
-	default:
+		default:
 
-		SDL_assert(false && "No match for State!");
+			SDL_assert(false && "No match for State!");
 
 	}
 }

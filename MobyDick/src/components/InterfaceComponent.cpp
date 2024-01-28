@@ -83,19 +83,15 @@ void InterfaceComponent::update()
 	const auto& transformComponent = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
-	//Mouse Contact - ON_HOVER
+	//This object may have been deleted so clear it out if its lookup table reference is expired
+	if (m_currentGameObjectInterfaceActive) {
 
-	////////////////////////////////////////////////////////////////
+		const auto& temp = parent()->parentScene()->getGameObject(m_currentGameObjectInterfaceActive.value()->id());
+		if (temp.has_value() == false) {
 
-
-	//figure out a way to only register an "on_hover: event if this object is "in front of"
-	// whatever object is currently considered to "on hovered" object
-
-	//This should simplify the logic for determining what objects interface is the overiding interface
-
-
-	////////////////////////////////////////////////////////////////
-
+			m_currentGameObjectInterfaceActive = std::nullopt;
+		}
+	}
 
 
 	if (util::isMouseOverGameObject(renderComponent->getRenderDestRect())) {
