@@ -54,7 +54,7 @@ public:
 	bool clear();
 	SDL_Texture* createTextureFromSurface(SDL_Surface* surface) { return nullptr; };
 	void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) override;
+		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride = SDL_BLENDMODE_INVALID) override;
 	void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer);
 	const GLDrawer& spriteDrawer(){ return m_spriteDrawer; }
 	const GLDrawer& lineDrawer() { return m_lineDrawer; }

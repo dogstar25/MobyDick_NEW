@@ -236,7 +236,8 @@ void Game::_displayLoadingMsg()
 		m_gameScreenResolution.y / (float)2 - (float)42,
 		(float)tempSurface->w, (float)tempSurface->h };
 
-	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, &texture, &texture.textureAtlasQuad, 0, false, SDL_Color{}, RenderBlendMode::BLEND);
+	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, &texture, &texture.textureAtlasQuad, 0, false, SDL_Color{}, 
+		RenderBlendMode::BLEND);
 	m_renderer->present();
 
 	if (texture.surface != nullptr) {

@@ -32,7 +32,8 @@ public:
 	void render(SDL_FPoint destPoint);
 	void render(Texture* texture);
 
-	void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode);
+	void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+		bool clear, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID);
 	void postInit() override;
 
 	SDL_FRect getRenderDestRect();

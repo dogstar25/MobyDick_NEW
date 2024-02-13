@@ -336,6 +336,9 @@
     <ClCompile Include="src\actions\OnOffToggleAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\components\MaskedOverlayComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -669,6 +672,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\actions\OnOffToggleAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\MaskedOverlayComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

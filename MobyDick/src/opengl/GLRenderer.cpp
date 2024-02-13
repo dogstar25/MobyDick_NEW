@@ -106,7 +106,7 @@ bool GLRenderer::present()
 }
 
 void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
+	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride)
 {
 
 	auto normalizedcolor = util::glNormalizeColor(color);

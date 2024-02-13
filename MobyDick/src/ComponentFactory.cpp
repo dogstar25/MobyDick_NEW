@@ -105,6 +105,10 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PUZZLE_COMPONENT);
 			component = std::make_shared<PuzzleComponent>(componentJSON);
 			break;
+		case ComponentTypes::MASKED_OVERLAY_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::MASKED_OVERLAY_COMPONENT);
+			component = std::make_shared<MaskedOverlayComponent>(componentJSON, scene);
+			break;
 		case ComponentTypes::RENDER_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::RENDER_COMPONENT);
 			component = std::make_shared<RenderComponent>(componentJSON);

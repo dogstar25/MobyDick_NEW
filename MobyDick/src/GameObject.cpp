@@ -10,6 +10,7 @@
 #include "imgui_impl_sdlrenderer.h"
 #include "Util.h"
 #include "components/LightedTreatmentComponent.h"
+#include "components/MaskedOverlayComponent.h"
 #include "components/InventoryComponent.h"
 
 
@@ -403,6 +404,12 @@ void GameObject::render()
 		if (hasComponent(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)) {
 
 			getComponent<LightedTreatmentComponent>(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)->render();
+		}
+
+		//If you have a Light treatment component, then render it
+		if (hasComponent(ComponentTypes::MASKED_OVERLAY_COMPONENT)) {
+
+			getComponent<MaskedOverlayComponent>(ComponentTypes::MASKED_OVERLAY_COMPONENT)->render();
 		}
 
 	}
