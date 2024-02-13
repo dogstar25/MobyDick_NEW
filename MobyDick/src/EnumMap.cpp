@@ -31,6 +31,7 @@ EnumMap::EnumMap()
 	m_enumMap["POOL_COMPONENT"] = (int)ComponentTypes::POOL_COMPONENT;
 	m_enumMap["PUZZLE_COMPONENT"] = (int)ComponentTypes::PUZZLE_COMPONENT;
 	m_enumMap["RENDER_COMPONENT"] = (int)ComponentTypes::RENDER_COMPONENT;
+	m_enumMap["MASKED_OVERLAY_COMPONENT"] = (int)ComponentTypes::MASKED_OVERLAY_COMPONENT;
 	m_enumMap["SOUND_COMPONENT"] = (int)ComponentTypes::SOUND_COMPONENT;
 	m_enumMap["STATE_COMPONENT"] = (int)ComponentTypes::STATE_COMPONENT;
 	m_enumMap["TEXT_COMPONENT"] = (int)ComponentTypes::TEXT_COMPONENT;

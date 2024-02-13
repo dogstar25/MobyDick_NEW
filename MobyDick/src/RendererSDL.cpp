@@ -65,7 +65,7 @@ void RendererSDL::drawPoints(SDL_FPoint* points, SDL_Color color)
 
 
 void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
+	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeOverride)
 {
 
 	if (textureBlendMode == RenderBlendMode::BLEND) {
@@ -80,12 +80,15 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 	else if (textureBlendMode == RenderBlendMode::MODULATE) {
 		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_MOD);
 	}
+	else if (textureBlendMode == RenderBlendMode::CUSTOM) {
+		int customReturn = SDL_SetTextureBlendMode(texture->sdlTexture, sdlBlendModeOverride);
+	}
 	else{
 		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_NONE);
 	}
 
-	//SDL_SetRenderDrawBlendMode(m_sdlRenderer, SDL_BLENDMODE_BLEND);
-
+	//SDL_SetTextureAlphaMod can only lower the alpha value of how the texture will render, never increate it. 
+	// so a 255, will be src pixel * (255/255) which is unchanged
 	SDL_SetTextureAlphaMod(texture->sdlTexture, color.a);
 	SDL_SetTextureColorMod(texture->sdlTexture, color.r, color.g, color.b);
 

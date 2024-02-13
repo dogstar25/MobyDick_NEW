@@ -34,7 +34,7 @@ RenderComponent::RenderComponent(Json::Value componentJSON):
 		//Simple color define
 		else {
 			m_color = game->colorMap()->toSDLColor(componentJSON["color"].asString());
-			util::colorApplyAlpha(m_color, 255);
+			//util::colorApplyAlpha(m_color, 255);
 		}
 	}
 	else
@@ -237,6 +237,17 @@ void RenderComponent::render()
 		return;
 	}
 
+	//Same for Masked Overlay component
+	if (parent()->hasComponent(ComponentTypes::MASKED_OVERLAY_COMPONENT)) {
+		return;
+	}
+
+	if (parent()->type() == "FULL_HOUSE_EXTERIOR") {
+
+		int todd = 1;
+
+	}
+
 	SDL_FRect destQuad = { getRenderDestRect() };
 	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
 
@@ -279,6 +290,12 @@ void RenderComponent::render(Texture* texture, SDL_Color color, RenderBlendMode 
 void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQuad, RenderBlendMode textureBlendMode)
 {
 	
+	if (parent()->type() == "FULL_HOUSE_EXTERIOR") {
+
+		int todd = 1;
+
+	}
+
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	const auto& physics = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		
@@ -337,13 +354,15 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 			outlineColor = m_outLineColor;
 		}
 
-		game->renderer()->drawSprite(parent()->layer(), destQuad, color, texture, textureSourceQuad, angle, outline, outlineColor, textureBlendMode);
+		game->renderer()->drawSprite(parent()->layer(), destQuad, color, texture, textureSourceQuad, angle, outline, outlineColor, 
+			textureBlendMode);
 
 	}
 
-}
+ }      
 
-void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode)
+void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+	bool clear, SDL_BlendMode customBlendMode)
 {
 	///
 	///
@@ -354,6 +373,10 @@ void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObec
 	/// 
 	//Set the render target to the texture destination texture
 	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
+	if (clear) {
+		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
+		game->renderer()->clear();
+	}
 
 	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
@@ -365,7 +388,7 @@ void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObec
 	
 
 	game->renderer()->drawSprite(parent()->layer(), destQuad, color, renderComponent->getRenderTexture().get(), 
-		textureSourceQuad, angle, false, SDL_Color(), textureBlendMode);
+		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
 
 	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
 

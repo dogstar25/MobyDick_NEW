@@ -20,6 +20,7 @@
 #include "components/PhysicsComponent.h"
 #include "components/PuzzleComponent.h"
 #include "components/RenderComponent.h"
+#include "components/MaskedOverlayComponent.h"
 #include "components/SoundComponent.h"
 #include "components/StateComponent.h"
 #include "components/TextComponent.h"

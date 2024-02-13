@@ -75,6 +75,9 @@ Component::Component(int componentType)
 		case ComponentTypes::RENDER_COMPONENT:
 			m_componentType = ComponentTypes::RENDER_COMPONENT;
 			break;
+		case ComponentTypes::MASKED_OVERLAY_COMPONENT:
+			m_componentType = ComponentTypes::MASKED_OVERLAY_COMPONENT;
+			break;
 		case ComponentTypes::SOUND_COMPONENT:
 			m_componentType = ComponentTypes::SOUND_COMPONENT;
 			break;
