@@ -53,6 +53,13 @@ void MaskedOverlayComponent::postInit()
 
 void MaskedOverlayComponent::update()
 {
+	//Call the update for each of the overlay objects. One might be a particle emitter or such
+	for (auto& overlayObject : m_overlayObjects) {
+
+		overlayObject->setPosition(parent()->getTopLeftPosition());
+		overlayObject->update();
+
+	}
 
 
 }

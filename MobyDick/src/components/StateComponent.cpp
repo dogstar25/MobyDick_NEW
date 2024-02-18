@@ -127,10 +127,6 @@ void StateComponent::addState(GameObjectState newState)
 {
 
 
-	if ((int)newState == 0) {
-		int todd = 1;
-	}
-
 	//Check to see if we have a transition defined for this state combination
 	//Also, if the gameObject already has the state, dont try to set it again
 	if (_hasTransitionDuration(newState) == false and testState(newState) == false) {
@@ -379,6 +375,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		case GameObjectState::DISABLED_RENDER:
 		case GameObjectState::DISABLED_UPDATE:
 		case GameObjectState::ON_VERTICAL_MOVEMENT:
+		case GameObjectState::IMPASSABLE:
 
 			m_states.set((int)newState, true);
 
