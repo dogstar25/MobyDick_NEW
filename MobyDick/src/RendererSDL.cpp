@@ -1,5 +1,7 @@
 #include "RendererSDL.h"
+#include "game.h"
 
+extern std::unique_ptr<Game> game;
 
 RendererSDL::RendererSDL()
 {
@@ -129,4 +131,31 @@ void RendererSDL::renderPrimitives(int layerIndex)
 	m_primitiveLines.clear();
 
 }
+
+void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+	bool clear, SDL_BlendMode customBlendMode)
+{
+	//Set the render target to the texture destination texture
+	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
+	if (clear) {
+		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
+		game->renderer()->clear();
+	}
+
+	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+	SDL_Color color = gameObectToRender->getColor();
+	float angle = gameObectToRender->getAngle();
+
+	SDL_Rect* textureSourceQuad = renderComponent->getRenderTextureRect(renderComponent->getRenderTexture().get());
+	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
+
+
+	game->renderer()->drawSprite(gameObectToRender->layer(), destQuad, color, renderComponent->getRenderTexture().get(),
+		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
+
+	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+
+}
+
 

@@ -361,38 +361,31 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 
  }      
 
-void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
-	bool clear, SDL_BlendMode customBlendMode)
-{
-	///
-	///
-	/// NOTE:I dont know if this works. I used it for a while and realized it might not be the best in terms of
-	/// performance. So, for now, I am changing the render target right before the render instead of
-	/// this which is switching the render tagert every time this is called. this was done during the time
-	/// of texture light development and i'm still learning (05/13/2023)
-	/// 
-	//Set the render target to the texture destination texture
-	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
-	if (clear) {
-		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
-		game->renderer()->clear();
-	}
-
-	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-
-	SDL_Color color = gameObectToRender->getColor();
-	float angle = gameObectToRender->getAngle();
-
-	SDL_Rect* textureSourceQuad = getRenderTextureRect(renderComponent->getRenderTexture().get());
-	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
-	
-
-	game->renderer()->drawSprite(parent()->layer(), destQuad, color, renderComponent->getRenderTexture().get(), 
-		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
-
-	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
-
-}
+//void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+//	bool clear, SDL_BlendMode customBlendMode)
+//{
+//	//Set the render target to the texture destination texture
+//	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
+//	if (clear) {
+//		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
+//		game->renderer()->clear();
+//	}
+//
+//	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+//
+//	SDL_Color color = gameObectToRender->getColor();
+//	float angle = gameObectToRender->getAngle();
+//
+//	SDL_Rect* textureSourceQuad = getRenderTextureRect(renderComponent->getRenderTexture().get());
+//	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
+//	
+//
+//	game->renderer()->drawSprite(parent()->layer(), destQuad, color, renderComponent->getRenderTexture().get(), 
+//		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
+//
+//	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+//
+//}
 
 
 

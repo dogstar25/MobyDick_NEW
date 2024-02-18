@@ -11,6 +11,8 @@
 #include "Renderer.h"
 #include "texture.h"
 
+class GameObject;
+
 class RendererSDL : public Renderer
 {
 public:
@@ -27,6 +29,9 @@ public:
 		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeOverride = SDL_BLENDMODE_INVALID) override;
 
 	void renderPrimitives(int layerIndex);
+	void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+		bool clear = false, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID) override;
+
 
 	SDL_Renderer* sdlRenderer() {
 		return m_sdlRenderer;

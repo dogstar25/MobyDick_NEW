@@ -17,17 +17,19 @@ public:
 	void render();
 	void postInit() override;
 
-private:
+	void addOverlayObject(std::shared_ptr<GameObject> overlayObject);
+	std::shared_ptr<GameObject> removeOverlayObject(std::shared_ptr<GameObject> overlayObject);
 
-	std::shared_ptr<GameObject> m_backgroundObject{};
-	std::shared_ptr<GameObject> m_foregroundObject{};
-	std::shared_ptr<GameObject> m_foregroundObject2{};
-	std::shared_ptr<GameObject> m_maskTextureObject{};
+protected:
+
+	std::vector<std::shared_ptr<GameObject>> m_overlayObjects{};
+	std::vector<std::shared_ptr<GameObject>> m_maskObjects{};
 
 	std::shared_ptr<Texture> m_compositeTexture{};
 	std::shared_ptr<Texture> m_tempTexture{};
 
 	SDL_FPoint m_maskPosition{};
+	std::vector<std::string> m_maskObjectNames{};
 
 };
 

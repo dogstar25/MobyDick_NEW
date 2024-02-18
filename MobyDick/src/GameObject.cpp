@@ -1433,7 +1433,7 @@ void GameObject::_imGuiDebugObject()
 		ImGui::End();
 
 	}
-	if (type() == "FULL_HOUSE_EXTERIOR") {
+	if (type() == "HOUSE_OVERLAY") {
 
 		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);

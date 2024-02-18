@@ -11,21 +11,16 @@ MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, Scene*
 	// ToDo:try changing this Layer to abstract
 	//
 
-	std::string backgroundObjectType = componentJSON["backgroundObject"].asString();
-	m_backgroundObject = parentScene->createGameObject(backgroundObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN);
+	for (Json::Value objectItr : componentJSON["overlayObjects"]) {
+		m_overlayObjects.push_back( parentScene->createGameObject(objectItr.asString(), -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN));
+	}
 
-	std::string foregroundObjectType = componentJSON["foregroundObject"].asString();
-	m_foregroundObject = parentScene->createGameObject(foregroundObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN);
-
-	std::string maskTextureObject = componentJSON["maskTextureObject"].asString();
-	m_maskTextureObject = parentScene->createGameObject(maskTextureObject, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN);
+	for (Json::Value objectItr : componentJSON["maskObjects"]) {
+		m_maskObjectNames.push_back(objectItr.asString());
+	}
 
 	m_compositeTexture = std::make_shared<Texture>();
 	m_tempTexture = std::make_shared<Texture>();
-
-	m_foregroundObject2 = parentScene->createGameObject("BOWMAN", -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN);
-	m_foregroundObject2->setSize({ 128, 128 });
-
 
 }
 
@@ -35,35 +30,42 @@ void MaskedOverlayComponent::postInit()
 	//this is very important for textures that get created on the fly
 	//The textureatlasQuad has to be set to the right size.
 	//See if there's a better solution to this. need a mobyDick create texture function
-	m_tempTexture->textureAtlasQuad = SDL_Rect(0, 0,
-		(int)parent()->getSize().x,
-		(int)parent()->getSize().y);
-
 	m_compositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
 		(int)parent()->getSize().x,
 		(int)parent()->getSize().y);
 
-	m_tempTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
-
 	m_compositeTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
 
-	//set the size of the backgfround object to be same as the main object
-	m_foregroundObject->setSize({ parent()->getSize().x, parent()->getSize().y });
-	m_backgroundObject->setSize({ parent()->getSize().x, parent()->getSize().y });
-	m_maskTextureObject->setSize({512,256});
+	//Go and find the mask objects to be added to this component.
+	//These are masks that are already created like the player mask
+	for (const auto maskObjectName : m_maskObjectNames) {
+
+		auto maskObject = parent()->parentScene()->getFirstGameObjectByName(maskObjectName);
+		if (maskObject.has_value()) {
+			m_maskObjects.push_back(maskObject.value());
+		}
+
+	}
+
 
 }
 
 void MaskedOverlayComponent::update()
 {
 
-	m_foregroundObject->setPosition(parent()->getCenterPosition());
-	m_backgroundObject->setPosition(parent()->getCenterPosition());
 
-	m_maskPosition = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player).value()->getCenterPosition();
+}
 
+void MaskedOverlayComponent::addOverlayObject(std::shared_ptr<GameObject> overlayObject)
+{
+
+}
+
+std::shared_ptr<GameObject> MaskedOverlayComponent::removeOverlayObject(std::shared_ptr<GameObject> overlayObject)
+{
+
+	return std::shared_ptr<GameObject>();
 
 }
 
@@ -103,34 +105,52 @@ void MaskedOverlayComponent::render()
 	////////////////////////////////////////////////////////////////////////////////////
 
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-	const auto& renderComponentFore = m_foregroundObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-	const auto& renderComponentBack = m_backgroundObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-	const auto& renderComponentMask = m_maskTextureObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
 	//Best Mask blending for mask object to display house gradiently is
 	SDL_BlendMode customBlendModeFinal =
 		SDL_ComposeCustomBlendMode(
-			SDL_BLENDFACTOR_DST_COLOR,
-			SDL_BLENDFACTOR_DST_COLOR,
-			SDL_BLENDOPERATION_ADD,
-			SDL_BLENDFACTOR_SRC_ALPHA,
 			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDOPERATION_MINIMUM);
+			SDL_BLENDFACTOR_ZERO,
+			SDL_BLENDOPERATION_ADD,
+			SDL_BLENDFACTOR_ZERO,
+			SDL_BLENDFACTOR_ZERO,
+			SDL_BLENDOPERATION_SUBTRACT);
 
-	//renderComponent->renderToTexture(m_compositeTexture.get(), m_backgroundObject.get(), { 0.,0. }, RenderBlendMode::CUSTOM, true, customBlendMode);
-	//Render the foreground to the composite texture
-	renderComponent->renderToTexture(m_compositeTexture.get(), m_foregroundObject.get(), { 0.,0. }, RenderBlendMode::BLEND, true, customBlendMode);
-	
-	//test
-	renderComponent->renderToTexture(m_compositeTexture.get(), m_foregroundObject2.get(), { 900.,650. }, RenderBlendMode::BLEND, false, customBlendMode);
+	//Render the overlay objects to the composite texture
+	bool first = true;
+	for (auto& overlayObject : m_overlayObjects) {
 
-	renderComponent->renderToTexture(m_compositeTexture.get(), m_maskTextureObject.get(), { 450.,650.0 }, RenderBlendMode::CUSTOM, false, customBlendModeFinal);
+		bool clear = first;
+		first = false;
 
-	//test
-	renderComponent->renderToTexture(m_compositeTexture.get(), m_maskTextureObject.get(), { 650.,750.0 }, RenderBlendMode::CUSTOM, false, customBlendModeFinal);
+		//Only clear on the first one
+		game->renderer()->renderToTexture(m_compositeTexture.get(), overlayObject.get(), { 0.,0. }, RenderBlendMode::BLEND, clear);
+	}
 
-	//Finally render the composite texture to th main scren buffer using modulate
+	//Render the mask objects to the composite texture
+	auto parentTopLeftPos = parent()->getTopLeftPosition();
+	for (auto& maskObject : m_maskObjects) {
+
+		if (maskObject->hasState(GameObjectState::ON)) {
+
+			auto topLeftPos = maskObject->getTopLeftPosition();
+
+			SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
+
+			game->renderer()->renderToTexture(m_compositeTexture.get(), maskObject.get(), newPosition, RenderBlendMode::CUSTOM, false, customBlendModeFinal);
+		}
+
+	}
+
+	//Finally render the composite texture
 	renderComponent->render(m_compositeTexture.get(), Colors::WHITE, RenderBlendMode::BLEND);
+
+	///////////////////////////////////////////
+	//NOTE: when rendering to a texture OR rendering a specific texture passed in as an argument
+	//		the function should live with the renderer, not the renderComponent.
+	//		Also, there should not be base renderer methods that have sdl or opengl specific parameters.
+	//		There should be overloaded method declarations instead
+	///////////////////////////////////////////
 
 
 }

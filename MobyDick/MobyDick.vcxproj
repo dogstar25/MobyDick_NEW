@@ -239,6 +239,7 @@
     <ClCompile Include="src\components\IMGuiComponent.cpp" />
     <ClCompile Include="src\components\SoundComponent.cpp" />
     <ClCompile Include="src\components\StateComponent.cpp" />
+    <ClCompile Include="src\components\TextComponent.cpp" />
     <ClCompile Include="src\cutScenes\CutScene.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneExample.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneFactory.cpp" />
@@ -316,7 +317,6 @@
     <ClCompile Include="src\SoundManager.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />
-    <ClCompile Include="src\components\TextComponent.cpp" />
     <ClCompile Include="src\components\VitalityComponent.cpp" />
     <ClCompile Include="src\actions\UseAction.cpp" />
     <ClCompile Include="src\triggers\Trigger.cpp" />
@@ -350,6 +350,7 @@
     <ClInclude Include="src\components\IMGuiComponent.h" />
     <ClInclude Include="src\components\SoundComponent.h" />
     <ClInclude Include="src\components\StateComponent.h" />
+    <ClInclude Include="src\components\TextComponent.h" />
     <ClInclude Include="src\cutScenes\CutScene.h" />
     <ClInclude Include="src\cutScenes\CutSceneExample.h" />
     <ClInclude Include="src\cutScenes\CutSceneFactory.h" />
@@ -429,7 +430,6 @@
     <ClInclude Include="src\SoundManager.h" />
     <ClInclude Include="src\texture.h" />
     <ClInclude Include="src\TextureManager.h" />
-    <ClInclude Include="src\components\TextComponent.h" />
     <ClInclude Include="src\components\VitalityComponent.h" />
     <ClInclude Include="src\actions\UseAction.h" />
     <ClInclude Include="src\triggers\Trigger.h" />
