@@ -137,14 +137,7 @@ bool LightedTreatmentComponent::_hasLineOfSightToLitArea(GameObject* lightObject
 	//cast a physics raycast from the light object to the center of this lightedArea's center
 	parent()->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), begin, end);
 
-	//Loop through all objects hit between the brain owner and the detected object
-	//If there is a clear line of sight then store it in seenObjects
-	//We must sort the raycast hit objects by distance because they are not guarenteed to return in
-	//distance order
-	//std::sort(RayCastCallBack::instance().intersectionItems().begin(),
-	//	RayCastCallBack::instance().intersectionItems().end(),
-	//	intersection_sort_compare());
-
+	//Loop through all objects hit between the light object and the center of the lit are being checked
 	for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
 
 		//Is this a barrier and also NOT its own body and the object is not physicsdisabled

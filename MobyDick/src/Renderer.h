@@ -10,6 +10,8 @@
 #include "imgui.h"
 #include "BaseConstants.h"
 
+class GameObject;
+
 
 struct DisplayOverlay
 {
@@ -100,6 +102,8 @@ public:
 	virtual SDL_Texture* createTextureFromSurface(SDL_Surface* surface) = 0;
 	virtual SDL_Renderer* sdlRenderer() = 0;
 	virtual void drawBatches() {};
+	virtual void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+		bool clear = false, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID) {};
 
 
 protected:

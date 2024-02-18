@@ -54,12 +54,18 @@ void MaskedOverlayComponent::postInit()
 void MaskedOverlayComponent::update()
 {
 
-	//Todd, do we still need this?
-	//for (const auto& gameObject : m_overlayObjects) {
 
-	//	gameObject->setPosition(parent()->getCenterPosition());
+}
 
-	//}
+void MaskedOverlayComponent::addOverlayObject(std::shared_ptr<GameObject> overlayObject)
+{
+
+}
+
+std::shared_ptr<GameObject> MaskedOverlayComponent::removeOverlayObject(std::shared_ptr<GameObject> overlayObject)
+{
+
+	return std::shared_ptr<GameObject>();
 
 }
 
@@ -103,23 +109,36 @@ void MaskedOverlayComponent::render()
 	//Best Mask blending for mask object to display house gradiently is
 	SDL_BlendMode customBlendModeFinal =
 		SDL_ComposeCustomBlendMode(
-			SDL_BLENDFACTOR_DST_COLOR,
-			SDL_BLENDFACTOR_DST_COLOR,
-			SDL_BLENDOPERATION_ADD,
-			SDL_BLENDFACTOR_SRC_ALPHA,
 			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDOPERATION_MINIMUM);
+			SDL_BLENDFACTOR_ZERO,
+			SDL_BLENDOPERATION_ADD,
+			SDL_BLENDFACTOR_ZERO,
+			SDL_BLENDFACTOR_ZERO,
+			SDL_BLENDOPERATION_SUBTRACT);
 
 	//Render the overlay objects to the composite texture
+	bool first = true;
 	for (auto& overlayObject : m_overlayObjects) {
 
-		renderComponent->renderToTexture(m_compositeTexture.get(), overlayObject.get(), { 0.,0. }, RenderBlendMode::BLEND, true, customBlendMode);
+		bool clear = first;
+		first = false;
+
+		//Only clear on the first one
+		game->renderer()->renderToTexture(m_compositeTexture.get(), overlayObject.get(), { 0.,0. }, RenderBlendMode::BLEND, clear);
 	}
 
 	//Render the mask objects to the composite texture
+	auto parentTopLeftPos = parent()->getTopLeftPosition();
 	for (auto& maskObject : m_maskObjects) {
 
-		renderComponent->renderToTexture(m_compositeTexture.get(), maskObject.get(), { 0.,0. }, RenderBlendMode::CUSTOM, false, customBlendModeFinal);
+		if (maskObject->hasState(GameObjectState::ON)) {
+
+			auto topLeftPos = maskObject->getTopLeftPosition();
+
+			SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
+
+			game->renderer()->renderToTexture(m_compositeTexture.get(), maskObject.get(), newPosition, RenderBlendMode::CUSTOM, false, customBlendModeFinal);
+		}
 
 	}
 

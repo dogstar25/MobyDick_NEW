@@ -20,7 +20,7 @@ public:
 	void addOverlayObject(std::shared_ptr<GameObject> overlayObject);
 	std::shared_ptr<GameObject> removeOverlayObject(std::shared_ptr<GameObject> overlayObject);
 
-private:
+protected:
 
 	std::vector<std::shared_ptr<GameObject>> m_overlayObjects{};
 	std::vector<std::shared_ptr<GameObject>> m_maskObjects{};
