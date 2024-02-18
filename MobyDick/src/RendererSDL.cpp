@@ -150,7 +150,6 @@ void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToR
 	SDL_Rect* textureSourceQuad = renderComponent->getRenderTextureRect(renderComponent->getRenderTexture().get());
 	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
 
-
 	game->renderer()->drawSprite(gameObectToRender->layer(), destQuad, color, renderComponent->getRenderTexture().get(),
 		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
 
