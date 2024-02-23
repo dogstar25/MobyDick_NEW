@@ -2,10 +2,10 @@
 
 #include <string>
 
-//#include "../GameConfig.h"
-
 #include <box2d/box2d.h>
 #include <SDL2/SDL.h>
+
+#include <optional>
 
 
 
@@ -23,8 +23,12 @@ struct ParticleEffect {
 	bool alphaFade = true;
 	float angleMin = 0;
 	float angleMax = 360;
-	float particleSizeMin = 1;
-	float particleSizeMax = 1;
+	std::optional<float> particleSizeMin{};
+	std::optional<float> particleSizeMax{};
+	std::optional<float> particleSizeMinWidth{};
+	std::optional<float> particleSizeMaxWidth{};
+	std::optional<float> particleSizeMinHeight{};
+	std::optional<float> particleSizeMaxHeight{};
 	SDL_Color colorRangeBegin = {255,255,255,255};
 	SDL_Color colorRangeEnd = { 255,255,255,255 };
 	int particleSpawnCountMin = 25;

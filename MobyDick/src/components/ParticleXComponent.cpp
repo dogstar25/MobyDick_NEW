@@ -82,9 +82,17 @@ void ParticleXComponent::update()
 					SDL_Color color = util::generateRandomColor(effect.colorRangeBegin, effect.colorRangeEnd);
 					renderComponent->setColor(color);
 
-					//Size
-					auto particleSize = util::generateRandomNumber(effect.particleSizeMin, effect.particleSizeMax);
-					transformComponent->setSize(particleSize, particleSize);
+					//Size - either uniform size or not
+					if (effect.particleSizeMin.has_value()) {
+						float size = util::generateRandomNumber(effect.particleSizeMin.value(), effect.particleSizeMax.value());
+						transformComponent->setSize(size, size);
+					}
+					else if (effect.particleSizeMinWidth.has_value()) {
+						float width = util::generateRandomNumber(effect.particleSizeMinWidth.value(), effect.particleSizeMaxWidth.value());
+						float height = util::generateRandomNumber(effect.particleSizeMinHeight.value(), effect.particleSizeMaxHeight.value());
+
+						transformComponent->setSize(width, height);
+					}
 
 					//Set the particles lifetime in miliseconds. If zero lifetime then it has infinite lifetime
 					float particleLifetime = util::generateRandomNumber(effect.lifetimeMin, effect.lifetimeMax);

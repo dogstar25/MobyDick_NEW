@@ -51,13 +51,13 @@ void ParticleComponent::render()
 
 			SDL_FRect positionRect = { 
 				particle.position.x, particle.position.y, 
-				particle.size,	particle.size
+				particle.size.x, particle.size.y
 			};
 
 			SDL_FRect destRect = renderComponent->getRenderDestRect(positionRect);
 
 			game->renderer()->drawSprite(parent()->layer(), destRect, particle.color, particle.texture, &particle.texture->textureAtlasQuad, 
-				0, false, SDL_Color{}, RenderBlendMode::ADD);
+				135, false, SDL_Color{}, RenderBlendMode::ADD);
 
 		}
 	}
@@ -146,7 +146,16 @@ void ParticleComponent::update()
 					particle.value()->originalALpha = particle.value()->color.a;
 
 					//Size
-					particle.value()->size = util::generateRandomNumber(effect.particleSizeMin, effect.particleSizeMax);
+					if (effect.particleSizeMin.has_value()) {
+						float size = util::generateRandomNumber(effect.particleSizeMin.value(), effect.particleSizeMax.value());
+						particle.value()->size = {size, size};
+					}
+					else if (effect.particleSizeMinWidth.has_value()) {
+						float width = util::generateRandomNumber(effect.particleSizeMinWidth.value(), effect.particleSizeMaxWidth.value());
+						float height = util::generateRandomNumber(effect.particleSizeMinHeight.value(), effect.particleSizeMaxHeight.value());
+
+						particle.value()->size = {width, height};
+					}
 
 					//Set the particles lifetime
 					auto particleLifetime = util::generateRandomNumber(effect.lifetimeMin, effect.lifetimeMax);
