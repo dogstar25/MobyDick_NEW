@@ -107,9 +107,15 @@ void InterfaceComponent::update()
 	}
 
 	//Player Object Contact
-	if (parent()->isTouchingByTrait(TraitTag::player)) {
+	
+	if (parent()->isTouchingByTrait(TraitTag::player) ) {
 
-		newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
+		const auto& playerObject = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
+
+		if (util::hasLineOfSight(playerObject.value().get(), parent())) {
+			newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
+		}
+
 	}
 	else {
 

@@ -37,7 +37,6 @@ public:
 	SDL_FPoint dragOffset() { return m_dragOffset; }
 	std::map<int, std::shared_ptr<InterfaceAction>> eventActions() { return m_eventActions; }
 
-	virtual void setCursor(GameObject*, std::bitset<MAX_EVENT_STATES>) {};
 	virtual bool isEventAvailable(int eventId) { return true; }
 
 	bool isDragging();

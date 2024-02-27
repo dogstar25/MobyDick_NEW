@@ -227,7 +227,7 @@ EnumMap::EnumMap()
 	m_enumMap["gui"] = TraitTag::gui;
 	m_enumMap["waypoint"] = TraitTag::waypoint;
 	m_enumMap["abstract"] = TraitTag::abstract;
-	m_enumMap["contact_interface"] = TraitTag::contact_interface;
+	m_enumMap["always_in_line_of_sight"] = TraitTag::always_in_line_of_sight;
 	m_enumMap["mouse_interface"] = TraitTag::mouse_interface;
 	m_enumMap["debug"] = TraitTag::debug;
 	m_enumMap["pooled"] = TraitTag::pooled;

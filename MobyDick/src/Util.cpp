@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Scene.h"
 #include "Game.h"
+#include "RayCastCallBack.h"
 
 #define NOMINMAX 10000000 // need this so that the compiler doesnt find the min and max in the windows include
 #include <Windows.h>
@@ -519,7 +520,48 @@ namespace util
 		return tmp_s;
 	}
 
+
+	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject)
+	{
+		bool clearPath{ true };
+
+		//Special override for things like the doorknob, which is built into the door which itself
+		//can become impassable or a barrier
+		if (candidateObject->hasTrait(TraitTag::always_in_line_of_sight)) {
+
+			return true;
+		}
+
+		b2Vec2 sourcePosition = { sourceObject->getCenterPosition().x, sourceObject->getCenterPosition().y };
+		b2Vec2 candidatePosition = { candidateObject->getCenterPosition().x, candidateObject->getCenterPosition().y };
+
+		//convert to box2d coordinates
+		util::toBox2dPoint(sourcePosition);
+		util::toBox2dPoint(candidatePosition);
+
+		//cast a physics raycast from the light object to the center of this lightedArea's center
+		sourceObject->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), sourcePosition, candidatePosition);
+
+		//Loop through all objects hit between the player and the center of the mask area
+		for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
+
+			//Is this a barrier or and also NOT its own body and the object is not physicsdisabled
+			if ((rayHitObject.gameObject->hasTrait(TraitTag::barrier) || rayHitObject.gameObject->hasState(GameObjectState::IMPASSABLE)) &&
+				rayHitObject.gameObject != sourceObject) {
+				clearPath = false;
+				break;
+			}
+		}
+
+		RayCastCallBack::instance().reset();
+
+		return clearPath;
+
+	}
+
 }
+
+
 
 
 

@@ -66,6 +66,7 @@ void LightedTreatmentComponent::update()
 			else if (parent()->intersectsWith(light.get())) {
 
 				if (_hasLineOfSightToLitArea(light.get())) {
+				//if (util::hasLineOfSight(light.get(), parent())) {
 					m_lights.push_back(light);
 				}
 			}
@@ -141,7 +142,7 @@ bool LightedTreatmentComponent::_hasLineOfSightToLitArea(GameObject* lightObject
 	for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
 
 		//Is this a barrier and also NOT its own body and the object is not physicsdisabled
-		if (rayHitObject.gameObject->hasTrait(TraitTag::barrier) &&
+		if ((rayHitObject.gameObject->hasTrait(TraitTag::barrier) || rayHitObject.gameObject->hasState(GameObjectState::IMPASSABLE)) &&
 			rayHitObject.gameObject != parent()) {
 			clearPath = false;
 			break;
