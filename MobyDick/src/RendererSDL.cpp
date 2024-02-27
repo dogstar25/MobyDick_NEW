@@ -141,18 +141,29 @@ void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToR
 		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
 		game->renderer()->clear();
 	}
+	
+	//Particle components have a special rendering method so use it directly if this is a particle component
+	if (gameObectToRender->hasComponent(ComponentTypes::PARTICLE_COMPONENT)) {
 
-	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& particleComponent = gameObectToRender->getComponent<ParticleComponent>(ComponentTypes::PARTICLE_COMPONENT);
+		particleComponent->render();
 
-	SDL_Color color = gameObectToRender->getColor();
-	float angle = gameObectToRender->getAngle();
+	}
+	else {
+		const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
-	SDL_Rect* textureSourceQuad = renderComponent->getRenderTextureRect(renderComponent->getRenderTexture().get());
-	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
+		SDL_Color color = gameObectToRender->getColor();
+		float angle = gameObectToRender->getAngle();
 
-	game->renderer()->drawSprite(gameObectToRender->layer(), destQuad, color, renderComponent->getRenderTexture().get(),
-		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
+		SDL_Rect* textureSourceQuad = renderComponent->getRenderTextureRect(renderComponent->getRenderTexture().get());
+		SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
 
+		game->renderer()->drawSprite(gameObectToRender->layer(), destQuad, color, renderComponent->getRenderTexture().get(),
+			textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
+
+	}
+
+	//Set the render target back to the graphics card
 	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
 
 }

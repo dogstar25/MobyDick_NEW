@@ -253,10 +253,6 @@ void Scene::update() {
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
 
-			if (gameObjects[i]->type() == "LIGHT_ITEM_HIGHLIGHT_CIRCLE") {
-				int todd = 1;
-			}
-
 			gameObjects[i]->update();
 		}
 	}

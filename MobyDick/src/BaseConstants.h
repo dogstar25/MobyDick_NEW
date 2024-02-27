@@ -92,7 +92,7 @@ namespace TraitTag {
 	inline constexpr int gui = 5;
 	inline constexpr int waypoint = 6;
 	inline constexpr int abstract = 7;
-	inline constexpr int contact_interface = 8;
+	inline constexpr int always_in_line_of_sight = 8;
 	inline constexpr int mouse_interface = 9;
 	inline constexpr int debug = 10;
 	inline constexpr int pooled = 11;

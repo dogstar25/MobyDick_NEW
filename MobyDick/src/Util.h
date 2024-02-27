@@ -13,7 +13,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdlrenderer.h"
 
-
+class GameObject;
 
 /*
 Overloaded operators used throught the game
@@ -75,6 +75,7 @@ namespace util
 	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition);
 
 	std::string wideStringToString(const std::wstring& wstr);
+	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject);
 
 };
 
