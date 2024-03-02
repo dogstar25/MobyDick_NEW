@@ -138,6 +138,7 @@ EnumMap::EnumMap()
 	m_enumMap["Key::SDL_SCANCODE_S"] = SDL_SCANCODE_S;
 	m_enumMap["Key::SDL_SCANCODE_D"] = SDL_SCANCODE_D;
 	m_enumMap["Key::SDL_SCANCODE_I"] = SDL_SCANCODE_I;
+	m_enumMap["Key::SDL_SCANCODE_F"] = SDL_SCANCODE_F;
 
 	m_enumMap["Key::SDLK_F1"] = SDLK_F1;
 	m_enumMap["Key::SDLK_F2"] = SDLK_F2;
@@ -294,6 +295,7 @@ EnumMap::EnumMap()
 	m_enumMap["GameObjectState::DEPLOYED"] = (int)GameObjectState::DEPLOYED;
 	m_enumMap["GameObjectState::CONCEALED"] = (int)GameObjectState::CONCEALED;
 	m_enumMap["GameObjectState::IMPASSABLE"] = (int)GameObjectState::IMPASSABLE;
+	m_enumMap["GameObjectState::EQUIPPED"] = (int)GameObjectState::EQUIPPED;
 	m_enumMap["GameObjectState::ITEM_OBTAINABLE"] = (int)GameObjectState::ITEM_OBTAINABLE;
 	m_enumMap["GameObjectState::ITEM_LOOSE"] = (int)GameObjectState::ITEM_LOOSE;
 	m_enumMap["GameObjectState::ITEM_STORED_ENCLOSED"] = (int)GameObjectState::ITEM_STORED_ENCLOSED;
@@ -307,6 +309,15 @@ EnumMap::EnumMap()
 	m_enumMap["GameObjectState::WALK_LEFT"] = (int)GameObjectState::WALK_LEFT;
 	m_enumMap["GameObjectState::WALK_UP"] = (int)GameObjectState::WALK_UP;
 	m_enumMap["GameObjectState::WALK_DOWN"] = (int)GameObjectState::WALK_DOWN;
+	m_enumMap["GameObjectState::IDLE_RIGHT_EQUIPPED"] = (int)GameObjectState::IDLE_RIGHT_EQUIPPED;
+	m_enumMap["GameObjectState::IDLE_LEFT_EQUIPPED"] = (int)GameObjectState::IDLE_LEFT_EQUIPPED;
+	m_enumMap["GameObjectState::IDLE_UP_EQUIPPED"] = (int)GameObjectState::IDLE_UP_EQUIPPED;
+	m_enumMap["GameObjectState::IDLE_DOWN_EQUIPPED"] = (int)GameObjectState::IDLE_DOWN_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_RIGHT_EQUIPPED"] = (int)GameObjectState::WALK_RIGHT_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_LEFT_EQUIPPED"] = (int)GameObjectState::WALK_LEFT_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_UP_EQUIPPED"] = (int)GameObjectState::WALK_UP_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_DOWN_EQUIPPED"] = (int)GameObjectState::WALK_DOWN_EQUIPPED;
+
 	m_enumMap["GameObjectState::RUN_RIGHT"] = (int)GameObjectState::RUN_RIGHT;
 	m_enumMap["GameObjectState::RUN_LEFT"] = (int)GameObjectState::RUN_LEFT;
 	m_enumMap["GameObjectState::RUN_UP"] = (int)GameObjectState::RUN_UP;

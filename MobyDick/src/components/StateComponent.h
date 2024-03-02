@@ -43,6 +43,7 @@ public:
 
 	std::optional<StateTransition> getCurrentTransition();
 	std::optional<std::string> getCurrentAnimatedState();
+	const std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> getStateBitSet() { return m_states; }
 
 protected:
 

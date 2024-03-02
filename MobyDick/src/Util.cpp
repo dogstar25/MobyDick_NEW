@@ -559,7 +559,41 @@ namespace util
 
 	}
 
+	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate)
+	{
+
+
+		if (gameObject->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+
+			const auto& childComponent = gameObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+
+
+			for (auto& slotItr : childComponent->childSlots()) {
+
+				//Each child slot can have multiple gameObjects that live in a vector
+				//Only Standard slots support multipl
+				for (auto& child : slotItr.second) {
+
+					if (child.gameObject.has_value()) {
+
+						child.gameObject.value()->addState(stateToPropogate);
+
+					}
+
+					propogateStateToAllChildren(child.gameObject.value().get(), stateToPropogate);
+
+				}
+
+			}
+
+		}
+
+
+
+	}
 }
+
+
 
 
 
