@@ -23,6 +23,7 @@ struct Particle
 	SDL_FPoint position{ 0,0 };
 	SDL_FPoint size{ 1,1 };
 	float speed { 1 };
+	float angle{ 0 };
 	SDL_FPoint velocity{ 0 };
 	bool isAvailable { true };	
 	bool isActive{ false };
