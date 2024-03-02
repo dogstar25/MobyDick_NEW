@@ -56,8 +56,11 @@ void ParticleComponent::render()
 
 			SDL_FRect destRect = renderComponent->getRenderDestRect(positionRect);
 
+			//adjust angle to match what the drawsprite wants
+			float angle = particle.angle + 90;
+
 			game->renderer()->drawSprite(parent()->layer(), destRect, particle.color, particle.texture, &particle.texture->textureAtlasQuad, 
-				135, false, SDL_Color{}, RenderBlendMode::ADD);
+				angle, false, SDL_Color{}, RenderBlendMode::ADD);
 
 		}
 	}
@@ -172,6 +175,8 @@ void ParticleComponent::update()
 					else {
 						emitAngle = util::generateRandomNumber(effect.angleMin, effect.angleMax);
 					}
+
+					particle.value()->angle = emitAngle;
 
 					//emitAngle += effect.angleMin;
 					emitAngle = util::degreesToRadians(emitAngle);
