@@ -13,6 +13,8 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdlrenderer.h"
 
+#include "BaseConstants.h"
+
 class GameObject;
 
 /*
@@ -76,6 +78,7 @@ namespace util
 
 	std::string wideStringToString(const std::wstring& wstr);
 	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject);
+	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate);
 
 };
 

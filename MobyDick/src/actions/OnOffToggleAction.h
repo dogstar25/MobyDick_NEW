@@ -11,9 +11,6 @@ public:
 
     virtual void perform(GameObject* gameObject) override;
 
-private:
-
-    void _toggleAllChildrenLights(GameObject* gameObject, GameObjectState stateToPropogate);
 
 };
 

@@ -277,6 +277,15 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
 		case GameObjectState::WALK_RIGHT:
@@ -290,6 +299,15 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
 		case GameObjectState::WALK_UP:
@@ -303,6 +321,15 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
 		case GameObjectState::WALK_DOWN:
@@ -316,6 +343,15 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
 		case GameObjectState::IDLE_RIGHT:
@@ -329,6 +365,15 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
 		case GameObjectState::IDLE_LEFT:
@@ -342,6 +387,15 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
 		case GameObjectState::IDLE_UP:
@@ -355,6 +409,15 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
 		case GameObjectState::IDLE_DOWN:
@@ -368,8 +431,193 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
 			break;
 
+		case GameObjectState::WALK_LEFT_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
+			break;
+
+		case GameObjectState::WALK_RIGHT_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
+			break;
+
+		case GameObjectState::WALK_UP_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
+			break;
+
+		case GameObjectState::WALK_DOWN_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
+			break;
+
+		case GameObjectState::IDLE_RIGHT_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
+			break;
+
+		case GameObjectState::IDLE_LEFT_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
+			break;
+
+		case GameObjectState::IDLE_UP_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN_EQUIPPED, false);
+
+			break;
+
+		case GameObjectState::IDLE_DOWN_EQUIPPED:
+
+			m_states.set((int)newState, true);
+
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT, false);
+			m_states.set((int)GameObjectState::IDLE_UP, false);
+			m_states.set((int)GameObjectState::IDLE_DOWN, false);
+			m_states.set((int)GameObjectState::WALK_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_UP_EQUIPPED, false);
+			m_states.set((int)GameObjectState::WALK_DOWN_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_RIGHT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_LEFT_EQUIPPED, false);
+			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
+
+			break;
+		case GameObjectState::EQUIPPED:
 		case GameObjectState::DISABLED_COLLISION:
 		case GameObjectState::DISABLED_PHYSICS:
 		case GameObjectState::DISABLED_RENDER:

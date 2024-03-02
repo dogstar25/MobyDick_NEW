@@ -49,10 +49,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 			sizeOverride = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
 		}
 
-		if (childObjectType == "ELECTRIC_ROOM_LIGHT_CIRCLE") {
-			int todd = 1;
-		}
-
 		//Create the child gameObject
 		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name, sizeOverride);
 
@@ -272,6 +268,28 @@ void ChildrenComponent::removeChildrenByType(std::string gameObjectType)
 
 }
 
+void ChildrenComponent::changeChildPosition(std::string childType, SDL_FPoint newPosition)
+{
+
+	for (auto& pair : m_childSlots) {
+
+		const std::string& key = pair.first;
+
+		for (auto& child : pair.second) {
+
+			if (child.gameObject.has_value() && child.gameObject.value()->type() == childType) {
+
+				child.absolutePositionOffset = newPosition;
+
+			}
+
+		}
+
+	}
+
+
+}
+
 std::vector<std::shared_ptr<GameObject>> ChildrenComponent::getChildrenByType(std::string gameObjectType)
 {
 
@@ -300,6 +318,33 @@ std::vector<std::shared_ptr<GameObject>> ChildrenComponent::getChildrenByType(st
 
 }
 
+std::optional<std::shared_ptr<GameObject>> ChildrenComponent::getFirstChildByType(std::string gameObjectType)
+{
+
+	std::shared_ptr<GameObject> foundGameObject;
+
+	auto childSlotItr = m_childSlots.begin();
+	while (childSlotItr != m_childSlots.end()) {
+
+		//Each child slot can have multiple gameObjects that live in a vector
+		auto childItr = childSlotItr->second.begin();
+		while (childItr != childSlotItr->second.end()) {
+
+			if (childItr->gameObject.has_value() && childItr->gameObject.value()->type() == gameObjectType) {
+
+				return childItr->gameObject.value();
+
+			}
+
+			++childItr;
+		}
+
+		++childSlotItr;
+	}
+
+	return std::nullopt;
+
+}
 
 //A stepChild lives outside of the parent so we just remove him as a child and do not delete its 
 //index from the main lookup tanle
