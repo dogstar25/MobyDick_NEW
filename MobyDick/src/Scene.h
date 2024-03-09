@@ -15,6 +15,8 @@
 #include "ObjectPoolManager.h"
 #include "triggers/Trigger.h"
 
+#include <thread>
+
 class CutScene;
 struct Objective;
 
@@ -63,9 +65,15 @@ public:
 	void update();
 	void clearEvents();
 
-	GameObject* addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle = 0., bool cameraFollow = false,std::string name="");
-	GameObject* addGameObject(std::string gameObjectType, int layer, PositionAlignment windowPosition, float adjustX=0, float adjustY=0, float angle=0, bool cameraFollow=false);
-	void addGameObject(std::shared_ptr<GameObject> gameObject, int layer);
+	std::shared_ptr<GameObject> createGameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer = GameLayer::MAIN,
+		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
+	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, 
+		float angle=0., bool cameraFollow=false, std::string name="", b2Vec2 sizeOverride = { 0.,0. });
+	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, 
+		float adjustX=0., float adjustY=0., float angle=0.,
+		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
+	void addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer);
+	void addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer);
 
 	void addGameObjectIndex(std::shared_ptr<GameObject> gameObject);
 	void addNavigationMapItem(NavigationMapItem& navigationMapItem, int x, int y);
@@ -73,12 +81,19 @@ public:
 	void addLevelTrigger(std::shared_ptr<Trigger> trigger);
 	void addKeyAction(SDL_Keycode, SceneAction);
 	void applyCurrentControlMode();
+	
 	std::optional<std::shared_ptr<GameObject>> getGameObject(std::string id);
+	std::optional<std::shared_ptr<GameObject>> extractGameObject(std::string id);
 	std::vector<std::shared_ptr<GameObject>> getGameObjectsByName(std::string name);
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByName(std::string name);
-	std::vector<std::shared_ptr<GameObject>> getGameObjectsByTrait(int trait);
+	std::vector<std::shared_ptr<GameObject>> getGameObjectsByTrait(int trait, bool includePooled = false);
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByTrait(int trait); //use when you know there's only one
+	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByType(std::string type); //use when you know there's only one
 	std::optional<std::string> getNextLevel();
+
+	int getRenderSequence() { return m_renderSequence; }
+	int incrementRenderSequence(GameObject* gameObject);
+	
 	
 	void stepB2PhysicsWorld() {
 		m_physicsWorld->Step(m_physicsConfig.timeStep,
@@ -86,7 +101,7 @@ public:
 			m_physicsConfig.positionIterations);
 	}
 
-	const std::array <std::vector<std::shared_ptr<GameObject>>, MAX_GAMEOBJECT_LAYERS>& gameObjects() {
+	const std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::GameLayer_COUNT>& gameObjects() {
 		return m_gameObjects;
 	}
 
@@ -117,7 +132,7 @@ public:
 	void setCutScene(std::shared_ptr<CutScene>cutScene);
 	void deleteCutScene();
 	void addParallaxItem(Parallax& parallaxItem);
-	std::optional<Parallax> getParallax(int layer);
+	std::optional<Parallax> getParallax(GameLayer layer);
 
 	void deleteIndex(std::string gameObjectIndex);
 	void setPlayerOriginalSpawnPoint(float x, float y) { m_playerOrigSpawnPoint = {x,y}; }
@@ -129,6 +144,10 @@ public:
 	void resetGridDisplay();
 	void updateGridDisplay(int xPos, int yPos, int operation, SDL_Color color);
 
+	void setDraggingObject(std::weak_ptr<GameObject> gameObject);
+
+	std::unordered_map<std::string, std::weak_ptr<GameObject>>& getGameObjectLookup() { return m_gameObjectLookup; }
+
 	bool navigationMapChanged() {
 		return m_navigationMapChanged;
 	}
@@ -137,6 +156,7 @@ private:
 
 	std::string m_id;
 
+	int m_renderSequence{};
 	int m_gameObjectCount{};
 	int m_inputControlMode{};
 	int m_parentSceneIndex{};
@@ -151,7 +171,7 @@ private:
 	ObjectPoolManager m_objectPoolManager{};
 
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_gameObjectLookup;
-	std::array <std::vector<std::shared_ptr<GameObject>>, MAX_GAMEOBJECT_LAYERS> m_gameObjects;
+	std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::GameLayer_COUNT> m_gameObjects;
 
 	std::vector < std::vector<NavigationMapItem>> m_navigationMap{};
 
@@ -165,12 +185,15 @@ private:
 	std::vector<Objective> m_levelObjectives;
 	std::map<int, Parallax>m_parallaxRates;
 
+	std::optional<std::weak_ptr<GameObject>> m_draggingObject{};
+
 	void _processGameObjectInterdependecies();
 	void _buildPhysicsWorld(Json::Value physicsJSON);
 	void _buildSceneGameObjects(Json::Value sceneJSON);
 	void _removeFromWorldPass();
 	void _showNavigationMap();
 	bool _updateNavigationMap();
+	void _resetRenderSequence() { m_renderSequence = 0; }
 	
 
 };

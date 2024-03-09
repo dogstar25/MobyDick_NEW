@@ -17,9 +17,6 @@
 #include <assert.h>
 #include <format>
 
-
-
-//Vendors
 #include <json/json.h>
 #include <box2d/box2d.h>
 #include <SDL2/SDL.h>
@@ -113,15 +110,15 @@
 #include "../src/opengl/GLRenderer.h"
 #include "../src/opengl/LineDrawBatch.h"
 #include "../src/opengl/Shader.h"
+
 #include "../src/opengl/SpriteDrawBatch.h"
 #include "../src/opengl/Vertex.h"
 #include "../src/particleEffects/BaseParticleEffects.h"
 #include "../src/particleEffects/ParticleEffectsFactory.h"
 #include "../src/triggers/Trigger.h"
+
 #include "../src/triggers/TriggerFactory.h"
 #include "../src/texture.h"
 #include "../src/TextureManager.h"
 #include "../src/Timer.h"
 #include "../src/Util.h"
-
-

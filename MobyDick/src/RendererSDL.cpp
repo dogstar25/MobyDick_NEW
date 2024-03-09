@@ -1,5 +1,7 @@
 #include "RendererSDL.h"
+#include "game.h"
 
+extern std::unique_ptr<Game> game;
 
 RendererSDL::RendererSDL()
 {
@@ -64,8 +66,8 @@ void RendererSDL::drawPoints(SDL_FPoint* points, SDL_Color color)
 //}
 
 
-void RendererSDL::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
+void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
+	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeOverride)
 {
 
 	if (textureBlendMode == RenderBlendMode::BLEND) {
@@ -74,12 +76,29 @@ void RendererSDL::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* textu
 	else if (textureBlendMode == RenderBlendMode::ADD) {
 		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_ADD);
 	}
+	else if (textureBlendMode == RenderBlendMode::MULTIPLY) {
+		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_MUL);
+	}
+	else if (textureBlendMode == RenderBlendMode::MODULATE) {
+		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_MOD);
+	}
+	else if (textureBlendMode == RenderBlendMode::CUSTOM) {
+		int customReturn = SDL_SetTextureBlendMode(texture->sdlTexture, sdlBlendModeOverride);
+	}
 	else{
 		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_NONE);
 	}
 
+	//SDL_SetTextureAlphaMod can only lower the alpha value of how the texture will render, never increate it. 
+	// so a 255, will be src pixel * (255/255) which is unchanged
 	SDL_SetTextureAlphaMod(texture->sdlTexture, color.a);
 	SDL_SetTextureColorMod(texture->sdlTexture, color.r, color.g, color.b);
+
+	SDL_RendererFlip flip = SDL_RendererFlip::SDL_FLIP_NONE;
+	if (texture->applyFlip == true) {
+		flip = SDL_RendererFlip::SDL_FLIP_HORIZONTAL;
+
+	}
 
 	//Render the texture
 	SDL_RenderCopyExF(
@@ -89,7 +108,7 @@ void RendererSDL::drawSprite(SDL_FRect destQuad, SDL_Color color, Texture* textu
 		&destQuad,
 		angle,
 		NULL,
-		SDL_FLIP_NONE);
+		flip);
 	
 	//outline the object if defined to
 	if (outline) {
@@ -112,4 +131,41 @@ void RendererSDL::renderPrimitives(int layerIndex)
 	m_primitiveLines.clear();
 
 }
+
+void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+	bool clear, SDL_BlendMode customBlendMode)
+{
+	//Set the render target to the texture destination texture
+	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
+	if (clear) {
+		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
+		game->renderer()->clear();
+	}
+	
+	//Particle components have a special rendering method so use it directly if this is a particle component
+	if (gameObectToRender->hasComponent(ComponentTypes::PARTICLE_COMPONENT)) {
+
+		const auto& particleComponent = gameObectToRender->getComponent<ParticleComponent>(ComponentTypes::PARTICLE_COMPONENT);
+		particleComponent->render();
+
+	}
+	else {
+		const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+		SDL_Color color = gameObectToRender->getColor();
+		float angle = gameObectToRender->getAngle();
+
+		SDL_Rect* textureSourceQuad = renderComponent->getRenderTextureRect(renderComponent->getRenderTexture().get());
+		SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
+
+		game->renderer()->drawSprite(gameObectToRender->layer(), destQuad, color, renderComponent->getRenderTexture().get(),
+			textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
+
+	}
+
+	//Set the render target back to the graphics card
+	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+
+}
+
 

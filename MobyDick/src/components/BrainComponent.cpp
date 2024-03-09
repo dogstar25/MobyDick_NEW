@@ -1,22 +1,22 @@
 #include "BrainComponent.h"
 
-
 #include "../game.h"
 #include "../RayCastCallBack.h"
 #include "../EnumMap.h"
 
+#include <algorithm>
 
 
 extern std::unique_ptr<Game> game;
 
-BrainComponent::BrainComponent()
+BrainComponent::BrainComponent() :
+	Component(ComponentTypes::BRAIN_COMPONENT)
 {
 }
 
-BrainComponent::BrainComponent(Json::Value componentJSON)
+BrainComponent::BrainComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::BRAIN_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::BRAIN_COMPONENT;
 
 	m_sightSensorSize = componentJSON["sightSensorSize"].asInt();
 
@@ -67,17 +67,6 @@ void BrainComponent::_updateSensorInput()
 	aabb.lowerBound = b2Vec2(centerB2.x - m_sightSensorSize, centerB2.y - m_sightSensorSize);
 	aabb.upperBound = b2Vec2(centerB2.x + m_sightSensorSize, centerB2.y + m_sightSensorSize);
 	
-	//Draw the sight sensor
-	glm::vec2 topLeft = { aabb.lowerBound.x, aabb.lowerBound.y };
-	glm::vec2 topRight = { aabb.upperBound.x, aabb.lowerBound.y };
-	glm::vec2 botRight = { aabb.upperBound.x, aabb.upperBound.y };
-	glm::vec2 botLeft = { aabb.lowerBound.x, aabb.upperBound.y };
-	glm::vec4 lineColor{ 255,255,255,255 };
-	util::toRenderPoint(topLeft);
-	util::toRenderPoint(topRight);
-	util::toRenderPoint(botRight);
-	util::toRenderPoint(botLeft);
-
 	//Make the AABB query
 	parent()->parentScene()->physicsWorld()->QueryAABB(&BrainAABBCallback::instance(), aabb);
 

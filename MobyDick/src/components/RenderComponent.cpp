@@ -10,7 +10,8 @@
 
 extern std::unique_ptr<Game> game;
 
-RenderComponent::RenderComponent(Json::Value componentJSON)
+RenderComponent::RenderComponent(Json::Value componentJSON):
+	Component(ComponentTypes::RENDER_COMPONENT)
 {
 
 	m_componentType = ComponentTypes::RENDER_COMPONENT;
@@ -33,15 +34,15 @@ RenderComponent::RenderComponent(Json::Value componentJSON)
 		//Simple color define
 		else {
 			m_color = game->colorMap()->toSDLColor(componentJSON["color"].asString());
-			util::colorApplyAlpha(m_color, 255);
+			//util::colorApplyAlpha(m_color, 255);
 		}
 	}
 	else
 	{
 
 		setColor(Colors::WHITE);
-		if (componentJSON["color"].isMember("alpha")) {
-			util::colorApplyAlpha(m_color, componentJSON["color"]["alpha"].asInt());
+		if (componentJSON.isMember("alpha")) {
+			util::colorApplyAlpha(m_color, componentJSON["alpha"].asInt());
 		}
 		else {
 			util::colorApplyAlpha(m_color, 255);
@@ -50,8 +51,6 @@ RenderComponent::RenderComponent(Json::Value componentJSON)
 	}
 
 	m_textureId = componentJSON["textureId"].asString();
-	m_xRenderAdjustment = componentJSON["xRenderAdjustment"].asFloat();
-	m_yRenderAdjustment = componentJSON["yRenderAdjustment"].asFloat();
 
 	if (componentJSON.isMember("textureBlendMode")) {
 		m_textureBlendMode = static_cast<RenderBlendMode>(game->enumMap()->toEnum(componentJSON["textureBlendMode"].asString()));
@@ -62,7 +61,7 @@ RenderComponent::RenderComponent(Json::Value componentJSON)
 
 	if (componentJSON.isMember("outline")) {
 		m_renderOutline = true;
-		m_outLineColor =  util::JsonToColor(componentJSON["outline"]["color"]);
+		m_outLineColor = game->colorMap()->toSDLColor(componentJSON["outline"]["color"].asString());
 	}
 	else {
 		m_renderOutline = false;
@@ -88,7 +87,7 @@ void RenderComponent::postInit()
 	//if it is a physics object, we cannot parallax it because it will cause weird visual issues
 	//with how stuff collides
 
-	//if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) 
+	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) 
 	{
 
 		auto parallax = parent()->parentScene()->getParallax(parent()->layer());
@@ -140,18 +139,21 @@ SDL_FRect RenderComponent::getRenderDestRect()
 {
 	SDL_FRect destRect;
 
+	if (parent()->type() == "OIL_CAN") {
+		int todd = 1;
+	}
+
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 
 	//Get its current position. Should be center of object
 	destRect = transform->getPositionRect();
 
-	destRect.w += m_xRenderAdjustment;
-	destRect.h += m_yRenderAdjustment;
-
 	//Adjust position based on current camera position - offset
-	if (transform->absolutePositioning() == false)
+	//Physics object always need camera adjustment to render
+	//if (transform->absolutePositioning() == false || (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) && transform->absolutePositioning() == true) )
 	{
 		//Include application of Camera adjustment and Parallax rate
+
 		destRect = getRenderDestRect(destRect);
 
 	}
@@ -164,7 +166,7 @@ Get the portion of the gameObject texture to render
 For animated objects, this is the portion of the texture that
 represents the current frame of animation
 */
-SDL_Rect* RenderComponent::getRenderTextureRect(std::shared_ptr<Texture> texture)
+SDL_Rect* RenderComponent::getRenderTextureRect(Texture* texture)
 {
 
 	SDL_Rect* textureSrcRect=nullptr;
@@ -229,17 +231,71 @@ void RenderComponent::render()
 		return;
 	}
 
-	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-	SDL_FRect destQuad = { getRenderDestRect() };
+	//If this object has a lighted treatment component then skip the render
+	//because the lighted treatment component will do the rendering
+	if (parent()->hasComponent(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)) {
+		return;
+	}
 
-	render(destQuad);
+	//Same for Masked Overlay component
+	if (parent()->hasComponent(ComponentTypes::MASKED_OVERLAY_COMPONENT)) {
+		return;
+	}
+
+	if (parent()->type() == "FULL_HOUSE_EXTERIOR") {
+
+		int todd = 1;
+
+	}
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
 
 }
 
-
 void RenderComponent::render(SDL_FRect destQuad)
 {
+
+	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
+
+
+}
+
+void RenderComponent::render(SDL_FPoint destPoint)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	destQuad.x = destPoint.x;
+	destQuad.y = destPoint.y;
+	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
+
+}
+
+void RenderComponent::render(Texture* texture)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	render(texture, m_color, destQuad, m_textureBlendMode);
+
+}
+
+void RenderComponent::render(Texture* texture, SDL_Color color, RenderBlendMode textureBlendMode)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	render(texture, color, destQuad, textureBlendMode);
+
+}
+
+void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQuad, RenderBlendMode textureBlendMode)
+{
 	
+	if (parent()->type() == "FULL_HOUSE_EXTERIOR") {
+
+		int todd = 1;
+
+	}
+
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	const auto& physics = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		
@@ -260,18 +316,20 @@ void RenderComponent::render(SDL_FRect destQuad)
 		transform->absolutePositioning() == true || m_parallaxRate.has_value() == true)
 	{
 
+		//One and only place to increment render sequence
+		parent()->parentScene()->incrementRenderSequence(parent());
+
 		bool outline{};
 		SDL_Color outlineColor{};
-		SDL_Color color = m_color;
 		float angle = transform->angle();
 
 		//SDL_FRect destQuad = getRenderDestRect();
-		SDL_Rect* textureSourceQuad = getRenderTextureRect(getRenderTexture());
+		SDL_Rect* textureSourceQuad = getRenderTextureRect(texture);
 
 		//SDL Only Stuff
 		if (GameConfig::instance().rendererType() == RendererType::SDL) {
 
-			SDL_Texture* sdlTexture = getRenderTexture()->sdlTexture;
+			SDL_Texture* sdlTexture = texture->sdlTexture;
 		}
 
 		//Alter the render variables if there is an Overlay applied!
@@ -292,16 +350,44 @@ void RenderComponent::render(SDL_FRect destQuad)
 		}
 		else {
 
-			color = m_color;
 			outline = m_renderOutline;
 			outlineColor = m_outLineColor;
 		}
 
-		game->renderer()->drawSprite(destQuad, color, getRenderTexture().get(), textureSourceQuad, angle, outline, outlineColor, m_textureBlendMode);
+		game->renderer()->drawSprite(parent()->layer(), destQuad, color, texture, textureSourceQuad, angle, outline, outlineColor, 
+			textureBlendMode);
 
 	}
 
-}
+ }      
+
+//void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+//	bool clear, SDL_BlendMode customBlendMode)
+//{
+//	//Set the render target to the texture destination texture
+//	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
+//	if (clear) {
+//		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
+//		game->renderer()->clear();
+//	}
+//
+//	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+//
+//	SDL_Color color = gameObectToRender->getColor();
+//	float angle = gameObectToRender->getAngle();
+//
+//	SDL_Rect* textureSourceQuad = getRenderTextureRect(renderComponent->getRenderTexture().get());
+//	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
+//	
+//
+//	game->renderer()->drawSprite(parent()->layer(), destQuad, color, renderComponent->getRenderTexture().get(), 
+//		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
+//
+//	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+//
+//}
+
+
 
 void RenderComponent::applyDisplayOverlay(DisplayOverlay displayOverlay)
 {

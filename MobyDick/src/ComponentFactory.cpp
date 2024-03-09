@@ -9,6 +9,7 @@ std::shared_ptr<Component> ComponentFactory::create(
 	float xMapPos,
 	float yMapPos,
 	float angleAdjust,
+	b2Vec2 sizeOverride,
 	const int componentType)
 {
 	std::shared_ptr<Component> component{};
@@ -49,9 +50,17 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::CHECKPOINT_COMPONENT);
 			component = std::make_shared<CheckPointComponent>(componentJSON);
 			break;
+		case ComponentTypes::GRID_DISPLAY_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::GRID_DISPLAY_COMPONENT);
+			component = std::make_shared<GridDisplayComponent>(componentJSON, scene);
+			break;
 		case ComponentTypes::HUD_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::HUD_COMPONENT);
 			component = std::make_shared<HudComponent>(componentJSON, scene);
+			break;
+		case ComponentTypes::INTERFACE_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::INTERFACE_COMPONENT);
+			component = std::make_shared<InterfaceComponent>(componentJSON, scene);
 			break;
 		case ComponentTypes::INVENTORY_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::INVENTORY_COMPONENT);
@@ -60,6 +69,14 @@ std::shared_ptr<Component> ComponentFactory::create(
 		case ComponentTypes::IMGUI_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::IMGUI_COMPONENT);
 			component = std::make_shared<IMGuiComponent>(componentJSON, name, scene);
+			break;
+		case ComponentTypes::LIGHT_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::LIGHT_COMPONENT);
+			component = std::make_shared<LightComponent>(componentJSON);
+			break;
+		case ComponentTypes::LIGHTED_TREATMENT_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::LIGHTED_TREATMENT_COMPONENT);
+			component = std::make_shared<LightedTreatmentComponent>(componentJSON);
 			break;
 		case ComponentTypes::NAVIGATION_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::NAVIGATION_COMPONENT);
@@ -74,10 +91,7 @@ std::shared_ptr<Component> ComponentFactory::create(
 			component = std::make_shared<ParticleXComponent>(componentJSON);
 			break;
 		case ComponentTypes::PHYSICS_COMPONENT:
-			//
-			//Physics component cannot be overridden right now so pass in the whole gameobject definition is needed
-			//
-			component = std::make_shared<PhysicsComponent>(definitionJSON, scene, xMapPos, yMapPos, angleAdjust);
+			component = std::make_shared<PhysicsComponent>(definitionJSON, scene, xMapPos, yMapPos, angleAdjust, sizeOverride);
 			break;
 		case ComponentTypes::PLAYER_CONTROL_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PLAYER_CONTROL_COMPONENT);
@@ -87,6 +101,14 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::POOL_COMPONENT);
 			component = std::make_shared<PoolComponent>(componentJSON);
 			break;
+		case ComponentTypes::PUZZLE_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PUZZLE_COMPONENT);
+			component = std::make_shared<PuzzleComponent>(componentJSON);
+			break;
+		case ComponentTypes::MASKED_OVERLAY_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::MASKED_OVERLAY_COMPONENT);
+			component = std::make_shared<MaskedOverlayComponent>(componentJSON, scene);
+			break;
 		case ComponentTypes::RENDER_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::RENDER_COMPONENT);
 			component = std::make_shared<RenderComponent>(componentJSON);
@@ -95,17 +117,17 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::SOUND_COMPONENT);
 			component = std::make_shared<SoundComponent>(componentJSON);
 			break;
+		case ComponentTypes::STATE_COMPONENT:
+			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::STATE_COMPONENT);
+			component = std::make_shared<StateComponent>(componentJSON);
+			break;
 		case ComponentTypes::TEXT_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TEXT_COMPONENT);
 			component = std::make_shared<TextComponent>(gameObjectTextType, componentJSON);
 			break;
 		case ComponentTypes::TRANSFORM_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TRANSFORM_COMPONENT);
-			component = std::make_shared<TransformComponent>(componentJSON, xMapPos, yMapPos, angleAdjust);
-			break;
-		case ComponentTypes::UICONTROL_COMPONENT:
-			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::UICONTROL_COMPONENT);
-			component = std::make_shared<UIControlComponent>(componentJSON);
+			component = std::make_shared<TransformComponent>(componentJSON, xMapPos, yMapPos, angleAdjust, sizeOverride);
 			break;
 		case ComponentTypes::VITALITY_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::VITALITY_COMPONENT);

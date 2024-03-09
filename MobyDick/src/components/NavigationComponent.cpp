@@ -12,10 +12,9 @@ NavigationComponent::~NavigationComponent()
 
 }
 
-NavigationComponent::NavigationComponent(Json::Value componentJSON)
+NavigationComponent::NavigationComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::NAVIGATION_COMPONENT)
 {
-	m_componentType = ComponentTypes::NAVIGATION_COMPONENT;
-
 	m_passageFitSizeCategory = game->enumMap()->toEnum(componentJSON["passageFitSizeCategory"].asString());
 
 	m_pathRefreshTimer = { 0.5, true };
@@ -35,8 +34,8 @@ void NavigationComponent::navigateStop()
 
 	auto actionComponent = parent()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
 
-	if (actionComponent->getAction(ACTION_MOVE)) {
-		const auto& moveAction = actionComponent->getAction(ACTION_MOVE);
+	if (actionComponent->getAction(Actions::MOVE)) {
+		const auto& moveAction = actionComponent->getAction(Actions::MOVE);
 		moveAction->perform(parent(), trajectory);
 	}
 
@@ -592,7 +591,7 @@ void NavigationComponent::_moveTo(SDL_Point destinationTile)
 	trajectory.Normalize();
 
 	const auto& actionComponent = parent()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
-	const auto& moveAction = actionComponent->getAction(ACTION_MOVE);
+	const auto& moveAction = actionComponent->getAction(Actions::MOVE);
 
 	moveAction->perform(parent(), trajectory);
 

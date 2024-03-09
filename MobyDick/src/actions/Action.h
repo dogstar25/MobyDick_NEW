@@ -14,6 +14,9 @@ public:
 	Action() {}
 	~Action();
 
+	std::string label() { return m_label; }
+	void setLabel(std::string label) { m_label = label; }
+
 	//We never want to end up calling the base level action perform. The derived action classes should have setup
 	//the proper perform override and whoever is calling these actions should be passing in the correct paramters
 	//If we end up calling base, then throw an assert
@@ -26,6 +29,11 @@ public:
 	virtual void perform(SDL_FRect*, glm::vec2, float) { assert(false && "An Empty Action was executed!"); };
 	virtual void perform(GameObject*, SDL_Scancode) { assert(false && "An Empty Action was executed!"); };
 	virtual void perform(GameObject*, GameObject*, SDL_Scancode) { assert(false && "An Empty Action was executed!"); };
-	
+	virtual void perform(GameObject*, GameObject*, b2Vec2) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(GameObject*, GameObject*) { assert(false && "An Empty Action was executed!"); };
+
+protected:
+	std::string m_label{};
+
 };
 

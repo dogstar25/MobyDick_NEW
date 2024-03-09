@@ -9,10 +9,9 @@
 extern std::unique_ptr<Game> game;
 
 
-AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene)
+AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::ATTACHMENTS_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::ATTACHMENTS_COMPONENT;
 
 	int attachmentCount{};
 	for (Json::Value itrItem : componentJSON["attachments"])
@@ -27,13 +26,10 @@ AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::strin
 
 		m_isDependentObjectOwner = true;
 
-		//tOdO: PUT A CHECK HER THAT WILL NOT ALLOW A STATIC OBJECT BE ATTACHED TO A DYNAMIC OBJECT
+		//TODO: PUT A CHECK HER THAT WILL NOT ALLOW A STATIC OBJECT BE ATTACHED TO A DYNAMIC OBJECT
 
 		std::string name = _buildAttachmentName(parentName, attachmentCount);
-		auto gameObject = std::make_shared<GameObject>(gameObjectType, - 1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
-
-		//Add index 
-		parentScene->addGameObjectIndex(gameObject);
+		auto gameObject = parentScene->createGameObject(gameObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
 
 		Attachment attachment = { id, addToInventory, attachB2JointType, attachLocation, gameObject };
 		m_attachments.emplace_back(attachment);
@@ -79,14 +75,15 @@ void AttachmentsComponent::postInit()
 		//set layer from parent
 		attachment.gameObject->setLayer(parent()->layer());
 
+		//The attachment objects are offscreen, so first move them to the parent's position before trying to attach them
+		attachment.gameObject->setPosition(parent()->getCenterPosition());
+
 		physicsComponent->attachItem(attachment.gameObject.get(), attachment.attachB2JointType, attachment.attachLocation);
 		if (attachment.addToInventory == true) {
 
 			const auto& inventoryComponent = parent()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 			inventoryComponent->addItem(attachment.gameObject);
 		}
-
-		attachment.gameObject->postInit();
 
 	}
 }

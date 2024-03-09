@@ -19,7 +19,9 @@ EnumMap::EnumMap()
 	m_enumMap["COMPOSITE_COMPONENT"] = (int)ComponentTypes::COMPOSITE_COMPONENT;
 	m_enumMap["CONTAINER_COMPONENT"] = (int)ComponentTypes::CONTAINER_COMPONENT;
 	m_enumMap["HUD_COMPONENT"] = (int)ComponentTypes::HUD_COMPONENT;
+	m_enumMap["GRID_DISPLAY_COMPONENT"] = (int)ComponentTypes::GRID_DISPLAY_COMPONENT;
 	m_enumMap["INVENTORY_COMPONENT"] = (int)ComponentTypes::INVENTORY_COMPONENT;
+	m_enumMap["INTERFACE_COMPONENT"] = (int)ComponentTypes::INTERFACE_COMPONENT;
 	m_enumMap["IMGUI_COMPONENT"] = (int)ComponentTypes::IMGUI_COMPONENT;
 	m_enumMap["PARTICLE_COMPONENT"] = (int)ComponentTypes::PARTICLE_COMPONENT;
 	m_enumMap["NAVIGATION_COMPONENT"] = (int)ComponentTypes::NAVIGATION_COMPONENT;
@@ -27,13 +29,18 @@ EnumMap::EnumMap()
 	m_enumMap["PHYSICS_COMPONENT"] = (int)ComponentTypes::PHYSICS_COMPONENT;
 	m_enumMap["PLAYER_CONTROL_COMPONENT"] = (int)ComponentTypes::PLAYER_CONTROL_COMPONENT;
 	m_enumMap["POOL_COMPONENT"] = (int)ComponentTypes::POOL_COMPONENT;
+	m_enumMap["PUZZLE_COMPONENT"] = (int)ComponentTypes::PUZZLE_COMPONENT;
 	m_enumMap["RENDER_COMPONENT"] = (int)ComponentTypes::RENDER_COMPONENT;
+	m_enumMap["MASKED_OVERLAY_COMPONENT"] = (int)ComponentTypes::MASKED_OVERLAY_COMPONENT;
 	m_enumMap["SOUND_COMPONENT"] = (int)ComponentTypes::SOUND_COMPONENT;
+	m_enumMap["STATE_COMPONENT"] = (int)ComponentTypes::STATE_COMPONENT;
 	m_enumMap["TEXT_COMPONENT"] = (int)ComponentTypes::TEXT_COMPONENT;
 	m_enumMap["TRANSFORM_COMPONENT"] = (int)ComponentTypes::TRANSFORM_COMPONENT;
 	m_enumMap["UICONTROL_COMPONENT"] = (int)ComponentTypes::UICONTROL_COMPONENT;
 	m_enumMap["VITALITY_COMPONENT"] = (int)ComponentTypes::VITALITY_COMPONENT;
 	m_enumMap["WEAPON_COMPONENT"] = (int)ComponentTypes::WEAPON_COMPONENT;
+	m_enumMap["LIGHT_COMPONENT"] = (int)ComponentTypes::LIGHT_COMPONENT;
+	m_enumMap["LIGHTED_TREATMENT_COMPONENT"] = (int)ComponentTypes::LIGHTED_TREATMENT_COMPONENT;
 
 
 	//Renderer Types
@@ -43,18 +50,18 @@ EnumMap::EnumMap()
 	//Render Modes
 	m_enumMap["RenderBlendMode::BLEND"] = (int)RenderBlendMode::BLEND;
 	m_enumMap["RenderBlendMode::ADD"] = (int)RenderBlendMode::ADD;
+	m_enumMap["RenderBlendMode::MULTIPLY"] = (int)RenderBlendMode::MULTIPLY;
+	m_enumMap["RenderBlendMode::MODULATE"] = (int)RenderBlendMode::MODULATE;
 	m_enumMap["RenderBlendMode::NONE"] = (int)RenderBlendMode::NONE;
 
-	//Mouse State
-	m_enumMap["MOUSE_NONE"] = MOUSE_NONE;
-	m_enumMap["MOUSE_HOVER"] = MOUSE_HOVER;
-	m_enumMap["MOUSE_NONE"] = MOUSE_HOLD;
-	m_enumMap["MOUSE_HOVER"] = MOUSE_CLICKED;
+	//Child slot treatment
+	m_enumMap["ChildSlotTreatment::HORIZONTAL"] = (int)ChildSlotTreatment::HORIZONTAL;
+	m_enumMap["ChildSlotTreatment::VERTICAL"] = (int)ChildSlotTreatment::VERTICAL;
+	m_enumMap["ChildSlotTreatment::STACKED"] = (int)ChildSlotTreatment::STACKED;
 
 	//Mouse Modes
 	m_enumMap["CONTROL_MODE_SELECT"] = CONTROL_MODE_SELECT;
 	m_enumMap["CONTROL_MODE_PLAY"] = CONTROL_MODE_PLAY;
-	m_enumMap["CONTROL_MODE_IMGUI"] = CONTROL_MODE_IMGUI;
 
 	//Renderer Types
 	m_enumMap["RendererType::SDL"] = (int)RendererType::SDL;
@@ -100,26 +107,52 @@ EnumMap::EnumMap()
 	m_enumMap["INPUT_CONTROL_CLICK"] = INPUT_CONTROL_CLICK;
 
 	//Game Object Actions
-	m_enumMap["ACTION_NONE"] = ACTION_NONE;
-	m_enumMap["ACTION_MOVE"] = ACTION_MOVE;
-	m_enumMap["ACTION_ROTATE"] = ACTION_ROTATE;
-	m_enumMap["ACTION_USE"] = ACTION_USE;
-	m_enumMap["ACTION_USAGE"] = ACTION_USAGE;
-	m_enumMap["ACTION_INTERACT"] = ACTION_INTERACT;
-	m_enumMap["ACTION_INTERACTION"] = ACTION_INTERACTION;
-	m_enumMap["ACTION_ON_HOVER"] = ACTION_ON_HOVER;
-	m_enumMap["ACTION_ON_HOVER_OUT"] = ACTION_ON_HOVER_OUT;
-	m_enumMap["ACTION_ON_CLICK"] = ACTION_ON_CLICK;
-	m_enumMap["ACTION_SPRINT"] = ACTION_SPRINT;
-	m_enumMap["ACTION_USAGE_SPECIAL"] = ACTION_USAGE_SPECIAL;
+	m_enumMap["Actions::NONE"] = Actions::NONE;
+	m_enumMap["Actions::MOVE"] = Actions::MOVE;
+	m_enumMap["Actions::SPRINT"] = Actions::SPRINT;
+	m_enumMap["Actions::ROTATE"] = Actions::ROTATE;
+	m_enumMap["Actions::USE"] = Actions::USE;
+	m_enumMap["Actions::USAGE"] = Actions::USAGE;
+	m_enumMap["Actions::INSPECT"] = Actions::INSPECT;
+	m_enumMap["Actions::TALK"] = Actions::TALK;
+	m_enumMap["Actions::PUSH"] = Actions::PUSH;
+	m_enumMap["Actions::TAKE"] = Actions::TAKE;
+	m_enumMap["Actions::COMBINE"] = Actions::COMBINE;
+	m_enumMap["Actions::OPEN"] = Actions::OPEN;
+	m_enumMap["Actions::CLOSE"] = Actions::CLOSE;
+	m_enumMap["Actions::WARP"] = Actions::WARP;
+	m_enumMap["Actions::ENTER"] = Actions::ENTER;
+	m_enumMap["Actions::SHOW_INTERFACE"] = Actions::SHOW_INTERFACE;
+	m_enumMap["Actions::HIDE_INTERFACE"] = Actions::HIDE_INTERFACE;
+	m_enumMap["Actions::APPLY_HIGHLIGHT"] = Actions::APPLY_HIGHLIGHT;
+	m_enumMap["Actions::REMOVE_HIGHLIGHT"] = Actions::REMOVE_HIGHLIGHT;
+	m_enumMap["Actions::DROP"] = Actions::DROP;
+
+	//User Events
+	m_enumMap["InterfaceEvents::ON_TOUCHING"] = (int)InterfaceEvents::ON_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_STOP_TOUCHING"] = (int)InterfaceEvents::ON_STOP_TOUCHING;
+	m_enumMap["InterfaceEvents::ON_HOVER"] = (int)InterfaceEvents::ON_HOVER;
+	m_enumMap["InterfaceEvents::ON_HOVER_OUT"] = (int)InterfaceEvents::ON_HOVER_OUT;
+	m_enumMap["InterfaceEvents::ON_LCLICK"] = (int)InterfaceEvents::ON_LCLICK;
+	m_enumMap["InterfaceEvents::ON_RCLICK"] = (int)InterfaceEvents::ON_RCLICK;
+	m_enumMap["InterfaceEvents::ON_DRAG"] = (int)InterfaceEvents::ON_DRAG;
+	m_enumMap["InterfaceEvents::ON_DROP"] = (int)InterfaceEvents::ON_DROP;
+
 
 	//Keys
-	m_enumMap["SDLK_ESCAPE"] = SDLK_ESCAPE;
-	m_enumMap["SDLK_F1"] = SDLK_F1;
-	m_enumMap["SDLK_F2"] = SDLK_F2;
-	m_enumMap["SDLK_F3"] = SDLK_F3;
-	m_enumMap["SDLK_F4"] = SDLK_F4;
-	m_enumMap["SDLK_F12"] = SDLK_F12;
+	m_enumMap["Key::SDLK_ESCAPE"] = SDLK_ESCAPE;
+	m_enumMap["Key::SDL_SCANCODE_W"] = SDL_SCANCODE_W;
+	m_enumMap["Key::SDL_SCANCODE_A"] = SDL_SCANCODE_A;
+	m_enumMap["Key::SDL_SCANCODE_S"] = SDL_SCANCODE_S;
+	m_enumMap["Key::SDL_SCANCODE_D"] = SDL_SCANCODE_D;
+	m_enumMap["Key::SDL_SCANCODE_I"] = SDL_SCANCODE_I;
+	m_enumMap["Key::SDL_SCANCODE_F"] = SDL_SCANCODE_F;
+
+	m_enumMap["Key::SDLK_F1"] = SDLK_F1;
+	m_enumMap["Key::SDLK_F2"] = SDLK_F2;
+	m_enumMap["Key::SDLK_F3"] = SDLK_F3;
+	m_enumMap["Key::SDLK_F4"] = SDLK_F4;
+	m_enumMap["Key::SDLK_F12"] = SDLK_F12;
 
 	//Scene Action Codes
 	m_enumMap["SCENE_ACTION_QUIT"] = SCENE_ACTION_QUIT;
@@ -148,14 +181,23 @@ EnumMap::EnumMap()
 	m_enumMap["PositionAlignment::BOTTOM_RIGHT"] = (int)PositionAlignment::BOTTOM_RIGHT;
 
 	//Game Layers
-	m_enumMap["GameLayer::BACKGROUND_1"] = GameLayer::BACKGROUND_1;
+	m_enumMap["GameLayer::BACKGROUND_5"] = GameLayer::BACKGROUND_5;
+	m_enumMap["GameLayer::BACKGROUND_4"] = GameLayer::BACKGROUND_4;
+	m_enumMap["GameLayer::BACKGROUND_3"] = GameLayer::BACKGROUND_3;
 	m_enumMap["GameLayer::BACKGROUND_2"] = GameLayer::BACKGROUND_2;
+	m_enumMap["GameLayer::BACKGROUND_1"] = GameLayer::BACKGROUND_1;
 	m_enumMap["GameLayer::MAIN"] = GameLayer::MAIN;
 	m_enumMap["GameLayer::FOREGROUND_1"] = GameLayer::FOREGROUND_1;
 	m_enumMap["GameLayer::FOREGROUND_2"] = GameLayer::FOREGROUND_2;
-	m_enumMap["GameLayer::GUI"] = GameLayer::GUI;
+	m_enumMap["GameLayer::FOREGROUND_3"] = GameLayer::FOREGROUND_3;
+	m_enumMap["GameLayer::FOREGROUND_4"] = GameLayer::FOREGROUND_4;
+	m_enumMap["GameLayer::FOREGROUND_5"] = GameLayer::FOREGROUND_5;
+	m_enumMap["GameLayer::GUI_1"] = GameLayer::GUI_1;
+	m_enumMap["GameLayer::GUI_2"] = GameLayer::GUI_2;
+	m_enumMap["GameLayer::GUI_3"] = GameLayer::GUI_3;
 	m_enumMap["GameLayer::ABSTRACT"] = GameLayer::ABSTRACT;
 	m_enumMap["GameLayer::GRID_DISPLAY"] = GameLayer::GRID_DISPLAY;
+
 
 	//Game Object Display Modes
 	m_enumMap["DISPLAY_UI_MODE_STANDARD"] = DISPLAY_UI_MODE_STANDARD;
@@ -167,7 +209,11 @@ EnumMap::EnumMap()
 	m_enumMap["ParticleEmitterType::CONTINUOUS"] = ParticleEmitterType::CONTINUOUS;
 
 	//OpenGL Texture Index values
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4;
 	m_enumMap["GL_TextureIndexType::IMGUI_TEXTURE_ATLAS"] = (int)GL_TextureIndexType::IMGUI_TEXTURE_ATLAS;
 	
 	//Texure Blend Modes
@@ -190,7 +236,8 @@ EnumMap::EnumMap()
 	m_enumMap["gui"] = TraitTag::gui;
 	m_enumMap["waypoint"] = TraitTag::waypoint;
 	m_enumMap["abstract"] = TraitTag::abstract;
-	m_enumMap["interactive"] = TraitTag::interactive;
+	m_enumMap["always_in_line_of_sight"] = TraitTag::always_in_line_of_sight;
+	m_enumMap["mouse_interface"] = TraitTag::mouse_interface;
 	m_enumMap["debug"] = TraitTag::debug;
 	m_enumMap["pooled"] = TraitTag::pooled;
 	m_enumMap["fragment"] = TraitTag::fragment;
@@ -199,17 +246,30 @@ EnumMap::EnumMap()
 	m_enumMap["conditional_impasse"] = TraitTag::conditional_impasse;
 	m_enumMap["complex_impasse"] = TraitTag::complex_impasse;
 	m_enumMap["mobile"] = TraitTag::mobile;
+	m_enumMap["light"] = TraitTag::light;
+	m_enumMap["puzzle"] = TraitTag::puzzle;
+	m_enumMap["vertical_movement_zone"] = TraitTag::vertical_movement_zone;
+	m_enumMap["draggable"] = TraitTag::draggable;
+	m_enumMap["inventory"] = TraitTag::inventory;
+	m_enumMap["puzzle_item"] = TraitTag::puzzle_item;
+	m_enumMap["door"] = TraitTag::door;
+	m_enumMap["inventory_player"] = TraitTag::inventory_player;
+	m_enumMap["inventory_open"] = TraitTag::inventory_open;
+	m_enumMap["inventory_closed"] = TraitTag::inventory_closed;
+	m_enumMap["inventory_display"] = TraitTag::inventory_display;
+	m_enumMap["door_entry"] = TraitTag::door_entry;
+	m_enumMap["door_side"] = TraitTag::door_side;
+	m_enumMap["door_front"] = TraitTag::door_front;
+	m_enumMap["receptacle"] = TraitTag::receptacle;
+
 
 	//Hud Item Types
 	m_enumMap["HudItemTypes::STATUS_SINGLE"] = (int)HudItemTypes::STATUS_SINGLE;
 	m_enumMap["HudItemTypes::STATUS_SERIES"] = (int)HudItemTypes::STATUS_SERIES;
 
-	m_enumMap["DISABLED_TYPE::RENDER"] = DISABLED_TYPE::RENDER;
-	m_enumMap["DISABLED_TYPE::UPDATE"] = DISABLED_TYPE::UPDATE;
-	m_enumMap["DISABLED_TYPE::PHYSICS"] = DISABLED_TYPE::PHYSICS;
-	m_enumMap["DISABLED_TYPE::RENDER_AND_PHYSICS"] = DISABLED_TYPE::RENDER_AND_PHYSICS;
-	m_enumMap["DISABLED_TYPE::RENDER_AND_UPDATE"] = DISABLED_TYPE::RENDER_AND_UPDATE;
-	m_enumMap["DISABLED_TYPE::PHYICS_AND_UPDATE"] = DISABLED_TYPE::PHYICS_AND_UPDATE;
+	m_enumMap["LightType::TEXTURE_LIGHT"] = (int)LightType::TEXTURE_LIGHT;
+	m_enumMap["LightType::SHADER_LIGHT"] = (int)LightType::SHADER_LIGHT;
+	m_enumMap["LightType::RAY_LIGHT"] = (int)LightType::RAY_LIGHT;
 
 	//Scene Settings
 	m_enumMap["DebugSceneSettings::SHOW_PHYSICS_DEBUG"] = DebugSceneSettings::SHOW_PHYSICS_DEBUG;
@@ -219,6 +279,58 @@ EnumMap::EnumMap()
 	m_enumMap["NavigationSizeCategory::SMALL"] = NavigationSizeCategory::SMALL;
 	m_enumMap["NavigationSizeCategory::MEDIUM"] = NavigationSizeCategory::MEDIUM;
 	m_enumMap["NavigationSizeCategory::LARGE"] = NavigationSizeCategory::LARGE;
+
+	//Condition Operators
+	m_enumMap["ConditionOperator::AND"] = (int)ConditionOperator::AND;
+	m_enumMap["ConditionOperator::OR"] = (int)ConditionOperator::OR;
+
+	//GameObject States
+	m_enumMap["GameObjectState::ON"] = (int)GameObjectState::ON;
+	m_enumMap["GameObjectState::OFF"] = (int)GameObjectState::OFF;
+	m_enumMap["GameObjectState::OPENED"] = (int)GameObjectState::OPENED;
+	m_enumMap["GameObjectState::CLOSED"] = (int)GameObjectState::CLOSED;
+	m_enumMap["GameObjectState::IDLE"] = (int)GameObjectState::IDLE;
+	m_enumMap["GameObjectState::WALK"] = (int)GameObjectState::WALK;
+	m_enumMap["GameObjectState::RUN"] = (int)GameObjectState::RUN;
+	m_enumMap["GameObjectState::SPRINT"] = (int)GameObjectState::SPRINT;
+	m_enumMap["GameObjectState::JUMP"] = (int)GameObjectState::JUMP;
+	m_enumMap["GameObjectState::CLIMB"] = (int)GameObjectState::CLIMB;
+	m_enumMap["GameObjectState::DEAD"] = (int)GameObjectState::DEAD;
+	m_enumMap["GameObjectState::DISABLED_UPDATE"] = (int)GameObjectState::DISABLED_UPDATE;
+	m_enumMap["GameObjectState::DISABLED_PHYSICS"] = (int)GameObjectState::DISABLED_PHYSICS;
+	m_enumMap["GameObjectState::DISABLED_RENDER"] = (int)GameObjectState::DISABLED_RENDER;
+	m_enumMap["GameObjectState::DISABLED_COLLISION"] = (int)GameObjectState::DISABLED_COLLISION;
+	m_enumMap["GameObjectState::DEPLOYED"] = (int)GameObjectState::DEPLOYED;
+	m_enumMap["GameObjectState::CONCEALED"] = (int)GameObjectState::CONCEALED;
+	m_enumMap["GameObjectState::IMPASSABLE"] = (int)GameObjectState::IMPASSABLE;
+	m_enumMap["GameObjectState::EQUIPPED"] = (int)GameObjectState::EQUIPPED;
+	m_enumMap["GameObjectState::ITEM_OBTAINABLE"] = (int)GameObjectState::ITEM_OBTAINABLE;
+	m_enumMap["GameObjectState::ITEM_LOOSE"] = (int)GameObjectState::ITEM_LOOSE;
+	m_enumMap["GameObjectState::ITEM_STORED_ENCLOSED"] = (int)GameObjectState::ITEM_STORED_ENCLOSED;
+	m_enumMap["GameObjectState::ITEM_STORED_OPEN"] = (int)GameObjectState::ITEM_STORED_OPEN;
+	m_enumMap["GameObjectState::ITEM_STORED_PLAYER"] = (int)GameObjectState::ITEM_STORED_PLAYER;
+	m_enumMap["GameObjectState::IDLE_RIGHT"] = (int)GameObjectState::IDLE_RIGHT;
+	m_enumMap["GameObjectState::IDLE_LEFT"] = (int)GameObjectState::IDLE_LEFT;
+	m_enumMap["GameObjectState::IDLE_UP"] = (int)GameObjectState::IDLE_UP;
+	m_enumMap["GameObjectState::IDLE_DOWN"] = (int)GameObjectState::IDLE_DOWN;
+	m_enumMap["GameObjectState::WALK_RIGHT"] = (int)GameObjectState::WALK_RIGHT;
+	m_enumMap["GameObjectState::WALK_LEFT"] = (int)GameObjectState::WALK_LEFT;
+	m_enumMap["GameObjectState::WALK_UP"] = (int)GameObjectState::WALK_UP;
+	m_enumMap["GameObjectState::WALK_DOWN"] = (int)GameObjectState::WALK_DOWN;
+	m_enumMap["GameObjectState::IDLE_RIGHT_EQUIPPED"] = (int)GameObjectState::IDLE_RIGHT_EQUIPPED;
+	m_enumMap["GameObjectState::IDLE_LEFT_EQUIPPED"] = (int)GameObjectState::IDLE_LEFT_EQUIPPED;
+	m_enumMap["GameObjectState::IDLE_UP_EQUIPPED"] = (int)GameObjectState::IDLE_UP_EQUIPPED;
+	m_enumMap["GameObjectState::IDLE_DOWN_EQUIPPED"] = (int)GameObjectState::IDLE_DOWN_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_RIGHT_EQUIPPED"] = (int)GameObjectState::WALK_RIGHT_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_LEFT_EQUIPPED"] = (int)GameObjectState::WALK_LEFT_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_UP_EQUIPPED"] = (int)GameObjectState::WALK_UP_EQUIPPED;
+	m_enumMap["GameObjectState::WALK_DOWN_EQUIPPED"] = (int)GameObjectState::WALK_DOWN_EQUIPPED;
+
+	m_enumMap["GameObjectState::RUN_RIGHT"] = (int)GameObjectState::RUN_RIGHT;
+	m_enumMap["GameObjectState::RUN_LEFT"] = (int)GameObjectState::RUN_LEFT;
+	m_enumMap["GameObjectState::RUN_UP"] = (int)GameObjectState::RUN_UP;
+	m_enumMap["GameObjectState::RUN_DOWN"] = (int)GameObjectState::RUN_DOWN;
+
 
 }
 

@@ -1,7 +1,4 @@
 #pragma once
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdlrenderer.h"
 #include "../game.h"
 
 namespace ImGui
@@ -19,5 +16,6 @@ namespace ImGui
 	void setFont64();
 	void textCentered(std::string text);
 	void setCursorToCentered(float itemToCenterSize);
-
+	ImGuiKey getNumKey(int keyInt);
+	void adjustCursorPosition(float x, float y);
 }

@@ -15,6 +15,8 @@ ColorMap::ColorMap()
 	m_colorMap["Colors::ORANGE"] = Colors::ORANGE;
 	m_colorMap["Colors::GREY"] = Colors::GREY;
 	m_colorMap["Colors::CLOUD"] = Colors::CLOUD;
+	m_colorMap["Colors::BROWN"] = Colors::BROWN;
+	m_colorMap["Colors::BLACKISH"] = Colors::BLACKISH;
 
 }
 

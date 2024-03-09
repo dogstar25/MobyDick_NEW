@@ -2,10 +2,10 @@
 
 #include <string>
 
-//#include "../GameConfig.h"
-
 #include <box2d/box2d.h>
 #include <SDL2/SDL.h>
+
+#include <optional>
 
 
 
@@ -16,15 +16,19 @@ struct ParticleEffect {
 	std::string poolId = "SMOKE1_POOL";
 	b2Vec2 originMin;
 	b2Vec2 originMax;
-	int forceMin = 50;
-	int forceMax = forceMin;
+	float forceMin = 50;
+	float forceMax = forceMin;
 	float lifetimeMin = 2.5;
 	float lifetimeMax = 2.5;
 	bool alphaFade = true;
 	float angleMin = 0;
 	float angleMax = 360;
-	float particleSizeMin = 1;
-	float particleSizeMax = 1;
+	std::optional<float> particleSizeMin{};
+	std::optional<float> particleSizeMax{};
+	std::optional<float> particleSizeMinWidth{};
+	std::optional<float> particleSizeMaxWidth{};
+	std::optional<float> particleSizeMinHeight{};
+	std::optional<float> particleSizeMaxHeight{};
 	SDL_Color colorRangeBegin = {255,255,255,255};
 	SDL_Color colorRangeEnd = { 255,255,255,255 };
 	int particleSpawnCountMin = 25;

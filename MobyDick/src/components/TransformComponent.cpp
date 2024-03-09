@@ -3,26 +3,33 @@
 
 extern std::unique_ptr<Game> game;
 
-TransformComponent::TransformComponent()
+TransformComponent::TransformComponent() :
+	Component(ComponentTypes::TRANSFORM_COMPONENT)
 {
 }
 
-TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust)
+TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride) :
+	Component(ComponentTypes::TRANSFORM_COMPONENT)
 {
-		m_componentType = ComponentTypes::TRANSFORM_COMPONENT;
-
 		m_angle = m_originalAngle = angleAdjust;
+		b2Vec2 size{};
 
-		auto objectWidth = componentJSON["size"]["width"].asFloat();
-		auto objectHeight = componentJSON["size"]["height"].asFloat();
+		//Apply override if it's not zero
+		if (sizeOverride != b2Vec2_zero) {
+			size = sizeOverride;
+		}
+		else {
+			size.x = componentJSON["size"]["width"].asFloat();
+			size.y = componentJSON["size"]["height"].asFloat();
+		}
 
 		m_originalTilePosition = { xMapPos , yMapPos };
-		setPosition(util::tileToPixelPlacementLocation(xMapPos, yMapPos, objectWidth, objectHeight)	);
+		setPosition(util::tileToPixelPlacementLocation(xMapPos, yMapPos, size.x, size.y)	);
 
 		m_originalPosition = m_position;
-		m_size.Set(componentJSON["size"]["width"].asFloat(), componentJSON["size"]["height"].asFloat());
+		m_originalSize = m_size = size;
 
-		m_absolutePositioning = componentJSON["absolutePositioning"].asBool();
+		m_absolutePositioning = m_originalAbsolutePositioning = componentJSON["absolutePositioning"].asBool();
 
 		//Determine location
 		auto locationJSON = componentJSON["location"];
@@ -55,6 +62,14 @@ void TransformComponent::update()
 	//because the object may have changed size, i.e ImGui Window
 	if (m_windowRelativePosition) {
 		parent()->setPosition(m_windowRelativePosition.value(), m_windowPositionAdjustment.x, m_windowPositionAdjustment.y);
+	}
+
+	if (m_absolutePositioning == true && parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {
+
+		SDL_FPoint cameraPosition = { Camera::instance().frame().x, Camera::instance().frame().y };
+
+		m_position = { m_position.x + cameraPosition.x, m_position.y + cameraPosition.y};
+
 	}
 
 
@@ -149,4 +164,5 @@ void TransformComponent::setAbsolutePositioning(bool absolutePositioning)
 {
 	m_absolutePositioning = absolutePositioning;
 }
+
 

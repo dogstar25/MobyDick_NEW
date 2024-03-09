@@ -8,6 +8,9 @@
 #include <SDL2/SDL.h>
 #include <box2d/box2d.h>
 #include "imgui.h"
+#include "BaseConstants.h"
+
+class GameObject;
 
 
 struct DisplayOverlay
@@ -20,10 +23,27 @@ struct DisplayOverlay
 namespace displayOverlays {
 
 	static const DisplayOverlay outline_GREEN1{
-
 		.color{},
-		.outlined{},
-		.outlineColor{}
+		.outlined{true},
+		.outlineColor{Colors::GREEN}
+	};
+
+	static const DisplayOverlay tint_RED1{
+		.color{Colors::RED},
+		.outlined{true},
+		.outlineColor{Colors::GAS}
+	};
+
+	static const DisplayOverlay outline_CLOUD{
+		.color{},
+		.outlined{true},
+		.outlineColor{Colors::CLOUD}
+	};
+
+	static const DisplayOverlay outline_SUBTLE_1{
+		.color{},
+		.outlined{true},
+		.outlineColor{Colors::SMOKE}
 	};
 
 	/*
@@ -36,7 +56,10 @@ enum class RenderBlendMode {
 
 	BLEND,
 	ADD,
-	NONE
+	MULTIPLY,
+	MODULATE,
+	NONE,
+	CUSTOM
 
 };
 
@@ -67,41 +90,29 @@ public:
 	virtual void init(SDL_Window* window) = 0;;
 	virtual bool present() = 0;
 	virtual bool clear() = 0;
-	virtual void drawSprite(SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) = 0;
+	virtual void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
+		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride= SDL_BLENDMODE_INVALID) = 0;
 	virtual void renderPrimitives(int layerIndex) = 0;
 
 	void addLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color);
 	void addLine(PrimitiveLine line);
 	void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color = { 255,255,255,255 });
-	//void initImGuiFonts(ImGuiIO& io);
-	
 
 	//SDL Specific stuff
 	virtual SDL_Texture* createTextureFromSurface(SDL_Surface* surface) = 0;
 	virtual SDL_Renderer* sdlRenderer() = 0;
+	virtual void drawBatches() {};
+	virtual void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
+		bool clear = false, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID) {};
 
-	////ImGuiFonts
-	//ImFont* font12() { return m_font12; }
-	//ImFont* font22() { return m_font22; }
-	//ImFont* font32() { return m_font32; }
-	//ImFont* font64() { return m_font64; }
 
 protected:
 
 	void outlineObject(SDL_FRect quad, SDL_Color color);
 	
-	//ToDo:Add a layer level - all outlines will be put in a arbitrary layer below the menu/gui layer
 	std::vector<PrimitivePoint> m_primitivePoints{};
 	std::vector<PrimitiveLine> m_primitiveLines{};
-
-	//ImFont* m_font12{};
-	//ImFont* m_font22{};
-	//ImFont* m_font32{};
-	//ImFont* m_font64{};
-
-
-
+	
 
 };
 

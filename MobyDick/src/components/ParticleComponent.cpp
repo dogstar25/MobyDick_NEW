@@ -6,9 +6,9 @@
 
 extern std::unique_ptr<Game> game;
 
-ParticleComponent::ParticleComponent(Json::Value componentJSON)
+ParticleComponent::ParticleComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::PARTICLE_COMPONENT)
 {
-	m_componentType = ComponentTypes::PARTICLE_COMPONENT;
 
 	m_maxParticles = componentJSON["maxParticles"].asInt();
 	for (int i = 0; i < m_maxParticles; i++) {
@@ -51,12 +51,16 @@ void ParticleComponent::render()
 
 			SDL_FRect positionRect = { 
 				particle.position.x, particle.position.y, 
-				particle.size,	particle.size
+				particle.size.x, particle.size.y
 			};
 
 			SDL_FRect destRect = renderComponent->getRenderDestRect(positionRect);
 
-			game->renderer()->drawSprite(destRect, particle.color, particle.texture, &particle.texture->textureAtlasQuad, 0, false, SDL_Color{}, RenderBlendMode::ADD);
+			//adjust angle to match what the drawsprite wants
+			float angle = particle.angle + 90;
+
+			game->renderer()->drawSprite(parent()->layer(), destRect, particle.color, particle.texture, &particle.texture->textureAtlasQuad, 
+				angle, false, SDL_Color{}, RenderBlendMode::ADD);
 
 		}
 	}
@@ -145,7 +149,16 @@ void ParticleComponent::update()
 					particle.value()->originalALpha = particle.value()->color.a;
 
 					//Size
-					particle.value()->size = util::generateRandomNumber(effect.particleSizeMin, effect.particleSizeMax);
+					if (effect.particleSizeMin.has_value()) {
+						float size = util::generateRandomNumber(effect.particleSizeMin.value(), effect.particleSizeMax.value());
+						particle.value()->size = {size, size};
+					}
+					else if (effect.particleSizeMinWidth.has_value()) {
+						float width = util::generateRandomNumber(effect.particleSizeMinWidth.value(), effect.particleSizeMaxWidth.value());
+						float height = util::generateRandomNumber(effect.particleSizeMinHeight.value(), effect.particleSizeMaxHeight.value());
+
+						particle.value()->size = {width, height};
+					}
 
 					//Set the particles lifetime
 					auto particleLifetime = util::generateRandomNumber(effect.lifetimeMin, effect.lifetimeMax);
@@ -162,6 +175,8 @@ void ParticleComponent::update()
 					else {
 						emitAngle = util::generateRandomNumber(effect.angleMin, effect.angleMax);
 					}
+
+					particle.value()->angle = emitAngle;
 
 					//emitAngle += effect.angleMin;
 					emitAngle = util::degreesToRadians(emitAngle);

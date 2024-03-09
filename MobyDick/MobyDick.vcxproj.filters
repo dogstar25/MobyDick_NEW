@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,9 +75,6 @@
     <ClCompile Include="src\components\RenderComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\components\TextComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\components\VitalityComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,9 +97,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\actions\Action.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\components\UIControlComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ObjectPoolManager.cpp">
@@ -160,9 +151,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\actions\DroneMoveAction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\actions\LoadNextLevelAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\triggers\Trigger.cpp">
@@ -291,11 +279,68 @@
     <ClCompile Include="src\components\SoundComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\actions\ActorWarpAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\LightedTreatmentComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\LightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\InterfaceComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\PuzzleComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\puzzles\Puzzle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\puzzles\PuzzleFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\puzzles\UnLockDoorPuzzle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\GridDisplayComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\ToggleInventoryAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\CloseInventoryAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\ButtonCloseInventoryAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\ItemhHighlightApplyAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\ItemhHighlightRemoveAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\TakeItemAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\CloseShelfInventoryAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\StateComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\actions\OnOffToggleAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\MaskedOverlayComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\components\TextComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -329,9 +374,6 @@
     <ClInclude Include="src\TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\EnumMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -359,9 +401,6 @@
     <ClInclude Include="src\components\RenderComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\components\TextComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\components\VitalityComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -384,9 +423,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\actions\Action.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\components\UIControlComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ObjectPoolManager.h">
@@ -420,9 +456,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\actions\DefaultRotateAction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ContactListener.h">
@@ -462,9 +495,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\BaseConstants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\actions\LoadNextLevelAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\triggers\Trigger.h">
@@ -587,6 +617,7 @@
     <ClInclude Include="include\MobyDick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+
   </ItemGroup>
   <ItemGroup>
     <Library Include="ExtraLibs\SDL2main.lib" />
@@ -597,9 +628,9 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vcpkg.json_old" />
     <None Include="src\opengl\shaders\basic.glsl" />
     <None Include="src\opengl\shaders\uberShader.glsl" />
     <None Include="readme.md" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
 </Project>

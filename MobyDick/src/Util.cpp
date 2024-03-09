@@ -9,27 +9,64 @@
 #include <iostream>
 #include "Scene.h"
 #include "Game.h"
+#include "RayCastCallBack.h"
 
+#define NOMINMAX 10000000 // need this so that the compiler doesnt find the min and max in the windows include
+#include <Windows.h>
 
 extern std::unique_ptr<Game> game;
+
 
 namespace util
 {
 
-	//bool isMouseButtonPressed(uint8 button) {
 
-	//	int mouseX, mouseY;
-	//	auto mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
-	//	if (mouseButtons & button) {
-	//		return true;
-	//	}
-	//	else {
-	//		return false;
-	//	}
+	std::string wideStringToString(const std::wstring& wstr)
+	{
+		if (wstr.empty()) return std::string();
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+		std::string strTo(size_needed, 0);
+		WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+		return strTo;
+	}
 
-	//	
+	bool isMouseOverGameObject(SDL_FRect gameObjectRenderDest)
+	{
 
-	//}
+		int mouseX;
+		int mouseY;
+
+		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
+		SDL_FPoint mouseLocation = { (float)mouseX , (float)mouseY };
+
+		return  SDL_PointInFRect(&mouseLocation, &gameObjectRenderDest);
+
+	}
+
+	SDL_FPoint getMouseWorldPosition()
+	{
+
+		int mouseX;
+		int mouseY;
+
+		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
+		SDL_FPoint mouseLocation = { (float)mouseX , (float)mouseY };
+
+		SDL_FPoint worldPosition = screenToWorldPosition(mouseLocation);
+
+		return worldPosition;
+
+	}
+
+	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition)
+	{
+		SDL_FPoint worldPosition{};
+		worldPosition.x = screenPosition.x += Camera::instance().frame().x;
+		worldPosition.y = screenPosition.y += Camera::instance().frame().y;
+
+		return  worldPosition;
+
+	}
 
 	void sendSceneEvent(const int sceneActionCode, const std::string& sceneActionCodeId)
 	{
@@ -217,6 +254,31 @@ namespace util
 		return position;
 	}
 
+	Json::Value getModelComponent(std::string componentId, std::string modelId)
+	{
+		std::string definitionFilename = "assets/gameObjectDefinitions/models/" + componentId + "_models.json";
+
+		Json::Value root;
+		std::ifstream definitionFile(definitionFilename);
+		definitionFile >> root;
+
+		if (root.isMember(modelId)) {
+
+			if (root[modelId]["id"].asString() == componentId) {
+
+				return root[modelId];
+			}
+			else {
+				SDL_assert(false && "Component model is wrong type!");
+			}
+		}
+		else {
+			SDL_assert(false && "Component model name not found!");
+		}
+
+		return Json::Value();
+	}
+
 	const ImVec4 JsonToImVec4Color(Json::Value JsonColor) 
 	{
 
@@ -324,30 +386,66 @@ namespace util
 		return point;
 	}
 
-	b2Vec2& toRenderPoint(b2Vec2& point)
+	SDL_FPoint& toBox2dPoint(SDL_FPoint& point)
 	{
-		point.x *= (float)25;
-		point.y *= (float)25;
+		point.x /= (float)GameConfig::instance().scaleFactor();
+		point.y /= (float)GameConfig::instance().scaleFactor();
 
 		return point;
 	}
 
-	glm::vec2& toRenderPoint(glm::vec2& point)
+	float& toBox2dPoint(float& value)
 	{
-		point.x *= (float)25;
-		point.y *= (float)25;
+		value /= (float)GameConfig::instance().scaleFactor();
 
-		return point;
+		return value;
+	}
+
+
+
+	std::string getComponentType(Json::Value configJSON)
+	{
+
+		std::string id = configJSON["id"].asString();
+		std::string extractedId{};
+
+		// Find the position of '[' in the string if it exists then we are dealing with a template
+		size_t bracketPos = id.find('[');
+
+		if (id.contains('[')) {
+
+			auto underScorePos = id.find_first_of('_');
+			extractedId = id.substr(underScorePos + 1, id.size() - underScorePos - 2);
+		}
+		else {
+
+			extractedId = id;
+		}
+
+		return extractedId;
 	}
 
 	Json::Value getComponentConfig(Json::Value definitionJSON, int componentType)
 	{
 		for (Json::Value componentJSON : definitionJSON["components"]) {
 
-			std::string id = componentJSON["id"].asString();
-			int type = game->enumMap()->toEnum(id);
+			std::string origComponentId = componentJSON["id"].asString();
+			std::string  componentId = getComponentType(componentJSON);
+
+			int type = game->enumMap()->toEnum(componentId);
+
 			if (type == componentType) {
+
+				//If componentJSON has a "[" then get the value such as [item_TRANSFORM_COMPONENT]
+				//and retrieve it from the models/directory and return it instead of whats in componentJSON
+				if (origComponentId.contains('[')) {
+
+					componentJSON = getModelComponent(componentId, origComponentId);
+
+				}
+
 				return componentJSON;
+
 			}
 
 		}
@@ -425,7 +523,82 @@ namespace util
 		return tmp_s;
 	}
 
+
+	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject)
+	{
+		bool clearPath{ true };
+
+		//Special override for things like the doorknob, which is built into the door which itself
+		//can become impassable or a barrier
+		if (candidateObject->hasTrait(TraitTag::always_in_line_of_sight)) {
+
+			return true;
+		}
+
+		b2Vec2 sourcePosition = { sourceObject->getCenterPosition().x, sourceObject->getCenterPosition().y };
+		b2Vec2 candidatePosition = { candidateObject->getCenterPosition().x, candidateObject->getCenterPosition().y };
+
+		//convert to box2d coordinates
+		util::toBox2dPoint(sourcePosition);
+		util::toBox2dPoint(candidatePosition);
+
+		//cast a physics raycast from the light object to the center of this lightedArea's center
+		sourceObject->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), sourcePosition, candidatePosition);
+
+		//Loop through all objects hit between the player and the center of the mask area
+		for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
+
+			//Is this a barrier or and also NOT its own body and the object is not physicsdisabled
+			if ((rayHitObject.gameObject->hasTrait(TraitTag::barrier) || rayHitObject.gameObject->hasState(GameObjectState::IMPASSABLE)) &&
+				rayHitObject.gameObject != sourceObject) {
+				clearPath = false;
+				break;
+			}
+		}
+
+		RayCastCallBack::instance().reset();
+
+		return clearPath;
+
+	}
+
+	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate)
+	{
+
+
+		if (gameObject->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+
+			const auto& childComponent = gameObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+
+
+			for (auto& slotItr : childComponent->childSlots()) {
+
+				//Each child slot can have multiple gameObjects that live in a vector
+				//Only Standard slots support multipl
+				for (auto& child : slotItr.second) {
+
+					if (child.gameObject.has_value()) {
+
+						child.gameObject.value()->addState(stateToPropogate);
+
+					}
+
+					propogateStateToAllChildren(child.gameObject.value().get(), stateToPropogate);
+
+				}
+
+			}
+
+		}
+
+
+
+	}
 }
+
+
+
+
 
 
 

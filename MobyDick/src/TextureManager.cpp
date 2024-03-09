@@ -33,6 +33,11 @@ TextureManager::~TextureManager()
 		}
 	}
 
+	for (auto&& cursor : m_mouseCursorMap) {
+
+		SDL_FreeCursor(cursor.second);
+	}
+
 	m_textureMap.clear();
 	std::map<std::string, std::shared_ptr<Texture>>().swap(m_textureMap);
 
@@ -194,7 +199,7 @@ bool TextureManager::load(std::string texturesAssetsFile)
 		textureObject->textureAtlasQuad = std::move(quad);
 
 		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-			textureObject->openglTextureIndex = GL_TextureIndexType::MAIN_TEXTURE_ATLAS;
+			textureObject->openglTextureIndex = m_textureMap[atlasId]->openglTextureIndex;
 
 		}
 
@@ -205,6 +210,9 @@ bool TextureManager::load(std::string texturesAssetsFile)
 		if (GameConfig::instance().rendererType() == RendererType::SDL) {
 			textureObject->sdlTexture = m_textureMap[atlasId]->sdlTexture;
 		}
+
+		//Is Flipped
+		textureObject->applyFlip = itr["flip"].asBool();
 
 		m_textureMap.emplace(id, std::make_shared<Texture>(*textureObject));
 
@@ -221,8 +229,53 @@ bool TextureManager::load(std::string texturesAssetsFile)
 
 		}
 
+		// Loop through every mouse cursor , build it from the textures we already have loaded earlier
+		for (auto itr : root["mouseCursors"])
+		{
+			SDL_Point hotspot{};
+			id = itr["id"].asString();
+			if (itr.isMember("hotSpot")) {
+				hotspot = { itr["hotSpot"]["x"].asInt(), itr["hotSpot"]["y"].asInt() };
+			}
+			std::string textureId = itr["textureId"].asString();
+			auto surface = getTexture(textureId)->surface;
+			auto quad = getTexture(textureId)->textureAtlasQuad;
+			//SDL_Surface* cursorSurface = SDL_CreateRGBSurface(0, quad.w, quad.y, 32, 0, 0, 0, 0);
+			SDL_Surface* cursorSurface = SDL_CreateRGBSurfaceWithFormat(0, quad.w, quad.h, 32, SDL_PIXELFORMAT_RGBA32);
+
+			SDL_SetSurfaceBlendMode(cursorSurface, SDL_BLENDMODE_BLEND);
+
+			SDL_BlitSurface(surface, &quad, cursorSurface, NULL);
+
+			SDL_Cursor* cursor = SDL_CreateColorCursor(cursorSurface, hotspot.x, hotspot.y);
+			m_mouseCursorMap.emplace(id, cursor);
+
+			SDL_FreeSurface(cursorSurface);
+
+			//m_mouseCursorMap.emplace(SDL_CreateColorCursor(surface, hotspot.x, hotspot.y));
+
+		}
+
 	return true;
 }
+
+SDL_Cursor* TextureManager::getMouseCursor(std::string id)
+{
+
+	auto iter = m_mouseCursorMap.find(id);
+
+	if (iter != m_mouseCursorMap.end())
+	{
+		//fontFile = m_fontMap[id];
+		return iter->second;
+	}
+	else //default
+	{
+		return m_mouseCursorMap["CURSOR_ARROW"];
+	}
+
+}
+
 
 std::string TextureManager::getFont(std::string id)
 {

@@ -67,7 +67,7 @@ Scene::Scene(std::string sceneId)
 	//Debug Mode
 	if (m_hasPhysics == true)
 	{
-		DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit);
+		DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit | DebugDraw::e_jointBit);
 		m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
 	}
 
@@ -77,13 +77,11 @@ Scene::Scene(std::string sceneId)
 		std::string backGroundMusicId = definitionJSON["backgroundMusicId"].asString();
 		SoundManager::instance().playMusic(backGroundMusicId, -1);
 	}
-		
 
 }
 
 Scene::~Scene()
 {
-
 	clear();
 
 }
@@ -149,6 +147,16 @@ std::optional<std::string> Scene::getNextLevel()
 
 }
 
+int Scene::incrementRenderSequence(GameObject* gameObject)
+{
+	m_renderSequence += 1;
+
+	gameObject->setRenderOrder(m_renderSequence);
+
+	return m_renderSequence;
+
+}
+
 void Scene::loadCurrentLevel()
 {
 
@@ -206,15 +214,15 @@ void Scene::clear()
 	//Clear everything
 	m_objectPoolManager.clear();
 	m_levelTriggers.clear();
-
 	m_levelObjectives.clear();
-	m_gameObjectLookup.clear();
 	m_navigationMap.clear();
 
-	for (int x = 0; x < MAX_GAMEOBJECT_LAYERS; x++)
+	for (int x = 0; x < GameLayer::GameLayer_COUNT; x++)
 	{
 		m_gameObjects[x].clear();
 	}
+
+	m_gameObjectLookup.clear();
 
 	if (m_hasPhysics) {
 		delete m_physicsWorld;
@@ -236,11 +244,15 @@ void Scene::update() {
 		stepB2PhysicsWorld();
 	}
 
+
 	//Update each gameObject in all layers
 	for (auto& gameObjects : m_gameObjects)
 	{
+
+
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
+
 			gameObjects[i]->update();
 		}
 	}
@@ -272,7 +284,6 @@ void Scene::update() {
 
 void Scene::render() {
 
-	int gameLayerIndex{0};
 
 	//Render all of the layers
 	for (auto& gameLayer : m_gameObjects)
@@ -281,20 +292,56 @@ void Scene::render() {
 		//Render all of the GameObjects in this layer
 		for (auto& gameObject : gameLayer)
 		{
+
 			gameObject->render();
+
 		}
 
 		//Render any primitive object for this layer (lines and single pixels/points)
-		game->renderer()->renderPrimitives(gameLayerIndex);
-
-		gameLayerIndex++;
+		//ToDo:Make this use the layer that we are passing it
+		//game->renderer()->renderPrimitives(gameLayerIndex);
 
 	}
+
+	_resetRenderSequence();
 	
+	//If we have an object being dragged then render it here so that it is always  on top
+	if (m_draggingObject && m_draggingObject.value().expired() == false) {
+
+		m_draggingObject.value().lock()->enableRender();
+		m_draggingObject.value().lock()->render();
+		m_draggingObject.value().lock()->disableRender();
+	}
+
 	//DebugDraw
 	if (m_hasPhysics && isDebugSetting(DebugSceneSettings::SHOW_PHYSICS_DEBUG) == true)
 	{
 		m_physicsWorld->DebugDraw();
+	}
+
+	//Draw primitive lines and pixels
+	game->renderer()->renderPrimitives(0);
+
+}
+
+void Scene::setDraggingObject(std::weak_ptr<GameObject> gameObject)
+{
+
+	//When we stop dragging the dragged object then we have to reset it and make sure it
+	//render is enabled because we turn off rendering fron the main loop so that it doesnt render twice
+	if (gameObject.expired() && m_draggingObject.has_value() && m_draggingObject.value().expired() == false) {
+
+		m_draggingObject.value().lock()->enableRender();
+		m_draggingObject.reset();
+
+	}
+	else if (gameObject.expired()) {
+
+		m_draggingObject = std::nullopt;
+	}
+	else {
+		m_draggingObject = gameObject;
+		m_draggingObject.value().lock()->disableRender();
 	}
 
 }
@@ -332,60 +379,71 @@ void Scene::deleteCutScene()
 
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle, bool cameraFollow,std::string name)
+std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, 
+	GameLayer layer, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	auto& gameObject = m_gameObjects[layer].emplace_back(std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, name));
+	std::shared_ptr<GameObject> gameObject = 
+		std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name, sizeOverride);
 
 	//Add index
-	addGameObjectIndex(gameObject);
+	const auto gameObjectPair = m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
 
-	return gameObject.get();
-
+	
+	return gameObject;
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, int layer, PositionAlignment windowPosition, float adjustX, float adjustY, float angle, bool cameraFollow)
+GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, 
+	bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	auto& gameObject = m_gameObjects[layer].emplace_back(std::make_shared<GameObject>(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow));
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, 
+		name, sizeOverride);
+
+	m_gameObjects[layer].emplace_back(gameObject);
+		
+	return gameObject.get();
+
+}
+
+GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, float adjustX, float adjustY,
+	float angle, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
+{
+
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow, 
+		name, sizeOverride);
+
 	gameObject->setPosition(windowPosition, adjustX, adjustY);
+	gameObject->setWindowRelativePosition(windowPosition, adjustX, adjustY);
 
-	//Set the window position override
-	gameObject->setWindowRelativePosition( windowPosition, adjustX, adjustY);
-
-	//Add index 
-	addGameObjectIndex(gameObject);
+	m_gameObjects[layer].emplace_back(gameObject);
 
 	return gameObject.get();
 
 }
 
-/*
-Emplace the new gameObject into the collection and also return a reference ptr to the newly created object as well
-*/
-void Scene::addGameObject(std::shared_ptr<GameObject> gameObject, int layer)
+void Scene::addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer layer)
+{
+
+	gameObject->setParentScene(this);
+	this->m_gameObjects[layer].push_back(gameObject);
+
+	return;
+
+}
+
+void Scene::addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer)
 {
 
 	gameObject->setParentScene(this);
 	this->m_gameObjects[layer].push_back(gameObject);
 
 	//Add index 
-	addGameObjectIndex(gameObject);
-
-	return;;
-
-}
-
-void Scene::addGameObjectIndex(std::shared_ptr<GameObject> gameObject)
-{
-
-	const auto gameObjectPair = m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
+	m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
 
 	return;
 
 }
-
-
 
 void Scene::addKeyAction(SDL_Keycode keyCode, SceneAction sceneAction)
 {
@@ -399,7 +457,7 @@ void Scene::applyCurrentControlMode()
 
 }
 
-std::optional<Parallax> Scene::getParallax(int layer)
+std::optional<Parallax> Scene::getParallax(GameLayer layer)
 {
 
 	if (m_parallaxRates.find(layer) != m_parallaxRates.end()) {
@@ -425,17 +483,10 @@ void Scene::setInputControlMode(int inputControlMode)
 	if (inputControlMode == CONTROL_MODE_PLAY) {
 		SDL_ShowCursor(false);
 		SDL_SetRelativeMouseMode(SDL_TRUE);
-		game->IMGuiControlled = false;
 	}
 	else if (inputControlMode == CONTROL_MODE_SELECT) {
 		SDL_ShowCursor(true);
 		SDL_SetRelativeMouseMode(SDL_FALSE);
-		game->IMGuiControlled = false;
-	}
-	else if (inputControlMode == CONTROL_MODE_IMGUI) {
-		SDL_ShowCursor(true);
-		SDL_SetRelativeMouseMode(SDL_FALSE);
-		game->IMGuiControlled = true;
 	}
 
 }
@@ -444,15 +495,16 @@ void Scene::setInputControlMode(int inputControlMode)
 void Scene::_processGameObjectInterdependecies()
 {
 
-	for (auto& layer : m_gameObjects) {
+	for (auto& gameObject : m_gameObjectLookup) {
 
-		for (auto& gameObject : layer) {
+		if (gameObject.second.expired() == false) {
 
-			gameObject->postInit();
+			gameObject.second.lock()->postInit();
 
 			//Now that all gameobjects are created we can set the shared pointer for the object to follow for the camera
-			if (gameObject->name() == Camera::instance().getFollowMeName() && !Camera::instance().getFollowMeObject()) {
-				Camera::instance().setFollowMe(gameObject);
+			//ToDo:Maybe this should move to the postInit() of the gameObject
+			if (gameObject.second.lock()->name() == Camera::instance().getFollowMeName() && !Camera::instance().getFollowMeObject()) {
+				Camera::instance().setFollowMe(gameObject.second.lock());
 			}
 
 		}
@@ -464,7 +516,7 @@ void Scene::_processGameObjectInterdependecies()
 void Scene::_buildPhysicsWorld(Json::Value physicsJSON)
 {
 
-	m_physicsConfig.gravity.Set(physicsJSON["gravity"]["x"].asFloat(), physicsJSON["gravity"]["y"].asFloat());
+ 	m_physicsConfig.gravity.Set(physicsJSON["gravity"]["x"].asFloat(), physicsJSON["gravity"]["y"].asFloat());
 	m_physicsConfig.timeStep = physicsJSON["timeStep"].asFloat();
 	m_physicsConfig.velocityIterations = physicsJSON["velocityIterations"].asInt();
 	m_physicsConfig.positionIterations = physicsJSON["positionIterations"].asInt();
@@ -494,7 +546,10 @@ void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 		std::string gameObjectType = gameObjectJSON["gameObjectType"].asString();
 		assert(!gameObjectType.empty() && "Empty GameObejectType in Scene definition for scene ");
 
-		auto layer = game->enumMap()->toEnum(gameObjectJSON["layer"].asString());
+		GameLayer layer = (GameLayer)game->enumMap()->toEnum(gameObjectJSON["layer"].asString());
+
+		//name
+		std::string name = gameObjectJSON["name"].asString();
 
 		//Determine location
 		auto locationJSON = gameObjectJSON["location"];
@@ -505,17 +560,17 @@ void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 			if (locationJSON.isMember("adjust")) {
 				auto adjustX = locationJSON["adjust"]["x"].asFloat();
 				auto adjustY = locationJSON["adjust"]["y"].asFloat();
-				gameObject = addGameObject(gameObjectType, layer, windowPosition, adjustX, adjustY);
+				gameObject = addGameObject(gameObjectType, layer, windowPosition, adjustX, adjustY, 0.,false,name);
 			}
 			else {
-				gameObject = addGameObject(gameObjectType, layer, windowPosition);
+				gameObject = addGameObject(gameObjectType, layer, windowPosition, 0., 0., 0., false, name);
 			}
 			
 		}
 		else {
 			auto locationX = gameObjectJSON["location"]["x"].asFloat();
 			auto locationY = gameObjectJSON["location"]["y"].asFloat();
-			gameObject = addGameObject(gameObjectType, layer, locationX, locationY, 0);
+			gameObject = addGameObject(gameObjectType, layer, locationX, locationY, 0., false, name);
 		}
 
 		gameObject->postInit();
@@ -528,8 +583,53 @@ std::optional<std::shared_ptr<GameObject>> Scene::getGameObject(std::string id)
 
 
 	auto search = m_gameObjectLookup.find(id);
-	if (search != m_gameObjectLookup.end()) {
+	if (search != m_gameObjectLookup.end() && search->second.expired() == false) {
 		foundGameObject = search->second.lock();
+	}
+
+	return foundGameObject;
+}
+
+std::optional<std::shared_ptr<GameObject>> Scene::extractGameObject(std::string id)
+{
+	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
+
+	auto deleteMeObject = createGameObject("DELETE_ME_OBJECT", (float)-1.0, (float)-1.0, (float)0, this);
+	deleteMeObject->setRemoveFromWorld(true);
+
+
+	//Loop through all layers and remove any gameObject that has been marked to remove
+	//for (auto& gameObjectsLayers : m_gameObjects) {
+
+	//	for (auto gameObjectItr = gameObjectsLayers.begin(); gameObjectItr != gameObjectsLayers.end();) {
+
+	//		if (gameObjectItr->get()->id() == id) {
+
+	//			foundGameObject = std::make_optional(*gameObjectItr);
+	//			gameObjectItr->swap(deleteMeObject);
+	//		}
+	//		else {
+	//			++gameObjectItr;
+	//		}
+
+	//	}
+	//}
+
+	//Using a swap so that we contain all dletions of objects at the _removeFromWorldPass level
+	//This allows us to move an object from the main world collection to a parent object and it can be called from a 
+	//box2d callback
+
+	for (auto& gameObjectsLayers : m_gameObjects) {
+
+		for (auto& gameObject : gameObjectsLayers) {
+
+			if (gameObject->id() == id) {
+
+				foundGameObject = gameObject;
+				gameObject.swap(deleteMeObject);
+			}
+
+		}
 	}
 
 	return foundGameObject;
@@ -542,7 +642,7 @@ std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByName(std::string
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->name() == name) {
+		if (it->second.expired() == false && it->second.lock()->name() == name) {
 			foundGameObjects.push_back(it->second.lock());
 		}
 
@@ -559,7 +659,7 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByName(std::
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->name() == name) {
+		if (it->second.expired() == false && it->second.lock()->name() == name) {
 			foundGameObject = it->second.lock();
 			break;
 		}
@@ -570,15 +670,19 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByName(std::
 	return foundGameObject;
 }
 
-std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByTrait(int trait)
+std::vector<std::shared_ptr<GameObject>> Scene::getGameObjectsByTrait(int trait, bool includePooled)
 {
 	std::vector<std::shared_ptr<GameObject>> foundGameObjects;
 
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->hasTrait(trait)) {
-			foundGameObjects.push_back(it->second.lock());
+		if (it->second.expired() == false && it->second.lock()->hasTrait(trait) ) {
+
+			if (includePooled == false && it->second.lock()->isOffGrid() ==false) {
+
+				foundGameObjects.push_back(it->second.lock());
+			}
 		}
 
 		++it;
@@ -594,7 +698,25 @@ std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByTrait(int 
 	auto it = m_gameObjectLookup.begin();
 	while (it != m_gameObjectLookup.end()) {
 
-		if (it->second.lock()->hasTrait(trait)) {
+		if (it->second.expired() == false && it->second.lock()->hasTrait(trait)) {
+			foundGameObject = it->second.lock();
+			break;
+		}
+
+		++it;
+	}
+
+	return foundGameObject;
+}
+
+std::optional<std::shared_ptr<GameObject>> Scene::getFirstGameObjectByType(std::string type)
+{
+	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
+
+	auto it = m_gameObjectLookup.begin();
+	while (it != m_gameObjectLookup.end()) {
+
+		if (it->second.expired() == false && it->second.lock()->type() == type) {
 			foundGameObject = it->second.lock();
 			break;
 		}

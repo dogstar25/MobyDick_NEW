@@ -40,6 +40,13 @@ IMGuiItem::IMGuiItem(std::string gameObjectType, b2Vec2 padding, ImVec4 backgrou
 		m_xLargeFont = io.Fonts->AddFontFromFileTTF("assets/fonts/DroidSans.ttf", 64.0f);
 	}
 
+	if (!m_xSmallGothicFont) {
+		m_xSmallGothicFont = io.Fonts->AddFontFromFileTTF("assets/fonts/AnandaBlack.ttf", 14.0f);
+	}
+	if (!m_smallGothicFont) {
+		m_smallGothicFont = io.Fonts->AddFontFromFileTTF("assets/fonts/AnandaBlack.ttf", 24.0f);
+	}
+
 }
 
 void IMGuiItem::setWindowProperties(GameObject* parentGameObject)

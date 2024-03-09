@@ -22,8 +22,9 @@ Game::~Game()
 
 bool Game::init(std::shared_ptr<ContactListener> contactListener, std::shared_ptr<ContactFilter> contactFilter,
 	std::shared_ptr<ComponentFactory> componentFactory, std::shared_ptr<ActionFactory> actionFactory, std::shared_ptr<ParticleEffectsFactory> particleEffectsFactory,
-	std::shared_ptr<CutSceneFactory> cutSceneFactory, std::shared_ptr<IMGuiFactory> iMGuiFactory, std::shared_ptr<TriggerFactory> triggerFactory, 
-	std::shared_ptr<ContextManager> contextManager, std::shared_ptr<EnumMap> enumMap, std::shared_ptr<ColorMap> colorMap)
+	std::shared_ptr<CutSceneFactory> cutSceneFactory, std::shared_ptr<IMGuiFactory> iMGuiFactory, std::shared_ptr<TriggerFactory> triggerFactory,
+	std::shared_ptr<PuzzleFactory> puzzleFactory, std::shared_ptr<ContextManager> contextManager, std::shared_ptr<EnumMap> enumMap, 
+	std::shared_ptr<ColorMap> colorMap)
 {
 
 	//Set all of our game specific factories and managers
@@ -36,6 +37,7 @@ bool Game::init(std::shared_ptr<ContactListener> contactListener, std::shared_pt
 	m_contextMananger = contextManager;
 	m_iMGUIFactory = iMGuiFactory;
 	m_triggerFactory = triggerFactory;
+	m_puzzleFactory = puzzleFactory;
 	m_enumMap = enumMap;
 	m_colorMap = colorMap;
 
@@ -61,8 +63,8 @@ bool Game::init(std::shared_ptr<ContactListener> contactListener, std::shared_pt
 	{
 		//Swict these depending on if you are building for a release executable or just local development
 		//SDL_WINDOW_FULLSCREEN_DESKTOP for local development
-		windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN;
-		//windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN_DESKTOP;
+		//windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN;
+		windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
 	else
 	{
@@ -102,9 +104,8 @@ void Game::setWorldParams(SDL_Rect gameWorldBounds, SDL_Point gameTileSize)
 void Game::play()
 {
 
+
 	while (m_gameState != GameState::QUIT) {
-
-
 
 		//Test spot for detecting if user has alt tabbed out of game
 		//SDL_GetWindowFlags
@@ -211,6 +212,12 @@ void Game::_displayLoadingMsg()
 		texture.sdlTexture = sdlTexture;
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
+
+		//here how we get the texureId used by imgui
+		//USE it here below ToDo!
+		int test = (GLuint)ImGui::GetIO().Fonts->TexID;
+		/////
+
 		GL_TextureIndexType textureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
 		GLuint textureAtlasId = static_cast<GLRenderer*>(renderer())->getTextureId(textureIndex);
 		glActiveTexture((int)textureIndex);
@@ -229,7 +236,8 @@ void Game::_displayLoadingMsg()
 		m_gameScreenResolution.y / (float)2 - (float)42,
 		(float)tempSurface->w, (float)tempSurface->h };
 
-	m_renderer->drawSprite(dest, SDL_Color{ 255,255,255,255 }, &texture, &texture.textureAtlasQuad, 0, false, SDL_Color{}, RenderBlendMode::BLEND);
+	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, &texture, &texture.textureAtlasQuad, 0, false, SDL_Color{}, 
+		RenderBlendMode::BLEND);
 	m_renderer->present();
 
 	if (texture.surface != nullptr) {
@@ -252,6 +260,14 @@ void Game::_displayLoadingMsg()
 //	return foundGameObject;
 //
 //}
+
+SDL_FPoint Game::getMouseWorldPosition()
+{
+	b2Vec2 mouseWorldPosition{};
+
+	return util::getMouseWorldPosition();
+
+}
 
 std::optional<SDL_Point> Game::_determineScreenResolution()
 {

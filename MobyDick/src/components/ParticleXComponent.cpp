@@ -6,15 +6,15 @@
 
 extern std::unique_ptr<Game> game;
 
-ParticleXComponent::ParticleXComponent(Json::Value componentJSON)
+ParticleXComponent::ParticleXComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::PARTICLE_X_COMPONENT)
 {
-	m_componentType = ComponentTypes::PARTICLE_X_COMPONENT;
 
 	if (componentJSON.isMember("type")) {
 		m_type = game->enumMap()->toEnum(componentJSON["type"].asString());
 	}
 	if (componentJSON.isMember("emissionLayer")) {
-		m_emissionLayer = game->enumMap()->toEnum(componentJSON["emissionLayer"].asString());
+		m_emissionLayer = (GameLayer)game->enumMap()->toEnum(componentJSON["emissionLayer"].asString());
 	}
 
 	float emissionInterval = componentJSON["emissionInterval"].asFloat();
@@ -82,9 +82,17 @@ void ParticleXComponent::update()
 					SDL_Color color = util::generateRandomColor(effect.colorRangeBegin, effect.colorRangeEnd);
 					renderComponent->setColor(color);
 
-					//Size
-					auto particleSize = util::generateRandomNumber(effect.particleSizeMin, effect.particleSizeMax);
-					transformComponent->setSize(particleSize, particleSize);
+					//Size - either uniform size or not
+					if (effect.particleSizeMin.has_value()) {
+						float size = util::generateRandomNumber(effect.particleSizeMin.value(), effect.particleSizeMax.value());
+						transformComponent->setSize(size, size);
+					}
+					else if (effect.particleSizeMinWidth.has_value()) {
+						float width = util::generateRandomNumber(effect.particleSizeMinWidth.value(), effect.particleSizeMaxWidth.value());
+						float height = util::generateRandomNumber(effect.particleSizeMinHeight.value(), effect.particleSizeMaxHeight.value());
+
+						transformComponent->setSize(width, height);
+					}
 
 					//Set the particles lifetime in miliseconds. If zero lifetime then it has infinite lifetime
 					float particleLifetime = util::generateRandomNumber(effect.lifetimeMin, effect.lifetimeMax);
@@ -138,7 +146,7 @@ void ParticleXComponent::update()
 
 					//Add the particle to the game world
 					//ToDo:Make Layer configurable
-					parent()->parentScene()->addGameObject(particle.value(), m_emissionLayer);
+					parent()->parentScene()->addGameObjectFromPool(particle.value(), m_emissionLayer);
 
 				}
 				else {

@@ -74,32 +74,34 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\projects\MobyDick\MobyDick\vendor;C:\projects\MobyDick\MobyDick\vendor\jsoncpp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\lib\</OutDir>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\projects\vcpkg\installed\x64-windows\lib;C:\projects\MobyDick\MobyDick\vendor\jsoncpp;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <SourcePath>C:\projects\MobyDick\MobyDick\vendor;$(SourcePath)</SourcePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExternalIncludePath>c:\projects\thirdparty\SDL\src;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\projects\MobyDick\MobyDick\vendor;C:\projects\MobyDick\MobyDick\vendor\jsoncpp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\lib\</OutDir>
     <CopyLocalProjectReference>true</CopyLocalProjectReference>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\projects\vcpkg\installed\x64-windows\lib;C:\projects\MobyDick\MobyDick\vendor\jsoncpp;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <SourcePath>C:\projects\MobyDick\MobyDick\vendor;$(SourcePath)</SourcePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <ExternalIncludePath>c:\projects\thirdparty\SDL\src;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
@@ -134,7 +136,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -149,7 +151,7 @@
     <Lib>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\projects\MobyDick\MobyDick\vendor\jsoncpp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <Verbose>true</Verbose>
       <AdditionalOptions>
@@ -174,7 +176,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level2</WarningLevel>
       <Optimization>Full</Optimization>
@@ -190,7 +192,7 @@
     <Lib>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\projects\MobyDick\MobyDick\vendor\jsoncpp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <Verbose>true</Verbose>
       <AdditionalOptions>
@@ -214,13 +216,30 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\components\MaskedOverlayComponent.cpp" />
+    <ClCompile Include="src\actions\ButtonCloseInventoryAction.cpp" />
+    <ClCompile Include="src\actions\CloseInventoryAction.cpp" />
+    <ClCompile Include="src\actions\CloseShelfInventoryAction.cpp" />
+    <ClCompile Include="src\actions\ItemhHighlightApplyAction.cpp" />
+    <ClCompile Include="src\actions\ItemhHighlightRemoveAction.cpp" />
+    <ClCompile Include="src\actions\OnOffToggleAction.cpp" />
+    <ClCompile Include="src\actions\TakeItemAction.cpp" />
+    <ClCompile Include="src\actions\ToggleInventoryAction.cpp" />
+    <ClCompile Include="src\components\GridDisplayComponent.cpp" />
+    <ClCompile Include="src\components\InterfaceComponent.cpp" />
+    <ClCompile Include="src\components\PuzzleComponent.cpp" />
+    <ClCompile Include="src\components\LightComponent.cpp" />
+    <ClCompile Include="src\components\LightedTreatmentComponent.cpp" />
     <ClCompile Include="src\actions\ActionFactory.cpp" />
+    <ClCompile Include="src\actions\ActorWarpAction.cpp" />
     <ClCompile Include="src\actions\PrimitiveMoveAction.cpp" />
     <ClCompile Include="src\ColorMap.cpp" />
     <ClCompile Include="src\components\CheckPointComponent.cpp" />
     <ClCompile Include="src\components\ContainerComponent.cpp" />
     <ClCompile Include="src\components\IMGuiComponent.cpp" />
     <ClCompile Include="src\components\SoundComponent.cpp" />
+    <ClCompile Include="src\components\StateComponent.cpp" />
+    <ClCompile Include="src\components\TextComponent.cpp" />
     <ClCompile Include="src\cutScenes\CutScene.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneExample.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneFactory.cpp" />
@@ -250,6 +269,8 @@
     <ClCompile Include="src\opengl\Shader.cpp" />
     <ClCompile Include="src\opengl\DrawBatch.cpp" />
     <ClCompile Include="src\particleEffects\ParticleEffectsFactory.cpp" />
+    <ClCompile Include="src\puzzles\Puzzle.cpp" />
+    <ClCompile Include="src\puzzles\PuzzleFactory.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\triggers\TriggerFactory.cpp" />
     <ClCompile Include="src\actions\DroneMoveAction.cpp" />
@@ -282,7 +303,6 @@
     <ClCompile Include="src\components\PhysicsComponent.cpp" />
     <ClCompile Include="src\components\RenderComponent.cpp" />
     <ClCompile Include="src\components\Component.cpp" />
-    <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Clock.cpp" />
     <ClCompile Include="src\components\TransformComponent.cpp" />
@@ -297,25 +317,26 @@
     <ClCompile Include="src\SoundManager.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />
-    <ClCompile Include="src\components\TextComponent.cpp" />
     <ClCompile Include="src\components\VitalityComponent.cpp" />
-    <ClCompile Include="src\components\UIControlComponent.cpp" />
     <ClCompile Include="src\actions\UseAction.cpp" />
-    <ClCompile Include="src\actions\LoadNextLevelAction.cpp" />
     <ClCompile Include="src\triggers\Trigger.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\opengl\Vertex.cpp" />
     <ClCompile Include="src\ContextManager.cpp" />
+    <ClCompile Include="src\puzzles\UnLockDoorPuzzle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MobyDick.h" />
     <ClInclude Include="src\actions\ActionFactory.h" />
+    <ClInclude Include="src\actions\ActorWarpAction.h" />
     <ClInclude Include="src\actions\PrimitiveMoveAction.h" />
     <ClInclude Include="src\ColorMap.h" />
     <ClInclude Include="src\components\CheckPointComponent.h" />
     <ClInclude Include="src\components\ContainerComponent.h" />
     <ClInclude Include="src\components\IMGuiComponent.h" />
     <ClInclude Include="src\components\SoundComponent.h" />
+    <ClInclude Include="src\components\StateComponent.h" />
+    <ClInclude Include="src\components\TextComponent.h" />
     <ClInclude Include="src\cutScenes\CutScene.h" />
     <ClInclude Include="src\cutScenes\CutSceneExample.h" />
     <ClInclude Include="src\cutScenes\CutSceneFactory.h" />
@@ -342,6 +363,8 @@
     <ClInclude Include="src\opengl\Shader.h" />
     <ClInclude Include="src\opengl\DrawBatch.h" />
     <ClInclude Include="src\particleEffects\ParticleEffectsFactory.h" />
+    <ClInclude Include="src\puzzles\Puzzle.h" />
+    <ClInclude Include="src\puzzles\PuzzleFactory.h" />
     <ClInclude Include="src\triggers\TriggerFactory.h" />
     <ClInclude Include="src\ComponentFactory.h" />
     <ClInclude Include="src\actions\DroneMoveAction.h" />
@@ -379,9 +402,6 @@
     <ClInclude Include="src\components\PhysicsComponent.h" />
     <ClInclude Include="src\components\RenderComponent.h" />
     <ClInclude Include="src\components\Component.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="resource1.h" />
-    <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Clock.h" />
     <ClInclude Include="src\components\TransformComponent.h" />
@@ -396,16 +416,14 @@
     <ClInclude Include="src\SoundManager.h" />
     <ClInclude Include="src\texture.h" />
     <ClInclude Include="src\TextureManager.h" />
-    <ClInclude Include="src\components\TextComponent.h" />
     <ClInclude Include="src\components\VitalityComponent.h" />
-    <ClInclude Include="src\components\UIControlComponent.h" />
     <ClInclude Include="src\actions\UseAction.h" />
-    <ClInclude Include="src\actions\LoadNextLevelAction.h" />
     <ClInclude Include="src\triggers\Trigger.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\opengl\Vertex.h" />
     <ClInclude Include="src\ContextManager.h" />
+    <ClInclude Include="src\puzzles\UnLockDoorPuzzle.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ExtraLibs\SDL2main.lib" />
@@ -417,14 +435,14 @@
     <None Include="readme.md" />
     <None Include="src\opengl\shaders\basic.glsl" />
     <None Include="src\opengl\shaders\uberShader.glsl" />
-    <None Include="vcpkg.json_old" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties assets_4gameObjectDefinitions_4commonObjects_1json__JsonSchema="gina" />
+      <UserProperties />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

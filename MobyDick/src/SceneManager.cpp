@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "game.h"
+#include "gameConfig.h"
 #include "IMGui/IMGuiUtil.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
@@ -36,7 +37,6 @@ void SceneManager::deleteGameObject(std::string gameObjectName)
 
 void SceneManager::init()
 {
-	m_currentSceneIndex = 0;
 	m_scenes.reserve(MAX_SCENES);
 
 	float gameLoopStep = GameConfig::instance().gameLoopStep();
@@ -79,6 +79,12 @@ void SceneManager::run()
 		//IMGui framerate calc - R.I.P MobyDick Framerate code 2018 - 2022
 		ImGui::MobyDickFPSFrame();
 
+		//Set the mouse cursor to whatever the last loop decided
+		SDL_SetCursor(m_currentMouseCursor);
+
+		//Set the default mouse cursor for the next loop to be the ARROW cursor
+		m_currentMouseCursor = TextureManager::instance().getMouseCursor("CURSOR_ARROW");
+
 		//Run update for every active scene
 		for (auto& scene : m_scenes) {
 
@@ -93,6 +99,13 @@ void SceneManager::run()
 		//Render every scene, active or not
 		for (auto& scene : m_scenes) {
 			scene.render();
+		}
+
+		//If our Renderer is OpenGL, and we are batching, then we need to send the vertex data that hasn't been drawn yet
+		//This needs to happen before the IMGui draw piece below
+		if (GameConfig::instance().rendererType() == RendererType::OPENGL &&
+			GameConfig::instance().openGLBatching() == true) {
+			game->renderer()->drawBatches();
 		}
 
 		//Render any IMGui frames that were updated in this loop
@@ -128,6 +141,7 @@ std::optional<SceneAction> SceneManager::pollEvents()
 		{
 			case SDL_WINDOWEVENT:
 				count++;
+
 				switch (event.window.event)
 				{
 					case SDL_WINDOWEVENT_MINIMIZED:
@@ -166,6 +180,24 @@ std::optional<SceneAction> SceneManager::pollEvents()
 				If no mapping was found for the keycode, then assume that
 				it is player action related and store it for later
 				*/
+
+				///////////////////////////////////////////////////
+				//
+				// Here is where we should determine if the key or mouse click goes into the 
+				//PlayerControl event list or the Interface Event List 
+				//If there is an active interface menu, then the event should get stored in that objects 
+				//interface event list
+				//
+				//otherwise it goes into the player control event list
+				//
+				////////////////////////////////////////////////////////
+
+
+
+
+
+
+
 				if (sceneAction.has_value() == false) {
 					//std::cout << "\033[1;31m Store Key\033[0m" << keyCode << "\n";
 					PlayerInputEvent& playerInputEvent = m_PlayerInputEvents.emplace_back();
@@ -183,8 +215,6 @@ std::optional<SceneAction> SceneManager::pollEvents()
 			}
 			case SDL_USEREVENT:
 			{
-
-				
 				int* type = static_cast<int*>(event.user.data1);
 				sceneAction = *(static_cast<std::optional<SceneAction>*>(event.user.data1));
 				delete event.user.data1;
@@ -369,17 +399,17 @@ void SceneManager::respawnPlayer()
 
 }
 
-GameObject* SceneManager::addGameObject(std::shared_ptr<GameObject>gameObject, int layer)
-{
-	//Add the gameObject to the currently active scene using back()
-	m_scenes.back().addGameObject(gameObject, layer);
+//GameObject* SceneManager::addGameObject(std::shared_ptr<GameObject>gameObject, GameLayer layer)
+//{
+//	//Add the gameObject to the currently active scene using back()
+//	m_scenes.back().addGameObject(gameObject, layer);
+//
+//	//ToDo:fix this warning
+//	return gameObject.get();
+//
+//}
 
-	//ToDo:fix this warning
-	return gameObject.get();
-
-}
-
-GameObject* SceneManager::addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle, bool cameraFollow)
+GameObject* SceneManager::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, bool cameraFollow)
 {
 	//Add the gameObject to the currently active scene using back()
 	auto& currentScene = m_scenes.back();
@@ -462,5 +492,6 @@ void SceneManager::testIMGUI()
 	//glClear(GL_COLOR_BUFFER_BIT);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	//SDL_GL_SwapWindow(window);
+
 
 }

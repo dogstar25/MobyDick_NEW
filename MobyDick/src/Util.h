@@ -13,7 +13,9 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdlrenderer.h"
 
+#include "BaseConstants.h"
 
+class GameObject;
 
 /*
 Overloaded operators used throught the game
@@ -52,8 +54,9 @@ namespace util
 	const ImVec4 JsonToImVec4Color(Json::Value JsonColor);
 	const ImVec4 SDLColorToImVec4(SDL_Color sdlColor);
 	b2Vec2& toBox2dPoint(b2Vec2& point);
-	b2Vec2& toRenderPoint(b2Vec2& point);
-	glm::vec2& toRenderPoint(glm::vec2& point);
+	SDL_FPoint& toBox2dPoint(SDL_FPoint& value);
+	float& toBox2dPoint(float& value);
+	SDL_FPoint getMouseWorldPosition();
 	Json::Value getComponentConfig(Json::Value definitionJSON, int);
 	float calculateDistance(SDL_FPoint location1, SDL_FPoint location2);
 	float calculateDistance(SDL_Point location1, SDL_Point location2);
@@ -65,10 +68,17 @@ namespace util
 	SDL_FPoint tileToPixelPlacementLocation(float tileX, float tileY, float objectWidth, float objectHeight);
 	SDL_Point pixelToTileLocation(float pixelX, float pixelY);
 	std::string locationToString(float x, float y);
+	Json::Value getModelComponent(std::string componentId, std::string modelId);
+	std::string getComponentType(Json::Value configJSON);
 
 	b2Vec2 matchParentRotation(SDL_FPoint childPosition, SDL_FPoint parentPosition, float);
-	bool isMouseButtonPressed(uint8 button);
 	const std::string genRandomId(const int len);
+	bool isMouseOverGameObject(SDL_FRect gameObjectPositionRect);
+	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition);
+
+	std::string wideStringToString(const std::wstring& wstr);
+	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject);
+	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate);
 
 };
 

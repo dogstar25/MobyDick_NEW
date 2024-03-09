@@ -4,12 +4,13 @@
 #include "../EnumMap.h"
 #include "../Game.h"
 
+
 extern std::unique_ptr<Game> game;
 
-PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust)
+PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, 
+	b2Vec2 sizeOverride) :
+	Component(ComponentTypes::PHYSICS_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::PHYSICS_COMPONENT;
 
 	//Get reference to the animationComponent JSON config and transformComponent JSON config
 	Json::Value physicsComponentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PHYSICS_COMPONENT);
@@ -21,21 +22,33 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScen
 		physicsComponentJSON["anchorPoint"]["y"].asFloat());
 
 	//Build the physics body
-	m_physicsBody = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld());
+	m_physicsBody = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld(), sizeOverride);
 
 	//Calculate the spawn position
 	b2Vec2 position{};
 
 	//Get size of the object
-	float objectWidth = transformComponentJSON["size"]["width"].asFloat();
-	float objectHeight = transformComponentJSON["size"]["height"].asFloat();
+	b2Vec2 size = b2Vec2_zero;
+	if (sizeOverride != b2Vec2_zero) {
+		size = sizeOverride;
+	}
+	else {
+		size = { transformComponentJSON["size"]["width"].asFloat(),
+			transformComponentJSON["size"]["height"].asFloat() };
+	}
 
+	//We want to mostly always capture a list of other objects that this one is touching, but we can turn it off
+	// for some objects to save processing
+	if (physicsComponentJSON.isMember("touchingObjectsCapturedRequired")) {
+		m_touchingObjectsCapturedRequired = physicsComponentJSON["touchingObjectsCapturedRequired"].asBool();
+	}
+	
 	//Angle adjustment if any in radians
 	float newAngle = util::degreesToRadians(angleAdjust);
 
 	//The width and height can change when a rectangle shape is rotated
-	float objectWidthAfterAngle = abs(sin(newAngle) * objectHeight + cos(newAngle) * objectWidth);
-	float objectHeightAfterAngle = abs(sin(newAngle) * objectWidth + cos(newAngle) * objectHeight);
+	float objectWidthAfterAngle = abs(sin(newAngle) * size.y + cos(newAngle) * size.x);
+	float objectHeightAfterAngle = abs(sin(newAngle) * size.x + cos(newAngle) * size.y);
 
 	//Get the pixel position of where we are placing the object. Divide by 2 to get the center
 	position.x = (xMapPos * game->worldTileSize().x + (objectWidthAfterAngle / 2));
@@ -107,6 +120,16 @@ void PhysicsComponent::setLinearDamping(float linearDamping)
 	m_physicsBody->SetLinearDamping(linearDamping);
 }
 
+void PhysicsComponent::setAngularDamping(float angularDamping)
+{
+	m_physicsBody->SetAngularDamping(angularDamping);
+}
+
+void PhysicsComponent::setGravityScale(float gravityScale)
+{
+	m_physicsBody->SetGravityScale(gravityScale);
+}
+
 void PhysicsComponent::setAngle(float angle)
 {
 	auto normalizedAngle = util::normalizeRadians(angle);
@@ -119,13 +142,43 @@ void PhysicsComponent::setAngle(float angle)
 
 void PhysicsComponent::update()
 {
+
+	if (parent()->type() == "OIL_CAN") {
+		int todd = 1;
+	}
+
 	//We want to make sure that the angle stays in the range of 0 to 360 for various concerns throughtout the game
 	//Unfortunately, box2d's only function to set an angle value directly is the setTransform which also takes
 	// X and Y position, so we have to send setTransform the current X,Y position as well as the updated angle
 	// value 
 	auto normalizedAngle = util::normalizeRadians(m_physicsBody->GetAngle());
+
+	//If we were given a position change from our contactListener, since we cannnot change position within
+	//contactListener, we set it here. An example would be warping the player to a new location after making contact
+	//with a portal object
 	b2Vec2 currentPosition = { m_physicsBody->GetPosition().x , m_physicsBody->GetPosition().y };
+	if (m_changePositionPosition.has_value()) {
+		currentPosition = { m_changePositionPosition->x , m_changePositionPosition->y };
+		m_changePositionPosition.reset();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if (parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->absolutePositioning() == true) {
+
+		SDL_FPoint cameraPosition = { Camera::instance().frame().x, Camera::instance().frame().y };
+		SDL_FPoint convertedCameraPosition = util::toBox2dPoint(cameraPosition);
+
+		currentPosition = { currentPosition.x + convertedCameraPosition.x, currentPosition.y + convertedCameraPosition.y};
+
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	//Set the transform
 	m_physicsBody->SetTransform(currentPosition, normalizedAngle);
+
 
 	//Transfer the physicsComponent coordinates to the transformComponent
 	//converting the angle to degrees
@@ -138,13 +191,22 @@ void PhysicsComponent::update()
 	parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->setPosition(convertedPosition, convertedAngle);
 }
 
-b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld)
+void PhysicsComponent::setIsSensor(bool isSensor)
+{
+
+	for (auto fixture = physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext()){
+
+		fixture->SetSensor(isSensor);
+		//fixture->Refilter();
+	}
+}
+
+
+b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, 
+	b2Vec2 sizeOverride)
 {
 	b2BodyDef bodyDef;
-
 	bodyDef.type = static_cast<b2BodyType>(m_physicsType);
-
-	
 
 	//Default the position to zero.
 	bodyDef.position.SetZero();
@@ -163,9 +225,27 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 	if (physicsComponentJSON.isMember("isBullet")) {
 		body->SetBullet(physicsComponentJSON["isBullet"].asBool());
 	}
+	//Size Override will only apply to an object that has one fixure and it is a box/polygon shape
+	bool isSizeOverrideAllowed{};
 
+	if (physicsComponentJSON["fixtures"].size() == 1) {
+		
+		auto checkCollisionShape = game->enumMap()->toEnum(physicsComponentJSON["fixtures"][0]["collisionShape"].asString());
+
+		if (checkCollisionShape == b2Shape::e_polygon && sizeOverride != b2Vec2_zero) {
+
+			isSizeOverrideAllowed = true;
+
+		}
+	}
+
+	 
+	
 	//Build fixtures
 	for (const auto& fixtureJSON : physicsComponentJSON["fixtures"]) {
+
+		float xOffset{};
+		float yOffset{};
 
 		b2Shape* shape;
 		b2PolygonShape box;
@@ -177,9 +257,25 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 		//default
 		shape = &box;
 
+		//See if we have an offset value
+		if (fixtureJSON.isMember("offset")) {
+
+			auto offsetJSON = fixtureJSON["offset"];
+			if (offsetJSON.isMember("x")) {
+				xOffset = fixtureJSON["offset"]["x"].asFloat();
+				util::toBox2dPoint(xOffset);
+			}
+			if (offsetJSON.isMember("y")) {
+				yOffset = fixtureJSON["offset"]["y"].asFloat();
+				util::toBox2dPoint(yOffset);
+			}
+
+		}
+
 		if (collisionShape == b2Shape::e_circle)
 		{
 			circle.m_radius = fixtureJSON["collisionRadius"].asFloat();
+			circle.m_p.Set(xOffset, yOffset);
 			shape = &circle;
 		}
 		else if (collisionShape == b2Shape::e_polygon) {
@@ -187,16 +283,27 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 			float sizeX{};
 			float sizeY{};
 			//If a size is not specified for the fixture then default to the transform size of the object
-			if (fixtureJSON.isMember("size")) {
-				sizeX = fixtureJSON["size"]["width"].asFloat() / GameConfig::instance().scaleFactor() / 2;
-				sizeY = fixtureJSON["size"]["height"].asFloat() / GameConfig::instance().scaleFactor() / 2;
+			//Also, apply the override if there is one
+			if (isSizeOverrideAllowed) {
+				sizeX = sizeOverride.x;
+				sizeY = sizeOverride.y;
+			}
+			else if (fixtureJSON.isMember("size")) {
+				sizeX = fixtureJSON["size"]["width"].asFloat();
+				sizeY = fixtureJSON["size"]["height"].asFloat();
 			}
 			else {
-				sizeX = transformComponentJSON["size"]["width"].asFloat() / GameConfig::instance().scaleFactor() / 2;
-				sizeY = transformComponentJSON["size"]["height"].asFloat() / GameConfig::instance().scaleFactor() / 2;
+				sizeX = transformComponentJSON["size"]["width"].asFloat();
+				sizeY = transformComponentJSON["size"]["height"].asFloat();
 			}
-			
+
+			//Convert to what box2d needs
+			sizeX = util::toBox2dPoint(sizeX) / 2;
+			sizeY = util::toBox2dPoint(sizeY) / 2;
+
 			box.SetAsBox(sizeX, sizeY);
+			b2Vec2 offsetLocation = { xOffset, yOffset };
+			box.SetAsBox(sizeX, sizeY, offsetLocation, 0);
 			shape = &box;
 		}
 		else if (collisionShape == b2Shape::e_chain) {
@@ -273,6 +380,21 @@ void PhysicsComponent::applyImpulse(float force, b2Vec2 trajectory)
 
 }
 
+void PhysicsComponent::applyImpulse(float speed, int direction, int strafeDirection)
+{
+	b2Vec2 trajectory = { (float)strafeDirection, (float)direction };
+	trajectory.Normalize();
+
+	trajectory *= speed;
+
+	//apply point
+	b2Vec2 applyPoint{2, -2};
+
+	//m_physicsBody->ApplyLinearImpulseToCenter(trajectory, true);
+	m_physicsBody->ApplyForce(trajectory, applyPoint, true);
+
+}
+
 void PhysicsComponent::applyMovement(float velocity, b2Vec2 trajectory)
 {
 
@@ -292,6 +414,26 @@ void PhysicsComponent::applyAngleImpulse(float force)
 
 }
 
+b2MouseJoint* PhysicsComponent::createB2MouseJoint()
+{
+	b2MouseJointDef* mouseJointDef;
+
+	//Find the cage object that should exist for 
+	const auto& levelCageObject = parent()->parentScene()->getFirstGameObjectByType("LEVEL_CAGE");
+	const auto& cagePhysicsComponent = levelCageObject.value().get()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+	mouseJointDef = new b2MouseJointDef();
+	mouseJointDef->bodyA = cagePhysicsComponent->physicsBody();
+	mouseJointDef->bodyB = m_physicsBody;
+	mouseJointDef->target = m_physicsBody->GetPosition();
+	mouseJointDef->maxForce = 1000.0f;
+	mouseJointDef->stiffness = 5000;
+
+	b2MouseJoint* mouseJoint = static_cast<b2MouseJoint*>(parent()->parentScene()->physicsWorld()->CreateJoint(mouseJointDef));
+
+	return mouseJoint;
+
+}
 
 //void PhysicsComponent::applyMovement(float speed, int direction, int strafeDirection)
 //{
@@ -353,7 +495,7 @@ void PhysicsComponent::applyTorque(float angularVelocity)
 	m_physicsBody->ApplyTorque(angularVelocity, true);
 }
 
-void PhysicsComponent::setOffGrid()
+void PhysicsComponent::stash()
 {
 	b2Vec2 velocityVector = b2Vec2(0, 0);
 	b2Vec2 positionVector = b2Vec2(-50, -50);
@@ -383,7 +525,7 @@ void PhysicsComponent::deleteAllJoints()
 
 }
 
-void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointType, std::optional<b2Vec2> attachLocation)
+void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointType, b2Vec2 attachLocation)
 {
 	b2JointDef* jointDef=nullptr;
 	b2WeldJointDef* weldJointDef;
@@ -392,30 +534,11 @@ void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointTyp
 	//Get physics component of the attachment object
 	const auto& attachObjectPhysicsComponent = attachObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-	//If an attach point was passed in then use it , otherwise use the anchor point defined for the object
-	b2Vec2 anchorPoint = { 0,0 };
-	if (attachLocation) {
-		anchorPoint = attachLocation.value();
-	}
-	else {
-		anchorPoint = {
-			m_objectAnchorPoint.x,
-			m_objectAnchorPoint.y
-		};
-
-	}
-
 	//Get attachment anchor point
 	b2Vec2 attachObjectAnchorPoint = {
 	attachObjectPhysicsComponent->m_objectAnchorPoint.x,
 	attachObjectPhysicsComponent->m_objectAnchorPoint.y
 	};
-
-
-	//test
-	//attachObjectAnchorPoint = attachObjectPhysicsComponent.get()->physicsBody()->GetLocalCenter();
-
-
 
 	//Build specific joint
 	if (jointType == b2JointType::e_weldJoint) {
@@ -423,7 +546,7 @@ void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointTyp
 		weldJointDef->bodyA = m_physicsBody;
 		weldJointDef->bodyB = attachObjectPhysicsComponent->m_physicsBody;
 		weldJointDef->collideConnected = false;
-		weldJointDef->localAnchorA = anchorPoint;
+		weldJointDef->localAnchorA = attachLocation;
 		weldJointDef->localAnchorB = attachObjectAnchorPoint;
 		jointDef = weldJointDef;
 	}
@@ -432,13 +555,9 @@ void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointTyp
 		revoluteJointDef->bodyA = m_physicsBody;
 		revoluteJointDef->bodyB = attachObjectPhysicsComponent->m_physicsBody;
 		revoluteJointDef->collideConnected = false;
-		revoluteJointDef->localAnchorA = anchorPoint;
+		revoluteJointDef->localAnchorA = attachLocation;
 		revoluteJointDef->localAnchorB = attachObjectAnchorPoint;
 
-		////test
-		//revoluteJointDef->enableMotor = true;
-		//revoluteJointDef->maxMotorTorque = 100;
-		
 		jointDef = revoluteJointDef;
 	}
 

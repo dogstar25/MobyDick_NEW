@@ -6,12 +6,14 @@
 
 extern std::unique_ptr<Game> game;
 
-WeaponComponent::WeaponComponent()
+WeaponComponent::WeaponComponent() :
+	Component(ComponentTypes::WEAPON_COMPONENT)
 {
 
 }
 
-WeaponComponent::WeaponComponent(Json::Value componentJSON)
+WeaponComponent::WeaponComponent(Json::Value componentJSON) :
+	Component(ComponentTypes::WEAPON_COMPONENT)
 {
 	
 	m_componentType = ComponentTypes::WEAPON_COMPONENT;
@@ -105,7 +107,7 @@ void WeaponComponent::fire(const b2Vec2& origin, const float& angle, std::string
 		}
 
 		//Add the bullet object to the main gameObject collection
-		parent()->parentScene()->addGameObject(bullet.value(), GameLayer::MAIN);
+		parent()->parentScene()->addGameObjectFromPool(bullet.value(), GameLayer::MAIN);
 	}
 	else {
 		std::cout << "No Bullet available" << std::endl;

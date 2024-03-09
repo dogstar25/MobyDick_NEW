@@ -20,19 +20,23 @@ struct LevelObject
 {
 	std::string gameObjectType{};
 	bool isPlayer{};
-	int layer{ GameLayer::MAIN };
+	GameLayer layer{ GameLayer::MAIN };
 	int angleAdjustment {};
 	bool cameraFollow{ false };
+	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> states;
 	std::string name{};
-	std::optional<SDL_Color> color{};
-	std::optional<int> disabledType{};
-	std::optional<float> weaponForce{};
-	std::optional<SDL_Color> weaponColor{};
-	std::optional<int> compositePieceLevelCap{};
-	std::optional<int> brainSensorSize{};
-	std::optional<float> containerRespawnTimer{};
-	std::optional<int> containerStartCount{};
-	std::optional<int> containerCapacity{};
+	std::optional<b2Vec2>size;
+	std::optional<b2Vec2>locationAdjust;
+	std::optional<SDL_Color> color;
+	std::optional<int> disabledType;
+	std::optional<float> weaponForce;
+	std::optional<SDL_Color> weaponColor;
+	std::optional<int> compositePieceLevelCap;
+	std::optional<int> brainSensorSize;
+	std::optional<float> containerRespawnTimer;
+	std::optional<int> containerStartCount;
+	std::optional<int> containerCapacity;
+	
 
 };
 
@@ -71,7 +75,6 @@ public:
 	void loadLevel(std::string levelId, std::string sceneId);
 	std::optional<std::string> getNextLevelId(std::string levelId);
 
-	void addLevelObject(int xIndex, int yIndex, LevelObject levelObject);
 	void setLevelObjectArraySize(int width, int height);
 	
 
@@ -90,13 +93,13 @@ private:
 	Json::Value m_levelDefinition{};
 	std::optional<std::string> m_backgroundMusicAssetId{};
 
-	std::vector< std::vector <LevelObject>> m_levelObjects{};
+	std::vector<std::vector< std::vector <LevelObject>>> m_levelObjects{};
 	std::vector<std::string> m_levels{};
 	std::map<int, TiledLayerDefinition> m_tiledLayerDefinitions;
 
-	std::optional<LevelObject> _determineTile(int x, int y, SDL_Surface* bluePrintSurface);
+	std::vector<LevelObject> _determineTile(int x, int y, SDL_Surface* bluePrintSurface);
 	LevelObject _determineWallObject(int x, int y, SDL_Surface* bluePrintSurface);
-	std::optional<LevelObject> _determineLocationDefinedObject(int x, int y);
+	std::vector<LevelObject> _determineLocationDefinedObject(int x, int y);
 	std::optional<LevelObject> _determineColorDefinedObject(SDL_Color color);
 	void _loadDefinition(std::string levelId);
 	void _buildLevelObjects(Scene* scene);
@@ -111,5 +114,6 @@ private:
 	void _startBackgroundMusic();
 	bool _isColorDefinedObject(SDL_Color color);
 	void _clear();
+	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> _storeStates(Json::Value statesJSON);
 };
 

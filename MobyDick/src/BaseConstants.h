@@ -18,6 +18,7 @@ inline constexpr int TURN_OFF = 1;
 
 inline constexpr int CHILD_POSITIONS = 9;
 inline constexpr int MAX_VITALITY_LEVELS = 5;
+
 inline constexpr int PARTICLE_EMITTER_FORCE_ADJ = 50;
 inline constexpr int PRACTICLE_MOVE_SPEED_ADJ = 50;
 inline constexpr int MAX_OBJECT_TYPES = 5;
@@ -25,16 +26,9 @@ inline constexpr int MAX_OBJECT_TYPES = 5;
 inline constexpr int MAX_GL_TEXTURES = 1;
 //inline constexpr int MAX_GL_SHADER_TYPES = 5;
 
-//Mouse State
-inline constexpr int MOUSE_NONE = 0;
-inline constexpr int MOUSE_HOVER = 1;
-inline constexpr int MOUSE_HOLD = 2;
-inline constexpr int MOUSE_CLICKED = 3;
-
 //Mouse Modes
 inline constexpr int CONTROL_MODE_SELECT = 0;
 inline constexpr int CONTROL_MODE_PLAY = 1;
-inline constexpr int CONTROL_MODE_IMGUI = 2;
 
 namespace NavigationSizeCategory {
 	inline constexpr int SMALL = 0;
@@ -43,20 +37,14 @@ namespace NavigationSizeCategory {
 
 }
 
-namespace DISABLED_TYPE {
-	inline constexpr int RENDER = 0;
-	inline constexpr int UPDATE = 1;
-	inline constexpr int PHYSICS = 2;
-	inline constexpr int RENDER_AND_PHYSICS = 3;
-	inline constexpr int RENDER_AND_UPDATE = 4;
-	inline constexpr int PHYICS_AND_UPDATE = 5;
-}
-
 namespace Colors {
 
 	inline SDL_Color WHITE = { 255, 255, 255, 255 };
 	inline SDL_Color BLACK = { 0, 0, 0, 255 };
+	inline SDL_Color BLACKISH = { 1, 1, 1, 255 };
 	inline SDL_Color CLOUD = { 200, 200, 200, 200 };
+	inline SDL_Color GAS = { 127, 127, 127, 100 };
+	inline SDL_Color SMOKE = { 40, 40, 40, 150 };
 
 	inline SDL_Color RED = { 255, 0, 0, 255 };
 	inline SDL_Color GREEN = { 0, 255, 0, 255 };
@@ -65,6 +53,8 @@ namespace Colors {
 	inline SDL_Color PURPLE = { 255, 0, 255, 255 };
 	inline SDL_Color ORANGE = { 255, 127, 0, 255 };
 	inline SDL_Color GREY = { 127, 127, 127, 255 };
+	inline SDL_Color LIGHT_GREY = { 127, 127, 127, 255 };
+	inline SDL_Color BROWN = { 102, 57, 49, 255 };
 	inline SDL_Color CYAN = { 0, 255, 255, 255 };
 	
 
@@ -102,36 +92,35 @@ namespace TraitTag {
 	inline constexpr int gui = 5;
 	inline constexpr int waypoint = 6;
 	inline constexpr int abstract = 7;
-	inline constexpr int interactive = 8;
-	inline constexpr int debug = 9;
-	inline constexpr int pooled = 10;
-	inline constexpr int fragment = 11;
-	inline constexpr int objective = 12;
-	inline constexpr int impasse = 13;
-	inline constexpr int conditional_impasse = 14;
-	inline constexpr int complex_impasse = 15;
-	inline constexpr int mobile = 16;
+	inline constexpr int always_in_line_of_sight = 8;
+	inline constexpr int mouse_interface = 9;
+	inline constexpr int debug = 10;
+	inline constexpr int pooled = 11;
+	inline constexpr int fragment = 12;
+	inline constexpr int objective = 13;
+	inline constexpr int impasse = 14;
+	inline constexpr int conditional_impasse = 15;
+	inline constexpr int complex_impasse = 16;
+	inline constexpr int mobile = 17;
+	inline constexpr int light = 18;
+	inline constexpr int puzzle = 19;						//Object that has puzzle(s) to solve before can be used
+	inline constexpr int vertical_movement_zone = 20;			//Allows for the player to vertically move
+	inline constexpr int draggable = 21;					//Can be grabbed and dragged by the mouse
+	inline constexpr int inventory = 22;					//Can have a game item dropped onto it to add to its inventory
+	inline constexpr int inventory_open = 23;				//Inventory object where the inventory contents are displayed like a shelf
+	inline constexpr int inventory_closed = 24;				//Inventory object that is not currently displaying the inventory contents like a closed drawer
+	inline constexpr int inventory_display = 25;			//Inventory grid display object itself
+	inline constexpr int inventory_player = 26;				//Is the players inventory receptacle
+	inline constexpr int puzzle_item = 27;					//Is an item used to solve a game puzzle
+	inline constexpr int door_entry = 28;
+	inline constexpr int door = 29;
+	inline constexpr int door_side = 30;
+	inline constexpr int door_front = 31;
+	inline constexpr int receptacle = 32;
+
+
 
 }
-
-namespace StateTag {
-
-	inline constexpr int disabledUpdate = 1;
-	inline constexpr int disabledPhysics = 2;
-	inline constexpr int disabledRender = 3;
-	inline constexpr int disabledCollision = 4;
-}
-
-namespace GameObjectType {
-
-	inline constexpr auto ABSTRACT = 0; // SOMETHING LIKE A NAVIGATION POINT THAT DOES NOT DISPLAY
-	inline constexpr auto SPRITE = 1;
-	inline constexpr auto LINE = 2;
-	inline constexpr auto POINT = 3;
-	inline constexpr auto RECTANGLE = 4;
-
-}
-
 
 namespace BrainState {
 
@@ -160,13 +149,21 @@ namespace ParticleEmitterType {
 	inline constexpr int CONTINUOUS = 1;
 }
 
+enum class ConditionOperator {
+
+	NONE = 0,
+	OR = 1, 
+	AND = 2,
+
+};
+
 enum class PositionAlignment {
 
-	CENTER = 0,
-	TOP_LEFT = 1,
-	TOP_CENTER = 2,
-	TOP_RIGHT = 3,
-	CENTER_LEFT = 4,
+	TOP_LEFT = 0,
+	TOP_CENTER = 1,
+	TOP_RIGHT = 2,
+	CENTER_LEFT = 3,
+	CENTER = 4,
 	CENTER_RIGHT = 5,
 	BOTTOM_LEFT = 6,
 	BOTTOM_CENTER = 7,
@@ -214,6 +211,65 @@ enum class PhysicsChainType {
 	CW_REFLECT_OUT
 };
 
+enum class LightType {
+	TEXTURE_LIGHT = 0,
+	SHADER_LIGHT,
+	RAY_LIGHT
+};
+
+enum class GameObjectState : int {
+
+	ON = 1,
+	OFF,
+	OPENED,
+	CLOSED,
+	IDLE,
+	WALK,
+	RUN,
+	SPRINT,
+	JUMP,
+	CLIMB,
+	DEAD,
+	DISABLED_UPDATE,
+	DISABLED_PHYSICS,
+	DISABLED_RENDER,
+	DISABLED_COLLISION,
+	DEPLOYED,
+	CONCEALED,
+	IMPASSABLE,
+	EQUIPPED,
+	ITEM_OBTAINABLE,
+	ITEM_LOOSE,
+	ITEM_STORED_ENCLOSED,
+	ITEM_STORED_OPEN,
+	ITEM_STORED_PLAYER,
+	IDLE_RIGHT,
+	IDLE_LEFT,
+	IDLE_UP,
+	IDLE_DOWN,
+	WALK_RIGHT,
+	WALK_LEFT,
+	WALK_UP,
+	IDLE_RIGHT_EQUIPPED,
+	IDLE_LEFT_EQUIPPED,
+	IDLE_UP_EQUIPPED,
+	IDLE_DOWN_EQUIPPED,
+	WALK_RIGHT_EQUIPPED,
+	WALK_LEFT_EQUIPPED,
+	WALK_UP_EQUIPPED,
+	WALK_DOWN_EQUIPPED,
+	WALK_DOWN,
+	RUN_RIGHT,
+	RUN_LEFT,
+	RUN_UP,
+	RUN_DOWN,
+	ON_VERTICAL_MOVEMENT,
+
+	GameObjectState_Count
+
+};
+
+
 namespace DebugSceneSettings {
 	inline constexpr int SHOW_PHYSICS_DEBUG = 0;
 	inline constexpr int SHOW_NAVIGATION_DEBUG_MAP = 1;
@@ -221,7 +277,7 @@ namespace DebugSceneSettings {
 
 //Component Types
 namespace ComponentTypes {
-	inline constexpr int MAX_COMPONENT_TYPES = 32;
+	inline constexpr int MAX_COMPONENT_TYPES = 42;
 
 	inline constexpr int NONE = 0;
 	inline constexpr int ACTION_COMPONENT = 1;
@@ -232,24 +288,31 @@ namespace ComponentTypes {
 	inline constexpr int COMPOSITE_COMPONENT = 6;
 	inline constexpr int CONTAINER_COMPONENT = 7;
 	inline constexpr int CHECKPOINT_COMPONENT = 8;
-	inline constexpr int HUD_COMPONENT = 9;
-	inline constexpr int INVENTORY_COMPONENT = 10;
-	inline constexpr int IMGUI_COMPONENT = 11;
-	inline constexpr int PARTICLE_COMPONENT = 12;
-	inline constexpr int NAVIGATION_COMPONENT = 13;
-	inline constexpr int PARTICLE_X_COMPONENT = 14;
-	inline constexpr int PHYSICS_COMPONENT = 15;
-	inline constexpr int PLAYER_CONTROL_COMPONENT = 16;
-	inline constexpr int POOL_COMPONENT = 17;
-	inline constexpr int RENDER_COMPONENT = 18;
-	inline constexpr int SOUND_COMPONENT = 19;
-	inline constexpr int TEXT_COMPONENT = 20;
-	inline constexpr int TRANSFORM_COMPONENT = 21;
-	inline constexpr int UICONTROL_COMPONENT = 22;
-	inline constexpr int VITALITY_COMPONENT = 23;
-	inline constexpr int WEAPON_COMPONENT = 24;
+	inline constexpr int GRID_DISPLAY_COMPONENT = 9;
+	inline constexpr int HUD_COMPONENT = 10;
+	inline constexpr int INTERFACE_COMPONENT = 11;
+	inline constexpr int INVENTORY_COMPONENT = 12;
+	inline constexpr int IMGUI_COMPONENT = 13;
+	inline constexpr int PARTICLE_COMPONENT = 14;
+	inline constexpr int NAVIGATION_COMPONENT = 15;
+	inline constexpr int PARTICLE_X_COMPONENT = 16;
+	inline constexpr int PHYSICS_COMPONENT = 17;
+	inline constexpr int PLAYER_CONTROL_COMPONENT = 18;
+	inline constexpr int POOL_COMPONENT = 19;
+	inline constexpr int PUZZLE_COMPONENT = 20;
+	inline constexpr int MASKED_OVERLAY_COMPONENT = 21;
+	inline constexpr int RENDER_COMPONENT = 22;
+	inline constexpr int STATE_COMPONENT = 23;
+	inline constexpr int SOUND_COMPONENT = 24;
+	inline constexpr int TEXT_COMPONENT = 25;
+	inline constexpr int TRANSFORM_COMPONENT = 26;
+	inline constexpr int UICONTROL_COMPONENT = 27;
+	inline constexpr int VITALITY_COMPONENT = 28;
+	inline constexpr int WEAPON_COMPONENT = 29;
+	inline constexpr int LIGHT_COMPONENT = 30;
+	inline constexpr int LIGHTED_TREATMENT_COMPONENT = 31;
 	
-	inline constexpr int LAST_BASE_COMPONENT = 26;
+	inline constexpr int LAST_BASE_COMPONENT = 31;
 
 }
 
@@ -269,8 +332,13 @@ inline constexpr int ANIMATION_STRAFE_LEFT = 9;
 inline constexpr int ANIMATION_STRAFE_RIGHT = 10;
 
 //Animation Modes
-inline constexpr int ANIMATE_ONE_TIME = 0;
-inline constexpr int ANIMATE_CONTINUOUS = 1;
+enum class AnimationMode {
+
+	ANIMATE_ONE_TIME = 0,
+	ANIMATE_CONTINUOUS,
+	ANIMATE_STILL_FRAME
+
+};
 
 //Player Control
 inline constexpr int INPUT_CONTROL_MOVEMENT = 1;
@@ -279,19 +347,48 @@ inline constexpr int INPUT_CONTROL_HOVER = 3;
 inline constexpr int INPUT_CONTROL_CLICK = 4;
 
 //Actions
-inline constexpr int ACTION_NONE = 0;
-inline constexpr int ACTION_MOVE = 1;
-inline constexpr int ACTION_ROTATE = 2;
-inline constexpr int ACTION_USE = 3;
-inline constexpr int ACTION_USAGE = 4;
-inline constexpr int ACTION_INTERACT = 5;
-inline constexpr int ACTION_INTERACTION = 6;
-inline constexpr int ACTION_ON_HOVER = 7;
-inline constexpr int ACTION_ON_CLICK = 8;
-inline constexpr int ACTION_ON_HOVER_OUT = 9;
-inline constexpr int ACTION_ON_TRIGGER = 10;
-inline constexpr int ACTION_SPRINT = 11;
-inline constexpr int ACTION_USAGE_SPECIAL = 12;
+namespace Actions {
+
+	inline constexpr int NONE = 0;
+	inline constexpr int MOVE = 1;
+	inline constexpr int SPRINT = 2;
+	inline constexpr int ROTATE = 3;
+	inline constexpr int USE = 4;
+	inline constexpr int USAGE = 5;
+	inline constexpr int INSPECT = 6;
+	inline constexpr int TALK = 7;
+	inline constexpr int PUSH = 9;
+	inline constexpr int TAKE = 10;
+	inline constexpr int COMBINE = 11;
+	inline constexpr int OPEN = 12;
+	inline constexpr int CLOSE = 13;	
+	inline constexpr int WARP = 14;
+	inline constexpr int ENTER = 15;
+
+	inline constexpr int SHOW_INTERFACE = 16;
+	inline constexpr int HIDE_INTERFACE = 17;
+	inline constexpr int APPLY_HIGHLIGHT = 18;
+	inline constexpr int REMOVE_HIGHLIGHT = 19;
+	inline constexpr int DROP = 20;
+
+}
+
+//Actions
+//We need plenty of room using the SDL Keycodes
+inline constexpr int MAX_EVENT_STATES = 108;
+enum class InterfaceEvents {
+	ON_NONE=0,
+	ON_TOUCHING=100,
+	ON_STOP_TOUCHING=101,
+	ON_HOVER=102,
+	ON_HOVER_OUT=103,
+	ON_LCLICK=104,
+	ON_RCLICK=105,
+	ON_DRAG=106,
+	ON_DROP = 107
+};
+
+
 
 //GameSpace Types
 inline constexpr int GAMESPACE_INTRO = 0;
@@ -319,18 +416,28 @@ inline constexpr int SCENE_ACTION_WINDOW_UNPAUSE = 13;
 inline constexpr int SCENETAG_MENU = 1;
 
 //Game Layers
-inline constexpr int MAX_GAMEOBJECT_LAYERS = 8;
 
-namespace GameLayer {
-	inline constexpr int BACKGROUND_1 = 0;
-	inline constexpr int BACKGROUND_2 = 1;
-	inline constexpr int MAIN = 2;
-	inline constexpr int FOREGROUND_1 = 3;
-	inline constexpr int FOREGROUND_2 = 4;
-	inline constexpr int GUI = 5;
-	inline constexpr int ABSTRACT = 6;
-	inline constexpr int GRID_DISPLAY = 7;
-}
+enum GameLayer {
+
+	BACKGROUND_5,
+	BACKGROUND_4,
+	BACKGROUND_3,
+	BACKGROUND_2,
+	BACKGROUND_1,
+	MAIN,
+	FOREGROUND_1,
+	FOREGROUND_2,
+	FOREGROUND_3,
+	FOREGROUND_4,
+	FOREGROUND_5,
+	GUI_1, 
+	GUI_2,
+	GUI_3,
+	ABSTRACT,
+	GRID_DISPLAY,
+
+	GameLayer_COUNT
+};
 
 //Game Object Display Modes
 inline constexpr int MAX_GAMEOBJECT_DISPLAY_UI_MODES = 3;

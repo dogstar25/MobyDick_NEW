@@ -9,6 +9,9 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_sdlrenderer.h"
 #include "Util.h"
+#include "components/LightedTreatmentComponent.h"
+#include "components/MaskedOverlayComponent.h"
+#include "components/InventoryComponent.h"
 
 
 extern std::unique_ptr<Game> game;
@@ -16,27 +19,33 @@ extern std::unique_ptr<Game> game;
 GameObject::~GameObject()
 {
 
+	//m_shouldThreadStop = true;
 	//std::cout << this->m_id << " GameObject Destructor called" << std::endl;
 
 }
 
-GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, int layer, bool cameraFollow, std::string name)
+GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer, 
+	bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
 	Json::Value definitionJSON;
 
 	//Build components
 	definitionJSON = GameObjectManager::instance().getDefinition(gameObjectType)->definitionJSON();
+	m_gameObjectDefinition = definitionJSON;
 
 	//Category Id and Object Type
 	m_type = gameObjectType;
 	m_removeFromWorld = false;
 
+	//Description
+	m_description = definitionJSON["description"].asString();
+
 	//Layer
 	m_layer = layer;
 
 	//Build the unique id
-	m_id = _buildId(gameObjectType, xMapPos, yMapPos);
+	m_id = _buildId(layer, gameObjectType, xMapPos, yMapPos);
 
 	//Build the unique name if a name wasnt given
 	if (name.empty()) {
@@ -61,9 +70,11 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 
 	for (Json::Value componentJSON : definitionJSON["components"]){
 
-		int componentType = game->enumMap()->toEnum(componentJSON["id"].asString());
+		std::string componentTypeString = util::getComponentType(componentJSON);
+		int componentType = game->enumMap()->toEnum(componentTypeString);
 
-		component = game->componentFactory()->create(definitionJSON, m_name, gameObjectType, parentScene, xMapPos, yMapPos, angleAdjust, componentType);
+		component = game->componentFactory()->create(
+			definitionJSON, m_name, gameObjectType, parentScene, xMapPos, yMapPos, angleAdjust, sizeOverride, componentType);
 		component->setParent(this);
 		addComponent(component);
 
@@ -88,6 +99,32 @@ void GameObject::setParent(GameObject* parentObject)
 
 	m_parentObject = parentObject;
 
+}
+
+bool GameObject::isDragging()
+{
+	if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+
+		return getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT)->isDragging();
+
+	}
+
+	return false;
+
+}
+
+void GameObject::clearDragging()
+{
+	if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+
+		getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT)->clearDragging();
+
+	}
+}
+
+void GameObject::revertToOriginalSize()
+{
+	getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->revertToOriginalSize();
 }
 
 void GameObject::setPosition(float x, float y)
@@ -149,6 +186,47 @@ void GameObject::setWindowRelativePosition(PositionAlignment windowPosition, flo
 	const auto& transforComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	transforComponent->setWindowRelativePosition(windowPosition);
 	transforComponent->setWindowPositionAdjustment({ adjustX, adjustY });
+
+}
+
+void GameObject::addLitHighlight(b2Vec2 size)
+{
+
+	std::shared_ptr<ChildrenComponent> childrenComponent{};
+
+	auto lightObject = m_parentScene->addGameObject("LIGHT_ITEM_HIGHLIGHT_CIRCLE", GameLayer::FOREGROUND_5 , -1.0F, -1.0F,
+		0.F, false, "LitHightlight", size);
+	std::shared_ptr<GameObject> lightObjectShrPtr = m_parentScene->getGameObject(lightObject->id()).value();
+	lightObjectShrPtr->addState(GameObjectState::ON);
+
+
+	if (hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+
+		childrenComponent = getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+		childrenComponent->addStepChild(lightObjectShrPtr, PositionAlignment::CENTER);
+
+	}
+	else {
+		Json::Value componentsDefinition{};
+		Json::Value childrenComponentDefinition{};
+
+		childrenComponentDefinition["id"] = "CHILDREN_COMPONENT";
+		childrenComponentDefinition["sameSlotTreatment"] = "ChildSlotTreatment::STACKED";
+		componentsDefinition["components"].append(childrenComponentDefinition);
+
+
+		childrenComponent =
+			std::static_pointer_cast<ChildrenComponent>(
+				game->componentFactory()->create(componentsDefinition, m_name, "", m_parentScene, 0, 0, 0, b2Vec2_zero,
+					ComponentTypes::CHILDREN_COMPONENT)
+			);
+		childrenComponent->setParent(this);
+		addComponent(childrenComponent);
+
+		childrenComponent->addStepChild(lightObjectShrPtr, PositionAlignment::CENTER);
+
+	}
+
 
 }
 
@@ -229,7 +307,6 @@ void GameObject::update()
 			}
 		}
 
-		//Update touching GameObject
 		_updateTouchingObjects();
 
 	}
@@ -241,17 +318,25 @@ Render this object somewhere other than the GameObjects transformcomponent locat
 */
 void GameObject::render(SDL_FRect destQuad)
 {
-
-	//Render yourself
 	getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(destQuad);
 
 }
 
+void GameObject::render(SDL_FPoint locationPoint)
+{
+
+	getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(locationPoint);
+
+}
 
 void GameObject::render()
 {
 
+	//Special spot to place a debug ImGui object
+	_imGuiDebugObject();
+
 	if (this->renderDisabled() == false) {
+
 		//Render yourself
 		getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render();
 
@@ -261,7 +346,7 @@ void GameObject::render()
 			getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT)->render();
 		}
 
-		//Render your attached inventory items
+		//Render your attached items
 		if (hasComponent(ComponentTypes::ATTACHMENTS_COMPONENT)) {
 
 			getComponent<AttachmentsComponent>(ComponentTypes::ATTACHMENTS_COMPONENT)->render();
@@ -285,22 +370,16 @@ void GameObject::render()
 			getComponent<HudComponent>(ComponentTypes::HUD_COMPONENT)->render();
 		}
 
-		//If you have a vitality component, then render the vitality items
-		if (hasComponent(ComponentTypes::VITALITY_COMPONENT)) {
-
-			getComponent<VitalityComponent>(ComponentTypes::VITALITY_COMPONENT)->render();
-		}
-
 		//If you have a IMGui component, then render it
 		if (hasComponent(ComponentTypes::IMGUI_COMPONENT)) {
 
 			getComponent<IMGuiComponent>(ComponentTypes::IMGUI_COMPONENT)->render();
 		}
 
-		//If you have aa Action component, then render possible interaction menus
-		if (hasComponent(ComponentTypes::ACTION_COMPONENT)) {
+		//If you have an Interface component, then render possible interaction menus
+		if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
 
-			getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT)->render();
+			getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT)->render();
 		}
 
 		//If you have a Container component, then render the container content items
@@ -309,8 +388,74 @@ void GameObject::render()
 			getComponent<ContainerComponent>(ComponentTypes::CONTAINER_COMPONENT)->render();
 		}
 
+		////Render Inventory
+		//if (hasComponent(ComponentTypes::INVENTORY_COMPONENT)) {
+
+		//	getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT)->render();
+		//}
+
+		//Render Inventory
+		if (hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
+
+			getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT)->render();
+		}
+
+		//If you have a Light treatment component, then render it
+		if (hasComponent(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)) {
+
+			getComponent<LightedTreatmentComponent>(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)->render();
+		}
+
+		//If you have a Light treatment component, then render it
+		if (hasComponent(ComponentTypes::MASKED_OVERLAY_COMPONENT)) {
+
+			getComponent<MaskedOverlayComponent>(ComponentTypes::MASKED_OVERLAY_COMPONENT)->render();
+		}
+
 	}
 }
+
+bool GameObject::intersectsWith(GameObject* gameObject)
+{
+
+	//Do not store yourself as a touching object
+	if (this == gameObject) {
+		return false;
+	}
+
+	const auto& compareObjectTransformComponent = gameObject->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	const auto& thisObjectTransformComponent = this->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+	SDL_FRect compareObjectRect{};
+	SDL_FRect thisObjectRect{};
+
+	//If either one of the objects are absolute positioned, then use there render rectangle to determin eif touching
+	//otherwise use there worl position
+	if (compareObjectTransformComponent->absolutePositioning() == true ||
+		thisObjectTransformComponent->absolutePositioning() == true) {
+
+		const auto& compareObjectRenderComponent = gameObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& thisObjectRenderComponent = this->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+		compareObjectRect = compareObjectRenderComponent->getRenderDestRect();
+		thisObjectRect = thisObjectRenderComponent->getRenderDestRect();
+
+	}
+	else
+	{
+		compareObjectRect = compareObjectTransformComponent->getPositionRect();
+		thisObjectRect = thisObjectTransformComponent->getPositionRect();
+
+	}
+
+	if (SDL_HasIntersectionF(&compareObjectRect, &thisObjectRect) ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 
 void GameObject::reset()
 {
@@ -320,9 +465,12 @@ void GameObject::reset()
 	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
-		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->setOffGrid();
+		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->stash();
 		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->update();
 	}
+
+	//test calling the main update so that if the pooled item has a child, it needs to be moved off too
+	update();
 
 
 }
@@ -355,6 +503,36 @@ void GameObject::setAngleInRadians(float angle)
 	if (physicsComponent) {
 
 		physicsComponent->setAngle(angle);
+	}
+
+}
+
+void GameObject::setAbsolutePositionaing(bool absolutePositionaing)
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	if (transformComponent) {
+
+		transformComponent->setAbsolutePositioning(absolutePositionaing);
+	}
+
+}
+
+bool GameObject::absolutePositioning()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	return transformComponent->absolutePositioning();
+
+}
+
+void GameObject::revertToOriginalAbsolutePositionaing()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	if (transformComponent) {
+
+		transformComponent->setAbsolutePositioning(transformComponent->originalAbsolutePositioning());
 	}
 
 }
@@ -461,6 +639,14 @@ SDL_FPoint GameObject::getCenterPosition()
 
 }
 
+SDL_FRect GameObject::getPositionRect()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	return(transformComponent->getPositionRect());
+
+}
+
 bool GameObject::isAlive()
 {
 
@@ -530,10 +716,10 @@ std::string GameObject::_buildName(std::string rootName, std::string gameObjectT
 
 }
 
-std::string GameObject::_buildId(std::string id, float xMapPos, float yMapPos)
+std::string GameObject::_buildId(GameLayer layer, std::string id, float xMapPos, float yMapPos)
 {
 	std::string randomid = util::genRandomId(16);
-	auto name = std::format("{}_{:.0f}_{:.0f}_{}", id, xMapPos, yMapPos, randomid);
+	auto name = std::format("{:02}_{}_{:.0f}_{:.0f}_{}", (int)layer, id, xMapPos, yMapPos, randomid);
 
 	return name;
 
@@ -574,6 +760,87 @@ bool GameObject::isCompositeEmpty()
 	return false;
 }
 
+bool GameObject::isOffGrid()
+{
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	if (transformComponent->getCenterPosition().x < 0 && transformComponent->getCenterPosition().y < 0) {
+		return true;
+	}
+
+	return false;
+}
+
+//Take the GameObject out of the game but dont delete it so that it can we put back easily
+void GameObject::stash()
+{
+
+	b2Vec2 positionVector = b2Vec2(-50, -50);
+
+	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
+		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		b2Vec2 velocityVector = b2Vec2(0, 0);
+		
+
+		physicsComponent->physicsBody()->SetTransform(positionVector, 0);
+		physicsComponent->physicsBody()->SetLinearVelocity(velocityVector);
+		physicsComponent->physicsBody()->SetEnabled(false);
+
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+		transformComponent->setPosition(positionVector);
+
+	}
+	else {
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+		transformComponent->setPosition(positionVector);
+	}
+
+	//If this gameObject has a interface, then make sure that if the current active interface is this guys, then clear it out
+	if (hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+
+		const auto& interfaceComponent = getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
+		interfaceComponent->clearSpecificGameObjectInterface(this);
+	}
+}
+
+bool GameObject::hasState(GameObjectState state)
+{
+	if (hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+
+		return stateComponent->testState(state);
+
+	}
+
+	return false;
+	
+}
+
+void GameObject::addState(GameObjectState state)
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+
+		stateComponent->addState(state);
+
+	}
+
+}
+
+void GameObject::removeState(GameObjectState state)
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+
+		stateComponent->removeState(state);
+
+	}
+
+}
 
 void GameObject::dispatch(SDL_FPoint destination)
 {
@@ -591,17 +858,44 @@ int GameObject::brainState()
 
 void GameObject::disableUpdate()
 {
-	m_stateTags.set(StateTag::disabledUpdate, true);
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_UPDATE);
+	}
 
 }
 void GameObject::enableUpdate()
 {
-	m_stateTags.set(StateTag::disabledUpdate, false);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_UPDATE);
+	}
 
 }
+bool GameObject::updateDisabled()
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		return stateComponent->testState(GameObjectState::DISABLED_UPDATE);
+	}
+
+	return false;
+
+}
+
 void GameObject::disablePhysics()
 {
-	m_stateTags.set(StateTag::disabledPhysics, true);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_PHYSICS);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 
@@ -615,7 +909,11 @@ void GameObject::disablePhysics()
 
 void GameObject::enablePhysics()
 {
-	m_stateTags.set(StateTag::disabledPhysics, false);
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_PHYSICS);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 
@@ -627,26 +925,72 @@ void GameObject::enablePhysics()
 	}
 
 }
+
+bool GameObject::physicsDisabled()
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		return stateComponent->testState(GameObjectState::DISABLED_PHYSICS);
+	}
+
+	return false;
+
+}
+
 void GameObject::disableRender()
 {
-	m_stateTags.set(StateTag::disabledRender, true);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_RENDER);
+	}
+
 }
 
 void GameObject::enableRender()
 {
-	m_stateTags.set(StateTag::disabledRender, false);
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_RENDER);
+	}
+
 }
 
-void GameObject::disableCollision()
+bool GameObject::renderDisabled()
 {
-	m_stateTags.set(StateTag::disabledCollision, true);
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		return stateComponent->testState(GameObjectState::DISABLED_RENDER);
+	}
+
+	return false;
+
+}
+
+void GameObject::disableCollision(bool includeSensors)
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->addState(GameObjectState::DISABLED_COLLISION);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
 		{
-			ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
-			contactDefinition->contactTag = ContactTag::GENERAL_FREE;
+			if (fixture->IsSensor() == false || (fixture->IsSensor() == true && includeSensors == true)) {
+				ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
+				contactDefinition->contactTag = ContactTag::GENERAL_FREE;
+				fixture->Refilter();
+			}
 		}
 	}
 
@@ -654,7 +998,11 @@ void GameObject::disableCollision()
 
 void GameObject::enableCollision()
 {
-	m_stateTags.set(StateTag::disabledCollision, false);
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		stateComponent->removeState(GameObjectState::DISABLED_COLLISION);
+	}
 
 	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
@@ -662,10 +1010,25 @@ void GameObject::enableCollision()
 		{
 			ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
 			contactDefinition->contactTag = contactDefinition->saveOriginalContactTag;
+			fixture->Refilter();
 		}
 	}
 
 }
+
+bool GameObject::collisionDisabled()
+{
+
+	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		return stateComponent->testState(GameObjectState::DISABLED_COLLISION);
+	}
+
+	return false;
+
+}
+
 
 void GameObject::setCollisionTag( int contactTag)
 {
@@ -686,6 +1049,16 @@ void GameObject::setColor(SDL_Color color)
 
 	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 	renderComponent->setColor(color);
+
+}
+
+void GameObject::setSize(b2Vec2 size)
+{
+
+	//This should really only be used for non-physics objects because it will not affect the 
+	//physics size of the object (cant dynamically change a physics objects size)
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	transformComponent->setSize(size);
 
 }
 
@@ -771,44 +1144,74 @@ void GameObject::setOperatingSound(std::string soundAssetId)
 void GameObject::_updateTouchingObjects()
 {
 
-	m_touchingGameObjects.clear();
+		m_touchingGameObjects.clear();
 
-	//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
-	if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
+		//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
+		if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
 
-		const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+			if (this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->isTouchingObjectsCapturedRequired() == true) {
 
-		for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
-		{
-			b2Contact* contact = edge->contact;
+				const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-			//One of these fixtures being reported as a contact is the object itself, so we dont care about that one. 
-			// We only care about the objects are are not this object itself
-			GameObject* contactGameObject = reinterpret_cast<GameObject*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
-			GameObject* contactGameObject2 = reinterpret_cast<GameObject*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
+				for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
+				{
+					b2Contact* contact = edge->contact;
 
-			if (contact->IsTouching()) {
+					//One of these fixtures being reported as a contact is the object itself, so we dont care about that one. 
+					// We only care about the objects are are not this object itself
+					GameObject* contactGameObject = reinterpret_cast<GameObject*>(contact->GetFixtureA()->GetBody()->GetUserData().pointer);
+					GameObject* contactGameObject2 = reinterpret_cast<GameObject*>(contact->GetFixtureB()->GetBody()->GetUserData().pointer);
 
-				//const auto manifold = contact->GetManifold();
-				//manifold->localNormal;
+					if (contact->IsTouching()) {
 
-				if (contactGameObject != this && contactGameObject->hasTrait(TraitTag::fragment) == false) {
+						//const auto manifold = contact->GetManifold();
+						//manifold->localNormal;
 
-					auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject->id());
-					this->addTouchingObject(contactGameObjectSharedPtr.value());
-				
+						if (contactGameObject != this && contactGameObject->hasTrait(TraitTag::fragment) == false) {
+
+							auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject->id());
+							this->addTouchingObject(contactGameObjectSharedPtr.value());
+
+						}
+						else if (contactGameObject2 != this && contactGameObject2->hasTrait(TraitTag::fragment) == false) {
+
+							auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject2->id());
+							this->addTouchingObject(contactGameObjectSharedPtr.value());
+
+						}
+
+					}
 				}
-				else if (contactGameObject2 != this && contactGameObject2->hasTrait(TraitTag::fragment) == false) {
 
-					auto contactGameObjectSharedPtr = m_parentScene->getGameObject(contactGameObject2->id());
-					this->addTouchingObject(contactGameObjectSharedPtr.value());
-						
-				}
+				//Now see what non-physics objects it touches
+				//for (auto it = m_parentScene->getGameObjectLookup().begin(); it != m_parentScene->getGameObjectLookup().end(); ++it) {
 
+				//	if (it->second.lock().get()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false && this->intersectsWith(it->second.lock().get())) {
+
+				//		this->addTouchingObject(it->second.lock());
+
+				//	}
+
+				//}
 			}
 		}
-	}
+		else {
 
+			//NOT a physics object so spin through the entire gameIndex map and see if this object intersects with
+			//any other non-physics object
+
+			//for (auto it = m_parentScene->getGameObjectLookup().begin(); it != m_parentScene->getGameObjectLookup().end(); ++it) {
+
+
+			//	if (this->intersectsWith(it->second.lock().get())) {
+
+			//		this->addTouchingObject(it->second.lock());
+			//	}
+
+			//}
+		}
+
+		
 
 }
 
@@ -820,6 +1223,18 @@ SDL_Color GameObject::getColor()
 
 }
 
+//bool GameObject::hasIgnoreTouchTrait(GameObject* gameObject)
+//{
+//
+//	if (gameObject->hasTrait(TraitTag::fragment) ||
+//		gameObject->hasTrait(TraitTag::fragment))
+//	{
+//		return true;
+//	}
+//	else {
+//		return false;
+//	}
+//}
 
 std::vector<SeenObjectDetails> GameObject::getSeenObjects()
 {
@@ -834,18 +1249,233 @@ std::vector<SeenObjectDetails> GameObject::getSeenObjects()
 
 }
 
-std::vector<GameObject*> GameObject::getTouchingByTrait(const int trait)
+std::vector<std::weak_ptr<GameObject>> GameObject::getTouchingByTrait(const int trait)
 {
-	std::vector<GameObject*>touchingObjects{};
+
+	std::vector<std::weak_ptr<GameObject>>touchingObjects{};
 
 	for (auto& gameObject : m_touchingGameObjects) {
 
 		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
-			touchingObjects.push_back(gameObject.second.lock().get());
+			touchingObjects.push_back(gameObject.second.lock());
 		}
 
 	}
 
 	return touchingObjects;
+
+}
+
+
+std::optional<std::weak_ptr<GameObject>> GameObject::getFirstTouchingByTrait(const int trait)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
+			return gameObject.second.lock();
+		}
+
+	}
+
+	return std::nullopt;
+
+}
+
+bool GameObject::isTouchingByTrait(const int trait)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->hasTrait(trait)) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+bool GameObject::isTouchingByType(const std::string type)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->type() == type) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+bool GameObject::isTouchingByName(const std::string name)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->name() == name) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+void GameObject::_imGuiDebugObject()
+{
+
+	//if (type() == "MAIN_HUD_HOLDER") {
+
+	//	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	//	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+
+	//	ImGui::Begin("MAIN_HUD_HOLDER");
+
+	//	ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
+	//	ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
+
+	//	ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
+	//	ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+
+
+	//	ImGui::End();
+
+	//}
+
+	//if (type() == "HUD_INTERFACE_FRAME") {
+
+	//	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	//	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	//	//const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+
+	//	ImGui::Begin("HUD_INTERFACE_FRAME Position");
+
+	//	ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
+	//	ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
+
+	//	/*ImGui::Value("Physics Position X", physicsComponent->position().x);
+	//	ImGui::Value("Physics Position Y", physicsComponent->position().y);*/
+
+	//	ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
+	//	ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
+
+	//	
+
+	//	ImGui::End();
+
+	//}
+	if (type() == "DRAWER_SMALL") {
+
+		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+
+
+		ImGui::Begin("Small Drawer Inventory");
+
+		for (const auto& item : inventoryComponent->items()) {
+
+			if (item) {
+				ImGui::Text(item.value()->type().c_str());
+			}
+		}
+
+		ImGui::End();
+
+	}
+
+	if (type() == "DRAWER_MEDIUM") {
+
+		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+
+
+		ImGui::Begin("Medium Drawer Inventory");
+
+		for (const auto& item : inventoryComponent->items()) {
+
+			if (item) {
+				ImGui::Text(item.value()->type().c_str());
+			}
+		}
+
+		ImGui::End();
+
+	}
+
+	if (type() == "BOBBY") {
+
+		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+
+
+		ImGui::Begin("Bobby Inventory");
+
+		for (const auto& item : inventoryComponent->items()) {
+
+			if (item) {
+				ImGui::Text(item.value()->type().c_str());
+			}
+		}
+
+		ImGui::End();
+
+	}
+	if (type() == "HOUSE_OVERLAY") {
+
+		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+
+		ImGui::Begin("test");
+
+		ImGui::Text("House Adjustments");
+
+		//Alpha
+		static int alpha = renderComponent->color().a;
+		ImGui::InputInt("#mouseSensitivity", &alpha, 3, 500);
+		renderComponent->setColorAlpha(alpha);
+
+		//Width
+		static int width = transformComponent->getPositionRect().w;
+		ImGui::InputInt("#width", &width,3, 100);
+
+		//Height
+		static int height = transformComponent->getPositionRect().h;
+		ImGui::InputInt("#height", &height, 3, 100);
+		transformComponent->setSize(width, height);
+
+		//XPos
+		static int xPos = transformComponent->getCenterPosition().x;
+		ImGui::InputInt("#xPos", &xPos, 3, 100);
+
+		//yPos
+		static int yPos = transformComponent->getCenterPosition().y;
+		ImGui::InputInt("#yPos", &yPos, 3, 100);
+
+		transformComponent->setPosition(SDL_FPoint{(float)xPos,(float)yPos});
+
+
+
+		ImGui::End();
+	}
+
+
+
+
+
+
 
 }

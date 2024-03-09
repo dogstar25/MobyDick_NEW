@@ -12,20 +12,26 @@
 #include "components/CheckPointComponent.h"
 #include "components/HudComponent.h"
 #include "components/InventoryComponent.h"
+#include "components/InterfaceComponent.h"
 #include "components/NavigationComponent.h"
 #include "components/ParticleComponent.h"
 #include "components/ParticleXComponent.h"
 #include "components/PoolComponent.h"
-#include "components/UIControlComponent.h"
 #include "components/PhysicsComponent.h"
+#include "components/PuzzleComponent.h"
 #include "components/RenderComponent.h"
+#include "components/MaskedOverlayComponent.h"
 #include "components/SoundComponent.h"
+#include "components/StateComponent.h"
 #include "components/TextComponent.h"
 #include "components/TransformComponent.h"
 #include "components/VitalityComponent.h"
 #include "components/WeaponComponent.h"
 #include "components/PlayerControlComponent.h"
 #include "components/IMGuiComponent.h"
+#include "components/LightComponent.h"
+#include "components/LightedTreatmentComponent.h"
+#include "components/GridDisplayComponent.h"
 
 
 
@@ -48,6 +54,7 @@ public:
 		float xMapPos,
 		float yMapPos,
 		float angleAdjust,
+		b2Vec2 sizeOverride,
 		const int componentType);
 
 };

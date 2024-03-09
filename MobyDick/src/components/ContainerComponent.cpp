@@ -1,16 +1,16 @@
 #include "ContainerComponent.h"
+#include "StateComponent.h"
 #include "../Util.h"
 
-ContainerComponent::ContainerComponent()
+ContainerComponent::ContainerComponent() :
+	Component(ComponentTypes::CONTAINER_COMPONENT)
 {
 
 }
 
-ContainerComponent::ContainerComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene)
+ContainerComponent::ContainerComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::CONTAINER_COMPONENT)
 {
-
-	m_componentType = ComponentTypes::CONTAINER_COMPONENT;
-
 
 	m_capacity = componentJSON["capacity"].asInt();
 	if (componentJSON.isMember("refillTimer")) {
@@ -81,13 +81,16 @@ void ContainerComponent::update()
 
 	//Animation
 	if (parent()->hasComponent(ComponentTypes::ANIMATION_COMPONENT)) {
-		const auto& animation = parent()->getComponent<AnimationComponent>(ComponentTypes::ANIMATION_COMPONENT);
+		const auto& stateComponent = parent()->getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
 		if (isEmpty()) {
 
-			animation->setCurrentAnimationState(ANIMATION_IDLE);
+			stateComponent->addState(GameObjectState::ON);
+
 		}
 		else {
-			animation->setCurrentAnimationState(ANIMATION_ACTIVE);
+
+			stateComponent->addState(GameObjectState::OFF);
+
 		}
 	}
 
@@ -143,7 +146,7 @@ void ContainerComponent::_removeFromWorldPass()
 	m_items.shrink_to_fit();
 
 }
-ContainerItem& ContainerComponent::addItem(std::string gameObjectType, float spawnForce, Scene* parentScene, std::string parentName, int itemCount, bool onContainerConstruction)
+ContainerItem ContainerComponent::addItem(std::string gameObjectType, float spawnForce, Scene* parentScene, std::string parentName, int itemCount, bool onContainerConstruction)
 {
 
 	ContainerItem containerItem{};
@@ -151,9 +154,8 @@ ContainerItem& ContainerComponent::addItem(std::string gameObjectType, float spa
 
 	//Create off screen
 	std::string name = _buildItemName(parentName, itemCount);
-	auto gameObject = std::make_shared<GameObject>(gameObjectType, (float)-50.0, (float)-50.0, (float)0, parentScene, GameLayer::MAIN, false, name);
+	auto gameObject = parentScene->createGameObject(gameObjectType, (float)-50.0, (float)-50.0, (float)0, parentScene, GameLayer::MAIN, false, name);
 	containerItem.gameObject = gameObject;
-	parentScene->addGameObjectIndex(gameObject);
 
 	//If this is on the container construction we have to wait and let the postinit set the final destination
 	//otherwise we can set it now

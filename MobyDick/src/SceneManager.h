@@ -54,6 +54,7 @@ public:
 	void loadCurrentLevel();
 	void respawnPlayer();
 	void deleteGameObject(std::string gameObjectName);
+	void setMouseCursor(SDL_Cursor* mouseCursor) { m_currentMouseCursor = mouseCursor; }
 
 	std::optional<SceneAction> getSceneKeyAction(SDL_Keycode);
 
@@ -77,8 +78,8 @@ public:
 		return m_PlayerInputEvents;
 	}
 
-	GameObject* addGameObject(std::shared_ptr<GameObject>gameObject, int layer);
-	GameObject* addGameObject(std::string gameObjectType, int layer, float xMapPos, float yMapPos, float angle = 0., bool cameraFollow = false);
+	//GameObject* addGameObject(std::shared_ptr<GameObject>gameObject, GameLayer layer);
+	GameObject* addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle = 0., bool cameraFollow = false);
 
 private:
 	
@@ -95,6 +96,7 @@ private:
 	int m_currentSceneIndex{};
 	Timer m_gameTimer{};
 	int m_frameCount{};
+	SDL_Cursor* m_currentMouseCursor;
 
 	void _directorTakeOver();
 	void _directorRelease();

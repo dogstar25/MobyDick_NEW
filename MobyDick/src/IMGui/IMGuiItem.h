@@ -41,6 +41,9 @@ protected:
 	inline static ImFont* m_largeFont;
 	inline static ImFont* m_xLargeFont;
 
+	inline static ImFont* m_xSmallGothicFont;
+	inline static ImFont* m_smallGothicFont;
+
 	//GameObject that owns this IMGuiItem
 	GameObject* m_parent{};
 

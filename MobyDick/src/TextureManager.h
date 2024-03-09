@@ -15,7 +15,6 @@
 #include "texture.h"
 
 
-
 class TextureManager
 {
 
@@ -28,6 +27,7 @@ public:
 	bool init();
 	std::shared_ptr<Texture> getTexture(std::string id);
 	std::string getFont(std::string id);
+	SDL_Cursor* getMouseCursor(std::string id);
 	bool hasTexture(std::string textureId);
 	void addOrReplaceTexture(std::string textureId, std::shared_ptr<Texture> texture);
 	bool load(std::string texturesAssetsFile);
@@ -38,6 +38,7 @@ private:
 
 	std::map<std::string, std::shared_ptr<Texture>> m_textureMap;
 	std::map<std::string, std::string> m_fontMap;
+	std::map<std::string, SDL_Cursor*> m_mouseCursorMap;
 	
 
 

@@ -12,10 +12,9 @@
 
 extern std::unique_ptr<Game> game;
 
-IMGuiComponent::IMGuiComponent(Json::Value componentJSON, std::string gameObjectType, Scene* parentScene)
+IMGuiComponent::IMGuiComponent(Json::Value componentJSON, std::string gameObjectType, Scene* parentScene) :
+	Component(ComponentTypes::IMGUI_COMPONENT)
 {
-	m_componentType = ComponentTypes::IMGUI_COMPONENT;
-
 	auto imguiType = componentJSON["imguiType"].asString();
 
 	ImVec4 color = { 1.0, 1.0, 1.0, 1.0 };
@@ -78,26 +77,20 @@ void IMGuiComponent::setParent(GameObject* parentObject)
 
 void IMGuiComponent::update()
 {
-	////////////////////////////////
-	////NEW TEST TEST
-	//const auto& interactActionComponent = getInteractionObject()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
-	//const auto& interactAction = interactActionComponent->getAction(ACTION_INTERACTION);
-
-	//if (ImGui::IsKeyPressed(ImGuiKey_E)) {
-	//	interactAction->perform(getInteractionObject().get(), SDL_SCANCODE_E);
-	//}
-	//if (ImGui::IsKeyPressed(ImGuiKey_R)) {
-	//	interactAction->perform(getInteractionObject().get(), SDL_SCANCODE_R);
-	//}
-	/////////////////////////////////////
 }
 
 void IMGuiComponent::render()
 {
+
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 
 	glm::vec2 imGuiWindowSize = m_IMGuiItem->render();
 	transform->setSize(b2Vec2{ imGuiWindowSize.x,imGuiWindowSize.y });
+
+	//could we render a object here? Like a guipanel that needs to display the object like an item?
+	//todd
+
+
 
 
 }

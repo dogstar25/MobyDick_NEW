@@ -14,7 +14,6 @@
 #include "../actions/InteractAction.h"
 #include "../actions/UseAction.h"
 #include "../actions/NoAction.h"
-#include "../actions/LoadNextLevelAction.h"
 #include "../Util.h"
 #include "../BaseConstants.h"
 
@@ -37,7 +36,6 @@ public:
 	~SoundComponent();
 
 	void update() override;
-	void render();
 	void postInit() override;
 
 	std::optional<SoundItem> getSound(std::string soundId);
