@@ -11,6 +11,7 @@
 #include "components/ContainerComponent.h"
 #include "components/CheckPointComponent.h"
 #include "components/HudComponent.h"
+#include "components/EnvironmentComponent.h"
 #include "components/InventoryComponent.h"
 #include "components/InterfaceComponent.h"
 #include "components/NavigationComponent.h"

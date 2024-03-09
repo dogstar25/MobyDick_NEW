@@ -15,7 +15,6 @@ public:
 	std::chrono::duration<float> timeElapsed();
 	std::chrono::duration<float> timeRemaining();
 	float percentTargetMet();
-	float calculateFPS(int& frameCount);
 	void reset();
 	bool isSet() {
 		return m_targetDuration > std::chrono::duration<float>{0};
