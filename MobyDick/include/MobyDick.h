@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma once
+
 //Base
 #include <iostream>
 #include <filesystem>
@@ -10,10 +12,11 @@
 #include <optional>
 #include <bitset>
 #include <chrono>
+#include <math.h>
+#include <random>
+#include <assert.h>
+#include <format>
 
-
-//Vendors
-//#include "vcpkg_installed/x64-windows/x64-windows/include/json/json.h"
 #include <json/json.h>
 #include <box2d/box2d.h>
 #include <SDL2/SDL.h>
@@ -24,6 +27,7 @@
 #include "imgui_impl_sdlrenderer.h"
 
 //MobyDick
+#include "../src/Animation.h"
 #include "../src/BaseConstants.h"
 #include "../src/Blueprint.h"
 #include "../src/BrainAABBCallback.h"
@@ -52,7 +56,6 @@
 #include "../src/SoundManager.h"
 #include "../src/actions/Action.h"
 #include "../src/actions/ActionFactory.h"
-#include "../src/actions/ActorWarpAction.h"
 #include "../src/actions/DefaultMoveAction.h"
 #include "../src/actions/DefaultOnHoverAction.h"
 #include "../src/actions/DefaultOnHoverOutAction.h"
@@ -75,7 +78,6 @@
 #include "../src/components/ContainerComponent.h"
 #include "../src/components/HudComponent.h"
 #include "../src/components/IMGuiComponent.h"
-#include "../src/components/InterfaceComponent.h"
 #include "../src/components/InventoryComponent.h"
 #include "../src/components/NavigationComponent.h"
 #include "../src/components/ParticleComponent.h"
@@ -83,11 +85,10 @@
 #include "../src/components/PhysicsComponent.h"
 #include "../src/components/PlayerControlComponent.h"
 #include "../src/components/PoolComponent.h"
-#include "../src/components/PuzzleComponent.h"
 #include "../src/components/RenderComponent.h"
-#include "../src/components/StateComponent.h"
 #include "../src/components/TransformComponent.h"
 #include "../src/components/TextComponent.h"
+#include "../src/components/UIControlComponent.h"
 #include "../src/components/VitalityComponent.h"
 #include "../src/components/WeaponComponent.h"
 #include "../src/cutScenes/CutScene.h"
@@ -109,18 +110,15 @@
 #include "../src/opengl/GLRenderer.h"
 #include "../src/opengl/LineDrawBatch.h"
 #include "../src/opengl/Shader.h"
-//#include "../src/opengl/shaderCode.h"
+
 #include "../src/opengl/SpriteDrawBatch.h"
 #include "../src/opengl/Vertex.h"
 #include "../src/particleEffects/BaseParticleEffects.h"
 #include "../src/particleEffects/ParticleEffectsFactory.h"
 #include "../src/triggers/Trigger.h"
-#include "../src/puzzles/PuzzleFactory.h"
-#include "../src/puzzles/Puzzle.h"
-#include "../src/puzzles/UnLockDoorPuzzle.h"
+
 #include "../src/triggers/TriggerFactory.h"
 #include "../src/texture.h"
 #include "../src/TextureManager.h"
 #include "../src/Timer.h"
 #include "../src/Util.h"
-

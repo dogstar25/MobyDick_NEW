@@ -141,35 +141,16 @@ std::optional<SceneAction> SceneManager::pollEvents()
 		{
 			case SDL_WINDOWEVENT:
 				count++;
-				//std::cout << "Window Event" << std::endl;
+
 				switch (event.window.event)
 				{
-					//case SDL_WINDOWEVENT_FOCUS_GAINED:
-					//	std::cout << "Focus gained" << count << std::endl;
-					//	//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Debug Meaage", "Window focus was GAINED", game->window());
-					//	//SDL_SetWindowKeyboardGrab(game->window(), SDL_TRUE);
-					//	//SDL_SetWindowMouseGrab(game->window(), SDL_TRUE);
-					//	break;
-					//case SDL_WINDOWEVENT_FOCUS_LOST:
-					//	std::cout << "Focus lost" << count << std::endl;
-					//	//SDL_SetWindowKeyboardGrab(game->window(), SDL_FALSE);
-					//	//SDL_SetWindowMouseGrab(game->window(), SDL_FALSE);
-
-					//	break;
-					case SDL_WINDOWEVENT_RESIZED:
-						//SDL_SetWindowKeyboardGrab(game->window(), SDL_FALSE);
-						//SDL_SetWindowMouseGrab(game->window(), SDL_FALSE);
-						//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Switched to PAUSE", "Switched to PAUSE", game->window());
-						//glViewport(0, 0, event.window.data1, event.window.data2);
-						//sceneAction = SceneAction{};
-						//sceneAction->actionCode = SCENE_ACTION_WINDOW_PAUSE;
+					case SDL_WINDOWEVENT_MINIMIZED:
+						sceneAction = SceneAction{};
+						sceneAction->actionCode = SCENE_ACTION_WINDOW_PAUSE;
 						break;
 
 					case SDL_WINDOWEVENT_RESTORED:
 					case SDL_WINDOWEVENT_MAXIMIZED:
-						//SDL_SetWindowKeyboardGrab(game->window(), SDL_TRUE);
-						//SDL_SetWindowMouseGrab(game->window(), SDL_TRUE);
-						//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Switched to UNPAUSE", "Switched to UNPAUSE", game->window());
 						sceneAction = SceneAction{};
 						sceneAction->actionCode = SCENE_ACTION_WINDOW_UNPAUSE;
 						break;

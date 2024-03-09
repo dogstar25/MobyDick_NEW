@@ -316,6 +316,21 @@ namespace ComponentTypes {
 
 }
 
+//Animation States
+inline constexpr int MAX_ANIMATION_STATES = 12;
+
+inline constexpr int ANIMATION_IDLE = 0;
+inline constexpr int ANIMATION_RUN = 1;
+inline constexpr int ANIMATION_ACTIVE = 2;
+inline constexpr int ANIMATION_ACTION = 3;
+inline constexpr int ANIMATION_DEPLOY = 4;
+inline constexpr int ANIMATION_UNDEPLOY = 5;
+inline constexpr int ANIMATION_DEAD = 6;
+inline constexpr int ANIMATION_SPRINT = 7;
+inline constexpr int ANIMATION_ACKNOWLEDGE = 8;
+inline constexpr int ANIMATION_STRAFE_LEFT = 9;
+inline constexpr int ANIMATION_STRAFE_RIGHT = 10;
+
 //Animation Modes
 enum class AnimationMode {
 

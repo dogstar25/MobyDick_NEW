@@ -327,20 +327,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MobyDick.h" />
-    <ClInclude Include="src\components\MaskedOverlayComponent.h" />
-    <ClInclude Include="src\actions\ButtonCloseInventoryAction.h" />
-    <ClInclude Include="src\actions\CloseInventoryAction.h" />
-    <ClInclude Include="src\actions\CloseShelfInventoryAction.h" />
-    <ClInclude Include="src\actions\ItemhHighlightApplyAction.h" />
-    <ClInclude Include="src\actions\ItemhHighlightRemoveAction.h" />
-    <ClInclude Include="src\actions\OnOffToggleAction.h" />
-    <ClInclude Include="src\actions\TakeItemAction.h" />
-    <ClInclude Include="src\actions\ToggleInventoryAction.h" />
-    <ClInclude Include="src\components\GridDisplayComponent.h" />
-    <ClInclude Include="src\components\InterfaceComponent.h" />
-    <ClInclude Include="src\components\PuzzleComponent.h" />
-    <ClInclude Include="src\components\LightComponent.h" />
-    <ClInclude Include="src\components\LightedTreatmentComponent.h" />
     <ClInclude Include="src\actions\ActionFactory.h" />
     <ClInclude Include="src\actions\ActorWarpAction.h" />
     <ClInclude Include="src\actions\PrimitiveMoveAction.h" />

@@ -87,10 +87,18 @@ EnumMap::EnumMap()
 	m_enumMap["PhysicsChainType::CCW_REFLECT_IN"] = (int)PhysicsChainType::CCW_REFLECT_IN;
 	m_enumMap["PhysicsChainType::CW_REFLECT_OUT"] = (int)PhysicsChainType::CW_REFLECT_OUT;
 
-	//Animation Modes
-	m_enumMap["AnimationMode::ANIMATE_ONE_TIME"] = (int)AnimationMode::ANIMATE_ONE_TIME;
-	m_enumMap["AnimationMode::ANIMATE_CONTINUOUS"] = (int)AnimationMode::ANIMATE_CONTINUOUS;
-	m_enumMap["AnimationMode::ANIMATE_STILL_FRAME"] = (int)AnimationMode::ANIMATE_STILL_FRAME;
+	//Animation Statessdpssss
+	m_enumMap["ANIMATION_IDLE"] = ANIMATION_IDLE;
+	m_enumMap["ANIMATION_RUN"] = ANIMATION_RUN;
+	m_enumMap["ANIMATION_ACTIVE"] = ANIMATION_ACTIVE;
+	m_enumMap["ANIMATION_ACTION"] = ANIMATION_ACTION;
+	m_enumMap["ANIMATION_DEPLOY"] = ANIMATION_DEPLOY;
+	m_enumMap["ANIMATION_UNDEPLOY"] = ANIMATION_UNDEPLOY;
+	m_enumMap["ANIMATION_DEAD"] = ANIMATION_DEAD;
+	m_enumMap["ANIMATION_SPRINT"] = ANIMATION_SPRINT;
+	m_enumMap["ANIMATION_ACKNOWLEDGE"] = ANIMATION_ACKNOWLEDGE;
+	m_enumMap["ANIMATION_STRAFE_LEFT"] = ANIMATION_STRAFE_LEFT;
+	m_enumMap["ANIMATION_STRAFE_RIGHT"] = ANIMATION_STRAFE_RIGHT;
 
 	//Player Control
 	m_enumMap["INPUT_CONTROL_MOVEMENT"] = INPUT_CONTROL_MOVEMENT;
