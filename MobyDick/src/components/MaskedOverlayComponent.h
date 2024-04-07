@@ -19,6 +19,7 @@ public:
 
 	void addOverlayObject(std::shared_ptr<GameObject> overlayObject);
 	std::shared_ptr<GameObject> removeOverlayObject(std::shared_ptr<GameObject> overlayObject);
+	std::optional<std::shared_ptr<GameObject>> getOverlayObject(std::string gameObjectType);
 
 protected:
 

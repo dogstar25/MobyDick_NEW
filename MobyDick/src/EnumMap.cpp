@@ -41,6 +41,7 @@ EnumMap::EnumMap()
 	m_enumMap["WEAPON_COMPONENT"] = (int)ComponentTypes::WEAPON_COMPONENT;
 	m_enumMap["LIGHT_COMPONENT"] = (int)ComponentTypes::LIGHT_COMPONENT;
 	m_enumMap["LIGHTED_TREATMENT_COMPONENT"] = (int)ComponentTypes::LIGHTED_TREATMENT_COMPONENT;
+	m_enumMap["ENVIRONMENT_COMPONENT"] = (int)ComponentTypes::ENVIRONMENT_COMPONENT;
 
 
 	//Renderer Types
@@ -173,6 +174,7 @@ EnumMap::EnumMap()
 	m_enumMap["PositionAlignment::BOTTOM_RIGHT"] = (int)PositionAlignment::BOTTOM_RIGHT;
 
 	//Game Layers
+	m_enumMap["GameLayer::BACKGROUND_FINAL"] = GameLayer::BACKGROUND_FINAL;
 	m_enumMap["GameLayer::BACKGROUND_5"] = GameLayer::BACKGROUND_5;
 	m_enumMap["GameLayer::BACKGROUND_4"] = GameLayer::BACKGROUND_4;
 	m_enumMap["GameLayer::BACKGROUND_3"] = GameLayer::BACKGROUND_3;

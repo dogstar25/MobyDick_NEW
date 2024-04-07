@@ -8,7 +8,6 @@ Timer::Timer(float targetDuration, bool autoReset) : m_targetDuration(targetDura
         m_infiniteLifetime = true;
     }
 
-    //firstTime = false;
 }
 
 std::chrono::duration<float> Timer::timeElapsed() 
@@ -22,7 +21,6 @@ float Timer::percentTargetMet()
     float percentTargetMet{};
     if (m_infiniteLifetime == false) {
         percentTargetMet = (m_targetDuration - timeRemaining()) / m_targetDuration;
-        //percentTargetMet = timeRemaining() / m_targetDuration;
     }
     return percentTargetMet;
 }
@@ -30,7 +28,6 @@ float Timer::percentTargetMet()
 std::chrono::duration<float> Timer::timeRemaining()
 {
     auto timeRemaining =  std::max((m_targetDuration - timeElapsed()).count(), (float)0);
-    //auto timeRemaining = m_targetDuration - timeElapsed();
 
     return std::chrono::duration<float>(timeRemaining);
 }
@@ -58,18 +55,17 @@ bool Timer::hasMetTargetDuration()
 void Timer::reset()
 {
     m_timeSnapshot = std::chrono::steady_clock::now();
-    //m_accumulatedTimeDiff = std::chrono::duration < float>(0);
 
 }
 
-//float Timer::calculateFPS(int& frameCount)
-//{
-//    float fps{};
-//    if (frameCount > 100) {
-//        fps = frameCount / m_accumulatedTimeDiff.count();
-//        frameCount = 0;
-//        m_accumulatedTimeDiff = std::chrono::duration < float>(0);
-//    }
-//
-//    return fps;
-//}
+bool Timer::isFirstTime()
+{
+    if (m_firstTime) {
+        m_firstTime = false;
+        return true;
+    }
+
+    return false;
+    
+
+}

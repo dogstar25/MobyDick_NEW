@@ -67,12 +67,32 @@ void MaskedOverlayComponent::update()
 void MaskedOverlayComponent::addOverlayObject(std::shared_ptr<GameObject> overlayObject)
 {
 
+	m_overlayObjects.push_back(overlayObject);
+
 }
 
 std::shared_ptr<GameObject> MaskedOverlayComponent::removeOverlayObject(std::shared_ptr<GameObject> overlayObject)
 {
 
 	return std::shared_ptr<GameObject>();
+
+}
+
+std::optional<std::shared_ptr<GameObject>> MaskedOverlayComponent::getOverlayObject(std::string gameObjectType)
+{
+	std::optional<std::shared_ptr<GameObject>> object{};
+
+	for (auto& overlayObject : m_overlayObjects) {
+
+		if (overlayObject->type() == gameObjectType) {
+
+			return overlayObject;
+
+		}
+
+	}
+
+	return object;
 
 }
 
@@ -128,10 +148,14 @@ void MaskedOverlayComponent::render()
 	for (auto& overlayObject : m_overlayObjects) {
 
 		bool clear = first;
-		first = false;
-
+		
 		//Only clear on the first one
-		game->renderer()->renderToTexture(m_compositeTexture.get(), overlayObject.get(), { 0.,0. }, RenderBlendMode::BLEND, clear);
+		if (overlayObject->hasState(GameObjectState::DISABLED_RENDER) == false) {
+
+			first = false;
+			game->renderer()->renderToTexture(m_compositeTexture.get(), overlayObject.get(), { 0.,0. }, RenderBlendMode::BLEND, clear);
+
+		}
 	}
 
 	//Render the mask objects to the composite texture
