@@ -9,7 +9,7 @@ public:
 	Timer() = default;
 	Timer(float targetDuration, bool autoReset=false);
 
-	bool firstTime{ true };
+	
 	bool infiniteLifetime() { return m_infiniteLifetime; }
 	bool hasMetTargetDuration();
 	std::chrono::duration<float> timeElapsed();
@@ -19,6 +19,7 @@ public:
 	bool isSet() {
 		return m_targetDuration > std::chrono::duration<float>{0};
 	};
+	bool isFirstTime();
 
 	/*Timer(Timer&& other) noexcept : m_targetDuration(other.m_targetDuration)
 	{
@@ -52,6 +53,7 @@ private:
 	std::chrono::steady_clock::time_point m_timeSnapshot{ std::chrono::steady_clock::now() };
 	bool m_infiniteLifetime{ false };
 	bool m_autoReset{ false };
+	bool m_firstTime{ true };
 
 };
 

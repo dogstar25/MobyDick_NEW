@@ -246,4 +246,51 @@ std::optional<Particle*> ParticleComponent::getAvailableParticle()
 	return availableParticle;
 }
 
+void ParticleComponent::setParticleEffectSpawnCount(std::string effectName, int minSpawnCount, int maxSpawnCount)
+{
+
+	for (auto& effect : m_particleEffects) {
+
+		if (effect.name == effectName) {
+
+			effect.particleSpawnCountMin = minSpawnCount;
+			effect.particleSpawnCountMax = maxSpawnCount;
+
+		}
+
+	}
+
+}
+
+void ParticleComponent::setParticleEffectForce(std::string effectName, float minEmitForce, float maxEmitForce)
+{
+
+	for (auto& effect : m_particleEffects) {
+
+		if (effect.name == effectName) {
+
+			effect.forceMin = minEmitForce;
+			effect.forceMin = maxEmitForce;
+
+		}
+
+	}
+
+}
+
+void ParticleComponent::setParticleEffectEmitAngle(std::string effectName, float minEmitAngle, float maxEmitAngle)
+{
+
+	for (auto& effect : m_particleEffects) {
+
+		if (effect.name == effectName) {
+
+			effect.angleMin = minEmitAngle;
+			effect.angleMax = maxEmitAngle;
+
+		}
+
+	}
+
+}
 

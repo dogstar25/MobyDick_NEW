@@ -13,6 +13,7 @@
 Particle Effect struct is initialized with values if you do not want to override
 */
 struct ParticleEffect {
+	std::string name{"BASE"};
 	std::string poolId = "SMOKE1_POOL";
 	b2Vec2 originMin;
 	b2Vec2 originMax;
@@ -47,6 +48,7 @@ struct ParticleEffect {
 namespace ParticleEffects {
 
 	static const ParticleEffect smoke = {
+		.name = "SMOKE",
 		.poolId = "SMOKE1_POOL",
 		.originMin = {0,0},
 		.originMax = {0,0},

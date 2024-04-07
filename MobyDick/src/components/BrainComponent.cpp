@@ -40,7 +40,7 @@ BrainComponent::~BrainComponent()
 void BrainComponent::update()
 {
 
-	if (m_updateSensorInputTimer.firstTime == false && m_updateSensorInputTimer.hasMetTargetDuration()) {
+	if (m_updateSensorInputTimer.isFirstTime() == false && m_updateSensorInputTimer.hasMetTargetDuration()) {
 		_updateSensorInput();
 	}
 

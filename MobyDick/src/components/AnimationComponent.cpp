@@ -27,8 +27,8 @@ AnimationComponent::AnimationComponent(Json::Value componentJSON) :
 		animation.id = id;
 		animation.animationMode = (AnimationMode)game->enumMap()->toEnum(animItr["animateMode"].asString());
 		animation.speed = animItr["speed"].asFloat();
-		animation.texture = TextureManager::instance().getTexture(textureId);
 		animation.frameCount = animItr["frames"].asInt();
+		animation.texture = TextureManager::instance().getTexture(textureId);
 
 		//Calculate how many columns and rows this animation texture has
 		int rows, columns;
@@ -121,13 +121,6 @@ void AnimationComponent::update()
 
 		}
 
-		if (m_currentAnimation.value().timer.firstTime == true) {
-
-			m_currentAnimation.value().timer = Timer(m_currentAnimation.value().speed, true);
-			m_currentAnimation.value().timer.firstTime = false;
-
-		}
-
 		//Execute the next animation frame in the current animation
 		if (m_currentAnimation.value().timer.hasMetTargetDuration())
 		{
@@ -187,6 +180,8 @@ void AnimationComponent::animate(std::string animationId, float speed)
 		if (speed != 0.) {
 			m_currentAnimation.value().speed = speed;
 		}
+
+		m_currentAnimation.value().timer = Timer(m_currentAnimation.value().speed, true);
 
 	}
 

@@ -25,6 +25,7 @@ void EnvironmentComponent::update()
 
 
 
+
 }
 
 void EnvironmentComponent::setParent(GameObject* gameObject)

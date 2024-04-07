@@ -48,6 +48,9 @@ public:
 	void setEmissionInterval(float emissionIterval) { m_emissionInterval = std::chrono::duration<float>(emissionIterval); }
 	void addParticleEffect(ParticleEffect particleEffect);
 	std::optional<Particle*> getAvailableParticle();
+	void setParticleEffectSpawnCount(std::string effectName, int minSpawnCount, int maxSpawnCount);
+	void setParticleEffectEmitAngle(std::string effectName, float minEmitAngle, float maxEmitAngle);
+	void setParticleEffectForce(std::string effectName, float minEmitForce, float maxEmitForce);
 
 private:
 

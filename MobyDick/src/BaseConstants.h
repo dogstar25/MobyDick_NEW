@@ -13,6 +13,7 @@ enum NavigationStatus {
 
 };
 
+
 inline constexpr int TURN_ON = 0;
 inline constexpr int TURN_OFF = 1;
 

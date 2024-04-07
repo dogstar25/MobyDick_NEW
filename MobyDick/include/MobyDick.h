@@ -10,6 +10,8 @@
 #include <optional>
 #include <bitset>
 #include <chrono>
+#include <queue>
+#include <variant>
 
 
 //Vendors
@@ -73,6 +75,7 @@
 #include "../src/components/Component.h"
 #include "../src/components/CompositeComponent.h"
 #include "../src/components/ContainerComponent.h"
+#include "../src/components/EnvironmentComponent.h"
 #include "../src/components/HudComponent.h"
 #include "../src/components/IMGuiComponent.h"
 #include "../src/components/InterfaceComponent.h"
@@ -85,6 +88,7 @@
 #include "../src/components/PoolComponent.h"
 #include "../src/components/PuzzleComponent.h"
 #include "../src/components/RenderComponent.h"
+#include "../src/components/SoundComponent.h"
 #include "../src/components/StateComponent.h"
 #include "../src/components/TransformComponent.h"
 #include "../src/components/TextComponent.h"
