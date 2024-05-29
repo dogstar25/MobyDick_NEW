@@ -242,12 +242,6 @@ void RenderComponent::render()
 		return;
 	}
 
-	if (parent()->type() == "FULL_HOUSE_EXTERIOR") {
-
-		int todd = 1;
-
-	}
-
 	SDL_FRect destQuad = { getRenderDestRect() };
 	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
 
@@ -290,12 +284,6 @@ void RenderComponent::render(Texture* texture, SDL_Color color, RenderBlendMode 
 void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQuad, RenderBlendMode textureBlendMode)
 {
 	
-	if (parent()->type() == "FULL_HOUSE_EXTERIOR") {
-
-		int todd = 1;
-
-	}
-
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	const auto& physics = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		

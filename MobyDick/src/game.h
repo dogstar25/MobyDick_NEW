@@ -25,12 +25,14 @@
 #include "IMGui/IMGuiFactory.h"
 #include "triggers/TriggerFactory.h"
 #include "particleEffects/ParticleEffectsFactory.h"
+#include "EnvironmentEvents/EnvironmentEventFactory.h"
 #include "ContactListener.h"
 #include "ContactFilter.h"
 #include "ContextManager.h"
 #include "Renderer.h"
 #include "EnumMap.h"
 #include "ColorMap.h"
+
 
 
 /*
@@ -43,10 +45,21 @@ public:
 	Game() = default;
 	~Game();
 
-	virtual bool init(std::shared_ptr<ContactListener>, std::shared_ptr<ContactFilter>,
-		std::shared_ptr<ComponentFactory>, std::shared_ptr<ActionFactory>, std::shared_ptr<ParticleEffectsFactory>,
-		std::shared_ptr<CutSceneFactory>, std::shared_ptr<IMGuiFactory>, std::shared_ptr<TriggerFactory>, std::shared_ptr<PuzzleFactory>,
-		std::shared_ptr<ContextManager>, std::shared_ptr<EnumMap>, std::shared_ptr<ColorMap>) = 0;
+	virtual bool init(
+		std::shared_ptr<ContactListener>, 
+		std::shared_ptr<ContactFilter>,
+		std::shared_ptr<ComponentFactory>, 
+		std::shared_ptr<ActionFactory>, 
+		std::shared_ptr<ParticleEffectsFactory>,
+		std::shared_ptr<CutSceneFactory>, 
+		std::shared_ptr<IMGuiFactory>, 
+		std::shared_ptr<TriggerFactory>, 
+		std::shared_ptr<PuzzleFactory>,
+		std::shared_ptr<EnvironmentEventFactory>,
+		std::shared_ptr<ContextManager>, 
+		std::shared_ptr<EnumMap>, 
+		std::shared_ptr<ColorMap>
+	) = 0;
 
 	virtual void play();
 	virtual void _displayLoadingMsg();
@@ -98,6 +111,9 @@ public:
 	std::shared_ptr<TriggerFactory> triggerFactory() {
 		return m_triggerFactory;
 	}
+	std::shared_ptr<EnvironmentEventFactory> environmentEventFactory() {
+		return m_environmentEventFactory;
+	}
 	std::shared_ptr<EnumMap> enumMap() {
 		return m_enumMap;
 	}
@@ -126,6 +142,7 @@ protected:
 	std::shared_ptr<IMGuiFactory> m_iMGUIFactory{};
 	std::shared_ptr<TriggerFactory> m_triggerFactory{};
 	std::shared_ptr<PuzzleFactory> m_puzzleFactory{};
+	std::shared_ptr<EnvironmentEventFactory> m_environmentEventFactory{};
 	std::shared_ptr<EnumMap> m_enumMap{};
 	std::shared_ptr<ColorMap> m_colorMap{};
 

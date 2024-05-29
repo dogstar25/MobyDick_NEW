@@ -5,40 +5,42 @@
 #include <map>
 #include <variant>
 #include <unordered_map>
-#include <queue>
+#include <deque>
 #include "../BaseConstants.h"
+#include "../environmentEvents/EnvironmentEvent.h"	
+#include <variant>
 
 #include "../GameObject.h"
 
 namespace EnvironmentEventType {
 
-	inline constexpr int WAIT_EVENT = 0;
+	inline constexpr int CYCLE_TIMER = 0;
+	inline constexpr int SOUND_LOOP = 1;
 }
 
-enum class EventStatus {
+namespace EnvironmentEventId {
 
-	IDLE,
-	IN_PROGRESS,
-	COMPLETE
+	inline constexpr int NONE = 0;
+
+}
+
+enum class EventLevel {
+
+	NA,
+	MILD,
+	MODERATE,
+	INTENSE
 
 };
 
-enum class EnvironmentEventSubType {
+struct EnvironmentEventInstruction {
 
-	DISPLAY,
-	SOUND_ONETIME,
-	SOUND_LOOP
-
-};
-
-struct EnvironmentEvent {
-
-	int environmentEventType;
+	std::string id;
+	std::variant<std::string, EventLevel, float> param;
 	Timer durationTimer;
-	EventStatus status{ EventStatus::IDLE };
+
 
 };
-
 
 
 class EnvironmentComponent : public Component
@@ -51,23 +53,28 @@ public:
 	virtual void update() override;
 	virtual void postInit() override;
 	virtual void setParent(GameObject* gameObject) override;
+	void addEvent(std::shared_ptr<EnvironmentEvent> event);
 
-	virtual const int CYCLE_COUNT() const {
-		return 1;
-	}
 
 protected:
 
-	//This is a special sequence that will ghe executed immediately, in addition to the normal cycle sequence
-	std::queue<EnvironmentEvent> m_oneOffSequence{};
+	std::deque<std::shared_ptr<EnvironmentEvent>> m_events{};
+	int m_currentSequence{};
+	int m_sequenceCount{};
 
-	//Each enviornment cycle item represent an enviornment time lapse of enviuronment events
-	//This is used to represent the cycle of maybe a day. Each cycle item will execute in order and start over when reaching the end
-	std::vector<std::vector<EnvironmentEvent>> m_enviornmentCycle{};
 
-	int m_currentSequence{ 0 };
+	std::vector <std::vector<EnvironmentEventInstruction>> m_currentCycleInstructions{};
+
+	virtual void _applyEventInstructions(int sequence);
+	bool isEventDequeEmpty();
+
+	void startCycle();
+
 
 private:
+
+	
+	
 
 	
 

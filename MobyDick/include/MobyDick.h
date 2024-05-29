@@ -123,6 +123,8 @@
 #include "../src/puzzles/Puzzle.h"
 #include "../src/puzzles/UnLockDoorPuzzle.h"
 #include "../src/triggers/TriggerFactory.h"
+#include "../src/EnvironmentEvents/EnvironmentEventFactory.h"
+#include "../src/EnvironmentEvents/NoEvent.h"
 #include "../src/texture.h"
 #include "../src/TextureManager.h"
 #include "../src/Timer.h"

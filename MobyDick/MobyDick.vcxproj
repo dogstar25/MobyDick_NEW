@@ -244,6 +244,10 @@
     <ClCompile Include="src\cutScenes\CutScene.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneExample.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneFactory.cpp" />
+    <ClCompile Include="src\environmentEvents\EnvironmentEventFactory.cpp" />
+    <ClCompile Include="src\environmentEvents\NoEvent.cpp" />
+    <ClCompile Include="src\environmentEvents\SoundEvent.cpp" />
+    <ClCompile Include="src\environmentEvents\SoundLoopEvent.cpp" />
     <ClCompile Include="src\hud\HudItemFactory.cpp" />
     <ClCompile Include="src\components\HudComponent.cpp" />
     <ClCompile Include="src\hud\HudStatusSeries.cpp" />
@@ -356,6 +360,11 @@
     <ClInclude Include="src\cutScenes\CutScene.h" />
     <ClInclude Include="src\cutScenes\CutSceneExample.h" />
     <ClInclude Include="src\cutScenes\CutSceneFactory.h" />
+    <ClInclude Include="src\environmentEvents\EnvironmentEventFactory.h" />
+    <ClInclude Include="src\environmentEvents\EnvironmentEvent.h" />
+    <ClInclude Include="src\environmentEvents\NoEvent.h" />
+    <ClInclude Include="src\environmentEvents\SoundEvent.h" />
+    <ClInclude Include="src\environmentEvents\SoundLoopEvent.h" />
     <ClInclude Include="src\hud\HudItemFactory.h" />
     <ClInclude Include="src\components\HudComponent.h" />
     <ClInclude Include="src\hud\HudStatusSeries.h" />
