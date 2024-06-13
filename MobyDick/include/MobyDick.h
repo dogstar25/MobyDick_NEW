@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning(disable : 4251)
+#pragma warning(disable : 4275)
 
 //Base
 #include <iostream>
@@ -52,6 +54,7 @@
 #include "../src/RendererSDL.h"
 #include "../src/SceneManager.h"
 #include "../src/SoundManager.h"
+#include "../src/GameStateManager.h"
 #include "../src/actions/Action.h"
 #include "../src/actions/ActionFactory.h"
 #include "../src/actions/ActorWarpAction.h"

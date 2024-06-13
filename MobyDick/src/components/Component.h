@@ -6,6 +6,7 @@
 
 #include "../Util.h"
 #include "../BaseConstants.h"
+#include "../JsonSerialization.h"
 
 class GameObject;
 
@@ -25,6 +26,7 @@ public:
 	void enable() { disabled = false; }
 	bool isDisabled() { return disabled; }
 	bool isDependentObjectOwner() { return m_isDependentObjectOwner; }
+	bool includeInSaveFile() { return m_includeInSaveFile; }
 	
 	GameObject* parent() { return m_parentGameObject; }
 	int componentType() { return m_componentType; }
@@ -35,7 +37,8 @@ protected:
 	int m_componentType{};
 	bool disabled{ false };
 	bool m_isDependentObjectOwner{};
-
+	bool m_includeInSaveFile{};
 
 };
+
 

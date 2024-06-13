@@ -5,7 +5,9 @@
 #include "imgui_impl_sdl.h"
 #include "IMGui/IMGuiUtil.h"
 #include "SoundManager.h"
+#include "GameStateManager.h"
 #include <memory>
+
 
 
 
@@ -28,6 +30,7 @@ bool Game::init(
 	std::shared_ptr<PuzzleFactory> puzzleFactory, 
 	std::shared_ptr<EnvironmentEventFactory> environmentEventFactory,
 	std::shared_ptr<ContextManager> contextManager, 
+	std::shared_ptr<GameStateManager> gameStateManager,
 	std::shared_ptr<EnumMap> enumMap,
 	std::shared_ptr<ColorMap> colorMap
 )
@@ -41,6 +44,7 @@ bool Game::init(
 	m_particleEffectsFactory = particleEffectsFactory;
 	m_cutSceneFactory = cutSceneFactory;
 	m_contextMananger = contextManager;
+	m_gameStateMananger = gameStateManager;
 	m_iMGUIFactory = iMGuiFactory;
 	m_triggerFactory = triggerFactory;
 	m_environmentEventFactory = environmentEventFactory;
@@ -175,6 +179,15 @@ void Game::play()
 			}
 			else if (action->actionCode == SCENE_ACTION_TOGGLE_SETTING) {
 				SceneManager::instance().toggleSetting(enumMap()->toEnum(action->actionId));
+			}
+			else if (action->actionCode == SCENE_ACTION_QUICK_SAVE) {
+				SceneManager::instance().quickSave();
+			}
+			else if (action->actionCode == SCENE_ACTION_QUICK_LOAD) {
+				SceneManager::instance().quickLoad();
+			}
+			else if (action->actionCode == SCENE_ACTION_START_NEW) {
+				SceneManager::instance().startNewGame();
 			}
 
 		}

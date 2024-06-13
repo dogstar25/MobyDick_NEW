@@ -1,5 +1,4 @@
-#ifndef RENDER_COMPONENT_H
-#define RENDER_COMPONENT_H
+#pragma once
 
 #include <memory>
 #include <optional>
@@ -74,8 +73,21 @@ private:
 
 	std::optional<DisplayOverlay> m_displayOverlay;
 
+	friend void Json::serialize(Json::Value& value, GameObject& o);
+	friend void Json::deserialize(Json::Value& value, GameObject& o);
+
+
 };
 
 
-#endif
+// Serialization and Deserialization
+namespace Json {
+
+	template<>
+	void serialize<RenderComponent>(Json::Value& value, RenderComponent& o);
+
+	template<>
+	void deserialize<RenderComponent>(Json::Value& value, RenderComponent& o);
+}
+
 

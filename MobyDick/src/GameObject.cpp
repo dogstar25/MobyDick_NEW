@@ -16,6 +16,8 @@
 
 extern std::unique_ptr<Game> game;
 
+
+
 GameObject::~GameObject()
 {
 
@@ -30,18 +32,12 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 
 	Json::Value definitionJSON;
 
-	//Build components
+	//Get and store the definition of this game object type
 	definitionJSON = GameObjectManager::instance().getDefinition(gameObjectType)->definitionJSON();
 	m_gameObjectDefinition = definitionJSON;
 
-	//Category Id and Object Type
 	m_type = gameObjectType;
-	m_removeFromWorld = false;
-
-	//Description
 	m_description = definitionJSON["description"].asString();
-
-	//Layer
 	m_layer = layer;
 
 	//Build the unique id
@@ -897,14 +893,6 @@ void GameObject::disablePhysics()
 		stateComponent->addState(GameObjectState::DISABLED_PHYSICS);
 	}
 
-	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
-
-		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-		if (physicsComponent) {
-			physicsComponent->setPhysicsBodyActive(false);
-		}
-	}
-
 }
 
 void GameObject::enablePhysics()
@@ -913,15 +901,6 @@ void GameObject::enablePhysics()
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
 		stateComponent->removeState(GameObjectState::DISABLED_PHYSICS);
-	}
-
-	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
-
-		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-		if (physicsComponent) {
-			physicsComponent->setPhysicsBodyActive(true);
-		}
-
 	}
 
 }
@@ -973,25 +952,13 @@ bool GameObject::renderDisabled()
 
 }
 
-void GameObject::disableCollision(bool includeSensors)
+void GameObject::disableCollision()
 {
 
 	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
 		stateComponent->addState(GameObjectState::DISABLED_COLLISION);
-	}
-
-	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
-		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-		for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
-		{
-			if (fixture->IsSensor() == false || (fixture->IsSensor() == true && includeSensors == true)) {
-				ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
-				contactDefinition->contactTag = ContactTag::GENERAL_FREE;
-				fixture->Refilter();
-			}
-		}
 	}
 
 }
@@ -1002,16 +969,6 @@ void GameObject::enableCollision()
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
 		stateComponent->removeState(GameObjectState::DISABLED_COLLISION);
-	}
-
-	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
-		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-		for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
-		{
-			ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
-			contactDefinition->contactTag = contactDefinition->saveOriginalContactTag;
-			fixture->Refilter();
-		}
 	}
 
 }
@@ -1473,9 +1430,11 @@ void GameObject::_imGuiDebugObject()
 	}
 
 
-
+	
 
 
 
 
 }
+
+

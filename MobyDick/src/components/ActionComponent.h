@@ -1,6 +1,4 @@
-#ifndef ACTION_COMPONENT_H
-#define ACTION_COMPONENT_H
-
+#pragma once
 #include "Component.h"
 
 #include <map>
@@ -16,6 +14,7 @@
 #include "../actions/NoAction.h"
 #include "../Util.h"
 #include "../BaseConstants.h"
+#include "../JsonSerialization.h"
 
 
 class GameObject;
@@ -23,6 +22,10 @@ class Scene;
 
 class ActionComponent : public Component
 {
+
+friend void Json::serialize(Json::Value& value, ActionComponent& o);
+friend void Json::deserialize(Json::Value& value, ActionComponent& o);
+
 public:
 	ActionComponent(Json::Value definitionJSON, Scene* parentScene);
 	~ActionComponent() = default;
@@ -35,10 +38,15 @@ public:
 private:
 	std::vector<std::shared_ptr<Action>>m_actions;
 
-	
-
-
 };
 
 
-#endif
+// Serialization and Deserialization
+namespace Json {
+
+	template<>
+	void serialize<ActionComponent>(Json::Value& value, ActionComponent& o);
+
+	template<>
+	void deserialize<ActionComponent>(Json::Value& value, ActionComponent& o);
+}

@@ -145,6 +145,9 @@ EnumMap::EnumMap()
 	m_enumMap["Key::SDLK_F2"] = SDLK_F2;
 	m_enumMap["Key::SDLK_F3"] = SDLK_F3;
 	m_enumMap["Key::SDLK_F4"] = SDLK_F4;
+	m_enumMap["Key::SDLK_F5"] = SDLK_F5;
+	m_enumMap["Key::SDLK_F8"] = SDLK_F8;
+	m_enumMap["Key::SDLK_F9"] = SDLK_F9;
 	m_enumMap["Key::SDLK_F12"] = SDLK_F12;
 
 	//Scene Action Codes
@@ -158,6 +161,9 @@ EnumMap::EnumMap()
 	m_enumMap["SCENE_ACTION_DIRECT"] = SCENE_ACTION_DIRECT;
 	m_enumMap["SCENE_ACTION_RELEASE_DIRECT"] = SCENE_ACTION_RELEASE_DIRECT;
 	m_enumMap["SCENE_ACTION_TOGGLE_SETTING"] = SCENE_ACTION_TOGGLE_SETTING;
+	m_enumMap["SCENE_ACTION_QUICK_SAVE"] = SCENE_ACTION_QUICK_SAVE;
+	m_enumMap["SCENE_ACTION_QUICK_LOAD"] = SCENE_ACTION_QUICK_LOAD;
+	m_enumMap["SCENE_ACTION_START_NEW"] = SCENE_ACTION_START_NEW;
 
 	//Scene Tags
 	m_enumMap["SCENETAG_MENU"] = SCENETAG_MENU;
@@ -255,6 +261,7 @@ EnumMap::EnumMap()
 	m_enumMap["door_side"] = TraitTag::door_side;
 	m_enumMap["door_front"] = TraitTag::door_front;
 	m_enumMap["receptacle"] = TraitTag::receptacle;
+	m_enumMap["save_me"] = TraitTag::save_me;
 
 
 	//Hud Item Types
@@ -338,6 +345,20 @@ const int EnumMap::toEnum(std::string name)
 	assert(m_enumMap.find(name) != m_enumMap.end() && "Constant Name wasnt found in EnumMap");
 
 	return m_enumMap[name];
+}
+
+std::string EnumMap::findKeyWithValueHint(int value, std::string nameHint)
+{
+
+	for (const auto& pair : m_enumMap) {
+		if (pair.first.find(nameHint) == 0 && value == pair.second) {
+
+			return pair.first;
+
+		}
+	}
+
+	return "NOT_FOUND";
 }
 
 

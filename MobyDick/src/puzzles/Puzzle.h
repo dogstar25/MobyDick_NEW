@@ -28,8 +28,11 @@ public:
 	void setClue(std::string clue) { m_clue = clue; }
 
 	std::vector<bool>& pieces() { return m_pieces; }
+	void setPiece(int index, bool solvedFlag) { m_pieces[index] = solvedFlag; }
 
 protected:
+
+	
 
 	std::string m_puzzleName;
 	std::string m_clue{};

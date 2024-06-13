@@ -79,6 +79,7 @@ namespace util
 	std::string wideStringToString(const std::wstring& wstr);
 	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject);
 	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate);
+	void replaceAll(std::string& str, const std::string& from, const std::string& to);
 
 };
 
