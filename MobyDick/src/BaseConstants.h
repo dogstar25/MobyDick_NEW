@@ -118,6 +118,8 @@ namespace TraitTag {
 	inline constexpr int door_side = 30;
 	inline constexpr int door_front = 31;
 	inline constexpr int receptacle = 32;
+	inline constexpr int save_me = 33;
+
 
 
 
@@ -150,6 +152,11 @@ namespace ParticleEmitterType {
 	inline constexpr int CONTINUOUS = 1;
 }
 
+enum class SaveFileType {
+	SETTINGS,
+	GAME_OBJECT_STATE
+
+};
 enum class ConditionOperator {
 
 	NONE = 0,
@@ -234,7 +241,7 @@ enum class GameObjectState : int {
 	DISABLED_UPDATE,
 	DISABLED_PHYSICS,
 	DISABLED_RENDER,
-	DISABLED_COLLISION,
+	DISABLED_COLLISION, //15
 	DEPLOYED,
 	CONCEALED,
 	IMPASSABLE,
@@ -398,6 +405,10 @@ inline constexpr int SCENE_ACTION_RESPAWN_PLAYER = 10;
 inline constexpr int SCENE_ACTION_TOGGLE_SETTING = 11;
 inline constexpr int SCENE_ACTION_WINDOW_PAUSE = 12;
 inline constexpr int SCENE_ACTION_WINDOW_UNPAUSE = 13;
+inline constexpr int SCENE_ACTION_QUICK_SAVE = 14;
+inline constexpr int SCENE_ACTION_QUICK_LOAD = 15;
+inline constexpr int SCENE_ACTION_START_NEW = 16;
+
 
 //Scene Tags
 inline constexpr int SCENETAG_MENU = 1;

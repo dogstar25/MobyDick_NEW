@@ -17,6 +17,8 @@ public:
 		m_enumMap[id] = enumValue;
 	}
 
+	std::string findKeyWithValueHint(int value, std::string nameHint);
+
 protected:
 	std::map<std::string, int> m_enumMap;
 

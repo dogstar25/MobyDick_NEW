@@ -347,6 +347,20 @@ void InventoryComponent::hideInventory()
 
 }
 
+void InventoryComponent::clearInventory()
+{
+	for (int i = 0; i < m_items.size(); i++) {
+
+		if (m_items[i].has_value()) {
+
+			m_items[i].value()->setRemoveFromWorld(true);
+		}
+	}
+
+	_removeFromWorldPass();
+
+}
+
 void InventoryComponent::_removeFromWorldPass()
 {
 

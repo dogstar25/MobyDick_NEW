@@ -249,7 +249,6 @@ void Scene::update() {
 	for (auto& gameObjects : m_gameObjects)
 	{
 
-
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
 
@@ -386,10 +385,10 @@ std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, 
 	std::shared_ptr<GameObject> gameObject = 
 		std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name, sizeOverride);
 
-	//Add index
-	const auto gameObjectPair = m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
-
+	//Add to the main gameObject lookup collection where every gameObject must live
+	m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
 	
+
 	return gameObject;
 }
 

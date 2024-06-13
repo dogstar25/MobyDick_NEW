@@ -55,6 +55,9 @@ public:
 	void respawnPlayer();
 	void deleteGameObject(std::string gameObjectName);
 	void setMouseCursor(SDL_Cursor* mouseCursor) { m_currentMouseCursor = mouseCursor; }
+	void quickSave();
+	void quickLoad();
+	void startNewGame();
 
 	std::optional<SceneAction> getSceneKeyAction(SDL_Keycode);
 

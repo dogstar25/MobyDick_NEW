@@ -41,6 +41,8 @@ public:
 	virtual void removeState(GameObjectState state);
 	virtual bool testState(GameObjectState state);
 
+	void clear() { m_states.reset(); }
+
 	std::optional<StateTransition> getCurrentTransition();
 	std::optional<std::string> getCurrentAnimatedState();
 	const std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> getStateBitSet() { return m_states; }

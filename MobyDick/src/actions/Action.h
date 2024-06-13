@@ -1,9 +1,12 @@
 #pragma once
+
 #include <string>
 #include <box2d/box2d.h>
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <assert.h>
+#include <json/json.h>
+#include "../JsonSerialization.h"
 
 class GameObject;
 
@@ -14,8 +17,8 @@ public:
 	Action() {}
 	~Action();
 
-	std::string label() { return m_label; }
-	void setLabel(std::string label) { m_label = label; }
+	std::string label() const { return m_label; }
+	void setLabel(const std::string label) { m_label = label; }
 
 	//We never want to end up calling the base level action perform. The derived action classes should have setup
 	//the proper perform override and whoever is calling these actions should be passing in the correct paramters
@@ -35,5 +38,17 @@ public:
 protected:
 	std::string m_label{};
 
+	friend void Json::serialize(Json::Value& value, Action& o);
+	friend void Json::deserialize(Json::Value& value, Action& o);
+	
 };
+
+// Serialization and Deserialization
+namespace Json {
+	template<>
+	void serialize<Action>(Json::Value& value, Action& o);
+
+	template<>
+	void deserialize<Action>(Json::Value& value, Action& o);
+}
 

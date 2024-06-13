@@ -266,6 +266,27 @@ std::optional<SceneAction> SceneManager::getSceneKeyAction(SDL_Keycode keycode)
 	return m_scenes.back().getkeycodeAction(keycode);
 }
 
+
+void SceneManager::quickSave()
+{
+	game->gameStateMananger()->saveGame();
+
+}
+
+void SceneManager::quickLoad()
+{
+	loadLevel("full_interior");
+	game->gameStateMananger()->loadGame();
+
+}
+
+void SceneManager::startNewGame()
+{
+	loadLevel("full_interior");
+	game->gameStateMananger()->loadGamePrimerFile();
+
+}
+
 void SceneManager::popScene()
 {
 

@@ -118,9 +118,47 @@ std::optional<std::string> StateComponent::getCurrentAnimatedState()
 void StateComponent::removeState(GameObjectState newState)
 {
 
+	//Set the state to false
 	m_states.set((int)newState, false);
 
+	//Depending on the state being removed, there may be further state specific code to
+	//reverse from the state being onpreviously
+	switch (newState)
+	{
+		case GameObjectState::DISABLED_COLLISION:
 
+			//enable collisions
+			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
+				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+				for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
+				{
+					ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
+					contactDefinition->contactTag = contactDefinition->saveOriginalContactTag;
+					fixture->Refilter();
+				}
+			}
+
+			break;
+		case GameObjectState::DISABLED_PHYSICS:
+
+			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
+
+				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+				if (physicsComponent) {
+					physicsComponent->setPhysicsBodyActive(true);
+				}
+
+			}
+
+			break;
+
+		case GameObjectState::DISABLED_RENDER:
+			break;
+
+		case GameObjectState::DISABLED_UPDATE:
+			break;
+
+	}
 }
 
 void StateComponent::addState(GameObjectState newState)
@@ -139,26 +177,25 @@ void StateComponent::addState(GameObjectState newState)
 
 void StateComponent::_setAndReconcileState(GameObjectState newState)
 {
+	//Set the state to true
+	m_states.set((int)newState, true);
 
+
+	//Depending on the state being added, other states may have to be turned off
+	//because of mutual exclusivity.
 	switch (newState) {
 
 		case GameObjectState::ON:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::OFF, false);
 			break;
 
 		case GameObjectState::OFF:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::ON, false);
 			break;
 
 		case GameObjectState::IDLE:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK, false);
 			m_states.set((int)GameObjectState::RUN, false);
@@ -169,8 +206,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::WALK:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::RUN, false);
 			m_states.set((int)GameObjectState::SPRINT, false);
@@ -179,8 +214,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::RUN:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK, false);
 			m_states.set((int)GameObjectState::IDLE, false);
@@ -191,8 +224,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::SPRINT:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK, false);
 			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::RUN, false);
@@ -201,8 +232,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::JUMP:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK, false);
 			m_states.set((int)GameObjectState::IDLE, false);
@@ -213,8 +242,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::CLIMB:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK, false);
 			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::RUN, false);
@@ -224,35 +251,25 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::OPENED:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::CLOSED, false);
 			break;
 
 		case GameObjectState::CLOSED:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::OPENED, false);
 			break;
 
 		case GameObjectState::ITEM_OBTAINABLE:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
 			break;
 
 		case GameObjectState::ITEM_STORED_ENCLOSED:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
 			break;
 
 		case GameObjectState::ITEM_STORED_OPEN:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
 			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
@@ -260,15 +277,11 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::ITEM_LOOSE:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
 			m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
 			break;
 
 		case GameObjectState::WALK_LEFT:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -290,8 +303,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::WALK_RIGHT:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
@@ -311,8 +322,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::WALK_UP:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
@@ -334,8 +343,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::WALK_DOWN:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -355,8 +362,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::IDLE_RIGHT:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
@@ -378,8 +383,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::IDLE_LEFT:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -399,8 +402,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::IDLE_UP:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
@@ -422,8 +423,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::IDLE_DOWN:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -443,8 +442,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::WALK_LEFT_EQUIPPED:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
@@ -466,8 +463,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::WALK_RIGHT_EQUIPPED:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -487,8 +482,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::WALK_UP_EQUIPPED:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
@@ -510,8 +503,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::WALK_DOWN_EQUIPPED:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -531,8 +522,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::IDLE_RIGHT_EQUIPPED:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
@@ -554,8 +543,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::IDLE_LEFT_EQUIPPED:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -575,8 +562,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 
 		case GameObjectState::IDLE_UP_EQUIPPED:
-
-			m_states.set((int)newState, true);
 
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
@@ -598,8 +583,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 		case GameObjectState::IDLE_DOWN_EQUIPPED:
 
-			m_states.set((int)newState, true);
-
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
@@ -617,16 +600,50 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::IDLE_UP_EQUIPPED, false);
 
 			break;
-		case GameObjectState::EQUIPPED:
 		case GameObjectState::DISABLED_COLLISION:
+
+			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
+				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+				for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
+				{
+					if (fixture->IsSensor() == false) {
+						ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
+						contactDefinition->contactTag = ContactTag::GENERAL_FREE;
+						fixture->Refilter();
+					}
+				}
+			}
+
+			break;
 		case GameObjectState::DISABLED_PHYSICS:
-		case GameObjectState::DISABLED_RENDER:
-		case GameObjectState::DISABLED_UPDATE:
-		case GameObjectState::ON_VERTICAL_MOVEMENT:
-		case GameObjectState::IMPASSABLE:
+
+			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
+
+				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+				if (physicsComponent) {
+					physicsComponent->setPhysicsBodyActive(false);
+				}
+			}
 
 			m_states.set((int)newState, true);
+			break;
 
+		case GameObjectState::DISABLED_RENDER:
+			m_states.set((int)newState, true);
+			break;
+
+		case GameObjectState::DISABLED_UPDATE:
+			m_states.set((int)newState, true);
+			break;
+
+		case GameObjectState::ON_VERTICAL_MOVEMENT:
+			m_states.set((int)newState, true);
+			break;
+		case GameObjectState::EQUIPPED:
+			//nothing
+			break;
+		case GameObjectState::IMPASSABLE:
+			//nothing
 			break;
 
 		default:

@@ -27,6 +27,7 @@
 #include "particleEffects/ParticleEffectsFactory.h"
 #include "EnvironmentEvents/EnvironmentEventFactory.h"
 #include "ContactListener.h"
+#include "gameStateManager.h"
 #include "ContactFilter.h"
 #include "ContextManager.h"
 #include "Renderer.h"
@@ -57,6 +58,7 @@ public:
 		std::shared_ptr<PuzzleFactory>,
 		std::shared_ptr<EnvironmentEventFactory>,
 		std::shared_ptr<ContextManager>, 
+		std::shared_ptr<GameStateManager>,
 		std::shared_ptr<EnumMap>, 
 		std::shared_ptr<ColorMap>
 	) = 0;
@@ -102,6 +104,9 @@ public:
 	std::shared_ptr<ContextManager> contextMananger() {
 		return m_contextMananger;
 	}
+	std::shared_ptr<GameStateManager> gameStateMananger() {
+		return m_gameStateMananger;
+	}
 	std::shared_ptr<ParticleEffectsFactory> particleEffectsFactory() {
 		return m_particleEffectsFactory;
 	}
@@ -138,6 +143,7 @@ protected:
 	std::shared_ptr<ActionFactory> m_actionFactory{};
 	std::shared_ptr<CutSceneFactory> m_cutSceneFactory{};
 	std::shared_ptr<ContextManager> m_contextMananger{};
+	std::shared_ptr<GameStateManager> m_gameStateMananger{};
 	std::shared_ptr<ParticleEffectsFactory> m_particleEffectsFactory{};
 	std::shared_ptr<IMGuiFactory> m_iMGUIFactory{};
 	std::shared_ptr<TriggerFactory> m_triggerFactory{};

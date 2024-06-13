@@ -6,13 +6,6 @@
 #include <iostream>
 
 
-class BaseSaveFileData {
-public:
-	int16_t soundLevel;
-	int16_t mouseSensitivity;
-};
-
-
 class StatusItem
 {
 
@@ -51,14 +44,15 @@ private:
 
 };
 
-const std::string GAME_FILENAME = "\\game.dat";
-
 struct UserSettings {
 
 	int soundLevel{};
 	int mouseSensitivity{};
 
 };
+
+
+const std::string GAME_SETTINGS_FILENAME = "\\gameSettings.dat";
 
 class ContextManager
 {
@@ -85,16 +79,17 @@ public:
 	int getSoundVolume();
 	void addStatusItem(int id, StatusItem& statusItem);
 
-	virtual bool saveGame(BaseSaveFileData* saveFileData) = 0;
-	virtual bool loadGame(BaseSaveFileData* saveFileData) = 0;
+	virtual bool saveSettings() = 0;
+	virtual void loadSettings() = 0;
 
 protected:
 
 	std::map<int, StatusItem> m_statusValueMap;
 	UserSettings m_userSettings{};
 
-	//std::string m_saveGamePath{};
-	std::string m_saveGamePath{};
+
+
+	int todd{};
 
 
 };

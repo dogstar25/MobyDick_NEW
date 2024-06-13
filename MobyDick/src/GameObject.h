@@ -1,5 +1,4 @@
-#ifndef GAME_OBJECT_H
-#define GAME_OBJECT_H
+#pragma once
 
 #include <memory>
 #include <SDL2/SDL.h>
@@ -53,7 +52,6 @@ public:
 	//Need to define default move constructors because we have an explicit deconstructor defined
 	GameObject(GameObject&&) = default;
 	GameObject& operator=(GameObject&&) = default;
-
 
 	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer=GameLayer::MAIN,
 		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
@@ -137,7 +135,7 @@ public:
 	void enableRender();
 	bool renderDisabled();
 
-	void disableCollision(bool includeSensors=false);
+	void disableCollision();
 	void enableCollision();
 	bool collisionDisabled();
 
@@ -178,13 +176,6 @@ public:
 	const std::unordered_map<std::string, std::weak_ptr<GameObject>>& getTouchingObjects() {
 		return m_touchingGameObjects;
 	}
-
-	/*template <typename componentType>
-	inline std::shared_ptr<componentType> addComponent(std::shared_ptr<componentType> component, ComponentTypes componentTypeIndex)
-	{
-		m_components[(int)componentTypeIndex] = std::move(component);
-		return std::static_pointer_cast<componentType>(m_components.at((int)componentTypeIndex));
-	}*/
 
 	inline std::shared_ptr<Component> addComponent(std::shared_ptr<Component> component)
 	{
@@ -257,7 +248,6 @@ private:
 	std::optional<int> m_renderOrder{};
 
 	//Components
-	//std::unordered_map<std::type_index, std::shared_ptr<Component>>m_components;
 	std::array<std::shared_ptr<Component>, static_cast<int>(ComponentTypes::MAX_COMPONENT_TYPES)>m_components;
 
 	std::string _buildId(GameLayer layer, std::string gameObjectType, float xMapPos, float yMapPos);
@@ -271,4 +261,5 @@ private:
 
 };
 
-#endif
+
+

@@ -147,6 +147,7 @@
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>
@@ -188,6 +189,7 @@
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>
@@ -248,6 +250,7 @@
     <ClCompile Include="src\environmentEvents\NoEvent.cpp" />
     <ClCompile Include="src\environmentEvents\SoundEvent.cpp" />
     <ClCompile Include="src\environmentEvents\SoundLoopEvent.cpp" />
+    <ClCompile Include="src\GameStateManager.cpp" />
     <ClCompile Include="src\hud\HudItemFactory.cpp" />
     <ClCompile Include="src\components\HudComponent.cpp" />
     <ClCompile Include="src\hud\HudStatusSeries.cpp" />
@@ -365,6 +368,7 @@
     <ClInclude Include="src\environmentEvents\NoEvent.h" />
     <ClInclude Include="src\environmentEvents\SoundEvent.h" />
     <ClInclude Include="src\environmentEvents\SoundLoopEvent.h" />
+    <ClInclude Include="src\GameStateManager.h" />
     <ClInclude Include="src\hud\HudItemFactory.h" />
     <ClInclude Include="src\components\HudComponent.h" />
     <ClInclude Include="src\hud\HudStatusSeries.h" />
@@ -377,6 +381,7 @@
     <ClInclude Include="src\IMGui\IMGuiItem.h" />
     <ClInclude Include="src\IMGui\IMGuiText.h" />
     <ClInclude Include="src\IMGui\IMGuiUtil.h" />
+    <ClInclude Include="src\JsonSerialization.h" />
     <ClInclude Include="src\opengl\LineDrawBatch.h" />
     <ClInclude Include="src\opengl\shaderCode.h" />
     <ClInclude Include="src\opengl\SpriteDrawBatch.h" />
