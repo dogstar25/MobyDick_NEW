@@ -118,13 +118,15 @@ std::optional<std::string> StateComponent::getCurrentAnimatedState()
 void StateComponent::removeState(GameObjectState newState)
 {
 
-	//Set the state to false
-	m_states.set((int)newState, false);
+	if (testState(newState)) {
 
-	//Depending on the state being removed, there may be further state specific code to
-	//reverse from the state being onpreviously
-	switch (newState)
-	{
+		//Set the state to false
+		m_states.set((int)newState, false);
+
+		//Depending on the state being removed, there may be further state specific code to
+		//reverse from the state being onpreviously
+		switch (newState)
+		{
 		case GameObjectState::DISABLED_COLLISION:
 
 			//enable collisions
@@ -158,6 +160,7 @@ void StateComponent::removeState(GameObjectState newState)
 		case GameObjectState::DISABLED_UPDATE:
 			break;
 
+		}
 	}
 }
 
@@ -179,7 +182,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 {
 	//Set the state to true
 	m_states.set((int)newState, true);
-
 
 	//Depending on the state being added, other states may have to be turned off
 	//because of mutual exclusivity.

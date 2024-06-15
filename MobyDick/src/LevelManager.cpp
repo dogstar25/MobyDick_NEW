@@ -520,67 +520,72 @@ std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, in
 	std::vector<LevelObject> levelObjects{ };
 
 	//This location should have a location item defined for it 
-	for (Json::Value locationItemJSON : m_locationDefinedList) {
+	for (Json::Value locationGroupJSON : m_locationDefinedList) {
 
-		std::string id = locationItemJSON["id"].asString();
-		if (levelObjectId == id) {
+		std::string groupName = locationGroupJSON["groupName"].asString();
 
-			auto levelObject = LevelObject();
-			levelObject.gameObjectType = locationItemJSON["gameObjectType"].asString();
+		for (Json::Value locationItemJSON : locationGroupJSON["objects"]) {
 
-			if (locationItemJSON.isMember("layer")) {
-				levelObject.layer = static_cast<GameLayer>(game->enumMap()->toEnum(locationItemJSON["layer"].asString()));
-			}
-			if (locationItemJSON.isMember("size")) {
-				b2Vec2 size = { locationItemJSON["size"]["width"].asFloat(), locationItemJSON["size"]["height"].asFloat() };
-				levelObject.size = size;
-			}
-			if (locationItemJSON.isMember("locationAdjust")) {
-				b2Vec2 locationAdjust = { locationItemJSON["locationAdjust"]["x"].asFloat(), locationItemJSON["locationAdjust"]["y"].asFloat() };
-				levelObject.locationAdjust = locationAdjust;
-			}
-			if (locationItemJSON.isMember("cameraFollow")) {
-				levelObject.cameraFollow = locationItemJSON["cameraFollow"].asBool();
-			}
-			if (locationItemJSON.isMember("name")) {
-				levelObject.name = locationItemJSON["name"].asString();
-			}
-			if (locationItemJSON.isMember("angle")) {
-				levelObject.angleAdjustment = locationItemJSON["angle"].asInt();
-			}
-			if (locationItemJSON.isMember("objectColor")) {
-				levelObject.color = game->colorMap()->toSDLColor(locationItemJSON["objectColor"].asString());
-			}
-			if (locationItemJSON.isMember("disabled")) {
-				levelObject.disabledType = game->enumMap()->toEnum(locationItemJSON["disabled"].asString());
-			}
-			if (locationItemJSON.isMember("weaponForce")) {
-				levelObject.weaponForce = locationItemJSON["weaponForce"].asFloat();
-			}
-			if (locationItemJSON.isMember("weaponColor")) {
-				levelObject.weaponColor = game->colorMap()->toSDLColor(locationItemJSON["weaponColor"].asString());
-			}
-			if (locationItemJSON.isMember("compositePieceLevelCap")) {
-				levelObject.compositePieceLevelCap = locationItemJSON["compositePieceLevelCap"].asInt();
-			}
-			if (locationItemJSON.isMember("brainSensorSize")) {
-				levelObject.brainSensorSize = locationItemJSON["brainSensorSize"].asInt();
-			}
-			if (locationItemJSON.isMember("containerRespawnTimer")) {
-				levelObject.containerRespawnTimer = locationItemJSON["containerRespawnTimer"].asFloat();
-			}
-			if (locationItemJSON.isMember("containerStartCount")) {
-				levelObject.containerStartCount = locationItemJSON["containerStartCount"].asInt();
-			}
-			if (locationItemJSON.isMember("containerCapacity")) {
-				levelObject.containerCapacity = locationItemJSON["containerCapacity"].asInt();
-			}
-			if (locationItemJSON.isMember("gameObjectStates")) {
-				levelObject.states = _storeStates(locationItemJSON["gameObjectStates"]);
-			}
+			std::string id = locationItemJSON["id"].asString();
 
-			levelObjects.push_back(levelObject);
+			if (levelObjectId == id) {
 
+				auto levelObject = LevelObject();
+				levelObject.gameObjectType = locationItemJSON["gameObjectType"].asString();
+
+				if (locationItemJSON.isMember("layer")) {
+					levelObject.layer = static_cast<GameLayer>(game->enumMap()->toEnum(locationItemJSON["layer"].asString()));
+				}
+				if (locationItemJSON.isMember("size")) {
+					b2Vec2 size = { locationItemJSON["size"]["width"].asFloat(), locationItemJSON["size"]["height"].asFloat() };
+					levelObject.size = size;
+				}
+				if (locationItemJSON.isMember("locationAdjust")) {
+					b2Vec2 locationAdjust = { locationItemJSON["locationAdjust"]["x"].asFloat(), locationItemJSON["locationAdjust"]["y"].asFloat() };
+					levelObject.locationAdjust = locationAdjust;
+				}
+				if (locationItemJSON.isMember("cameraFollow")) {
+					levelObject.cameraFollow = locationItemJSON["cameraFollow"].asBool();
+				}
+				if (locationItemJSON.isMember("name")) {
+					levelObject.name = locationItemJSON["name"].asString();
+				}
+				if (locationItemJSON.isMember("angle")) {
+					levelObject.angleAdjustment = locationItemJSON["angle"].asInt();
+				}
+				if (locationItemJSON.isMember("objectColor")) {
+					levelObject.color = game->colorMap()->toSDLColor(locationItemJSON["objectColor"].asString());
+				}
+				if (locationItemJSON.isMember("disabled")) {
+					levelObject.disabledType = game->enumMap()->toEnum(locationItemJSON["disabled"].asString());
+				}
+				if (locationItemJSON.isMember("weaponForce")) {
+					levelObject.weaponForce = locationItemJSON["weaponForce"].asFloat();
+				}
+				if (locationItemJSON.isMember("weaponColor")) {
+					levelObject.weaponColor = game->colorMap()->toSDLColor(locationItemJSON["weaponColor"].asString());
+				}
+				if (locationItemJSON.isMember("compositePieceLevelCap")) {
+					levelObject.compositePieceLevelCap = locationItemJSON["compositePieceLevelCap"].asInt();
+				}
+				if (locationItemJSON.isMember("brainSensorSize")) {
+					levelObject.brainSensorSize = locationItemJSON["brainSensorSize"].asInt();
+				}
+				if (locationItemJSON.isMember("containerRespawnTimer")) {
+					levelObject.containerRespawnTimer = locationItemJSON["containerRespawnTimer"].asFloat();
+				}
+				if (locationItemJSON.isMember("containerStartCount")) {
+					levelObject.containerStartCount = locationItemJSON["containerStartCount"].asInt();
+				}
+				if (locationItemJSON.isMember("containerCapacity")) {
+					levelObject.containerCapacity = locationItemJSON["containerCapacity"].asInt();
+				}
+				if (locationItemJSON.isMember("gameObjectStates")) {
+					levelObject.states = _storeStates(locationItemJSON["gameObjectStates"]);
+				}
+
+				levelObjects.push_back(levelObject);
+			}
 		}
 
 		if (levelObjects.empty() == true) {
