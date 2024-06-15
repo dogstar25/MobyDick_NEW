@@ -425,6 +425,7 @@ void Scene::addGameObject(std::shared_ptr<GameObject> gameObject, GameLayer laye
 {
 
 	gameObject->setParentScene(this);
+	//gameObject->setLayer(layer);
 	this->m_gameObjects[layer].push_back(gameObject);
 
 	return;
