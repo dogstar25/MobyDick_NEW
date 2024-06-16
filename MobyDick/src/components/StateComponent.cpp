@@ -647,6 +647,9 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		case GameObjectState::IMPASSABLE:
 			//nothing
 			break;
+		case GameObjectState::DRAGGABLE:
+			//nothing
+			break;
 
 		default:
 

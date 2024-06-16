@@ -106,7 +106,6 @@ namespace TraitTag {
 	inline constexpr int light = 18;
 	inline constexpr int puzzle = 19;						//Object that has puzzle(s) to solve before can be used
 	inline constexpr int vertical_movement_zone = 20;			//Allows for the player to vertically move
-	inline constexpr int draggable = 21;					//Can be grabbed and dragged by the mouse
 	inline constexpr int inventory = 22;					//Can have a game item dropped onto it to add to its inventory
 	inline constexpr int inventory_open = 23;				//Inventory object where the inventory contents are displayed like a shelf
 	inline constexpr int inventory_closed = 24;				//Inventory object that is not currently displaying the inventory contents like a closed drawer
@@ -272,6 +271,7 @@ enum class GameObjectState : int {
 	RUN_UP,
 	RUN_DOWN,
 	ON_VERTICAL_MOVEMENT,
+	DRAGGABLE,
 
 	GameObjectState_Count
 

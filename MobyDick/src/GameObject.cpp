@@ -1103,6 +1103,12 @@ void GameObject::_updateTouchingObjects()
 
 		m_touchingGameObjects.clear();
 
+
+		if (type() == "BOTTLE1") {
+			int todd = 1;
+
+		}
+
 		//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
 		if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
 

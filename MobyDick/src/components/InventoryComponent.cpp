@@ -107,7 +107,7 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 		gameObject->setParent(parent());
 
 		//All items in inventory are draggable and obtainable if they are not already in the players inventory
-		gameObject->addTrait(TraitTag::draggable);
+		gameObject->addState(GameObjectState::DRAGGABLE);
 
 		//if this is a receptacle that has an inventory and gridDisplay in one, like a shelf, then the object is considered loose
 		if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT) == false) {

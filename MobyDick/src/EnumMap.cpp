@@ -249,7 +249,6 @@ EnumMap::EnumMap()
 	m_enumMap["light"] = TraitTag::light;
 	m_enumMap["puzzle"] = TraitTag::puzzle;
 	m_enumMap["vertical_movement_zone"] = TraitTag::vertical_movement_zone;
-	m_enumMap["draggable"] = TraitTag::draggable;
 	m_enumMap["inventory"] = TraitTag::inventory;
 	m_enumMap["puzzle_item"] = TraitTag::puzzle_item;
 	m_enumMap["door"] = TraitTag::door;
@@ -331,6 +330,7 @@ EnumMap::EnumMap()
 	m_enumMap["GameObjectState::RUN_LEFT"] = (int)GameObjectState::RUN_LEFT;
 	m_enumMap["GameObjectState::RUN_UP"] = (int)GameObjectState::RUN_UP;
 	m_enumMap["GameObjectState::RUN_DOWN"] = (int)GameObjectState::RUN_DOWN;
+	m_enumMap["GameObjectState::DRAGGABLE"] = (int)GameObjectState::DRAGGABLE;
 
 
 }
