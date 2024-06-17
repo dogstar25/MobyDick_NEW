@@ -63,7 +63,7 @@ std::optional<std::shared_ptr<GameObject>> ObjectPoolManager::getPooledObject(st
 			pooledObject->setRemoveFromWorld(false);
 
 			poolComponent->setAvailable(false);
-			physicsComponent->setPhysicsBodyActive(true);
+			pooledObject->enablePhysics();
 			vitalityComponent->reset();
 			return pooledObject;
 		}

@@ -495,15 +495,15 @@ void PhysicsComponent::applyTorque(float angularVelocity)
 	m_physicsBody->ApplyTorque(angularVelocity, true);
 }
 
-void PhysicsComponent::stash()
-{
-	b2Vec2 velocityVector = b2Vec2(0, 0);
-	b2Vec2 positionVector = b2Vec2(-50, -50);
-
-	m_physicsBody->SetTransform(positionVector, 0);
-	m_physicsBody->SetLinearVelocity(velocityVector);
-	m_physicsBody->SetEnabled(false);
-}
+//void PhysicsComponent::stash()
+//{
+//	b2Vec2 velocityVector = b2Vec2(0, 0);
+//	b2Vec2 positionVector = b2Vec2(-50, -50);
+//
+//	m_physicsBody->SetTransform(positionVector, 0);
+//	m_physicsBody->SetLinearVelocity(velocityVector);
+//	m_physicsBody->SetEnabled(false);
+//}
 
 void PhysicsComponent::deleteAllJoints()
 {

@@ -456,18 +456,13 @@ bool GameObject::intersectsWith(GameObject* gameObject)
 void GameObject::reset()
 {
 
+	stash();
+
 	if (hasComponent(ComponentTypes::POOL_COMPONENT)) {
 		getComponent<PoolComponent>(ComponentTypes::POOL_COMPONENT)->reset();
 	}
 
-	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
-		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->stash();
-		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->update();
-	}
-
-	//test calling the main update so that if the pooled item has a child, it needs to be moved off too
 	update();
-
 
 }
 
@@ -479,16 +474,6 @@ void GameObject::addInventoryItem( GameObject* gameObject)
 	{
 		getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT)->attachItem(gameObject);
 	}*/
-
-}
-
-void GameObject::setPhysicsActive(bool active)
-{
-
-	const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-	if (physicsComponent) {
-		physicsComponent->setPhysicsBodyActive(active);
-	}
 
 }
 
@@ -779,7 +764,7 @@ void GameObject::stash()
 
 		physicsComponent->physicsBody()->SetTransform(positionVector, 0);
 		physicsComponent->physicsBody()->SetLinearVelocity(velocityVector);
-		physicsComponent->physicsBody()->SetEnabled(false);
+		disablePhysics();
 
 		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 		transformComponent->setPosition(positionVector);
@@ -887,6 +872,7 @@ bool GameObject::updateDisabled()
 void GameObject::disablePhysics()
 {
 
+	assert(hasComponent(ComponentTypes::STATE_COMPONENT) && "Trying to set a state on an object without a stateComponent");
 	if (hasComponent(ComponentTypes::STATE_COMPONENT) == true) {
 
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
@@ -1361,19 +1347,15 @@ void GameObject::_imGuiDebugObject()
 
 	}
 
-	if (type() == "DRAWER_MEDIUM") {
+	if (name() == "toddcan") {
 
-		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 
 
-		ImGui::Begin("Medium Drawer Inventory");
+		ImGui::Begin("Todds Can");
 
-		for (const auto& item : inventoryComponent->items()) {
-
-			if (item) {
-				ImGui::Text(item.value()->type().c_str());
-			}
-		}
+		ImGui::Value("x", transformComponent->getCenterPosition().x);
+		ImGui::Value("y", transformComponent->getCenterPosition().y);
 
 		ImGui::End();
 
@@ -1435,6 +1417,37 @@ void GameObject::_imGuiDebugObject()
 		ImGui::End();
 	}
 
+	if (type() == "DRAWER_1X1_INVENTORY_DISPLAY") {
+
+		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+		ImGui::Begin("drawer");
+
+		ImGui::Text("Drawer info");
+
+		std::string state{};
+
+		for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
+		{
+			ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
+			ImGui::Value("contactTag", contactDefinition->contactTag);
+
+		}
+
+		for (size_t i = 0; i < stateComponent->getStateBitSet().size(); ++i) {
+
+			if (stateComponent->testState(static_cast<GameObjectState>(i))) {
+
+				std::string name = game->enumMap()->findKeyWithValueHint(i, "GameObjectState::");
+
+				ImGui::Text(name.c_str());
+			}
+
+		}
+
+		ImGui::End();
+	}
 
 	
 

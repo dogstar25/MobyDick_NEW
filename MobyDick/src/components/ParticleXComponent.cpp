@@ -140,7 +140,6 @@ void ParticleXComponent::update()
 					positionVector.x /= GameConfig::instance().scaleFactor();
 					positionVector.y /= GameConfig::instance().scaleFactor();
 
-					physicsComponent->setPhysicsBodyActive(true);
 					physicsComponent->setTransform(positionVector, particleAngle);
 					physicsComponent->setLinearVelocity(velocityVector);
 

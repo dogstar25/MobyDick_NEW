@@ -18,6 +18,8 @@ struct ContactDefinition {
 class PhysicsComponent : public Component
 {
 
+	friend class StateComponent;
+
 public:
 	//PhysicsComponent() {};
 	PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride);
@@ -34,11 +36,10 @@ public:
 	void applyAngleImpulse(float force);
 	void applyRotation(float angularVelocity);
 	void applyTorque(float angularVelocity);
-	void stash();
 	void setTransform(b2Vec2 positionVector, float angle);
 	void setTransform(b2Vec2 positionVector);
 	void setLinearVelocity(b2Vec2 velocityVector);
-	void setPhysicsBodyActive(bool  active);
+	
 	void setFixedRotation(bool fixedRotation);
 	void setBullet(bool isBullet);
 	void setAngle(float angle);
@@ -62,6 +63,8 @@ public:
 	bool isTouchingObjectsCapturedRequired() { return m_touchingObjectsCapturedRequired; }
 
 private:
+
+	void setPhysicsBodyActive(bool  active);
 
 	b2Body* _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, b2Vec2 sizeOverride);
 	uint16 _setCollisionMask(Json::Value physicsComponentJSON);

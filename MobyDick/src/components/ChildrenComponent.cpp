@@ -644,16 +644,8 @@ void ChildrenComponent::render()
 
 			if (child.gameObject.has_value()) {
 
-				if (child.isStepChild == true) {
+				child.gameObject.value()->render();
 
-					child.gameObject.value()->enableRender();
-					child.gameObject.value()->enableCollision();
-					child.gameObject.value()->enablePhysics();
-				}
-				else {
-
-					child.gameObject.value()->render();
-				}
 			}
 		}
 	}
