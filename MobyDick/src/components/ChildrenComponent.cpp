@@ -644,8 +644,12 @@ void ChildrenComponent::render()
 
 			if (child.gameObject.has_value()) {
 
-				child.gameObject.value()->render();
+				//Stepchildren will render theirselves
+				if (child.isStepChild == false) {
 
+					child.gameObject.value()->render();
+
+				}
 			}
 		}
 	}
