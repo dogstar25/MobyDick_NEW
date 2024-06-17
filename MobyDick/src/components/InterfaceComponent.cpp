@@ -181,7 +181,7 @@ void InterfaceComponent::update()
 
 
 					//If this object is draggable and we have a left click then deal with it
-					if (parent()->isDragging() == false && parent()->hasTrait(TraitTag::draggable) && (buttonState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
+					if (parent()->isDragging() == false && parent()->hasState(GameObjectState::DRAGGABLE) && (buttonState & SDL_BUTTON(SDL_BUTTON_LEFT))
 						&& isDraggingAllowed()) {
 
 						newEventsState.set((int)InterfaceEvents::ON_DRAG, true);
@@ -420,7 +420,7 @@ void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)
 void InterfaceComponent::handleDragging()
 {
 
-	if (parent()->hasTrait(TraitTag::draggable)) {
+	if (parent()->hasState(GameObjectState::DRAGGABLE)) {
 
 		if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {
 

@@ -134,14 +134,23 @@ void MaskedOverlayComponent::render()
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
 	//Best Mask blending for mask object to display house gradiently is
+	//SDL_BlendMode customBlendModeFinal =
+	//	SDL_ComposeCustomBlendMode(
+	//		SDL_BLENDFACTOR_ZERO,
+	//		SDL_BLENDFACTOR_ZERO,
+	//		SDL_BLENDOPERATION_ADD,
+	//		SDL_BLENDFACTOR_ZERO,
+	//		SDL_BLENDFACTOR_ZERO,
+	//		SDL_BLENDOPERATION_SUBTRACT);
+
 	SDL_BlendMode customBlendModeFinal =
 		SDL_ComposeCustomBlendMode(
 			SDL_BLENDFACTOR_ZERO,
 			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDOPERATION_ADD,
+			SDL_BLENDOPERATION_MAXIMUM,
 			SDL_BLENDFACTOR_ZERO,
 			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDOPERATION_SUBTRACT);
+			SDL_BLENDOPERATION_MINIMUM);
 
 	//Render the overlay objects to the composite texture
 	bool first = true;

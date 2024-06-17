@@ -67,7 +67,6 @@ public:
 	void setPosition(SDL_FPoint position);
 	void setPosition(PositionAlignment windowPosition, float adjustX=0., float adjustY=0.);
 	void setLayer(GameLayer layer) { m_layer = layer; }
-	void setPhysicsActive(bool active);
 	void setParentScene(Scene* parentScene);
 	void setAngleInDegrees(float angle);
 	void setAngleInRadians(float angle);

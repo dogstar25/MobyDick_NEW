@@ -107,7 +107,7 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 		gameObject->setParent(parent());
 
 		//All items in inventory are draggable and obtainable if they are not already in the players inventory
-		gameObject->addTrait(TraitTag::draggable);
+		gameObject->addState(GameObjectState::DRAGGABLE);
 
 		//if this is a receptacle that has an inventory and gridDisplay in one, like a shelf, then the object is considered loose
 		if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT) == false) {
@@ -299,9 +299,11 @@ void InventoryComponent::showInventory()
 {
 	std::shared_ptr<GridDisplayComponent> gridDisplayComponent{};
 
-	//If we have a separate gameObject that isued to display the inventory
+	//If we have a separate gameObject that is used to display the inventory
 	if (m_displayObject && m_displayObject.value().expired() == false) {
 		gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+		m_displayObject.value().lock()->enableRender();
+		m_displayObject.value().lock()->enableCollision();
 		m_displayObject.value().lock()->enablePhysics();
 	}
 
@@ -331,6 +333,7 @@ void InventoryComponent::hideInventory()
 		//Get displayObjects grid display component
 		const auto& gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
 		m_displayObject.value().lock()->stash();
+
 		gridDisplayComponent->clear();
 
 		for (int i = 0; i < m_items.size(); i++) {

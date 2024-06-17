@@ -49,10 +49,30 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 			sizeOverride = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
 		}
 
-		//Create the child gameObject
-		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name, sizeOverride);
+		//StepChild?
+		//StepChildren live in in main gameObjects collection for the scene and NOT under the parentObject
+		bool isStepChild = itrChild["isStepChild"].asBool();
 
+		//Child Layer Override
+		//Layer can only be spercified for step children because regular children always display on same layer as parent
+		GameLayer stepChildGameLayer{};
+		if (itrChild.isMember("layer") && isStepChild) {
 
+			stepChildGameLayer = static_cast<GameLayer>(game->enumMap()->toEnum(itrChild["layer"].asString()));
+
+		}
+
+		//Create the child
+		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, 
+			false, name, sizeOverride);
+
+		//If this is a stepchild then we need to add it to the world where the scene will be responsible for it
+		if (isStepChild == true) {
+
+			parentScene->addGameObject(childObject, stepChildGameLayer);
+		}
+
+		//Begin States
 		if (itrChild.isMember("beginStates")) {
 			Json::Value beginStates = itrChild["beginStates"];
 			for (auto& stateItr : beginStates) {
@@ -74,7 +94,13 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 		if (itrChild.isMember("standardSlot")) {
 
 			PositionAlignment positionAlignment = (PositionAlignment)game->enumMap()->toEnum( itrChild["standardSlot"].asString());
-			_addChild(childObject, positionAlignment);
+
+			if (isStepChild) {
+				addStepChild(childObject, positionAlignment);
+			}
+			else {
+				_addChild(childObject, positionAlignment);
+			}
 			
 		}
 
@@ -82,7 +108,14 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 		if (itrChild.isMember("absolutePositionSlot")) {
 
 			SDL_FPoint position = { itrChild["absolutePositionSlot"]["x"].asFloat(), itrChild["absolutePositionSlot"]["y"].asFloat()};
-			_addChild(childObject, position);
+
+			if (isStepChild) {
+				addStepChild(childObject, position);
+			}
+			else {
+				_addChild(childObject, position);
+			}
+			
 		}
 
 	}
@@ -611,16 +644,8 @@ void ChildrenComponent::render()
 
 			if (child.gameObject.has_value()) {
 
-				if (child.isStepChild == true) {
+				child.gameObject.value()->render();
 
-					child.gameObject.value()->enableRender();
-					child.gameObject.value()->enableCollision();
-					child.gameObject.value()->enablePhysics();
-				}
-				else {
-
-					child.gameObject.value()->render();
-				}
 			}
 		}
 	}

@@ -125,6 +125,7 @@ void StateComponent::removeState(GameObjectState newState)
 
 		//Depending on the state being removed, there may be further state specific code to
 		//reverse from the state being onpreviously
+
 		switch (newState)
 		{
 		case GameObjectState::DISABLED_COLLISION:
@@ -627,24 +628,23 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 				}
 			}
 
-			m_states.set((int)newState, true);
 			break;
 
 		case GameObjectState::DISABLED_RENDER:
-			m_states.set((int)newState, true);
 			break;
 
 		case GameObjectState::DISABLED_UPDATE:
-			m_states.set((int)newState, true);
 			break;
 
 		case GameObjectState::ON_VERTICAL_MOVEMENT:
-			m_states.set((int)newState, true);
 			break;
 		case GameObjectState::EQUIPPED:
 			//nothing
 			break;
 		case GameObjectState::IMPASSABLE:
+			//nothing
+			break;
+		case GameObjectState::DRAGGABLE:
 			//nothing
 			break;
 
