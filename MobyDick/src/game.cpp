@@ -68,6 +68,8 @@ bool Game::init(
 		m_gameScreenResolution = gameResolution.value();
 	}
 
+	//SDL_HINT_RENDER_SCALE_QUALITY
+
 	//Create the game window
 	uint16 windowFlags = 0 | SDL_WINDOW_OPENGL;
 	if (GameConfig::instance().windowFullscreen() == true)
@@ -89,6 +91,8 @@ bool Game::init(
 		m_gameScreenResolution.x,
 		m_gameScreenResolution.y,
 		windowFlags);
+
+	//SDL_GL_SetSwapInterval(1);
 
 	if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 

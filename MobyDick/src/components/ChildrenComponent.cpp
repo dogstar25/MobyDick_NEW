@@ -129,7 +129,6 @@ ChildrenComponent::~ChildrenComponent()
 
 void ChildrenComponent::postInit()
 {
-
 	//Set the layer for these pieces using the parents layer
 	for (auto& slotItr : m_childSlots) {
 
@@ -187,8 +186,6 @@ void ChildrenComponent::update()
 
 		auto childSlotItr = childSlot.second.begin();
 		while (childSlotItr != childSlot.second.end()) {
-
-		//for (const auto& childObject : childSlot.second) {
 
 			if (childSlotItr->gameObject.has_value()) {
 				b2Vec2 newPosition =
