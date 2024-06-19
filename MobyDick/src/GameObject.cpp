@@ -1378,7 +1378,7 @@ void GameObject::_imGuiDebugObject()
 		ImGui::End();
 
 	}
-	if (type() == "HOUSE_OVERLAY") {
+	if (type() == "HOUSE_OVERLAY_FRONT") {
 
 		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
