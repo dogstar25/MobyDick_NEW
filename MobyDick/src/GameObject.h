@@ -162,6 +162,7 @@ public:
 	void addInventoryItem(GameObject* gameObject);
 	std::vector<std::weak_ptr<GameObject>> getTouchingByTrait(const int trait);
 	std::optional<std::weak_ptr<GameObject>> getFirstTouchingByTrait(const int trait);
+	std::optional<std::weak_ptr<GameObject>> getFirstTouchingByType(std::string type);
 	bool isTouchingByTrait(const int trait);
 	bool isTouchingByType(const std::string type);
 	bool isTouchingByName(std::string name);

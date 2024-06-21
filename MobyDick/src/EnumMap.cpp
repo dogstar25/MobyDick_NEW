@@ -256,7 +256,6 @@ EnumMap::EnumMap()
 	m_enumMap["inventory_open"] = TraitTag::inventory_open;
 	m_enumMap["inventory_closed"] = TraitTag::inventory_closed;
 	m_enumMap["inventory_display"] = TraitTag::inventory_display;
-	m_enumMap["door_entry"] = TraitTag::door_entry;
 	m_enumMap["door_side"] = TraitTag::door_side;
 	m_enumMap["door_front"] = TraitTag::door_front;
 	m_enumMap["receptacle"] = TraitTag::receptacle;

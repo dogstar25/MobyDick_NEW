@@ -112,7 +112,6 @@ namespace TraitTag {
 	inline constexpr int inventory_display = 25;			//Inventory grid display object itself
 	inline constexpr int inventory_player = 26;				//Is the players inventory receptacle
 	inline constexpr int puzzle_item = 27;					//Is an item used to solve a game puzzle
-	inline constexpr int door_entry = 28;
 	inline constexpr int door = 29;
 	inline constexpr int door_side = 30;
 	inline constexpr int door_front = 31;
