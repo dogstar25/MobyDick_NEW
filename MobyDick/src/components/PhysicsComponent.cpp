@@ -143,10 +143,6 @@ void PhysicsComponent::setAngle(float angle)
 void PhysicsComponent::update()
 {
 
-	if (parent()->type() == "OIL_CAN") {
-		int todd = 1;
-	}
-
 	//We want to make sure that the angle stays in the range of 0 to 360 for various concerns throughtout the game
 	//Unfortunately, box2d's only function to set an angle value directly is the setTransform which also takes
 	// X and Y position, so we have to send setTransform the current X,Y position as well as the updated angle

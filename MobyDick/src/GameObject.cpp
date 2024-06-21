@@ -1233,6 +1233,23 @@ std::optional<std::weak_ptr<GameObject>> GameObject::getFirstTouchingByTrait(con
 
 }
 
+std::optional<std::weak_ptr<GameObject>> GameObject::getFirstTouchingByType(std::string type)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->type() == type) {
+			return gameObject.second.lock();
+		}
+
+	}
+
+	return std::nullopt;
+
+}
+
 bool GameObject::isTouchingByTrait(const int trait)
 {
 
