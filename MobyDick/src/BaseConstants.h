@@ -117,6 +117,7 @@ namespace TraitTag {
 	inline constexpr int door_front = 31;
 	inline constexpr int receptacle = 32;
 	inline constexpr int save_me = 33;
+	inline constexpr int toggle_switch = 34;
 
 
 

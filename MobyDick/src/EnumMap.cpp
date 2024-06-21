@@ -260,6 +260,7 @@ EnumMap::EnumMap()
 	m_enumMap["door_front"] = TraitTag::door_front;
 	m_enumMap["receptacle"] = TraitTag::receptacle;
 	m_enumMap["save_me"] = TraitTag::save_me;
+	m_enumMap["toggle_switch"] = TraitTag::toggle_switch;
 
 
 	//Hud Item Types
