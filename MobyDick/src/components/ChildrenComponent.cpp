@@ -129,11 +129,12 @@ ChildrenComponent::~ChildrenComponent()
 
 void ChildrenComponent::postInit()
 {
+
 	//Set the layer for these pieces using the parents layer
 	for (auto& slotItr : m_childSlots) {
 
 		//Each child slot can have multiple gameObjects that live in a vector
-		//Only Standard slots support multipl
+		//Only Standard slots support multiple
 		for (auto& child : slotItr.second) {
 
 			if (child.gameObject.has_value()) {

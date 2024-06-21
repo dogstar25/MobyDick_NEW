@@ -69,6 +69,7 @@
 #include "../src/actions/UseAction.h"
 #include "../src/actions/DroneMoveAction.h"
 #include "../src/actions/DroneMoveAction.h"
+#include "../src/actions/OnOffToggleAction.h"
 #include "../src/components/ActionComponent.h"
 #include "../src/components/AnimationComponent.h"
 #include "../src/components/AttachmentsComponent.h"

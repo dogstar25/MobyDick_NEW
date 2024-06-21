@@ -13,10 +13,8 @@ class LightComponent : public Component
 
 	protected:
 		LightType m_lightType{};
-		float m_intensity{};
-		float m_flicker{};
-		Timer m_flickerTimer{};
-		void _applyFlicker(float flicker);
+		bool m_flicker{};
+		void _applyFlicker();
 		int m_flickerTargetBrightness{255};
 
 
