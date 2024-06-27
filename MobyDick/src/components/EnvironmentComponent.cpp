@@ -5,8 +5,8 @@
 extern std::unique_ptr<Game> game;
 
 
-EnvironmentComponent::EnvironmentComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::ENVIRONMENT_COMPONENT)
+EnvironmentComponent::EnvironmentComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::ENVIRONMENT_COMPONENT, parent)
 {
 
 
@@ -76,13 +76,6 @@ void EnvironmentComponent::update()
 
 	}
 
-
-}
-
-void EnvironmentComponent::setParent(GameObject* gameObject)
-{
-	//Call base component setParent
-	Component::setParent(gameObject);
 
 }
 

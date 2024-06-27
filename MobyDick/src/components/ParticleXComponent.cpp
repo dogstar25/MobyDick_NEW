@@ -6,8 +6,8 @@
 
 extern std::unique_ptr<Game> game;
 
-ParticleXComponent::ParticleXComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::PARTICLE_X_COMPONENT)
+ParticleXComponent::ParticleXComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::PARTICLE_X_COMPONENT, parent)
 {
 
 	if (componentJSON.isMember("type")) {

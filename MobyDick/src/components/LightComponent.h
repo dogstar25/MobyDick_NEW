@@ -7,7 +7,7 @@ class LightComponent : public Component
 
 	public:
 		LightComponent() = default;
-		LightComponent(Json::Value componentJSON);
+		LightComponent(Json::Value componentJSON, GameObject* parent);
 	
 		void update() override;
 

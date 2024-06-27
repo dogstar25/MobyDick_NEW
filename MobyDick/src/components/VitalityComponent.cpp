@@ -8,15 +8,15 @@ extern std::unique_ptr<Game> game;
 
 
 
-VitalityComponent::VitalityComponent() :
-	Component(ComponentTypes::VITALITY_COMPONENT)
-{
+//VitalityComponent::VitalityComponent() :
+//	Component(ComponentTypes::VITALITY_COMPONENT)
+//{
+//
+//}
 
-}
 
-
-VitalityComponent::VitalityComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::VITALITY_COMPONENT)
+VitalityComponent::VitalityComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::VITALITY_COMPONENT, parent)
 {
 
 	m_speed = componentJSON["speed"].asFloat();

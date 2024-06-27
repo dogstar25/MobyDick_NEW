@@ -30,12 +30,12 @@ class StateComponent : public Component
 {
 
 public:
-	StateComponent(Json::Value definitionJSON);
+	StateComponent(Json::Value definitionJSON, GameObject* parent);
 	~StateComponent() = default;
 
 	virtual void update() override;
 	virtual void postInit() override;
-	virtual void setParent(GameObject* gameObject) override;
+	//virtual void setParent(GameObject* gameObject) override;
 
 	virtual void addState(GameObjectState state);
 	virtual void removeState(GameObjectState state);

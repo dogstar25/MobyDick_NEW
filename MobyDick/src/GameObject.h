@@ -53,8 +53,8 @@ public:
 	GameObject(GameObject&&) = default;
 	GameObject& operator=(GameObject&&) = default;
 
-	GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer=GameLayer::MAIN,
-		bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
+	GameObject(std::string gameObjectType, GameObject* parent, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, 
+		GameLayer layer=GameLayer::MAIN, bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
 
 	virtual void update();
 	virtual void render();

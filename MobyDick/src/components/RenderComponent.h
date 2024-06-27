@@ -20,7 +20,7 @@ class RenderComponent : public Component
 
 public:
 	RenderComponent() = default;
-	RenderComponent(Json::Value componentJSON);
+	RenderComponent(Json::Value componentJSON, GameObject* parent);
 	~RenderComponent();
 
 	void update() override;

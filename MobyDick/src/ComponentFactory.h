@@ -49,6 +49,7 @@ public:
 	//Create version that has ALL possible inputs
 	virtual std::shared_ptr<Component> create(
 		Json::Value definitionJSON,
+		GameObject* parent,
 		std::string gameObjectName,
 		std::string gameObjectType,
 		Scene* scene,

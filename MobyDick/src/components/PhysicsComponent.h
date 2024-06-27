@@ -21,13 +21,13 @@ class PhysicsComponent : public Component
 	friend class StateComponent;
 
 public:
-	//PhysicsComponent() {};
-	PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride);
+	PhysicsComponent() = default;;
+	PhysicsComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride);
 	~PhysicsComponent();
 
 	void update() override;
 	void postInit() override;
-	void setParent(GameObject* gameObject) override;
+	//void setParent(GameObject* gameObject) override;
 
 	void applyMovement(float velocity, int direction, int strafeDirection);
 	void applyMovement(float velocity, b2Vec2 trajectory);

@@ -23,7 +23,7 @@ class WeaponComponent : public Component
 
 public:
 	WeaponComponent();
-	WeaponComponent(Json::Value componentJSON);
+	WeaponComponent(Json::Value componentJSON, GameObject* parent);
 	~WeaponComponent();
 
 	void update();

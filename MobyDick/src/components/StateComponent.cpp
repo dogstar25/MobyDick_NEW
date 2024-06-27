@@ -4,8 +4,8 @@
 
 extern std::unique_ptr<Game> game;
 
-StateComponent::StateComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::STATE_COMPONENT)
+StateComponent::StateComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::STATE_COMPONENT, parent)
 {
 
 	if (componentJSON.isMember("beginStates")) {
@@ -171,7 +171,7 @@ void StateComponent::addState(GameObjectState newState)
 
 	//Check to see if we have a transition defined for this state combination
 	//Also, if the gameObject already has the state, dont try to set it again
-	if (_hasTransitionDuration(newState) == false and testState(newState) == false) {
+	if (_hasTransitionDuration(newState) == false && testState(newState) == false) {
 		
 		_setAndReconcileState(newState);
 
@@ -675,12 +675,12 @@ void StateComponent::update()
 
 }
 
-void StateComponent::setParent(GameObject* gameObject)
-{
-	//Call base component setParent
-	Component::setParent(gameObject);
-
-}
+//void StateComponent::setParent(GameObject* gameObject)
+//{
+//	//Call base component setParent
+//	Component::setParent(gameObject);
+//
+//}
 
 bool StateComponent::_hasTransitionDuration(GameObjectState newState)
 {

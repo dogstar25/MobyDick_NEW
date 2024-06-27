@@ -32,14 +32,13 @@ struct Attachment
 class AttachmentsComponent :   public Component
 {
 public:
-	AttachmentsComponent();
-	AttachmentsComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene);
+	AttachmentsComponent()=default;
+	AttachmentsComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene);
 	~AttachmentsComponent();
 
 	void update() override;
 	void render();
 	void postInit() override;
-	void setParent(GameObject* parentObject) override;
 	void removeAllAttachments();
 	void removeAttachment(std::string id);
 

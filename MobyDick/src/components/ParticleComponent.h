@@ -39,7 +39,7 @@ struct Particle
 class ParticleComponent : public Component
 {
 public:
-	ParticleComponent(Json::Value componentJSON);
+	ParticleComponent(Json::Value componentJSON, GameObject* parent);
 	~ParticleComponent();
 
 	void update() override;

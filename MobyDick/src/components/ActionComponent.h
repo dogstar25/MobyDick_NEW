@@ -27,7 +27,7 @@ friend void Json::serialize(Json::Value& value, ActionComponent& o);
 friend void Json::deserialize(Json::Value& value, ActionComponent& o);
 
 public:
-	ActionComponent(Json::Value definitionJSON, Scene* parentScene);
+	ActionComponent(Json::Value definitionJSON, GameObject* parent);
 	~ActionComponent() = default;
 
 	void update() {};

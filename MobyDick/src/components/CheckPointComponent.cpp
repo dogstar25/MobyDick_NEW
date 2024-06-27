@@ -11,8 +11,8 @@ CheckPointComponent::~CheckPointComponent()
 
 }
 
-CheckPointComponent::CheckPointComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::CHECKPOINT_COMPONENT)
+CheckPointComponent::CheckPointComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::CHECKPOINT_COMPONENT, parent)
 {
 
 

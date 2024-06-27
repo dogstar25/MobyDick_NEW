@@ -246,7 +246,6 @@ EnumMap::EnumMap()
 	m_enumMap["conditional_impasse"] = TraitTag::conditional_impasse;
 	m_enumMap["complex_impasse"] = TraitTag::complex_impasse;
 	m_enumMap["mobile"] = TraitTag::mobile;
-	m_enumMap["light"] = TraitTag::light;
 	m_enumMap["puzzle"] = TraitTag::puzzle;
 	m_enumMap["vertical_movement_zone"] = TraitTag::vertical_movement_zone;
 	m_enumMap["inventory"] = TraitTag::inventory;
@@ -261,6 +260,7 @@ EnumMap::EnumMap()
 	m_enumMap["receptacle"] = TraitTag::receptacle;
 	m_enumMap["save_me"] = TraitTag::save_me;
 	m_enumMap["toggle_switch"] = TraitTag::toggle_switch;
+	m_enumMap["light_emission"] = TraitTag::light_emission;
 
 
 	//Hud Item Types

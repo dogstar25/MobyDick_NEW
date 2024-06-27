@@ -15,12 +15,12 @@ class Component
 
 public:
 
-	Component(int componentType);
+	Component(int componentType, GameObject* parent);
 	~Component();
 	virtual void update() = 0;
 	virtual void render() {};
 	virtual void postInit() {};
-	virtual void setParent(GameObject* gameObject) { m_parentGameObject = gameObject; }
+	virtual void setParent(GameObject* gameObject);
 
 	void disable() { disabled = true; }
 	void enable() { disabled = false; }

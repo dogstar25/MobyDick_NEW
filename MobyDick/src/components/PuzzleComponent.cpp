@@ -3,8 +3,8 @@
 
 extern std::unique_ptr<Game> game;
 
-PuzzleComponent::PuzzleComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::PUZZLE_COMPONENT)
+PuzzleComponent::PuzzleComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::PUZZLE_COMPONENT, parent)
 {
 
 	puzzle = game->puzzleFactory()->create(componentJSON);

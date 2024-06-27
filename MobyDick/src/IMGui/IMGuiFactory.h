@@ -8,6 +8,7 @@
 
 class IMGuiItem;
 class Scene;
+class GameObject;
 
 class IMGuiFactory
 {
@@ -16,8 +17,8 @@ public:
 
 	virtual std::shared_ptr<IMGuiItem> create(
 		std::string iMGuiItemType, 
+		GameObject* parent, 
 		std::string gameObjectType, 
-		Scene* parentScene,
 		b2Vec2 padding, 
 		ImVec4 backgroundColor, 
 		ImVec4 textColor,

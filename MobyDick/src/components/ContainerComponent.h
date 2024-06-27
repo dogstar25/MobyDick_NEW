@@ -25,8 +25,8 @@ class ContainerComponent : public Component
 {
 
 public:
-	ContainerComponent();
-	ContainerComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene);
+	ContainerComponent() = default;
+	ContainerComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene);
 	~ContainerComponent();
 
 	void update() override;

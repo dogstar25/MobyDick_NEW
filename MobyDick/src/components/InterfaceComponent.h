@@ -17,7 +17,7 @@ struct InterfaceAction {
 class InterfaceComponent : public Component
 {
 public:
-	InterfaceComponent(Json::Value definitionJSON, Scene* parentScene);
+	InterfaceComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene);
 	~InterfaceComponent() = default;
 
 	std::optional<std::shared_ptr<GameObject>> interfaceMenuObject() {
@@ -31,7 +31,6 @@ public:
 	virtual void update() override;
 	virtual void render() override;
 	virtual void postInit() override;
-	virtual void setParent(GameObject* gameObject) override;
 
 	bool isAutoInteractOnPuzzleComplete() { return m_autoInteractOnPuzzleComplete; }
 	SDL_FPoint dragOffset() { return m_dragOffset; }

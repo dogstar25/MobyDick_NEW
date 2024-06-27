@@ -17,7 +17,6 @@
 
 ContextManager::ContextManager()
 {
-    todd = 1;
 }
 
 void StatusItem::adjust(float adjustValue)

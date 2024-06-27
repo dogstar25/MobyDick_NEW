@@ -12,8 +12,8 @@ NavigationComponent::~NavigationComponent()
 
 }
 
-NavigationComponent::NavigationComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::NAVIGATION_COMPONENT)
+NavigationComponent::NavigationComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::NAVIGATION_COMPONENT, parent)
 {
 	m_passageFitSizeCategory = game->enumMap()->toEnum(componentJSON["passageFitSizeCategory"].asString());
 

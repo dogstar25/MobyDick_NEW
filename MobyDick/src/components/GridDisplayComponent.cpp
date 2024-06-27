@@ -6,14 +6,14 @@
 
 extern std::unique_ptr<Game> game;
 
-GridDisplayComponent::GridDisplayComponent() :
-	Component(ComponentTypes::GRID_DISPLAY_COMPONENT)
-{
+//GridDisplayComponent::GridDisplayComponent() :
+//	Component(ComponentTypes::GRID_DISPLAY_COMPONENT)
+//{
+//
+//}
 
-}
-
-GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, Scene* parentScene) :
-	Component(ComponentTypes::GRID_DISPLAY_COMPONENT)
+GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, GameObject* parent, Scene* parentScene) :
+	Component(ComponentTypes::GRID_DISPLAY_COMPONENT, parent)
 {
 
 	m_itemPadding = componentJSON["itemPadding"].asFloat();
@@ -35,7 +35,7 @@ GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, Scene* par
 	if (componentJSON.isMember("slotBackgroundImage")) {
 
 		std::string imageObjectType = componentJSON["slotBackgroundImage"].asString();
-		m_slotImageObject = parentScene->createGameObject(imageObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false);
+		m_slotImageObject = parentScene->createGameObject(imageObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false);
 	}
 
 }
@@ -50,8 +50,9 @@ GridDisplayComponent::~GridDisplayComponent()
 
 void GridDisplayComponent::postInit()
 {
-
-
+	if (m_slotImageObject.has_value()) {
+		m_slotImageObject.value()->postInit();
+	}
 
 }
 

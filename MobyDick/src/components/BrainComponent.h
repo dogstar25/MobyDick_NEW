@@ -28,7 +28,7 @@ class BrainComponent : public Component
 
 public:
     BrainComponent();
-    BrainComponent(Json::Value componentJSON);
+    BrainComponent(Json::Value componentJSON, GameObject* parent);
     ~BrainComponent();
 
     void update() override;

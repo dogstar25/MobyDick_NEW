@@ -6,7 +6,7 @@ class LightedTreatmentComponent : public Component
 
 	public:
 		LightedTreatmentComponent() = default;
-		LightedTreatmentComponent(Json::Value componentJSON);
+		LightedTreatmentComponent(Json::Value componentJSON, GameObject* parent);
 		~LightedTreatmentComponent();
 
 		void buildDynamicLightTexture();

@@ -1,8 +1,8 @@
 #include "PoolComponent.h"
 
 
-PoolComponent::PoolComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::POOL_COMPONENT)
+PoolComponent::PoolComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::POOL_COMPONENT, parent)
 {
 
 	m_isAvailable = true;

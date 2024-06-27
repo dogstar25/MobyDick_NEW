@@ -6,14 +6,14 @@
 
 extern std::unique_ptr<Game> game;
 
-WeaponComponent::WeaponComponent() :
-	Component(ComponentTypes::WEAPON_COMPONENT)
-{
+//WeaponComponent::WeaponComponent() :
+//	Component(ComponentTypes::WEAPON_COMPONENT)
+//{
+//
+//}
 
-}
-
-WeaponComponent::WeaponComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::WEAPON_COMPONENT)
+WeaponComponent::WeaponComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::WEAPON_COMPONENT, parent)
 {
 	
 	m_componentType = ComponentTypes::WEAPON_COMPONENT;

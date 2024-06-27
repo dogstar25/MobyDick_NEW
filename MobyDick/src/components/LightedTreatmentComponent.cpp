@@ -7,8 +7,8 @@
 extern std::unique_ptr<Game> game;
 
 
-LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)
+LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::LIGHTED_TREATMENT_COMPONENT, parent)
 {
 
 	m_lightCompositeTexture = std::make_shared<Texture>();
@@ -42,7 +42,7 @@ void LightedTreatmentComponent::update()
 	m_lights.clear();
 
 	//Find all of the light objects that are within the boundaries of this lightTreatmnent Object
-	const auto& lights = parent()->parentScene()->getGameObjectsByTrait(TraitTag::light);
+	const auto& lights = parent()->parentScene()->getGameObjectsByTrait(TraitTag::light_emission);
 	for (auto& light : lights) {
 
 

@@ -2,14 +2,14 @@
 #include "StateComponent.h"
 #include "../Util.h"
 
-ContainerComponent::ContainerComponent() :
-	Component(ComponentTypes::CONTAINER_COMPONENT)
-{
+//ContainerComponent::ContainerComponent() :
+//	Component(ComponentTypes::CONTAINER_COMPONENT)
+//{
+//
+//}
 
-}
-
-ContainerComponent::ContainerComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
-	Component(ComponentTypes::CONTAINER_COMPONENT)
+ContainerComponent::ContainerComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::CONTAINER_COMPONENT, parent)
 {
 
 	m_capacity = componentJSON["capacity"].asInt();
@@ -55,9 +55,6 @@ void ContainerComponent::postInit()
 		auto item = addItem(m_contentItemGameObjectType, m_contentsItemSpawnForce, parent()->parentScene(), parent()->name(), i, true);
 
 		const auto& itemPhysicsComponent = item.gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-
-		//Set the layer from the parent object
-		item.gameObject->setLayer(parent()->layer());
 
 		//Set the location in the middle of the container object
 		b2Vec2 containerCenter{ containerTransformComponent->getCenterPosition().x, containerTransformComponent->getCenterPosition().y };
@@ -154,7 +151,7 @@ ContainerItem ContainerComponent::addItem(std::string gameObjectType, float spaw
 
 	//Create off screen
 	std::string name = _buildItemName(parentName, itemCount);
-	auto gameObject = parentScene->createGameObject(gameObjectType, (float)-50.0, (float)-50.0, (float)0, parentScene, GameLayer::MAIN, false, name);
+	auto gameObject = parentScene->createGameObject(gameObjectType, parent(), (float)-50.0, (float)-50.0, (float)0, parentScene, GameLayer::MAIN, false, name);
 	containerItem.gameObject = gameObject;
 
 	//If this is on the container construction we have to wait and let the postinit set the final destination

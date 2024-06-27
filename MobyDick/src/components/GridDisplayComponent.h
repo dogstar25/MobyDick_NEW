@@ -27,7 +27,7 @@ class GridDisplayComponent : public Component
 {
 public:
 	GridDisplayComponent();
-	GridDisplayComponent(Json::Value componentJSON, Scene* parentScene);
+	GridDisplayComponent(Json::Value componentJSON, GameObject* parent, Scene* parentScene);
 	~GridDisplayComponent();
 
 	void update() override;

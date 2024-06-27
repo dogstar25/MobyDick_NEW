@@ -7,8 +7,8 @@
 
 extern std::unique_ptr<Game> game;
 
-HudComponent::HudComponent(Json::Value componentJSON, Scene* parentScene) :
-	Component(ComponentTypes::HUD_COMPONENT)
+HudComponent::HudComponent(Json::Value componentJSON, GameObject* parent, Scene* parentScene) :
+	Component(ComponentTypes::HUD_COMPONENT, parent)
 {
 
 	std::string labelObjectId = componentJSON["labelObjectId"].asString();
@@ -19,7 +19,7 @@ HudComponent::HudComponent(Json::Value componentJSON, Scene* parentScene) :
 
 	m_isDependentObjectOwner = true;
 
-	m_hudItem = HudItemFactory::instance().create(type, labelObjectId, statusObjectId, statusValueId, labelPadding, parentScene);
+	m_hudItem = HudItemFactory::instance().create(type, parent, labelObjectId, statusObjectId, statusValueId, labelPadding, parentScene);
 }
 
 

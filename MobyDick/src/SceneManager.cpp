@@ -449,15 +449,15 @@ void SceneManager::respawnPlayer()
 //
 //}
 
-GameObject* SceneManager::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, bool cameraFollow)
-{
-	//Add the gameObject to the currently active scene using back()
-	auto& currentScene = m_scenes.back();
-	auto gameObject = currentScene.addGameObject(gameObjectType, layer, xMapPos, yMapPos, angle, cameraFollow);
-
-	return gameObject;
-
-}
+//GameObject* SceneManager::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, bool cameraFollow)
+//{
+//	//Add the gameObject to the currently active scene using back()
+//	auto& currentScene = m_scenes.back();
+//	auto gameObject = currentScene.addGameObject(gameObjectType, layer, xMapPos, yMapPos, angle, cameraFollow);
+//
+//	return gameObject;
+//
+//}
 
 void SceneManager::_directorTakeOver()
 {

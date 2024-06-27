@@ -5,8 +5,8 @@
 extern std::unique_ptr<Game> game;
 
 
-CompositeComponent::CompositeComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
-	Component(ComponentTypes::COMPOSITE_COMPONENT)
+CompositeComponent::CompositeComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::COMPOSITE_COMPONENT, parent)
 {
 
 	Json::Value bluePrintJSON = componentJSON["blueprint"];
@@ -55,16 +55,11 @@ void CompositeComponent::postInit()
 	//Set the layer for these pieces using the parents layer
 	for (auto& piece : m_pieces) {
 
-		piece.pieceObject->setLayer(parent()->layer());
-
 		if (m_physicsWeldPiecesOn == true) {
 			_weldOnPiece(piece);
 		}
 
 		piece.pieceObject->postInit();
-
-		//Set this composite pieces parent as the main object
-		piece.pieceObject->setParent(parent());
 
 	}
 
@@ -209,7 +204,7 @@ void CompositeComponent::_buildPiece(CompositeLegendItem legendItem, int xPos, i
 	*/
 	_buildPieceName(parentName, pieceCount);
 
-	const auto& pieceObject = parentScene->createGameObject(legendItem.gameObjectType, -5.f, -5.f, 0.f, parentScene);
+	const auto& pieceObject = parentScene->createGameObject(legendItem.gameObjectType, parent(), - 5.f, -5.f, 0.f, parentScene);
 	piece.pieceObject = pieceObject;
 
 	//calculate the X,Y offset position in relating to the base object

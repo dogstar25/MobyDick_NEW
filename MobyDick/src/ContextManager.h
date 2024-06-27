@@ -89,9 +89,6 @@ protected:
 
 
 
-	int todd{};
-
-
 };
 
 
