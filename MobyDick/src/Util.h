@@ -12,6 +12,7 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdlrenderer.h"
+#include "optional"
 
 #include "BaseConstants.h"
 
@@ -78,7 +79,7 @@ namespace util
 
 	std::string wideStringToString(const std::wstring& wstr);
 	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject);
-	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate);
+	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait = std::nullopt);
 	void replaceAll(std::string& str, const std::string& from, const std::string& to);
 
 };

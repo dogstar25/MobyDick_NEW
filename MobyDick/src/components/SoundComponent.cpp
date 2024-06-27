@@ -10,8 +10,8 @@
 
 extern std::unique_ptr<Game> game;
 
-SoundComponent::SoundComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::SOUND_COMPONENT)
+SoundComponent::SoundComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::SOUND_COMPONENT, parent)
 {
 	for (Json::Value itr: componentJSON["sounds"])
 	{
@@ -146,12 +146,12 @@ void SoundComponent::stopSound(std::string soundId)
 }
 
 
-void SoundComponent::setParent(GameObject* gameObject)
-{
-	//Call base component setParent
-	Component::setParent(gameObject);
-
-}
+//void SoundComponent::setParent(GameObject* gameObject)
+//{
+//	//Call base component setParent
+//	Component::setParent(gameObject);
+//
+//}
 
 int SoundComponent::playSound(std::string soundId)
 {

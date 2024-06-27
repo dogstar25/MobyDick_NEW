@@ -9,8 +9,8 @@
 extern std::unique_ptr<Game> game;
 
 
-AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
-	Component(ComponentTypes::ATTACHMENTS_COMPONENT)
+AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::ATTACHMENTS_COMPONENT, parent)
 {
 
 	int attachmentCount{};
@@ -29,7 +29,7 @@ AttachmentsComponent::AttachmentsComponent(Json::Value componentJSON, std::strin
 		//TODO: PUT A CHECK HER THAT WILL NOT ALLOW A STATIC OBJECT BE ATTACHED TO A DYNAMIC OBJECT
 
 		std::string name = _buildAttachmentName(parentName, attachmentCount);
-		auto gameObject = parentScene->createGameObject(gameObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
+		auto gameObject = parentScene->createGameObject(gameObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name);
 
 		Attachment attachment = { id, addToInventory, attachB2JointType, attachLocation, gameObject };
 		m_attachments.emplace_back(attachment);
@@ -72,9 +72,6 @@ void AttachmentsComponent::postInit()
 
 	for (auto& attachment : m_attachments) {
 
-		//set layer from parent
-		attachment.gameObject->setLayer(parent()->layer());
-
 		//The attachment objects are offscreen, so first move them to the parent's position before trying to attach them
 		attachment.gameObject->setPosition(parent()->getCenterPosition());
 
@@ -84,6 +81,8 @@ void AttachmentsComponent::postInit()
 			const auto& inventoryComponent = parent()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 			inventoryComponent->addItem(attachment.gameObject);
 		}
+
+		attachment.gameObject->postInit();
 
 	}
 }
@@ -103,19 +102,6 @@ const std::optional<Attachment> AttachmentsComponent::getAttachment(std::string 
 
 }
 
-void AttachmentsComponent::setParent(GameObject* parentObject)
-{
-	//Call base setParent
-	Component::setParent(parentObject);
-
-	for (auto& attachment : m_attachments) {
-
-		attachment.gameObject->setParent(parentObject);
-
-	}
-
-
-}
 void AttachmentsComponent::_removeFromWorldPass()
 {
 	//First remove any pieces that were mared to be removed

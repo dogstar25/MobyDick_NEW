@@ -11,7 +11,7 @@ class CheckPointComponent : public Component
 
 public:
 	CheckPointComponent() = default;
-	CheckPointComponent(Json::Value componentJSON);
+	CheckPointComponent(Json::Value componentJSON, GameObject* parent);
 	~CheckPointComponent();
 
 	void update() override;

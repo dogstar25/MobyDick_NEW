@@ -7,7 +7,7 @@ class PuzzleComponent :  public Component
 {
 
 public:
-	PuzzleComponent(Json::Value definitionJSON);
+	PuzzleComponent(Json::Value definitionJSON, GameObject* parent);
 	~PuzzleComponent() = default;
 
 	std::shared_ptr<Puzzle> puzzle{};

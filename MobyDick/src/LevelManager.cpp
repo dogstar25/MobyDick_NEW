@@ -293,7 +293,7 @@ void LevelManager::_buildDebugGridObjects(Scene* scene)
 	for (auto x = 0; x < m_width;x++) {
 		for (auto y = 0; y < m_height; y++) {
 
-			const auto& gridObject = scene->addGameObject("DEBUG_GRID_32", GameLayer::GRID_DISPLAY, (float)x, (float)y, (float)0);
+			const auto& gridObject = scene->addGameObject("DEBUG_GRID_32", nullptr, GameLayer::GRID_DISPLAY, (float)x, (float)y, (float)0);
 			gridObject->disableRender();
 
 
@@ -328,7 +328,7 @@ void LevelManager::_buildLevelCage(Scene* scene)
 	auto levelHeight = (m_tileHeight * m_height) ;
 
 	//Create a Level Cage game object
-	const auto& levelCageObject = scene->addGameObject("LEVEL_CAGE", GameLayer::ABSTRACT, (float)0, (float)0, (float)0);
+	const auto& levelCageObject = scene->addGameObject("LEVEL_CAGE", nullptr, GameLayer::ABSTRACT, (float)0, (float)0, (float)0);
 
 	//Create a transform component dynamically
 	transformDefinition["id"] = "TRANSFORM_COMPONENT";
@@ -353,17 +353,15 @@ void LevelManager::_buildLevelCage(Scene* scene)
 	const auto& transformComponent =
 		std::static_pointer_cast<TransformComponent>(
 			game->componentFactory()->create(
-				componentsDefinition, "", "", scene, 0, 0, 0, b2Vec2_zero, ComponentTypes::TRANSFORM_COMPONENT)	);
-	transformComponent->setParent(levelCageObject);
+				componentsDefinition, levelCageObject, "", "", scene, 0, 0, 0, b2Vec2_zero, ComponentTypes::TRANSFORM_COMPONENT)	);
 	levelCageObject->addComponent(transformComponent);
 
 
 	//Add the physics component
 	const auto& physicsComponent =
 		std::static_pointer_cast<PhysicsComponent>(
-			game->componentFactory()->create(componentsDefinition, "", "", scene, 0, 0, 0, b2Vec2_zero, ComponentTypes::PHYSICS_COMPONENT)
+			game->componentFactory()->create(componentsDefinition, levelCageObject, "", "", scene, 0, 0, 0, b2Vec2_zero, ComponentTypes::PHYSICS_COMPONENT)
 			);
-	physicsComponent->setParent(levelCageObject);
 	levelCageObject->addComponent(physicsComponent);
 
 
@@ -827,7 +825,7 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 				}
 
 				//Create the gameObject
-				auto gameObject = scene->addGameObject(levelObject.gameObjectType, levelObject.layer,
+				auto gameObject = scene->addGameObject(levelObject.gameObjectType, nullptr, levelObject.layer,
 					(float)x, (float)y, (float)levelObject.angleAdjustment, levelObject.cameraFollow, levelObject.name, sizeOverride);
 
 				//Apply color override
@@ -933,7 +931,7 @@ void LevelManager::_buildTiledLayers(Scene* scene)
 				//adjust the X and Y map position based on the size of our background tiles
 				auto newBackgroundObject = 
 					scene->addGameObject(
-						tiledLayer.second.tiledObjectId, GameLayer::BACKGROUND_1, (float)x * adjustX, (float)y * adjustY, (float)0);
+						tiledLayer.second.tiledObjectId, nullptr, GameLayer::BACKGROUND_1, (float)x * adjustX, (float)y * adjustY, (float)0);
 
 			}
 

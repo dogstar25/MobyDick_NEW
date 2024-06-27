@@ -3,14 +3,14 @@
 
 extern std::unique_ptr<Game> game;
 
-InventoryComponent::InventoryComponent() :
-	Component(ComponentTypes::INVENTORY_COMPONENT)
-{
-	m_isDependentObjectOwner = true;
-}
+//InventoryComponent::InventoryComponent() :
+//	Component(ComponentTypes::INVENTORY_COMPONENT)
+//{
+//	m_isDependentObjectOwner = true;
+//}
 
-InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
-	Component(ComponentTypes::INVENTORY_COMPONENT)
+InventoryComponent::InventoryComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::INVENTORY_COMPONENT, parent)
 {
 
 	m_componentType = ComponentTypes::INVENTORY_COMPONENT;
@@ -31,7 +31,7 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, std::string pa
 
 	if (displayObjectType.empty() == false) {
 
-		auto displayObject = parentScene->createGameObject(displayObjectType, -50.0F, -50.0F, 0.F, parentScene, m_displayLayer);
+		auto displayObject = parentScene->createGameObject(displayObjectType, parent, -50.0F, -50.0F, 0.F, parentScene, m_displayLayer);
 		parentScene->addGameObject(displayObject, m_displayLayer);
 		displayObject->disablePhysics();
 		displayObject->disableRender();
@@ -56,22 +56,21 @@ void InventoryComponent::postInit()
 		refreshInventoryDisplay();
 	}
 
-
 }
 
 
-void InventoryComponent::setParent(GameObject* gameObject)
-{
-	//Call base component setParent
-	Component::setParent(gameObject);
-
-	//Parent for this interactionMenuObject if it exists
-	if (m_displayObject) {
-		m_displayObject.value().lock()->setParent(gameObject);
-
-	}
-
-}
+//void InventoryComponent::setParent(GameObject* gameObject)
+//{
+//	//Call base component setParent
+//	Component::setParent(gameObject);
+//
+//	//Parent for this interactionMenuObject if it exists
+//	if (m_displayObject) {
+//		m_displayObject.value().lock()->setParent(gameObject);
+//
+//	}
+//
+//}
 
 bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 {
@@ -141,7 +140,7 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 bool InventoryComponent::addItem(std::string gameObjectType)
 {
 
-	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, -50.0F, -50.0F, 0.F,
+	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, parent(),  - 50.0F, -50.0F, 0.F,
 		parent()->parentScene(), GameLayer::GUI_2);
 
 	if (addItem(gameObject) == false) {
@@ -157,7 +156,7 @@ bool InventoryComponent::addItem(std::string gameObjectType)
 bool InventoryComponent::addItem(std::string gameObjectType, int slot)
 {
 
-	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, -50.0F, -50.0F, 0.F,
+	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, parent(),  - 50.0F, -50.0F, 0.F,
 		parent()->parentScene(), GameLayer::GUI_2);
 
 	return addItem(gameObject, slot);

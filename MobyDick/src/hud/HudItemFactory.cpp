@@ -10,7 +10,7 @@ HudItemFactory& HudItemFactory::instance()
 
 }
 
-std::shared_ptr<HudItem> HudItemFactory::create(HudItemTypes type, std::string labelId, std::string statusId, std::string statusValueId, 
+std::shared_ptr<HudItem> HudItemFactory::create(HudItemTypes type, GameObject* parent, std::string labelId, std::string statusId, std::string statusValueId, 
     float labelPadding, Scene* parentScene)
 {
 
@@ -25,7 +25,6 @@ std::shared_ptr<HudItem> HudItemFactory::create(HudItemTypes type, std::string l
 
         hudItem = std::make_shared<HudStatusSeries>(labelId, statusId, statusValueId, labelPadding, parentScene);
     }
-
 
     return hudItem;
 }

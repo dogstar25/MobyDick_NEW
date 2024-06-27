@@ -4,14 +4,14 @@
 
 extern std::unique_ptr<Game> game;
 
-InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentScene) :
-	Component(ComponentTypes::INTERFACE_COMPONENT)
+InterfaceComponent::InterfaceComponent(Json::Value componentJSON, GameObject* parent, Scene* parentScene) :
+	Component(ComponentTypes::INTERFACE_COMPONENT, parent)
 {
 
 	//Interactive object if exists
 	if (componentJSON.isMember("menuObject")) {
 		auto interfaceMenuObjectId = componentJSON["menuObject"].asString();
-		m_interfaceMenuObject = parentScene->createGameObject(interfaceMenuObjectId, -5.f, -5.f, 0.f, parentScene);
+		m_interfaceMenuObject = parentScene->createGameObject(interfaceMenuObjectId, parent, -5.f, -5.f, 0.f, parentScene);
 
 		m_interfaceMenuObject->get()->disableRender();
 	}
@@ -43,11 +43,7 @@ InterfaceComponent::InterfaceComponent(Json::Value componentJSON, Scene* parentS
 
 void InterfaceComponent::postInit()
 {
-	//The interfaceMenuObject Lives in the interfaceComponent, so we are responsible for its
-	//creation and destruction and setting its layer
-	if (m_interfaceMenuObject.has_value()) {
-		m_interfaceMenuObject.value()->setLayer(parent()->layer());
-	}
+
 
 }
 
@@ -70,10 +66,6 @@ void InterfaceComponent::update()
 
 	std::bitset<MAX_EVENT_STATES> newEventsState{};
 	bool showInterfaceMenu{};
-
-	if (m_currentEventsState.test((int)InterfaceEvents::ON_DRAG) == true) {
-		int todd = 1;
-	}
 
 	//Need to carry over the ON_DRAG event sense it only stars on a mouse click and end on mouse release
 	newEventsState.set( (int)InterfaceEvents::ON_DRAG, m_currentEventsState.test((int)InterfaceEvents::ON_DRAG));
@@ -515,19 +507,6 @@ SDL_FPoint InterfaceComponent::determineInterfaceMenuLocation(GameObject* player
 
 	return position;
 
-
-}
-
-void InterfaceComponent::setParent(GameObject* gameObject)
-{
-	//Call base component setParent
-	Component::setParent(gameObject);
-
-	//Parent for this interactionMenuObject if it exists
-	if (m_interfaceMenuObject) {
-		m_interfaceMenuObject.value()->setParent(gameObject);
-
-	}
 
 }
 

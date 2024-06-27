@@ -28,7 +28,7 @@ class NavigationComponent : public Component
 
 public:
 	NavigationComponent() = default;
-	NavigationComponent(Json::Value componentJSON);
+	NavigationComponent(Json::Value componentJSON, GameObject* parent);
 	~NavigationComponent();
 
 	void update() override;

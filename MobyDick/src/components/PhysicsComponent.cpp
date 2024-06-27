@@ -7,9 +7,9 @@
 
 extern std::unique_ptr<Game> game;
 
-PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust, 
+PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust,
 	b2Vec2 sizeOverride) :
-	Component(ComponentTypes::PHYSICS_COMPONENT)
+	Component(ComponentTypes::PHYSICS_COMPONENT, parent)
 {
 
 	//Get reference to the animationComponent JSON config and transformComponent JSON config
@@ -85,14 +85,14 @@ PhysicsComponent::~PhysicsComponent()
 void PhysicsComponent::postInit()
 {
 
-	
-}
 
-void PhysicsComponent::setParent(GameObject* gameObject)
-{
-	Component::setParent(gameObject);
-	m_physicsBody->GetUserData().pointer = reinterpret_cast<uintptr_t>(gameObject);
-}
+	}
+
+//void PhysicsComponent::setParent(GameObject* gameObject)
+//{
+//	Component::setParent(gameObject);
+//	m_physicsBody->GetUserData().pointer = reinterpret_cast<uintptr_t>(gameObject);
+//}
 
 void PhysicsComponent::setTransform(b2Vec2 positionVector, float angle)
 {
@@ -209,6 +209,9 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 	bodyDef.allowSleep = true;
 	b2Body* body = physicsWorld->CreateBody(&bodyDef);
 
+	//Store a reference to the parent object in the userData pointer field
+	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(parent());
+
 	if (physicsComponentJSON.isMember("linearDamping")) {
 		body->SetLinearDamping(physicsComponentJSON["linearDamping"].asFloat());
 	}
@@ -235,8 +238,6 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 		}
 	}
 
-	 
-	
 	//Build fixtures
 	for (const auto& fixtureJSON : physicsComponentJSON["fixtures"]) {
 

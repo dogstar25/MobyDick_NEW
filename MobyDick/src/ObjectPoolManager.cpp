@@ -24,7 +24,7 @@ void ObjectPoolManager::init(Json::Value definitionJSON,  Scene* parentScene)
 
 		for (int index = 0; index < maxItems; index++) {
 
-			auto& gameObject = m_objectPool[poolId].emplace_back(std::make_shared<GameObject>(gameObjectType, -50.0f, -50.0f, 0.0f, parentScene));
+			auto& gameObject = m_objectPool[poolId].emplace_back(std::make_shared<GameObject>(gameObjectType, nullptr, -50.0f, -50.0f, 0.0f, parentScene));
 			gameObject->reset();
 
 			assert(gameObject->hasTrait(TraitTag::pooled) && "GameObject being pooled must be defined with the TraitTag::pooled trait");

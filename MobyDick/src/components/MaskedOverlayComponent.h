@@ -10,7 +10,7 @@ class MaskedOverlayComponent : public Component
 
 public:
 	MaskedOverlayComponent() = default;
-	MaskedOverlayComponent(Json::Value definitionJSON, Scene* parentScene);
+	MaskedOverlayComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene);
 	~MaskedOverlayComponent() = default;
 
 	void update() override;

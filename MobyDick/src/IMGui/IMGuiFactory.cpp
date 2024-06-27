@@ -7,7 +7,7 @@
 
 
 
-std::shared_ptr<IMGuiItem> IMGuiFactory::create(std::string iMGuiItemType, std::string gameObjectType, Scene* parentScene, b2Vec2 padding, ImVec4 backgroundColor, ImVec4 textColor,
+std::shared_ptr<IMGuiItem> IMGuiFactory::create(std::string iMGuiItemType, GameObject* parent, std::string gameObjectType, b2Vec2 padding, ImVec4 backgroundColor, ImVec4 textColor,
 	ImVec4 buttonColor, ImVec4 buttonHoverColor, ImVec4 buttonActiveColor, bool autoSize, std::string staticTextValue)
 {
 	std::shared_ptr<IMGuiItem> iMGuiItem;
@@ -25,13 +25,12 @@ std::shared_ptr<IMGuiItem> IMGuiFactory::create(std::string iMGuiItemType, std::
 
 		iMGuiItem = std::make_shared<IMGuiInteractiveMenuBasic>(gameObjectType, padding, backgroundColor, textColor, buttonColor, buttonHoverColor, buttonActiveColor, autoSize);
 	}
-
-
-	
 	else {
 
 		assert(false && "IMGui Type was not found");
 	}
+
+	iMGuiItem->setParent(parent);
 
 	return iMGuiItem;
 

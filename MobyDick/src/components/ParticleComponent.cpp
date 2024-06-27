@@ -6,8 +6,8 @@
 
 extern std::unique_ptr<Game> game;
 
-ParticleComponent::ParticleComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::PARTICLE_COMPONENT)
+ParticleComponent::ParticleComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::PARTICLE_COMPONENT, parent)
 {
 
 	m_maxParticles = componentJSON["maxParticles"].asInt();
@@ -182,12 +182,12 @@ void ParticleComponent::update()
 					emitAngle = util::degreesToRadians(emitAngle);
 
 					//Calculate velocity vector
-					auto force = util::generateRandomNumber(effect.forceMin, effect.forceMax);
+					auto force = util::generateRandomNumber(effect.forceMin * PARTICLE_EMITTER_FORCE_ADJ, effect.forceMax * PARTICLE_EMITTER_FORCE_ADJ);
 
 					//Adjust force by a factor so that is closer matches what box2d does and we can use the same
 					//particle effect objects easier
-					particle.value()->velocity.x = cos(emitAngle) * (force * PARTICLE_EMITTER_FORCE_ADJ);
-					particle.value()->velocity.y = sin(emitAngle) * (force * PARTICLE_EMITTER_FORCE_ADJ);
+					particle.value()->velocity.x = cos(emitAngle) * (force);// *PARTICLE_EMITTER_FORCE_ADJ);
+					particle.value()->velocity.y = sin(emitAngle) * (force);// *PARTICLE_EMITTER_FORCE_ADJ);
 
 					//Position - If zero was passed in then use the location of the gameObject
 					//that this ParticleComponent belongs to

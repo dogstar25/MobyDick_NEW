@@ -6,14 +6,14 @@
 
 extern std::unique_ptr<Game> game;
 
-ChildrenComponent::ChildrenComponent() :
-	Component(ComponentTypes::CHILDREN_COMPONENT)
-{
+//ChildrenComponent::ChildrenComponent() :
+//	Component(ComponentTypes::CHILDREN_COMPONENT)
+//{
+//
+//}
 
-}
-
-ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene) :
-	Component(ComponentTypes::CHILDREN_COMPONENT)
+ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :
+	Component(ComponentTypes::CHILDREN_COMPONENT, parent)
 {
 
 	m_childPadding = componentJSON["childPadding"].asFloat();
@@ -42,6 +42,10 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 			name = _buildChildName(parentName, childCount);
 		}
 
+		if (name == "toddDoor") {
+			int todd = 1;
+		}
+
 		//Child Size Override
 		b2Vec2 sizeOverride{ 0.f, 0.f };
 		if (itrChild.isMember("size")) {
@@ -63,7 +67,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, std::string pare
 		}
 
 		//Create the child
-		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, 
+		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, 
 			false, name, sizeOverride);
 
 		//If this is a stepchild then we need to add it to the world where the scene will be responsible for it
@@ -139,10 +143,7 @@ void ChildrenComponent::postInit()
 
 			if (child.gameObject.has_value()) {
 
-				child.gameObject.value()->setLayer(parent()->layer());
 				child.gameObject.value()->postInit();
-				child.gameObject.value()->setParent(parent());
-
 			}
 
 		}

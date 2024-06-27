@@ -47,12 +47,11 @@ class EnvironmentComponent : public Component
 {
 
 public:
-	EnvironmentComponent(Json::Value definitionJSON);
+	EnvironmentComponent(Json::Value definitionJSON, GameObject* parent);
 	~EnvironmentComponent() = default;
 
 	virtual void update() override;
 	virtual void postInit() override;
-	virtual void setParent(GameObject* gameObject) override;
 	void addEvent(std::shared_ptr<EnvironmentEvent> event);
 
 

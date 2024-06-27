@@ -32,7 +32,7 @@ struct SoundItem {
 class SoundComponent : public Component
 {
 public:
-	SoundComponent(Json::Value definitionJSON);
+	SoundComponent(Json::Value definitionJSON, GameObject* parent);
 	~SoundComponent();
 
 	void update() override;
@@ -44,7 +44,7 @@ public:
 	void stopSounds();
 	void stopSound(std::string soundId);
 
-	void setParent(GameObject* gameObject) override;
+	//void setParent(GameObject* gameObject) override;
 
 private:
 	std::unordered_map<std::string, SoundItem > m_sounds{};

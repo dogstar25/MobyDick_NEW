@@ -5,7 +5,7 @@ class PoolComponent : public Component
 {
 
 public:
-	PoolComponent(Json::Value componentJSON);
+	PoolComponent(Json::Value componentJSON, GameObject* parent);
 	~PoolComponent();
 
 	void update() override;

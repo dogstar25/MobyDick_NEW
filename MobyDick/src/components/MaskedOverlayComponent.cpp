@@ -4,15 +4,15 @@
 
 extern std::unique_ptr<Game> game;
 
-MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, Scene* parentScene) :
-	Component(ComponentTypes::MASKED_OVERLAY_COMPONENT)
+MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, GameObject* parent, Scene* parentScene) :
+	Component(ComponentTypes::MASKED_OVERLAY_COMPONENT, parent)
 {
 	//
 	// ToDo:try changing this Layer to abstract
 	//
 
 	for (Json::Value objectItr : componentJSON["overlayObjects"]) {
-		m_overlayObjects.push_back( parentScene->createGameObject(objectItr.asString(), -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN));
+		m_overlayObjects.push_back( parentScene->createGameObject(objectItr.asString(), parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN));
 	}
 
 	for (Json::Value objectItr : componentJSON["maskObjects"]) {
@@ -48,6 +48,11 @@ void MaskedOverlayComponent::postInit()
 
 	}
 
+	for (const auto& overlayObject : m_overlayObjects) {
+
+		overlayObject->postInit();
+
+	}
 
 }
 

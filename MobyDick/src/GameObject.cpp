@@ -26,8 +26,8 @@ GameObject::~GameObject()
 
 }
 
-GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, GameLayer layer, 
-	bool cameraFollow, std::string name, b2Vec2 sizeOverride)
+GameObject::GameObject(std::string gameObjectType, GameObject* parent, float xMapPos, float yMapPos, float angleAdjust, 
+	Scene* parentScene, GameLayer layer, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
 	Json::Value definitionJSON;
@@ -58,20 +58,28 @@ GameObject::GameObject(std::string gameObjectType, float xMapPos, float yMapPos,
 		m_traitTags.set(trait);
 	}
 
-	//Set the parent Scene
+	//Set the parent and parent Scene
 	m_parentScene = parentScene;
+	if (parent == nullptr) {
+		m_parentObject = std::nullopt;
+	}
+	else {
+		m_parentObject = parent;
+	}
 	parentScene->incrementGameObjectCount();
 
 	std::shared_ptr<Component> component{};
 
+	//Determine the parent object
+	//If this object is being built by a children, attachment component then the parent needs to get passed down
 	for (Json::Value componentJSON : definitionJSON["components"]){
 
 		std::string componentTypeString = util::getComponentType(componentJSON);
 		int componentType = game->enumMap()->toEnum(componentTypeString);
 
 		component = game->componentFactory()->create(
-			definitionJSON, m_name, gameObjectType, parentScene, xMapPos, yMapPos, angleAdjust, sizeOverride, componentType);
-		component->setParent(this);
+			definitionJSON, this, m_name, gameObjectType, parentScene, xMapPos, yMapPos, angleAdjust, sizeOverride, componentType);
+
 		addComponent(component);
 
 	}
@@ -190,7 +198,7 @@ void GameObject::addLitHighlight(b2Vec2 size)
 
 	std::shared_ptr<ChildrenComponent> childrenComponent{};
 
-	auto lightObject = m_parentScene->addGameObject("LIGHT_ITEM_HIGHLIGHT_CIRCLE", GameLayer::FOREGROUND_5 , -1.0F, -1.0F,
+	auto lightObject = m_parentScene->addGameObject("LIGHT_ITEM_HIGHLIGHT_CIRCLE", this, GameLayer::FOREGROUND_5 , -1.0F, -1.0F,
 		0.F, false, "LitHightlight", size);
 	std::shared_ptr<GameObject> lightObjectShrPtr = m_parentScene->getGameObject(lightObject->id()).value();
 	lightObjectShrPtr->addState(GameObjectState::ON);
@@ -213,10 +221,9 @@ void GameObject::addLitHighlight(b2Vec2 size)
 
 		childrenComponent =
 			std::static_pointer_cast<ChildrenComponent>(
-				game->componentFactory()->create(componentsDefinition, m_name, "", m_parentScene, 0, 0, 0, b2Vec2_zero,
+				game->componentFactory()->create(componentsDefinition, this, m_name, "", m_parentScene, 0, 0, 0, b2Vec2_zero,
 					ComponentTypes::CHILDREN_COMPONENT)
 			);
-		childrenComponent->setParent(this);
 		addComponent(childrenComponent);
 
 		childrenComponent->addStepChild(lightObjectShrPtr, PositionAlignment::CENTER);
@@ -331,6 +338,7 @@ void GameObject::render()
 	//Special spot to place a debug ImGui object
 	_imGuiDebugObject();
 
+
 	if (this->renderDisabled() == false) {
 
 		//Render yourself
@@ -383,12 +391,6 @@ void GameObject::render()
 
 			getComponent<ContainerComponent>(ComponentTypes::CONTAINER_COMPONENT)->render();
 		}
-
-		////Render Inventory
-		//if (hasComponent(ComponentTypes::INVENTORY_COMPONENT)) {
-
-		//	getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT)->render();
-		//}
 
 		//Render Inventory
 		if (hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
@@ -1088,12 +1090,6 @@ void GameObject::_updateTouchingObjects()
 {
 
 		m_touchingGameObjects.clear();
-
-
-		if (type() == "BOTTLE1") {
-			int todd = 1;
-
-		}
 
 		//If this is a physics GameObject then capture a list of every object that it or its aux sensor is currently touching
 		if (this->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {

@@ -103,7 +103,7 @@ namespace TraitTag {
 	inline constexpr int conditional_impasse = 15;
 	inline constexpr int complex_impasse = 16;
 	inline constexpr int mobile = 17;
-	inline constexpr int light = 18;
+	inline constexpr int light_emission = 18;
 	inline constexpr int puzzle = 19;						//Object that has puzzle(s) to solve before can be used
 	inline constexpr int vertical_movement_zone = 20;			//Allows for the player to vertically move
 	inline constexpr int inventory = 22;					//Can have a game item dropped onto it to add to its inventory
@@ -118,7 +118,6 @@ namespace TraitTag {
 	inline constexpr int receptacle = 32;
 	inline constexpr int save_me = 33;
 	inline constexpr int toggle_switch = 34;
-
 
 
 

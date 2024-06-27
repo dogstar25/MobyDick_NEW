@@ -5,7 +5,6 @@
 void OnOffToggleAction::perform(GameObject* gameObject)
 {
 
-	std::string buttonTargetObjectName = gameObject->name() + "_TARGET";
 	GameObjectState stateToPropogate{};
 
 	//Flip the switch on/off state
@@ -20,23 +19,28 @@ void OnOffToggleAction::perform(GameObject* gameObject)
 		stateToPropogate = GameObjectState::ON;
 	}
 
-	//Flip the target object or objects on/off state
+
+	//The default is to find all objects that match the _TARGET name and flip thie ON/OFF
+	//If none are found then we will fallback to toggle any sibling light fixtures
+	std::string buttonTargetObjectName = gameObject->name() + "_TARGET";
 	auto targetObjects = gameObject->parentScene()->getGameObjectsByName(buttonTargetObjectName);
-	assert(!targetObjects.empty() && "GameObject wasnt found!");
+	if (targetObjects.empty() == false) {
 
-	for (auto& targetObject : targetObjects) {
+		for (auto& targetObject : targetObjects) {
 
-		if (targetObject->hasState(GameObjectState::ON)) {
+			targetObject->addState(stateToPropogate);
 
-			targetObject->addState(GameObjectState::OFF);
-		}
-		else if (targetObject->hasState(GameObjectState::OFF)) {
-
-			targetObject->addState(GameObjectState::ON);
 		}
 
-		//turn off state of all children as well
-		util::propogateStateToAllChildren(targetObject.get(), stateToPropogate);
+	}
+	else {
+
+		if (gameObject->parent().has_value()){
+
+			//gameObject->parent().value()->addState(stateToPropogate);
+			gameObject->addState(stateToPropogate);
+
+		}
 
 	}
 

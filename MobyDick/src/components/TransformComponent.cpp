@@ -3,13 +3,13 @@
 
 extern std::unique_ptr<Game> game;
 
-TransformComponent::TransformComponent() :
-	Component(ComponentTypes::TRANSFORM_COMPONENT)
-{
-}
+//TransformComponent::TransformComponent() :
+//	Component(ComponentTypes::TRANSFORM_COMPONENT)
+//{
+//}
 
-TransformComponent::TransformComponent(Json::Value componentJSON, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride) :
-	Component(ComponentTypes::TRANSFORM_COMPONENT)
+TransformComponent::TransformComponent(Json::Value componentJSON, GameObject* parent, float xMapPos, float yMapPos, float angleAdjust, b2Vec2 sizeOverride) :
+	Component(ComponentTypes::TRANSFORM_COMPONENT, parent)
 {
 		m_angle = m_originalAngle = angleAdjust;
 		b2Vec2 size{};

@@ -378,12 +378,12 @@ void Scene::deleteCutScene()
 
 }
 
-std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, float xMapPos, float yMapPos, float angleAdjust, Scene* parentScene, 
-	GameLayer layer, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
+std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, GameObject* parent, float xMapPos, float yMapPos, float angleAdjust, 
+	Scene* parentScene,	GameLayer layer, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
 	std::shared_ptr<GameObject> gameObject = 
-		std::make_shared<GameObject>(gameObjectType, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name, sizeOverride);
+		std::make_shared<GameObject>(gameObjectType, parent, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name, sizeOverride);
 
 	//Add to the main gameObject lookup collection where every gameObject must live
 	m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
@@ -392,11 +392,11 @@ std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, 
 	return gameObject;
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, float xMapPos, float yMapPos, float angle, 
+GameObject* Scene::addGameObject(std::string gameObjectType, GameObject* parent, GameLayer layer, float xMapPos, float yMapPos, float angle,
 	bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, xMapPos, yMapPos, angle, this, layer, cameraFollow, 
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, parent, xMapPos, yMapPos, angle, this, layer, cameraFollow, 
 		name, sizeOverride);
 
 	m_gameObjects[layer].emplace_back(gameObject);
@@ -405,11 +405,11 @@ GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, fl
 
 }
 
-GameObject* Scene::addGameObject(std::string gameObjectType, GameLayer layer, PositionAlignment windowPosition, float adjustX, float adjustY,
+GameObject* Scene::addGameObject(std::string gameObjectType, GameObject* parent, GameLayer layer, PositionAlignment windowPosition, float adjustX, float adjustY,
 	float angle, bool cameraFollow, std::string name, b2Vec2 sizeOverride)
 {
 
-	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, (float)-5, (float)-5, angle, this, layer, cameraFollow, 
+	std::shared_ptr<GameObject> gameObject = createGameObject(gameObjectType, parent, (float)-5, (float)-5, angle, this, layer, cameraFollow, 
 		name, sizeOverride);
 
 	gameObject->setPosition(windowPosition, adjustX, adjustY);
@@ -507,6 +507,7 @@ void Scene::_processGameObjectInterdependecies()
 				Camera::instance().setFollowMe(gameObject.second.lock());
 			}
 
+
 		}
 
 	}
@@ -560,20 +561,19 @@ void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 			if (locationJSON.isMember("adjust")) {
 				auto adjustX = locationJSON["adjust"]["x"].asFloat();
 				auto adjustY = locationJSON["adjust"]["y"].asFloat();
-				gameObject = addGameObject(gameObjectType, layer, windowPosition, adjustX, adjustY, 0.,false,name);
+				gameObject = addGameObject(gameObjectType, nullptr, layer, windowPosition, adjustX, adjustY, 0.,false,name);
 			}
 			else {
-				gameObject = addGameObject(gameObjectType, layer, windowPosition, 0., 0., 0., false, name);
+				gameObject = addGameObject(gameObjectType, nullptr, layer, windowPosition, 0., 0., 0., false, name);
 			}
 			
 		}
 		else {
 			auto locationX = gameObjectJSON["location"]["x"].asFloat();
 			auto locationY = gameObjectJSON["location"]["y"].asFloat();
-			gameObject = addGameObject(gameObjectType, layer, locationX, locationY, 0., false, name);
+			gameObject = addGameObject(gameObjectType, nullptr, layer, locationX, locationY, 0., false, name);
 		}
 
-		gameObject->postInit();
 	}
 }
 
@@ -594,31 +594,12 @@ std::optional<std::shared_ptr<GameObject>> Scene::extractGameObject(std::string 
 {
 	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
 
-	auto deleteMeObject = createGameObject("DELETE_ME_OBJECT", (float)-1.0, (float)-1.0, (float)0, this);
+	auto deleteMeObject = createGameObject("DELETE_ME_OBJECT", nullptr, (float)-1.0, (float)-1.0, (float)0, this);
 	deleteMeObject->setRemoveFromWorld(true);
 
-
-	//Loop through all layers and remove any gameObject that has been marked to remove
-	//for (auto& gameObjectsLayers : m_gameObjects) {
-
-	//	for (auto gameObjectItr = gameObjectsLayers.begin(); gameObjectItr != gameObjectsLayers.end();) {
-
-	//		if (gameObjectItr->get()->id() == id) {
-
-	//			foundGameObject = std::make_optional(*gameObjectItr);
-	//			gameObjectItr->swap(deleteMeObject);
-	//		}
-	//		else {
-	//			++gameObjectItr;
-	//		}
-
-	//	}
-	//}
-
-	//Using a swap so that we contain all dletions of objects at the _removeFromWorldPass level
+	//Using a swap so that we contain all deletions of objects at the _removeFromWorldPass level
 	//This allows us to move an object from the main world collection to a parent object and it can be called from a 
 	//box2d callback
-
 	for (auto& gameObjectsLayers : m_gameObjects) {
 
 		for (auto& gameObject : gameObjectsLayers) {

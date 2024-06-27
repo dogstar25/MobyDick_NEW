@@ -55,7 +55,7 @@ class AnimationComponent : public Component
 {
 public:
 	//AnimationComponent();
-	AnimationComponent(Json::Value definitionJSON);
+	AnimationComponent(Json::Value definitionJSON, GameObject* parent);
 	~AnimationComponent();
 
 	void update() override;

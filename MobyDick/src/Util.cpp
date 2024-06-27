@@ -559,7 +559,7 @@ namespace util
 
 	}
 
-	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate)
+	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait)
 	{
 
 
@@ -576,11 +576,14 @@ namespace util
 
 					if (child.gameObject.has_value()) {
 
-						child.gameObject.value()->addState(stateToPropogate);
+						if (trait.has_value()==false || (trait.has_value() && child.gameObject.value()->hasTrait(trait.value()))) {
+
+							child.gameObject.value()->addState(stateToPropogate);
+						}
 
 					}
 
-					propogateStateToAllChildren(child.gameObject.value().get(), stateToPropogate);
+					propogateStateToAllChildren(child.gameObject.value().get(), stateToPropogate, trait);
 
 				}
 

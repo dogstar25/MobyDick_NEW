@@ -24,8 +24,8 @@ class PlayerControlComponent : public Component
 {
 public:
 
-	PlayerControlComponent();
-	PlayerControlComponent(Json::Value componentJSON);
+	PlayerControlComponent()=default;
+	PlayerControlComponent(Json::Value componentJSON, GameObject* parent);
 
 	~PlayerControlComponent();
 

@@ -10,8 +10,8 @@
 
 extern std::unique_ptr<Game> game;
 
-RenderComponent::RenderComponent(Json::Value componentJSON):
-	Component(ComponentTypes::RENDER_COMPONENT)
+RenderComponent::RenderComponent(Json::Value componentJSON, GameObject* parent):
+	Component(ComponentTypes::RENDER_COMPONENT, parent)
 {
 
 	m_componentType = ComponentTypes::RENDER_COMPONENT;
@@ -138,10 +138,6 @@ an x, y position that is the top left corner of the object (for SDL render funct
 SDL_FRect RenderComponent::getRenderDestRect()
 {
 	SDL_FRect destRect;
-
-	if (parent()->type() == "OIL_CAN") {
-		int todd = 1;
-	}
 
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 

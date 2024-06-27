@@ -20,11 +20,11 @@ class InventoryComponent : public Component
 
 	public:
 
-		InventoryComponent();
-		InventoryComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene);
+		InventoryComponent()=default;
+		InventoryComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene);
 		~InventoryComponent();
 
-		void setParent(GameObject* gameObject) override;
+		//void setParent(GameObject* gameObject) override;
 		void postInit() override;
 
 		bool addItem(std::shared_ptr<GameObject> gameObject, int slot);

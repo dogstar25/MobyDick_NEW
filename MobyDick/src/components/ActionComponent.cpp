@@ -14,8 +14,8 @@
 
 extern std::unique_ptr<Game> game;
 
-ActionComponent::ActionComponent(Json::Value componentJSON, Scene* parentScene) :
-	Component(ComponentTypes::ACTION_COMPONENT)
+ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::ACTION_COMPONENT, parent)
 {
 
 	m_actions.resize(32);

@@ -7,8 +7,8 @@
 
 extern std::unique_ptr<Game> game;
 
-AnimationComponent::AnimationComponent(Json::Value componentJSON) :
-	Component(ComponentTypes::ANIMATION_COMPONENT)
+AnimationComponent::AnimationComponent(Json::Value componentJSON, GameObject* parent) :
+	Component(ComponentTypes::ANIMATION_COMPONENT, parent)
 {
 
 	m_frameSize.x = componentJSON["frameSize"]["width"].asFloat();

@@ -52,8 +52,8 @@ struct Child {
 class ChildrenComponent : public Component
 {
 public:
-	ChildrenComponent();
-	ChildrenComponent(Json::Value componentJSON, std::string parentName, Scene* scene);
+	ChildrenComponent()=default;
+	ChildrenComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* scene);
 	~ChildrenComponent();
 
 	void update() override;

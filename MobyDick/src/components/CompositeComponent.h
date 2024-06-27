@@ -36,7 +36,7 @@ class CompositeComponent : public Component
 {
 public:
 	CompositeComponent();
-	CompositeComponent(Json::Value componentJSON, std::string parentName, Scene* parentScene);
+	CompositeComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene);
 	~CompositeComponent();
 
 	void update() override;
