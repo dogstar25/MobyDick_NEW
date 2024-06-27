@@ -64,7 +64,7 @@ IMGuiComponent::IMGuiComponent(Json::Value componentJSON, std::string gameObject
 	m_IMGuiItem = game->iMGUIFactory()->create(imguiType, gameObjectType, parentScene, padding, backgroundColor, textColor, buttonColor, buttonHoverColor, buttonActiveColor, autoSize, staticText);
 }
 
-void IMGuiComponent::setParent(GameObject* parentObject)
+//void IMGuiComponent::setParent(GameObject* parentObject)
 {
 	//Call base component setParent
 	Component::setParent(parentObject);
