@@ -332,6 +332,8 @@ EnumMap::EnumMap()
 	m_enumMap["GameObjectState::RUN_DOWN"] = (int)GameObjectState::RUN_DOWN;
 	m_enumMap["GameObjectState::DRAGGABLE"] = (int)GameObjectState::DRAGGABLE;
 
+	m_enumMap["GameObjectState::SOLVED"] = (int)GameObjectState::SOLVED;
+	m_enumMap["GameObjectState::UNSOLVED"] = (int)GameObjectState::UNSOLVED;
 
 }
 

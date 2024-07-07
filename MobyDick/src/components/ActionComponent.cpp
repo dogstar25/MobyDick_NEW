@@ -27,7 +27,13 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 		//Get the Enum that represents the Game Objects action as an int
 		int actionId = game->enumMap()->toEnum(itrAction["actionId"].asString());
 
-		m_actions[actionId] = game->actionFactory()->create(actionClass);
+		Json::Value properties{};
+		if (itrAction.isMember("properties")) {
+
+			properties = itrAction["properties"];
+
+		}
+		m_actions[actionId] = game->actionFactory()->create(actionClass, properties);
 
 		//Label
 		if (itrAction.isMember("label")) {
@@ -56,40 +62,5 @@ bool ActionComponent::hasAction(int actionId)
 	return false;
 }
 
-
-// Serialization and Deserialization
-namespace Json {
-
-	template<>
-	void serialize<ActionComponent>(Json::Value& value, ActionComponent& o) {
-
-		Json::Value baseComponentValue;
-		Json::serialize(baseComponentValue, static_cast<const Component&>(o));
-		value["component"] = baseComponentValue;
-
-		for (const auto& action : o.m_actions) {
-
-			Json::Value actionValue;
-
-			Json::serialize(actionValue, *action);
-			value["actions"].append(actionValue);
-
-		}
-	}
-
-	template<>
-	void deserialize<ActionComponent>(Json::Value& value, ActionComponent& o) {
-
-		Json::Value& actionsArray = value["actions"];
-
-		for (auto& actionValue : actionsArray) {
-
-			std::shared_ptr<Action> action = std::make_shared<Action>(); // Assuming Action is a class
-
-			Json::deserialize(actionValue, *action);
-			o.m_actions.push_back(action);
-		}
-	}
-}
 
 

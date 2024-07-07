@@ -14,7 +14,7 @@ class Action
 {
 public:
 
-	Action() {}
+	Action(Json::Value properties);
 	~Action();
 
 	std::string label() const { return m_label; }
@@ -37,18 +37,6 @@ public:
 
 protected:
 	std::string m_label{};
+	Json::Value m_properties{};
 
-	friend void Json::serialize(Json::Value& value, Action& o);
-	friend void Json::deserialize(Json::Value& value, Action& o);
-	
 };
-
-// Serialization and Deserialization
-namespace Json {
-	template<>
-	void serialize<Action>(Json::Value& value, Action& o);
-
-	template<>
-	void deserialize<Action>(Json::Value& value, Action& o);
-}
-

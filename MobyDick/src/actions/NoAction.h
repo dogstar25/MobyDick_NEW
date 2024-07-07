@@ -5,8 +5,9 @@
 class NoAction :   public Action
 {
 public:
-	NoAction() = default;
 
+	NoAction(Json::Value properties)
+		:Action(properties) {}
 	void perform(GameObject* gameObject) override {};
 
 };

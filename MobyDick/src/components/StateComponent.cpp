@@ -647,6 +647,12 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		case GameObjectState::DRAGGABLE:
 			//nothing
 			break;
+		case GameObjectState::SOLVED:
+			m_states.set((int)GameObjectState::UNSOLVED, false);
+			break;
+		case GameObjectState::UNSOLVED:
+			m_states.set((int)GameObjectState::SOLVED, false);
+			break;
 
 		default:
 

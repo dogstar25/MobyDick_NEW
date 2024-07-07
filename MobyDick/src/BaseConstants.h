@@ -271,6 +271,8 @@ enum class GameObjectState : int {
 	RUN_DOWN,
 	ON_VERTICAL_MOVEMENT,
 	DRAGGABLE,
+	SOLVED,
+	UNSOLVED,
 
 	GameObjectState_Count
 

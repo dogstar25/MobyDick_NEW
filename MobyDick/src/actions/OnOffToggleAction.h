@@ -7,7 +7,8 @@ class OnOffToggleAction : public Action
 
 public:
 
-    OnOffToggleAction() = default;
+    OnOffToggleAction(Json::Value properties)
+        :Action(properties) {}
 
     virtual void perform(GameObject* gameObject) override;
 

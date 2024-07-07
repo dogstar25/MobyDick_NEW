@@ -21,6 +21,14 @@ void TakeItemAction::perform(GameObject* gameObject)
 
 			auto extractedGameObject = gameObject->parentScene()->extractGameObject(gameObject->id());
 
+			//This object could have been a child of another object so if it is remove it from that parent as well
+			if (extractedGameObject.value()->isChild == true) {
+
+				const auto& childrenComponent = extractedGameObject.value()->parent().value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+				childrenComponent->removeChild(extractedGameObject.value()->id());
+
+			}
+
 			if (inventoryComponent->addItem(extractedGameObject.value()) == true) {
 
 				inventoryComponent->refreshInventoryDisplay();

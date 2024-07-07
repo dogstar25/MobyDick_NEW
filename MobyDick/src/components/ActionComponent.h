@@ -41,12 +41,3 @@ private:
 };
 
 
-// Serialization and Deserialization
-namespace Json {
-
-	template<>
-	void serialize<ActionComponent>(Json::Value& value, ActionComponent& o);
-
-	template<>
-	void deserialize<ActionComponent>(Json::Value& value, ActionComponent& o);
-}

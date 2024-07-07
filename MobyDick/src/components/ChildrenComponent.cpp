@@ -42,10 +42,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			name = _buildChildName(parentName, childCount);
 		}
 
-		if (name == "toddDoor") {
-			int todd = 1;
-		}
-
 		//Child Size Override
 		b2Vec2 sizeOverride{ 0.f, 0.f };
 		if (itrChild.isMember("size")) {
@@ -69,6 +65,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 		//Create the child
 		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, 
 			false, name, sizeOverride);
+		childObject->isChild = true;
 
 		//If this is a stepchild then we need to add it to the world where the scene will be responsible for it
 		if (isStepChild == true) {
@@ -157,7 +154,10 @@ void ChildrenComponent::update()
 	short locationSlot = 0;
 	b2Vec2 newChildPosition{};
 	
-	
+	if (parent()->type() == "WALL_SHELF_1") {
+		int todd = 1;
+	}
+
 	for (auto& childSlot : m_childSlots)
 	{
 
@@ -289,6 +289,7 @@ void ChildrenComponent::removeChildrenByType(std::string gameObjectType)
 
 			if (childItr->gameObject.has_value() && childItr->gameObject.value()->type() == gameObjectType) {
 
+				childItr->gameObject.value()->isChild = false;
 				childItr->gameObject.value()->setRemoveFromWorld(true);
 				++childItr;
 			}
@@ -392,6 +393,8 @@ void ChildrenComponent::removeChild(std::string id)
 
 			if (childItr->gameObject.has_value() && childItr->gameObject.value()->id() == id) {
 
+				childItr->gameObject.value()->isChild = false;
+
 				if (childItr->isStepChild == false) {
 
 					childItr->gameObject.value()->setRemoveFromWorld(true);
@@ -428,6 +431,8 @@ void ChildrenComponent::_removeAllChildren(GameObject* gameObject)
 			while (childItr != slotItr.second.end()) {
 
 				if (childItr->gameObject.has_value()) {
+
+					childItr->gameObject.value()->isChild = false;
 
 					if (childItr->isStepChild == false) {
 						childItr->gameObject.value()->setRemoveFromWorld(true);
@@ -538,8 +543,6 @@ void ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, Pos
 
 	}
 
-	gameObject->stash();
-	
 
 }
 

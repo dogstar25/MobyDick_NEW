@@ -605,6 +605,21 @@ namespace util
 			start_pos += to.length();
 		}
 	}
+
+
+	Json::Value getJsonProperty(std::string property, Json::Value properties)
+	{
+		for (Json::Value prop : properties) {
+
+			if (prop.isMember(property)) {
+
+				return prop[property];
+			}
+
+		}
+
+		return Json::Value{};
+	}
 }
 
 

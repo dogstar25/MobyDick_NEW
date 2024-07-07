@@ -482,6 +482,15 @@ void PhysicsComponent::applyMovement(float speed, int direction, int strafeDirec
 
 
 }
+
+void PhysicsComponent::applyMovement(b2Vec2 velocity)
+{
+
+	m_physicsBody->ApplyLinearImpulseToCenter(velocity, true);
+
+
+}
+
 void PhysicsComponent::applyRotation(float angularVelocity)
 {
 	m_physicsBody->SetAngularVelocity(angularVelocity);

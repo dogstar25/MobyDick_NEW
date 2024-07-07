@@ -62,6 +62,12 @@ void InterfaceComponent::clearSpecificGameObjectInterface(GameObject* gameObject
 void InterfaceComponent::update()
 {
 
+	////Make sure the current interface object is still valid
+	//if (m_currentGameObjectInterfaceActive.has_value()) {
+
+	//	const auto& gameObject = parent()->parentScene()->getGameObject(m_currentGameObjectInterfaceActive.value()->id());
+
+	//}
 
 
 	std::bitset<MAX_EVENT_STATES> newEventsState{};

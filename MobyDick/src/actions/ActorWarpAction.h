@@ -5,7 +5,8 @@ class ActorWarpAction : public Action
 
 
 public:
-	ActorWarpAction() = default;
+	ActorWarpAction(Json::Value properties)
+		:Action(properties) {}
 
 	void perform(GameObject* interactingObject, GameObject* interactionObject, b2Vec2 destination) override;
 };
