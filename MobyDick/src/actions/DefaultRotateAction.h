@@ -4,7 +4,9 @@ class DefaultRotateAction : public Action
 {
 
 public:
-	DefaultRotateAction() = default;
+
+	DefaultRotateAction(Json::Value properties)
+		:Action(properties) {}
 
 	void perform(GameObject* gameObject, float angularVelocity) override;
 

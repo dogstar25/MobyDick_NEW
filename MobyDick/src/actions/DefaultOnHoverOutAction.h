@@ -4,7 +4,9 @@ class DefaultOnHoverOutAction : public Action
 {
 
 public:
-	DefaultOnHoverOutAction() = default;
+
+	DefaultOnHoverOutAction(Json::Value properties)
+		:Action(properties) {}
 
 	void perform(GameObject* gameObject) override;
 

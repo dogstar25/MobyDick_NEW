@@ -310,6 +310,12 @@ void GameObject::update()
 			}
 		}
 
+
+		if (name() == "shelfcan") {
+			int todd = 1;
+
+		}
+
 		_updateTouchingObjects();
 
 	}

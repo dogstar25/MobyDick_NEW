@@ -7,7 +7,8 @@ class InteractAction : public Action
 
 public:
 
-    InteractAction() = default;
+    InteractAction(Json::Value properties)
+        :Action(properties) {}
 
     void perform(GameObject* gameObject, SDL_Scancode keyScanCode) override;
 

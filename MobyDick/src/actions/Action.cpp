@@ -5,15 +5,9 @@ Action::~Action()
 
 }
 
-// Serialization and Deserialization
-namespace Json {
-	template<>
-	void serialize<Action>(Json::Value& value, Action& o) {
-		value["label"] = o.m_label;
-	}
+Action::Action(Json::Value properties)
+	:m_properties(properties)
+{
+	
 
-	template<>
-	void deserialize<Action>(Json::Value& value, Action& o) {
-		o.setLabel(value["label"].asString());
-	}
 }

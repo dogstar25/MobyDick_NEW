@@ -7,7 +7,9 @@ class DroneMoveAction : public Action
 {
 
 public:
-	DroneMoveAction() = default;
+
+	DroneMoveAction(Json::Value properties)
+		:Action(properties) {}
 
 	void perform(GameObject* gameObject, b2Vec2 trajectory) override;
 

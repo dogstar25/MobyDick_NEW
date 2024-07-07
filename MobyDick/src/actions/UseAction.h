@@ -5,9 +5,10 @@ class UseAction : public Action
 
 public:
 
-    UseAction() = default;
+	UseAction(Json::Value properties)
+		:Action(properties) {}
 
-    virtual void perform(GameObject* gameObject) {};
+	virtual void perform(GameObject* gameObject) {};
 
 private:
 

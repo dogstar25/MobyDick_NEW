@@ -11,7 +11,7 @@ class ActionFactory {
 
 public:
 
-	virtual std::shared_ptr<Action> create(std::string actionType);
+	virtual std::shared_ptr<Action> create(std::string actionType, Json::Value properties);
 
 
 private:
