@@ -8,8 +8,8 @@ class DroneMoveAction : public Action
 
 public:
 
-	DroneMoveAction(Json::Value properties)
-		:Action(properties) {}
+	DroneMoveAction(Json::Value properties, GameObject* parent)
+		:Action(properties, parent) {}
 
 	void perform(GameObject* gameObject, b2Vec2 trajectory) override;
 

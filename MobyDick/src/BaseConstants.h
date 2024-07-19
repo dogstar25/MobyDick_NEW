@@ -117,7 +117,7 @@ namespace TraitTag {
 	inline constexpr int door_front = 31;
 	inline constexpr int receptacle = 32;
 	inline constexpr int save_me = 33;
-	inline constexpr int toggle_switch = 34;
+	inline constexpr int toggle_switch = 34;				//Objects with the toggle_switch trait will propogate on/off states through all children
 
 
 
@@ -383,7 +383,12 @@ enum class InterfaceEvents {
 	ON_DROP = 107
 };
 
-
+//DIRECT - Executes immediately and is done
+//PROGRESSIVE - Executes over time
+enum class ActionType {
+	DIRECT,
+	PROGRESSIVE
+};
 
 //GameSpace Types
 inline constexpr int GAMESPACE_INTRO = 0;

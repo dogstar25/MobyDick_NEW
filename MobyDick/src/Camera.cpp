@@ -8,7 +8,7 @@ extern std::unique_ptr<Game> game;
 Camera::Camera()
 {
 	//Get the move action that does not require a physics component
-	m_moveAction = std::dynamic_pointer_cast<Action>(game->actionFactory()->create("PrimitiveMove", Json::Value{}));
+	m_moveAction = std::dynamic_pointer_cast<Action>(game->actionFactory()->create("PrimitiveMove", Json::Value{}, nullptr));
 
 	m_frame = {0, 0, static_cast<float>(game->gameScreenResolution().x), static_cast<float>(game->gameScreenResolution().y) };
 

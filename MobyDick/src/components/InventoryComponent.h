@@ -45,6 +45,7 @@ class InventoryComponent : public Component
 		void update();
 
 		void refreshInventoryDisplay();
+		bool isFull();
 		void showInventory();
 		void hideInventory();
 		void clearInventory();

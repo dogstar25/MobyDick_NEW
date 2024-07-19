@@ -6,8 +6,8 @@ class TakeItemAction : public Action
 {
 	public:
 
-	TakeItemAction(Json::Value properties)
-		:Action(properties) {}
+	TakeItemAction(Json::Value properties, GameObject* parent)
+		:Action(properties, parent) {}
 
 	void perform(GameObject* doorObject) override;
 

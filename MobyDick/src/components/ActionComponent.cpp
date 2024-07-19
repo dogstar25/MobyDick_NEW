@@ -18,7 +18,7 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 	Component(ComponentTypes::ACTION_COMPONENT, parent)
 {
 
-	m_actions.resize(32);
+	m_actions.resize(64);
 	for (Json::Value itrAction: componentJSON["actions"])
 	{
 		//Get the name of the class to be used as the action as a string
@@ -27,13 +27,21 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 		//Get the Enum that represents the Game Objects action as an int
 		int actionId = game->enumMap()->toEnum(itrAction["actionId"].asString());
 
+		ActionType actionType{};
+		if (itrAction.isMember("actionType")) {
+			ActionType actionType = (ActionType)game->enumMap()->toEnum(itrAction["actionType"].asString());
+		}
+		else {
+			ActionType actionType = ActionType::DIRECT;
+		}
+
 		Json::Value properties{};
 		if (itrAction.isMember("properties")) {
 
 			properties = itrAction["properties"];
 
 		}
-		m_actions[actionId] = game->actionFactory()->create(actionClass, properties);
+		m_actions[actionId] = game->actionFactory()->create(actionClass, properties, parent);
 
 		//Label
 		if (itrAction.isMember("label")) {
@@ -43,6 +51,20 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 		}
 
 	}
+
+}
+
+void ActionComponent::update()
+{
+
+	for (const auto& action : m_actions) {
+
+		if (action && action->status() == ProgressionStatus::IN_PROGRESS) {
+			action->update();
+		}
+
+	}
+
 
 }
 
@@ -61,6 +83,5 @@ bool ActionComponent::hasAction(int actionId)
 
 	return false;
 }
-
 
 

@@ -5,9 +5,9 @@ Action::~Action()
 
 }
 
-Action::Action(Json::Value properties)
-	:m_properties(properties)
+Action::Action(Json::Value properties, GameObject* parent)
+	:m_properties(properties), m_parent(parent)
 {
 	
-
+	m_status = ProgressionStatus::COMPLETE;
 }

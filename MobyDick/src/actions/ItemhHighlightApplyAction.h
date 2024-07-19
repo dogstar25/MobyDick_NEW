@@ -6,8 +6,8 @@ class ItemhHighlightApplyAction : public Action
 {
 
 public:
-	ItemhHighlightApplyAction(Json::Value properties)
-		:Action(properties) {}
+	ItemhHighlightApplyAction(Json::Value properties, GameObject* parent)
+		:Action(properties, parent) {}
 
 	void perform(GameObject* gameObject) override;
 

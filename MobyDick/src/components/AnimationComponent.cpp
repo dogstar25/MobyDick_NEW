@@ -105,6 +105,26 @@ void AnimationComponent::postInit()
 		m_currentAnimation = m_defaultAnimation;
 	}
 
+	//For animations that are tied to state transition, go and get the state transition duration time and 
+	//calulate and override the animation frame speed using the transition duration and the number of 
+	// frames of the animation
+	if (parent()->hasComponent(ComponentTypes::STATE_COMPONENT)) {
+
+		for (auto& animation : m_animations) {
+
+			const auto& stateComponent = parent()->getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+			auto animationTransitionDuration = stateComponent->getAnimationTransitionDuration(animation.second.id);
+
+			if (animationTransitionDuration.has_value()) {
+
+				float newAnimationSpeed = animationTransitionDuration.value() / animation.second.frameCount;
+				animation.second.speed = newAnimationSpeed;
+			}
+
+		}
+
+	}
+
 }
 
 void AnimationComponent::update()
@@ -113,10 +133,17 @@ void AnimationComponent::update()
 	//This animation component may be used only for flashing
 	if (m_animations.empty() == false) {
 
-		auto animationId = _getCurrentAnimationFromState();
+		if (parent()->type() == "DOOR_FRONT_HIDDEN") {
+			int todd = 1;
+		}
 
 		if (parent()->hasComponent(ComponentTypes::STATE_COMPONENT)) {
 
+			auto animationId = _getCurrentAnimationFromState();
+			if (animationId == "OPEN") {
+				int todd = 1;
+
+			}
 			animate(animationId);
 
 		}
@@ -125,15 +152,27 @@ void AnimationComponent::update()
 		if (m_currentAnimation.value().timer.hasMetTargetDuration())
 		{
 
-			//Increment animation frame counter and reset if it exceeds last one
-			if (m_currentAnimation.value().frameCount > 1) {
+			//Increment animation frame counter
+			if (m_currentAnimation.value().frameCount > 1 && m_currentAnimation.value().currentAnimFrame < m_currentAnimation.value().frameCount-1) {
 				m_currentAnimation.value().currentAnimFrame += 1;
 			}
 
-			if (m_currentAnimation.value().currentAnimFrame >
-				m_currentAnimation.value().frameCount - 1) {
+			//If this is the last frame of the animation
+			if (m_currentAnimation.value().currentAnimFrame == m_currentAnimation.value().frameCount - 1) {
 
-				m_currentAnimation.value().currentAnimFrame = 0;
+				
+				//If the animation frame has started back over, and it should only execute once
+				// then set the current animation to the default animation
+				if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME){
+
+					const auto& stateComponent = parent()->getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+					stateComponent->finishupTransitionByAnimationId(m_currentAnimation.value().id);
+
+				}
+				else {
+					m_currentAnimation.value().currentAnimFrame = 0;
+				}
+
 			}
 
 			//build the rectangle that points to the current animation frame
@@ -148,14 +187,6 @@ void AnimationComponent::update()
 			m_currentAnimation.value().currentTextureAnimationSrcRect = rect;
 		}
 
-		//If the animation frame has started back over, and it should only execute once
-		// then set the current animation to the default animation
-		if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME &&
-			m_currentAnimation.value().currentAnimFrame == 0) {
-
-			m_currentAnimation = m_defaultAnimation;
-
-		}
 	}
 
 	//Should we flash?

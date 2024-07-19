@@ -6,8 +6,8 @@ class ToggleInventoryAction : public Action
 {
 
 public:
-	ToggleInventoryAction(Json::Value properties)
-		:Action(properties) {}
+	ToggleInventoryAction(Json::Value properties, GameObject* parent)
+		:Action(properties, parent) {}
 
 	void perform(GameObject* doorObject) override;
 

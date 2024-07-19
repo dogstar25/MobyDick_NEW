@@ -276,6 +276,19 @@ void InventoryComponent::refreshInventoryDisplay() {
 
 }
 
+bool InventoryComponent::isFull()
+{
+	
+	for (const auto& item: m_items) {
+		if (item.has_value() == false) {
+			return false;
+		}
+
+	}
+
+	return true;
+}
+
 std::optional<int> InventoryComponent::getSlot(GameObject* gameObject)
 {
 	int slotIndex{};

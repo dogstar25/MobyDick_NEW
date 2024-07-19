@@ -121,6 +121,10 @@ EnumMap::EnumMap()
 	m_enumMap["Actions::REMOVE_HIGHLIGHT"] = Actions::REMOVE_HIGHLIGHT;
 	m_enumMap["Actions::DROP"] = Actions::DROP;
 
+	//Action Types
+	m_enumMap["ActionType::DIRECT"] = (int)ActionType::DIRECT;
+	m_enumMap["ActionType::PROGRESSIVE"] = (int)ActionType::PROGRESSIVE;
+
 	//User Events
 	m_enumMap["InterfaceEvents::ON_TOUCHING"] = (int)InterfaceEvents::ON_TOUCHING;
 	m_enumMap["InterfaceEvents::ON_STOP_TOUCHING"] = (int)InterfaceEvents::ON_STOP_TOUCHING;

@@ -30,13 +30,14 @@ public:
 	ActionComponent(Json::Value definitionJSON, GameObject* parent);
 	~ActionComponent() = default;
 
-	void update() {};
+	virtual void update() override;
 
 	std::shared_ptr<Action> getAction(int actionId);
 	bool hasAction(int actionId);
 
 private:
 	std::vector<std::shared_ptr<Action>>m_actions;
+
 
 };
 
