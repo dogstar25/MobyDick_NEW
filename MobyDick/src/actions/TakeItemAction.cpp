@@ -19,26 +19,31 @@ void TakeItemAction::perform(GameObject* gameObject)
 		//If this item is loose then add it to the inventory and remove it from the world
 		if (gameObject->hasState(GameObjectState::ITEM_LOOSE) && gameObject->hasState(GameObjectState::ITEM_STORED_OPEN) == false) {
 
-			auto extractedGameObject = gameObject->parentScene()->extractGameObject(gameObject->id());
+			if (inventoryComponent->isFull() == false) {
 
-			//This object could have been a child of another object so if it is remove it from that parent as well
-			if (extractedGameObject.value()->isChild == true) {
+				auto extractedGameObject = gameObject->parentScene()->extractGameObject(gameObject->id());
 
-				const auto& childrenComponent = extractedGameObject.value()->parent().value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-				childrenComponent->removeChild(extractedGameObject.value()->id());
+				//This object could have been a child of another object so if it is remove it from that parent as well
+				if (extractedGameObject.value()->isChild == true) {
 
-			}
+					const auto& childrenComponent = extractedGameObject.value()->parent().value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+					childrenComponent->removeChild(extractedGameObject.value()->id());
 
-			if (inventoryComponent->addItem(extractedGameObject.value()) == true) {
+				}
 
-				inventoryComponent->refreshInventoryDisplay();
+				if (inventoryComponent->addItem(extractedGameObject.value()) == true) {
 
-				const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-				physicsComponent->setIsSensor(true);
+					inventoryComponent->refreshInventoryDisplay();
 
-			}
-			else {
-				std::cout << "Inventory is full!" << std::endl;
+					const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+					physicsComponent->setIsSensor(true);
+
+				}
+				else {
+					//If it failed to add for some reason then add it back to the world, because we extracted it above
+					gameObject->parentScene()->addGameObject(extractedGameObject.value(), extractedGameObject.value()->layer());
+					std::cout << "Failed to add!" << std::endl;
+				}
 			}
 
 		}

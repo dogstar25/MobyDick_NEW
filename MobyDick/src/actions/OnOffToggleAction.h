@@ -7,8 +7,8 @@ class OnOffToggleAction : public Action
 
 public:
 
-    OnOffToggleAction(Json::Value properties)
-        :Action(properties) {}
+    OnOffToggleAction(Json::Value properties, GameObject* parent)
+        :Action(properties, parent) {}
 
     virtual void perform(GameObject* gameObject) override;
 

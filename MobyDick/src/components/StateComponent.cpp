@@ -115,6 +115,22 @@ std::optional<std::string> StateComponent::getCurrentAnimatedState()
 
 }
 
+std::optional<float> StateComponent::getAnimationTransitionDuration(std::string animationId)
+{
+
+	for (const auto& transition: m_transitions) {
+
+		if (transition.animationId == animationId) {
+
+			return transition.transitionDuration;
+		}
+
+	}
+	
+	return std::nullopt;
+
+}
+
 void StateComponent::removeState(GameObjectState newState)
 {
 
@@ -660,6 +676,24 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 
 	}
 }
+
+
+void StateComponent::finishupTransitionByAnimationId(std::string animationId)
+{
+
+	for (auto& transition : m_transitions) {
+
+		if (transition.animationId == animationId) {
+
+			_setAndReconcileState(transition.toState);
+			transition.transitionTimer = std::nullopt;
+
+		}
+
+	}
+
+}
+
 
 void StateComponent::update()
 {

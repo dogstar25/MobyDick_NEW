@@ -35,7 +35,6 @@ public:
 
 	virtual void update() override;
 	virtual void postInit() override;
-	//virtual void setParent(GameObject* gameObject) override;
 
 	virtual void addState(GameObjectState state);
 	virtual void removeState(GameObjectState state);
@@ -46,12 +45,14 @@ public:
 	std::optional<StateTransition> getCurrentTransition();
 	std::optional<std::string> getCurrentAnimatedState();
 	const std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> getStateBitSet() { return m_states; }
+	std::optional<float> getAnimationTransitionDuration(std::string animationId);
+	void finishupTransitionByAnimationId(std::string animationId);
 
 protected:
 
 	int m_beginState{};
-	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> m_states;
-	std::vector< StateTransition> m_transitions;
+	std::bitset<static_cast<int>(GameObjectState::GameObjectState_Count)> m_states;
+	std::vector<StateTransition> m_transitions;
 	std::unordered_map<GameObjectState, RenderState> m_animationStates;
 
 	virtual bool _hasTransitionDuration(GameObjectState state);
