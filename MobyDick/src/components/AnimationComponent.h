@@ -78,6 +78,7 @@ private:
 	b2Vec2 m_frameSize{};
 	std::unordered_map<std::string, Animation> m_animations;
 	std::optional<FlashAnimation> m_flashAnimation{};
+	void setAnimationTexture();
 
 	void _handleFlashing();
 	std::string _getCurrentAnimationFromState();

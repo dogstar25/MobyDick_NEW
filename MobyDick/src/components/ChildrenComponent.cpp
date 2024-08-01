@@ -91,6 +91,13 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 
 		}
 
+		//Child description Override
+		if (itrChild.isMember("description")) {
+			std::string description = itrChild["description"].asString();
+			childObject->setDescription(description);
+		}
+
+
 		//Standard Slot
 		if (itrChild.isMember("standardSlot")) {
 

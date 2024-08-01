@@ -70,12 +70,24 @@ std::optional<StateTransition> StateComponent::getCurrentTransition()
 
 	for (auto transition : m_transitions) {
 
-		if (transition.transitionTimer.has_value() == true &&
-			transition.transitionTimer.value().hasMetTargetDuration() == false) {
+		if (transition.transitionTimer.has_value() == true){
 
-			return transition;
+			if (transition.transitionTimer.value().hasMetTargetDuration() == false) {
+
+				return transition;
+			}
+			else {
+
+				//If this transition is complete, then set the end transition state
+				//This also happens in the update. We have to do it here also because the transition 
+				// timer could have finished before the update was called
+				_setAndReconcileState(transition.toState);
+				transition.transitionTimer = std::nullopt;
+
+			}
 
 		}
+
 	}
 
 	return std::nullopt;
