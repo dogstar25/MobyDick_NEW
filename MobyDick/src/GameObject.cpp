@@ -997,6 +997,13 @@ void GameObject::setColor(SDL_Color color)
 
 }
 
+void GameObject::setDescription(std::string description)
+{
+
+	m_description = description;
+
+}
+
 void GameObject::setSize(b2Vec2 size)
 {
 

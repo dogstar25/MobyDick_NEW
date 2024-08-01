@@ -82,6 +82,7 @@ public:
 	void setContainerStartCount(int containerStartCount);
 	void setContainerCapacity(int containerCapacity);
 	void setSize(b2Vec2 size);
+	void setDescription(std::string description);
 	bool intersectsWith(GameObject* gameObject);
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);
 	void addLitHighlight(b2Vec2 size);

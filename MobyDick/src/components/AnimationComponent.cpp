@@ -102,7 +102,12 @@ void AnimationComponent::postInit()
 
 	//Make sure we have an animation set
 	if (m_currentAnimation.has_value() == false) {
+
 		m_currentAnimation = m_defaultAnimation;
+
+		setAnimationTexture();
+
+		m_currentAnimation.value().timer = Timer(m_currentAnimation.value().speed, true);
 	}
 
 	//For animations that are tied to state transition, go and get the state transition duration time and 
@@ -133,58 +138,58 @@ void AnimationComponent::update()
 	//This animation component may be used only for flashing
 	if (m_animations.empty() == false) {
 
-		if (parent()->type() == "DOOR_FRONT_HIDDEN") {
-			int todd = 1;
-		}
-
 		if (parent()->hasComponent(ComponentTypes::STATE_COMPONENT)) {
 
 			auto animationId = _getCurrentAnimationFromState();
-			if (animationId == "OPEN") {
-				int todd = 1;
-
-			}
 			animate(animationId);
 
 		}
+		else {
+			animate(m_defaultAnimation.id);
+		}
 
-		//Execute the next animation frame in the current animation
-		if (m_currentAnimation.value().timer.hasMetTargetDuration())
+		//Still frame animation
+		if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_STILL_FRAME)
 		{
+			setAnimationTexture();
+		}
 
-			//Increment animation frame counter
-			if (m_currentAnimation.value().frameCount > 1 && m_currentAnimation.value().currentAnimFrame < m_currentAnimation.value().frameCount-1) {
-				m_currentAnimation.value().currentAnimFrame += 1;
+		//Onetime animation
+		if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME)
+		{
+			if (m_currentAnimation.value().timer.hasMetTargetDuration()) {
+
+				if (m_currentAnimation.value().currentAnimFrame < m_currentAnimation.value().frameCount - 1) {
+
+					m_currentAnimation.value().currentAnimFrame += 1;
+					setAnimationTexture();
+
+				}
+
 			}
+		}
 
-			//If this is the last frame of the animation
-			if (m_currentAnimation.value().currentAnimFrame == m_currentAnimation.value().frameCount - 1) {
+		//Continuous animation
+		if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_CONTINUOUS)
+		{
+			if (m_currentAnimation.value().timer.hasMetTargetDuration()) {
 
-				
-				//If the animation frame has started back over, and it should only execute once
-				// then set the current animation to the default animation
-				if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_ONE_TIME){
+				if (m_currentAnimation.value().currentAnimFrame < m_currentAnimation.value().frameCount - 1) {
 
-					const auto& stateComponent = parent()->getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
-					stateComponent->finishupTransitionByAnimationId(m_currentAnimation.value().id);
+					m_currentAnimation.value().currentAnimFrame += 1;
+					
 
 				}
 				else {
+
 					m_currentAnimation.value().currentAnimFrame = 0;
+
 				}
+
+				setAnimationTexture();
 
 			}
 
-			//build the rectangle that points to the current animation frame
-			std::shared_ptr<SDL_Rect> rect = std::make_shared<SDL_Rect>();
-
-			rect->x = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].x;
-			rect->y = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].y;
-
-			rect->w = (int)m_frameSize.x;
-			rect->h = (int)m_frameSize.y;
-
-			m_currentAnimation.value().currentTextureAnimationSrcRect = rect;
 		}
 
 	}
@@ -198,12 +203,31 @@ void AnimationComponent::update()
 
 }
 
+void AnimationComponent::setAnimationTexture()
+{
+
+
+	//build the rectangle that points to the current animation frame
+	std::shared_ptr<SDL_Rect> rect = std::make_shared<SDL_Rect>();
+
+	rect->x = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].x;
+	rect->y = (int)m_currentAnimation.value().animationFramePositions[m_currentAnimation.value().currentAnimFrame].y;
+
+	rect->w = (int)m_frameSize.x;
+	rect->h = (int)m_frameSize.y;
+
+	m_currentAnimation.value().currentTextureAnimationSrcRect = rect;
+
+}
+
+
 // Use this directly when NOT tied to a state component
 void AnimationComponent::animate(std::string animationId, float speed)
 {
 
-	//If we are not already animating this particular animation then set it as our current animation
-	if (m_currentAnimation.has_value() && m_currentAnimation.value().id != animationId && m_animations.find(animationId) != m_animations.end()) {
+	//If we are not already animating this particular animation then set it as our current animation 
+	if ((m_currentAnimation.has_value() && m_currentAnimation.value().id != animationId 
+		&& m_animations.find(animationId) != m_animations.end())) {
 
 		m_currentAnimation = m_animations[animationId];
 
