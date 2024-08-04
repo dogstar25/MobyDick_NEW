@@ -73,7 +73,7 @@ void InterfaceComponent::update()
 	std::bitset<MAX_EVENT_STATES> newEventsState{};
 	bool showInterfaceMenu{};
 
-	//Need to carry over the ON_DRAG event sense it only stars on a mouse click and end on mouse release
+	//Need to carry over the ON_DRAG event sense it only starts on a mouse click and end on mouse release
 	newEventsState.set( (int)InterfaceEvents::ON_DRAG, m_currentEventsState.test((int)InterfaceEvents::ON_DRAG));
 
 	//convenience reference to outside component(s)
@@ -382,6 +382,15 @@ void InterfaceComponent::clearDragging()
 		m_b2MouseJoint = nullptr;
 	}
 
+}
+
+bool InterfaceComponent::hasEvent(int eventId)
+{
+	if (m_eventActions.find(eventId) != m_eventActions.end()) {
+		return true;
+	}
+
+	return false;
 }
 
 void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)

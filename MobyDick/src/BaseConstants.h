@@ -273,6 +273,7 @@ enum class GameObjectState : int {
 	DRAGGABLE,
 	SOLVED,
 	UNSOLVED,
+	SCARED,
 
 	GameObjectState_Count
 
