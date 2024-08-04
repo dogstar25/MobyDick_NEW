@@ -233,6 +233,8 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::SPRINT, false);
 			m_states.set((int)GameObjectState::JUMP, false);
 			m_states.set((int)GameObjectState::CLIMB, false);
+
+			m_states.set((int)GameObjectState::DEPLOYED, false);
 			break;
 
 		case GameObjectState::WALK:
@@ -680,6 +682,12 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			break;
 		case GameObjectState::UNSOLVED:
 			m_states.set((int)GameObjectState::SOLVED, false);
+			break;
+		case GameObjectState::DEPLOYED:
+			m_states.set((int)GameObjectState::IDLE, false);
+			break;
+		case GameObjectState::SCARED:
+			//nothing
 			break;
 
 		default:

@@ -42,6 +42,13 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			name = _buildChildName(parentName, childCount);
 		}
 
+
+		if (childObjectType == "NOPE_BUBBLE") {
+			int todd = 1;
+
+		}
+
+
 		//Child Size Override
 		b2Vec2 sizeOverride{ 0.f, 0.f };
 		if (itrChild.isMember("size")) {
@@ -55,7 +62,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 
 		//Child Layer Override
 		//Layer can only be spercified for step children because regular children always display on same layer as parent
-		GameLayer stepChildGameLayer{};
+		GameLayer stepChildGameLayer{parent->layer()};
 		if (itrChild.isMember("layer") && isStepChild) {
 
 			stepChildGameLayer = static_cast<GameLayer>(game->enumMap()->toEnum(itrChild["layer"].asString()));
@@ -161,7 +168,7 @@ void ChildrenComponent::update()
 	short locationSlot = 0;
 	b2Vec2 newChildPosition{};
 	
-	if (parent()->type() == "WALL_SHELF_1") {
+	if (parent()->type() == "BOBBY") {
 		int todd = 1;
 	}
 
@@ -253,11 +260,11 @@ int ChildrenComponent::_getSlotIndex(std::string slotKey)
 void ChildrenComponent::_removeFromWorldPass()
 {
 
-	for (auto& slotItr : m_childSlots) {
+	for (auto slotItr = m_childSlots.begin(); slotItr != m_childSlots.end();) {
 
 		//Each child slot can have multiple gameObjects that live in a vector
-		auto childItr = slotItr.second.begin();
-		while (childItr!= slotItr.second.end() ) {
+		auto childItr = slotItr->second.begin();
+		while (childItr != slotItr->second.end() ) {
 
 			//Some slots may be empty so check
 			if (childItr->gameObject.has_value() && childItr->gameObject.value()->removeFromWorld() == true) {
@@ -266,8 +273,7 @@ void ChildrenComponent::_removeFromWorldPass()
 				parent()->parentScene()->deleteIndex(childItr->gameObject.value()->id());
 
 				//Erase the object from the map
-				childItr = slotItr.second.erase(childItr);
-
+				childItr = slotItr->second.erase(childItr);
 			}
 			else {
 
@@ -276,7 +282,13 @@ void ChildrenComponent::_removeFromWorldPass()
 
 		}
 
-		slotItr.second.shrink_to_fit();
+		// Check if the vector is empty and remove the slot if it is
+		if (slotItr->second.empty()) {
+			slotItr = m_childSlots.erase(slotItr);
+		}
+		else {
+			++slotItr;
+		}
 
 	}
 
@@ -708,7 +720,7 @@ PositionAlignment ChildrenComponent::_translateStandardSlotPositionAlignment(std
 		return PositionAlignment::BOTTOM_RIGHT;
 	}
 
-	SDL_assert(true && "No match for slotType!");
+	SDL_assert(false && "No match for slotType!");
 
 }
 

@@ -43,6 +43,7 @@ public:
 	void setCurrentGameObjectInterfaceActive(GameObject* gameObject) { m_currentGameObjectInterfaceActive = gameObject; }
 	void clearSpecificGameObjectInterface(GameObject* gameObject);
 	void clearDragging();
+	bool hasEvent(int eventId);
 
 protected:
 
