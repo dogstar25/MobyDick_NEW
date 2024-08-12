@@ -118,6 +118,11 @@ void LightedTreatmentComponent::render()
 		//newLightPosition.x -= lightDestRect.w/2;
 		//newLightPosition.y -= lightDestRect.h/2;
 
+	/*	if (lightRenderComponent->parent()->type() == "ELECTRIC_ROOM_LIGHT_CIRCLE") {
+
+			lightRenderComponent->setColorAlpha(10);
+		}*/
+
 		lightRenderComponent->render(newLightPosition);
 
 
