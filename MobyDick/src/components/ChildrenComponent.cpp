@@ -6,12 +6,6 @@
 
 extern std::unique_ptr<Game> game;
 
-//ChildrenComponent::ChildrenComponent() :
-//	Component(ComponentTypes::CHILDREN_COMPONENT)
-//{
-//
-//}
-
 ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :
 	Component(ComponentTypes::CHILDREN_COMPONENT, parent)
 {
@@ -70,8 +64,8 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 		}
 
 		//Create the child
-		std::shared_ptr<GameObject> childObject = parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, 
-			false, name, sizeOverride);
+		std::shared_ptr<GameObject> childObject = 
+			parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name, sizeOverride);
 		childObject->isChild = true;
 
 		//If this is a stepchild then we need to add it to the world where the scene will be responsible for it
@@ -145,11 +139,9 @@ ChildrenComponent::~ChildrenComponent()
 void ChildrenComponent::postInit()
 {
 
-	//Set the layer for these pieces using the parents layer
+	//Call postinit for a  children
 	for (auto& slotItr : m_childSlots) {
 
-		//Each child slot can have multiple gameObjects that live in a vector
-		//Only Standard slots support multiple
 		for (auto& child : slotItr.second) {
 
 			if (child.gameObject.has_value()) {
@@ -168,10 +160,6 @@ void ChildrenComponent::update()
 	short locationSlot = 0;
 	b2Vec2 newChildPosition{};
 	
-	if (parent()->type() == "BOBBY") {
-		int todd = 1;
-	}
-
 	for (auto& childSlot : m_childSlots)
 	{
 
