@@ -315,8 +315,16 @@ void InventoryComponent::showInventory()
 	if (m_displayObject && m_displayObject.value().expired() == false) {
 		gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
 		m_displayObject.value().lock()->enableRender();
-		m_displayObject.value().lock()->enableCollision();
 		m_displayObject.value().lock()->enablePhysics();
+		m_displayObject.value().lock()->enableCollision();
+
+		//This is an unfortunately needed workaround for when an inventory holder goes from disabled to enabled,
+		//the box2d isTouching doesnt get triggered unless we very slightly move the player to force refresh
+		const auto& player = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
+		const auto& playerPhysics = player.value()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		playerPhysics->applyImpulse(50, {0,0});
+		playerPhysics->setLinearVelocity({0.,0.});
+
 	}
 
 	//If this ivnetoryObject is also the inventory display object, like a shelf
@@ -344,7 +352,9 @@ void InventoryComponent::hideInventory()
 
 		//Get displayObjects grid display component
 		const auto& gridDisplayComponent = m_displayObject.value().lock()->getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT);
+		m_displayObject.value().lock()->disableRender();
 		m_displayObject.value().lock()->stash();
+
 
 		gridDisplayComponent->clear();
 

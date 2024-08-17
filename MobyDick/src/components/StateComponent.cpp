@@ -167,6 +167,7 @@ void StateComponent::removeState(GameObjectState newState)
 					contactDefinition->contactTag = contactDefinition->saveOriginalContactTag;
 					fixture->Refilter();
 				}
+
 			}
 
 			break;
@@ -711,6 +712,40 @@ void StateComponent::finishupTransitionByAnimationId(std::string animationId)
 		}
 
 	}
+
+}
+
+void StateComponent::propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait)
+{
+
+	if (gameObject->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+
+		const auto& childComponent = gameObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+
+
+		for (auto& slotItr : childComponent->childSlots()) {
+
+			//Each child slot can have multiple gameObjects that live in a vector
+			//Only Standard slots support multipl
+			for (auto& child : slotItr.second) {
+
+				if (child.gameObject.has_value()) {
+
+					if (trait.has_value() == false || (trait.has_value() && child.gameObject.value()->hasTrait(trait.value()))) {
+
+						child.gameObject.value()->addState(stateToPropogate);
+					}
+
+				}
+
+				propogateStateToAllChildren(child.gameObject.value().get(), stateToPropogate, trait);
+
+			}
+
+		}
+
+	}
+
 
 }
 

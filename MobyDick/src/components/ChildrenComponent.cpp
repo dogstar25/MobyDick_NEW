@@ -74,6 +74,12 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			parentScene->addGameObject(childObject, stepChildGameLayer);
 		}
 
+		if (parent->type() == "BED_3") {
+
+			int todd = 1;
+
+		}
+
 		//Begin States
 		if (itrChild.isMember("beginStates")) {
 			Json::Value beginStates = itrChild["beginStates"];
@@ -98,6 +104,18 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			childObject->setDescription(description);
 		}
 
+		//Light Overrides
+		if (itrChild.isMember("lightBrightness")) {
+			
+			childObject->setLightBrightness(itrChild["lightBrightness"].asInt());
+		}
+
+		//Light Overrides
+		if (itrChild.isMember("lightSpreadsToOtherAreas")) {
+
+			const auto& lightComponent = childObject->getComponent<LightComponent>(ComponentTypes::LIGHT_COMPONENT);
+			lightComponent->setSpreadsToOtherAreas(itrChild["lightSpreadsToOtherAreas"].asBool());
+		}
 
 		//Standard Slot
 		if (itrChild.isMember("standardSlot")) {
@@ -384,6 +402,60 @@ std::optional<std::shared_ptr<GameObject>> ChildrenComponent::getFirstChildByTyp
 
 	return std::nullopt;
 
+}
+
+std::vector<std::shared_ptr<GameObject>> ChildrenComponent::getChildrenByTrait(int gameObjectTrait)
+{
+	std::vector<std::shared_ptr<GameObject>> foundGameObjects;
+
+	auto childSlotItr = m_childSlots.begin();
+	while (childSlotItr != m_childSlots.end()) {
+
+		//Each child slot can have multiple gameObjects that live in a vector
+		auto childItr = childSlotItr->second.begin();
+		while (childItr != childSlotItr->second.end()) {
+
+			if (childItr->gameObject.has_value() && childItr->gameObject.value()->hasTrait(gameObjectTrait)) {
+
+				foundGameObjects.push_back(childItr->gameObject.value());
+
+			}
+
+			++childItr;
+		}
+
+		++childSlotItr;
+	}
+
+	return foundGameObjects;
+
+}
+
+std::optional<std::shared_ptr<GameObject>> ChildrenComponent::getFirstChildByTrait(int gameObjectTrait)
+{
+
+	std::shared_ptr<GameObject> foundGameObject;
+
+	auto childSlotItr = m_childSlots.begin();
+	while (childSlotItr != m_childSlots.end()) {
+
+		//Each child slot can have multiple gameObjects that live in a vector
+		auto childItr = childSlotItr->second.begin();
+		while (childItr != childSlotItr->second.end()) {
+
+			if (childItr->gameObject.has_value() && childItr->gameObject.value()->hasTrait(gameObjectTrait)) {
+
+				return childItr->gameObject.value();
+
+			}
+
+			++childItr;
+		}
+
+		++childSlotItr;
+	}
+
+	return std::nullopt;
 }
 
 //A stepChild lives outside of the parent so we just remove him as a child and do not delete its 

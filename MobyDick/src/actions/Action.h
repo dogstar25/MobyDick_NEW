@@ -36,6 +36,9 @@ public:
 
 	virtual void update() {};
 
+	Json::Value getActionProperty(std::string property);
+	Json::Value hasActionProperty(std::string property);
+
 	//We never want to end up calling the base level action perform. The derived action classes should have setup
 	//the proper perform override and whoever is calling these actions should be passing in the correct paramters
 	//If we end up calling base, then throw an assert

@@ -66,6 +66,10 @@ public:
 	void changeChildPosition(std::string childType, SDL_FPoint newPosition);
 	std::vector<std::shared_ptr<GameObject>> getChildrenByType(std::string gameObjectType);
 	std::optional<std::shared_ptr<GameObject>> getFirstChildByType(std::string gameObjectType);
+	std::vector<std::shared_ptr<GameObject>> getChildrenByTrait(int gameObjectTrait);
+	std::optional<std::shared_ptr<GameObject>> getFirstChildByTrait(int gameObjectTrait);
+
+
 	std::unordered_map<std::string, std::vector<Child>> childSlots() { return m_childSlots; }
 
 private:

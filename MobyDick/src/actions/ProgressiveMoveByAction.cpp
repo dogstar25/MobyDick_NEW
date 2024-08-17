@@ -34,9 +34,9 @@ void ProgressiveMoveByAction::perform(GameObject* gameObject)
 
 		const auto& actionComponent = gameObject->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
 
-		float directionX = util::getJsonProperty("xPixels", m_properties).asFloat();
-		float directionY = util::getJsonProperty("yPixels", m_properties).asFloat();
-		float speed = util::getJsonProperty("speed", m_properties).asFloat();
+		float directionX = getActionProperty("xPixels").asFloat();
+		float directionY = getActionProperty("yPixels").asFloat();
+		float speed = getActionProperty("speed").asFloat();
 
 		//set destination and calculate trajectory
 		b2Vec2 moveTrajectory = { directionX, directionY };

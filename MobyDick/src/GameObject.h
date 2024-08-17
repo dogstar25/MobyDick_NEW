@@ -86,6 +86,7 @@ public:
 	bool intersectsWith(GameObject* gameObject);
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);
 	void addLitHighlight(b2Vec2 size);
+	void setLightBrightness(int brightness);
 
 	std::optional<int> renderOrder() { return m_renderOrder; }
 	void setRenderOrder(int renderOrder) { m_renderOrder = renderOrder; }
@@ -167,6 +168,7 @@ public:
 	bool isTouchingByTrait(const int trait);
 	bool isTouchingByType(const std::string type);
 	bool isTouchingByName(std::string name);
+	bool isTouchingById(const std::string id);
 	void addTouchingObject(std::shared_ptr<GameObject> touchingObject);
 	void setParent(GameObject* parentObject);
 	std::optional<GameObject*> parent() { return m_parentObject; }

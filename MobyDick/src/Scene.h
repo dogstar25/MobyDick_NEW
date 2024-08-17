@@ -92,6 +92,7 @@ public:
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByTrait(int trait); //use when you know there's only one
 	std::optional<std::shared_ptr<GameObject>> getFirstGameObjectByType(std::string type); //use when you know there's only one
 	std::optional<std::string> getNextLevel();
+	void flashContactListener();
 
 	int getRenderSequence() { return m_renderSequence; }
 	int incrementRenderSequence(GameObject* gameObject);
