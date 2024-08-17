@@ -559,41 +559,41 @@ namespace util
 
 	}
 
-	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait)
-	{
+	//void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait)
+	//{
 
 
-		if (gameObject->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+	//	if (gameObject->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
 
-			const auto& childComponent = gameObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
-
-
-			for (auto& slotItr : childComponent->childSlots()) {
-
-				//Each child slot can have multiple gameObjects that live in a vector
-				//Only Standard slots support multipl
-				for (auto& child : slotItr.second) {
-
-					if (child.gameObject.has_value()) {
-
-						if (trait.has_value()==false || (trait.has_value() && child.gameObject.value()->hasTrait(trait.value()))) {
-
-							child.gameObject.value()->addState(stateToPropogate);
-						}
-
-					}
-
-					propogateStateToAllChildren(child.gameObject.value().get(), stateToPropogate, trait);
-
-				}
-
-			}
-
-		}
+	//		const auto& childComponent = gameObject->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
 
 
+	//		for (auto& slotItr : childComponent->childSlots()) {
 
-	}
+	//			//Each child slot can have multiple gameObjects that live in a vector
+	//			//Only Standard slots support multipl
+	//			for (auto& child : slotItr.second) {
+
+	//				if (child.gameObject.has_value()) {
+
+	//					if (trait.has_value()==false || (trait.has_value() && child.gameObject.value()->hasTrait(trait.value()))) {
+
+	//						child.gameObject.value()->addState(stateToPropogate);
+	//					}
+
+	//				}
+
+	//				propogateStateToAllChildren(child.gameObject.value().get(), stateToPropogate, trait);
+
+	//			}
+
+	//		}
+
+	//	}
+
+
+
+	//}
 
 	void replaceAll(std::string& str, const std::string& from, const std::string& to) {
 		if (from.empty()) {
@@ -607,19 +607,7 @@ namespace util
 	}
 
 
-	Json::Value getJsonProperty(std::string property, Json::Value properties)
-	{
-		for (Json::Value prop : properties) {
 
-			if (prop.isMember(property)) {
-
-				return prop[property];
-			}
-
-		}
-
-		return Json::Value{};
-	}
 }
 
 

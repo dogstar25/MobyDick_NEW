@@ -11,7 +11,35 @@ LightComponent::LightComponent(Json::Value componentJSON, GameObject* parent) :
 
 	m_lightType = static_cast<LightType>(game->enumMap()->toEnum(componentJSON["type"].asString()));
 	m_flicker = componentJSON["flicker"].asBool();
-	
+
+	if (componentJSON.isMember("brightness")) {
+		m_brightness = componentJSON["brightness"].asInt();
+	}
+	else {
+		//default to maximum brightness
+		m_brightness = 100;
+	}
+
+	if (componentJSON.isMember("spreadsToOtherAreas")) {
+		m_spreadsToOtherAreas = componentJSON["spreadsToOtherAreas"].asBool();
+	}
+
+
+}
+
+
+void LightComponent::postInit()
+{
+
+	//The brightness is controlled by setting the alpha value of the color
+	const auto& lightRenderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+
+	//Light brightness should be 1 to 100
+	int brightness = static_cast<int>(m_brightness * 255.0 / 100.0);
+	if (brightness > 255) {
+		brightness = 255;
+	}
+	lightRenderComponent->setColorAlpha(brightness);
 
 }
 

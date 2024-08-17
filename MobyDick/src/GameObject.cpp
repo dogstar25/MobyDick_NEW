@@ -233,6 +233,17 @@ void GameObject::addLitHighlight(b2Vec2 size)
 
 }
 
+void GameObject::setLightBrightness(int brightness)
+{
+
+	if (hasComponent(ComponentTypes::LIGHT_COMPONENT)) {
+
+		const auto& lightComponent = getComponent<LightComponent>(ComponentTypes::LIGHT_COMPONENT);
+		lightComponent->setBrightness(brightness);
+	}
+	
+}
+
 void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, float adjustY)
 {
 	float xMapPos{};
@@ -809,6 +820,9 @@ void GameObject::addState(GameObjectState state)
 		stateComponent->addState(state);
 
 	}
+	else {
+		std::cout << "State trying to set for " << m_type << " and it has no state component" << std::endl;
+	}
 
 }
 
@@ -890,6 +904,11 @@ void GameObject::enablePhysics()
 		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
 		stateComponent->removeState(GameObjectState::DISABLED_PHYSICS);
 	}
+
+
+
+
+
 
 }
 
@@ -1105,6 +1124,12 @@ void GameObject::_updateTouchingObjects()
 
 				const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
+				if (hasTrait(TraitTag::player)) {
+
+					int todd = 1;
+
+				}
+
 				for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
 				{
 					b2Contact* contact = edge->contact;
@@ -1295,6 +1320,23 @@ bool GameObject::isTouchingByName(const std::string name)
 	for (auto& gameObject : m_touchingGameObjects) {
 
 		if (gameObject.second.expired() == false && gameObject.second.lock()->name() == name) {
+			return true;
+		}
+
+	}
+
+	return false;
+
+}
+
+bool GameObject::isTouchingById(const std::string id)
+{
+
+	std::weak_ptr<GameObject>touchingObject{};
+
+	for (auto& gameObject : m_touchingGameObjects) {
+
+		if (gameObject.second.expired() == false && gameObject.second.lock()->id() == id) {
 			return true;
 		}
 

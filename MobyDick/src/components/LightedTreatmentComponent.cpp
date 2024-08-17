@@ -51,7 +51,10 @@ void LightedTreatmentComponent::update()
 	const auto& lights = parent()->parentScene()->getGameObjectsByTrait(TraitTag::light_emission);
 	for (auto& light : lights) {
 
+		if (light->parent().has_value() && light->parent().value()->name() == "guestRoomLightSwitch_TARGET" && light->hasState(GameObjectState::ON)) {
+			int todd = 1;
 
+		}
 		//If this light has a stateCOmponent, then it can potentially be turned on or off
 		//so check if it is ON before adding it to th elist of lights
 		if (light->hasComponent(ComponentTypes::STATE_COMPONENT) == false ||
@@ -60,6 +63,7 @@ void LightedTreatmentComponent::update()
 
 			SDL_FPoint lightPoint = light->getCenterPosition();
 			SDL_FRect litAreaRect = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->getPositionRect();
+			const auto& lightComponent = light->getComponent<LightComponent>(ComponentTypes::LIGHT_COMPONENT);
 
 			//If the center of the light is inside of the lit area then add it
 			if (SDL_PointInFRect(&lightPoint, &litAreaRect)) {
@@ -69,12 +73,9 @@ void LightedTreatmentComponent::update()
 			//if this light's area of lumination crosses into the lit area AND the light has direct line 
 			// of sight to the lit area's center, then allow it to be added
 			//This allows light from other rooms shine into adjacent rooms to a degree
-			else if (parent()->intersectsWith(light.get())) {
+			else if (parent()->intersectsWith(light.get()) && lightComponent->spreadsToOtherAreas()) {
 
-				if (_hasLineOfSightToLitArea(light.get())) {
-				//if (util::hasLineOfSight(light.get(), parent())) {
-					m_lights.push_back(light);
-				}
+				m_lights.push_back(light);
 			}
 
 		}
@@ -104,28 +105,20 @@ void LightedTreatmentComponent::render()
 	//Render all of the lights to this texture also
 	for (auto& light : m_lights) {
 
-		const auto& lightRenderComponent = light.lock()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+		if (light.expired() == false) {
 
-		//Calculate the position within the lightedTreatment Object
-		//it will be an x,y that is 0,0 to the size of the lightTreatment object, however,
-		// we want the center of the light to be at the light position, so the render position
-		//x and y can go negative
-		SDL_FRect lightDestRect = lightRenderComponent->getRenderDestRect();
-		SDL_FPoint lightDestPosition = { lightDestRect.x, lightDestRect.y };
-		SDL_FPoint newLightPosition = { lightDestPosition.x - baseObjectDestPosition.x,  lightDestPosition.y - baseObjectDestPosition.y };
+			const auto& lightRenderComponent = light.lock()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
-		//Now position on center of light
-		//newLightPosition.x -= lightDestRect.w/2;
-		//newLightPosition.y -= lightDestRect.h/2;
+			//Calculate the position within the lightedTreatment Object
+			//it will be an x,y that is 0,0 to the size of the lightTreatment object, however,
+			// we want the center of the light to be at the light position, so the render position
+			//x and y can go negative
+			SDL_FRect lightDestRect = lightRenderComponent->getRenderDestRect();
+			SDL_FPoint lightDestPosition = { lightDestRect.x, lightDestRect.y };
+			SDL_FPoint newLightPosition = { lightDestPosition.x - baseObjectDestPosition.x,  lightDestPosition.y - baseObjectDestPosition.y };
 
-	/*	if (lightRenderComponent->parent()->type() == "ELECTRIC_ROOM_LIGHT_CIRCLE") {
-
-			lightRenderComponent->setColorAlpha(10);
-		}*/
-
-		lightRenderComponent->render(newLightPosition);
-
-
+			lightRenderComponent->render(newLightPosition);
+		}
 	}
 
 	//Set the renderer to target back to the main window again

@@ -79,9 +79,8 @@ namespace util
 
 	std::string wideStringToString(const std::wstring& wstr);
 	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject);
-	void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait = std::nullopt);
+	//void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait = std::nullopt);
 	void replaceAll(std::string& str, const std::string& from, const std::string& to);
-	Json::Value getJsonProperty(std::string property, Json::Value properties);
 
 };
 

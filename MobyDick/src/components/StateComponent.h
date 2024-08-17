@@ -48,6 +48,8 @@ public:
 	std::optional<float> getAnimationTransitionDuration(std::string animationId);
 	void finishupTransitionByAnimationId(std::string animationId);
 
+	static void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait = std::nullopt);
+
 protected:
 
 	int m_beginState{};

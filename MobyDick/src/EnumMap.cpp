@@ -264,6 +264,7 @@ EnumMap::EnumMap()
 	m_enumMap["receptacle"] = TraitTag::receptacle;
 	m_enumMap["save_me"] = TraitTag::save_me;
 	m_enumMap["toggle_switch"] = TraitTag::toggle_switch;
+	m_enumMap["toggleable"] = TraitTag::toggleable;
 	m_enumMap["light_emission"] = TraitTag::light_emission;
 
 

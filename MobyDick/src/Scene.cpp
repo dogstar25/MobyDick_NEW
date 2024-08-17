@@ -532,6 +532,15 @@ void Scene::_buildPhysicsWorld(Json::Value physicsJSON)
 
 }
 
+
+void Scene::flashContactListener()
+{
+
+	m_physicsWorld->SetContactFilter(nullptr);
+	m_physicsWorld->SetContactFilter(game->contactFilter().get());
+
+}
+
 void _updatePhysics(b2World* physicsWorld)
 {
 	//Update ALL physics object states
