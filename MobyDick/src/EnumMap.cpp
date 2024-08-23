@@ -257,7 +257,6 @@ EnumMap::EnumMap()
 	m_enumMap["door"] = TraitTag::door;
 	m_enumMap["inventory_player"] = TraitTag::inventory_player;
 	m_enumMap["inventory_open"] = TraitTag::inventory_open;
-	m_enumMap["inventory_closed"] = TraitTag::inventory_closed;
 	m_enumMap["inventory_display"] = TraitTag::inventory_display;
 	m_enumMap["door_side"] = TraitTag::door_side;
 	m_enumMap["door_front"] = TraitTag::door_front;
@@ -339,6 +338,7 @@ EnumMap::EnumMap()
 
 	m_enumMap["GameObjectState::SOLVED"] = (int)GameObjectState::SOLVED;
 	m_enumMap["GameObjectState::UNSOLVED"] = (int)GameObjectState::UNSOLVED;
+	m_enumMap["GameObjectState::LOCKED"] = (int)GameObjectState::LOCKED;
 
 }
 

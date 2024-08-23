@@ -18,21 +18,38 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, GameObject* pa
 	m_maxCapacity = componentJSON["maxCapacity"].asFloat();
 	m_activeItem = 0;
 
-	//Create the display object
-	std::string displayObjectType = componentJSON["displayObject"].asString();
-	if (componentJSON.isMember("displayLayer")) {
-		m_displayLayer = (GameLayer)game->enumMap()->toEnum(componentJSON["displayLayer"].asString());
-	}
-	else {
-		m_displayLayer = GameLayer::MAIN;
-	}
-
 	m_isAlwaysOpen = componentJSON["isAlwaysOpen"].asBool();
 
-	if (displayObjectType.empty() == false) {
+	//Create the display object
+	if (componentJSON.isMember("displayObject")) {
 
-		auto displayObject = parentScene->createGameObject(displayObjectType, parent, -50.0F, -50.0F, 0.F, parentScene, m_displayLayer);
-		parentScene->addGameObject(displayObject, m_displayLayer);
+		std::shared_ptr<GameObject> displayObject{};
+
+		Json::Value displayObjectJSON = componentJSON["displayObject"];
+
+		std::string displayObjectType = displayObjectJSON["gameObjectType"].asString();
+		GameLayer displayLayer{};
+
+		if (displayObjectJSON.isMember("displayLayer")) {
+			displayLayer = (GameLayer)game->enumMap()->toEnum(displayObjectJSON["displayLayer"].asString());
+		}
+		else {
+			displayLayer = GameLayer::MAIN;
+		}
+
+		if (displayObjectJSON.isMember("size")) {
+
+			b2Vec2 sizeOverride = { displayObjectJSON["size"]["width"].asFloat(), displayObjectJSON["size"]["height"].asFloat() };
+			displayObject = parentScene->createGameObject(displayObjectType, parent, -50.0F, -50.0F, 0.F, parentScene, displayLayer, false, "", sizeOverride);
+
+		}
+		else {
+
+			displayObject = parentScene->createGameObject(displayObjectType, parent, -50.0F, -50.0F, 0.F, parentScene, displayLayer);
+
+		}
+		
+		parentScene->addGameObject(displayObject, displayLayer);
 		displayObject->disablePhysics();
 		displayObject->disableRender();
 		displayObject->disableCollision();

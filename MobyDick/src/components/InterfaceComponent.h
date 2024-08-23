@@ -36,7 +36,7 @@ public:
 	SDL_FPoint dragOffset() { return m_dragOffset; }
 	std::map<int, std::shared_ptr<InterfaceAction>> eventActions() { return m_eventActions; }
 
-	virtual bool isEventAvailable(int eventId) { return true; }
+	virtual bool isEventAvailable(int eventId) { return true; } //override this 
 
 	bool isDragging();
 	bool isHovering();
@@ -44,6 +44,8 @@ public:
 	void clearSpecificGameObjectInterface(GameObject* gameObject);
 	void clearDragging();
 	bool hasEvent(int eventId);
+
+	static std::optional<GameObject*> getCurrentGameObjectInterfaceActive() { return m_currentGameObjectInterfaceActive; }
 
 protected:
 
