@@ -690,6 +690,9 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		case GameObjectState::SCARED:
 			//nothing
 			break;
+		case GameObjectState::LOCKED:
+			//nothing
+			break;
 
 		default:
 

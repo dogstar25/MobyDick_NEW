@@ -360,6 +360,9 @@
     <ClCompile Include="src\actions\ProgressiveMoveByAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\puzzles\UnLockContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -723,6 +726,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\actions\ProgressiveMoveByAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\puzzles\UnLockContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

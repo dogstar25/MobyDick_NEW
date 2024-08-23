@@ -108,19 +108,16 @@ namespace TraitTag {
 	inline constexpr int vertical_movement_zone = 20;			//Allows for the player to vertically move
 	inline constexpr int inventory = 22;					//Can have a game item dropped onto it to add to its inventory
 	inline constexpr int inventory_open = 23;				//Inventory object where the inventory contents are displayed like a shelf
-	inline constexpr int inventory_closed = 24;				//Inventory object that is not currently displaying the inventory contents like a closed drawer
-	inline constexpr int inventory_display = 25;			//Inventory grid display object itself
-	inline constexpr int inventory_player = 26;				//Is the players inventory receptacle
-	inline constexpr int puzzle_item = 27;					//Is an item used to solve a game puzzle
-	inline constexpr int door = 29;
-	inline constexpr int door_side = 30;
-	inline constexpr int door_front = 31;
-	inline constexpr int receptacle = 32;
-	inline constexpr int save_me = 33;
-	inline constexpr int toggle_switch = 34;				//Objects with the toggle_switch trait will propogate on/off states through all children that are toggleable
-	inline constexpr int toggleable = 35;
-
-
+	inline constexpr int inventory_display = 24;			//Inventory grid display object itself
+	inline constexpr int inventory_player = 25;				//Is the players inventory receptacle
+	inline constexpr int puzzle_item = 26;					//Is an item used to solve a game puzzle
+	inline constexpr int door = 27;
+	inline constexpr int door_side = 28;
+	inline constexpr int door_front = 29;
+	inline constexpr int receptacle = 30;
+	inline constexpr int save_me = 31;
+	inline constexpr int toggle_switch = 32;				//Objects with the toggle_switch trait will propogate on/off states through all children that are toggleable
+	inline constexpr int toggleable = 33;
 
 }
 
@@ -274,6 +271,7 @@ enum class GameObjectState : int {
 	DRAGGABLE,
 	SOLVED,
 	UNSOLVED,
+	LOCKED,
 	SCARED,
 
 	GameObjectState_Count

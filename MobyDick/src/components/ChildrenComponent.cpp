@@ -36,13 +36,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			name = _buildChildName(parentName, childCount);
 		}
 
-
-		if (childObjectType == "NOPE_BUBBLE") {
-			int todd = 1;
-
-		}
-
-
 		//Child Size Override
 		b2Vec2 sizeOverride{ 0.f, 0.f };
 		if (itrChild.isMember("size")) {
@@ -72,12 +65,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 		if (isStepChild == true) {
 
 			parentScene->addGameObject(childObject, stepChildGameLayer);
-		}
-
-		if (parent->type() == "BED_3") {
-
-			int todd = 1;
-
 		}
 
 		//Begin States
