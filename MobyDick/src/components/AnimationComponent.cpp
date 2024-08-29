@@ -135,6 +135,10 @@ void AnimationComponent::postInit()
 void AnimationComponent::update()
 {
 
+	if (parent()->name() == "bobbysBed") {
+		int todd = 1;
+
+	}
 	//This animation component may be used only for flashing
 	if (m_animations.empty() == false) {
 
@@ -144,9 +148,10 @@ void AnimationComponent::update()
 			animate(animationId);
 
 		}
-		else {
+		else if(m_currentAnimation.has_value() == false){
 			animate(m_defaultAnimation.id);
 		}
+
 
 		//Still frame animation
 		if (m_currentAnimation.value().animationMode == AnimationMode::ANIMATE_STILL_FRAME)

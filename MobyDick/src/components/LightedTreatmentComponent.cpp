@@ -42,19 +42,10 @@ void LightedTreatmentComponent::update()
 	m_lights.clear();
 
 
-	//if (parent()->name() == "denLitArea") {
-	//	int todd = 1;
-	//}
-
-
 	//Find all of the light objects that are within the boundaries of this lightTreatmnent Object
 	const auto& lights = parent()->parentScene()->getGameObjectsByTrait(TraitTag::light_emission);
 	for (auto& light : lights) {
 
-		if (light->parent().has_value() && light->parent().value()->name() == "guestRoomLightSwitch_TARGET" && light->hasState(GameObjectState::ON)) {
-			int todd = 1;
-
-		}
 		//If this light has a stateCOmponent, then it can potentially be turned on or off
 		//so check if it is ON before adding it to th elist of lights
 		if (light->hasComponent(ComponentTypes::STATE_COMPONENT) == false ||

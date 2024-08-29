@@ -222,6 +222,7 @@ void RenderComponent::setColor(int red, int green, int blue, int alpha)
 
 void RenderComponent::render()
 {
+
 	//If this gameObject is anabstract object then do not display
 	if (parent()->hasTrait(TraitTag::abstract) == true) {
 		return;
