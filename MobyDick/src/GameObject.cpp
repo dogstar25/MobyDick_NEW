@@ -1124,12 +1124,6 @@ void GameObject::_updateTouchingObjects()
 
 				const std::shared_ptr<PhysicsComponent> physicsComponent = this->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-				if (hasTrait(TraitTag::player)) {
-
-					int todd = 1;
-
-				}
-
 				for (b2ContactEdge* edge = physicsComponent->physicsBody()->GetContactList(); edge; edge = edge->next)
 				{
 					b2Contact* contact = edge->contact;

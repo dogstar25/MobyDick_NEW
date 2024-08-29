@@ -272,7 +272,8 @@ enum class GameObjectState : int {
 	SOLVED,
 	UNSOLVED,
 	LOCKED,
-	SCARED,
+	SCARED, 
+	HIDDEN,
 
 	GameObjectState_Count
 
