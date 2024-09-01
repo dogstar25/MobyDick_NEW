@@ -273,7 +273,9 @@ enum class GameObjectState : int {
 	UNSOLVED,
 	LOCKED,
 	SCARED, 
-	HIDDEN,
+	HIDING,
+	ANGLED,
+	STRAIGHT,
 
 	GameObjectState_Count
 

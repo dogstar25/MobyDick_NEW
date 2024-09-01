@@ -17,6 +17,7 @@
 #include "CloseShelfInventoryAction.h"
 #include "OnOffToggleAction.h"
 #include "ProgressiveMoveByAction.h"
+#include "PlayCutSceneAction.h"
 
 
 #include <iostream>
@@ -101,6 +102,10 @@ std::shared_ptr<Action> ActionFactory::create(std::string actionType, Json::Valu
     else if (actionType == "ProgressiveMoveByAction") {
 
         action = std::make_shared<ProgressiveMoveByAction>(properties, parent);
+    }
+    else if (actionType == "PlayCutSceneAction") {
+
+        action = std::make_shared<PlayCutSceneAction>(properties, parent);
     }
 
     else {

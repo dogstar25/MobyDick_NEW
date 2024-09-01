@@ -252,6 +252,11 @@ void Scene::update() {
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
 
+			if (gameObjects[i]->type() == "SKULL") {
+				int todd = 1;
+			}
+
+
 			gameObjects[i]->update();
 		}
 	}
