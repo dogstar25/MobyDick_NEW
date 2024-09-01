@@ -693,8 +693,14 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		case GameObjectState::LOCKED:
 			//nothing
 			break;
-		case GameObjectState::HIDDEN:
+		case GameObjectState::HIDING:
 			//nothing
+			break;
+		case GameObjectState::ANGLED:
+			m_states.set((int)GameObjectState::STRAIGHT, false);
+			break;
+		case GameObjectState::STRAIGHT:
+			m_states.set((int)GameObjectState::ANGLED, false);
 			break;
 
 		default:

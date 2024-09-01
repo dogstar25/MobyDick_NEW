@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include <optional>
 
@@ -36,7 +36,8 @@ public:
 	bool hasAction(int actionId);
 
 private:
-	std::vector<std::shared_ptr<Action>>m_actions;
+
+	std::unordered_map<int, std::shared_ptr<Action>> m_actions;
 
 
 };

@@ -135,7 +135,7 @@ void AnimationComponent::postInit()
 void AnimationComponent::update()
 {
 
-	if (parent()->name() == "bobbysBed") {
+	if (parent()->type() == "SKULL") {
 		int todd = 1;
 
 	}
@@ -232,7 +232,7 @@ void AnimationComponent::animate(std::string animationId, float speed)
 
 	//If we are not already animating this particular animation then set it as our current animation 
 	if ((m_currentAnimation.has_value() && m_currentAnimation.value().id != animationId 
-		&& m_animations.find(animationId) != m_animations.end())) {
+		&& m_animations.find(animationId) != m_animations.end()) || (m_currentAnimation.has_value() == false)) {
 
 		m_currentAnimation = m_animations[animationId];
 

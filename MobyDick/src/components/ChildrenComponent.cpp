@@ -22,6 +22,10 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 	m_isDependentObjectOwner = true;
 	std::optional<b2Vec2> sizeOverride{};
 
+	if (parent->type() == "SKULL") {
+		int todd = 1;
+	}
+
 	int childCount{};
 	for (Json::Value itrChild : componentJSON["childObjects"])
 	{

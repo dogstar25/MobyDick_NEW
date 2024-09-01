@@ -339,6 +339,9 @@ EnumMap::EnumMap()
 	m_enumMap["GameObjectState::SOLVED"] = (int)GameObjectState::SOLVED;
 	m_enumMap["GameObjectState::UNSOLVED"] = (int)GameObjectState::UNSOLVED;
 	m_enumMap["GameObjectState::LOCKED"] = (int)GameObjectState::LOCKED;
+	m_enumMap["GameObjectState::HIDING"] = (int)GameObjectState::HIDING;
+	m_enumMap["GameObjectState::ANGLED"] = (int)GameObjectState::ANGLED;
+	m_enumMap["GameObjectState::STRAIGHT"] = (int)GameObjectState::STRAIGHT;
 
 }
 

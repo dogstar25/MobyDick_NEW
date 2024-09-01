@@ -18,7 +18,6 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 	Component(ComponentTypes::ACTION_COMPONENT, parent)
 {
 
-	m_actions.resize(64);
 	for (Json::Value itrAction: componentJSON["actions"])
 	{
 		//Get the name of the class to be used as the action as a string
@@ -57,10 +56,10 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 void ActionComponent::update()
 {
 
-	for (const auto& action : m_actions) {
+	for (auto actionItr = m_actions.begin(); actionItr != m_actions.end(); ++actionItr) {
 
-		if (action && action->status() == ProgressionStatus::IN_PROGRESS) {
-			action->update();
+		if (actionItr->second->status() == ProgressionStatus::IN_PROGRESS) {
+			actionItr->second->update();
 		}
 
 	}
