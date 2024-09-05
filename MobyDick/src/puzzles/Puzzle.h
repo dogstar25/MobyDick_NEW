@@ -15,7 +15,7 @@ class Puzzle
 public:
 
 	Puzzle() = default;
-	Puzzle(std::string name, std::string clue, int pieceCount);
+	Puzzle(std::string name, std::string clue, int pieceCount, GameObject* parent);
 
 	bool hasBeenSolved();
 	virtual void applyPuzzlePiece(std::string puzzlePieceId);
@@ -29,10 +29,13 @@ public:
 
 	std::vector<bool>& pieces() { return m_pieces; }
 	void setPiece(int index, bool solvedFlag) { m_pieces[index] = solvedFlag; }
+	GameObject* parent() { return m_parent; }
 
 protected:
 
 	
+	//GameObject that owns this puzzle
+	GameObject* m_parent{};
 
 	std::string m_puzzleName;
 	std::string m_clue{};

@@ -1,7 +1,7 @@
 #include "UnLockDoorPuzzle.h"
 
-UnLockDoorPuzzle::UnLockDoorPuzzle(std::string name, std::string clue, int pieceCount) : 
-	Puzzle(name, clue, pieceCount) {
+UnLockDoorPuzzle::UnLockDoorPuzzle(std::string name, std::string clue, int pieceCount, GameObject* parent) :
+	Puzzle(name, clue, pieceCount, parent) {
 
 }
 

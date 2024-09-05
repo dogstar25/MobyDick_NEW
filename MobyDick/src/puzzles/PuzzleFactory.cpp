@@ -4,7 +4,7 @@
 
 
 
-std::shared_ptr<Puzzle> PuzzleFactory::create(Json::Value puzzleJSON)
+std::shared_ptr<Puzzle> PuzzleFactory::create(Json::Value puzzleJSON, GameObject* parent)
 {
 	std::shared_ptr<Puzzle> puzzle;
 
@@ -16,11 +16,11 @@ std::shared_ptr<Puzzle> PuzzleFactory::create(Json::Value puzzleJSON)
 
 	if (puzzleType == "UnlockDoorPuzzle") {
 
-		puzzle = std::make_shared<UnLockDoorPuzzle>(name, clue, puzzlePieces);
+		puzzle = std::make_shared<UnLockDoorPuzzle>(name, clue, puzzlePieces, parent);
 	}
 	else if (puzzleType == "UnlockContainer") {
 
-		puzzle = std::make_shared<UnlockContainer>(name, clue, puzzlePieces);
+		puzzle = std::make_shared<UnlockContainer>(name, clue, puzzlePieces, parent);
 	}
 
 	else {

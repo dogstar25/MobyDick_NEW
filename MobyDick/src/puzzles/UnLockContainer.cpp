@@ -1,7 +1,7 @@
 #include "UnlockContainer.h"
 
-UnlockContainer::UnlockContainer(std::string name, std::string clue, int pieceCount) :
-	Puzzle(name, clue, pieceCount) {
+UnlockContainer::UnlockContainer(std::string name, std::string clue, int pieceCount, GameObject* parent) :
+	Puzzle(name, clue, pieceCount, parent) {
 
 }
 
@@ -11,8 +11,13 @@ bool UnlockContainer::isPuzzlePieceApplicable(GameObject* puzzlePieceObject)
 
 	bool isApplicable = false;
 
+	//Since this is a generic unlock puzzle, we have to figure out if the puzzlePieceObject is applicable
+	//based on it's name and the name of the puzzle
+	std::string keyName = "key_" + parent()->name();
+
+
 	//Piece 1
-	if (puzzlePieceObject->type() == "KEY1") {
+	if (puzzlePieceObject->name() == keyName) {
 
 		isApplicable = true;
 	}
@@ -26,8 +31,10 @@ void UnlockContainer::applyPuzzlePiece(GameObject* puzzleObject, GameObject* puz
 
 	if (hasBeenSolved() == false) {
 
-		//Piece 1
-		if (puzzlePieceObject->type() == "KEY1") {
+		//Since this is a generic unlock puzzle, we have to figure out if the puzzlePieceObject is applicable
+		//based on it's name and the name of the puzzle
+		std::string keyName = "key_" + parent()->name();
+		if (puzzlePieceObject->name() == keyName) {
 
 			m_pieces[0] = true;
 
