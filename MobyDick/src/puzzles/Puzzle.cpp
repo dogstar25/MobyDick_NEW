@@ -1,12 +1,14 @@
 #include "Puzzle.h"
 
-Puzzle::Puzzle(std::string name, std::string clue, int pieceCount)
+Puzzle::Puzzle(std::string name, std::string clue, int pieceCount, GameObject* parent)
 {
 
 	m_puzzleName = name;
 	m_clue = clue;
 
 	m_pieces = std::vector<bool>(pieceCount, false);
+
+	m_parent = parent;
 
 
 }

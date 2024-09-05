@@ -4,7 +4,7 @@ class UnlockContainer : public Puzzle
 {
 public:
 	UnlockContainer() = default;
-	UnlockContainer(std::string name, std::string clue, int pieceCount);
+	UnlockContainer(std::string name, std::string clue, int pieceCount, GameObject* parent);
 
 	virtual bool isPuzzlePieceApplicable(GameObject* puzzlePieceObject) override;
 	virtual void applyPuzzlePiece(GameObject* puzzleObject, GameObject* puzzlePieceObject) override;

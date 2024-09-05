@@ -7,7 +7,7 @@ PuzzleComponent::PuzzleComponent(Json::Value componentJSON, GameObject* parent) 
 	Component(ComponentTypes::PUZZLE_COMPONENT, parent)
 {
 
-	puzzle = game->puzzleFactory()->create(componentJSON);
+	puzzle = game->puzzleFactory()->create(componentJSON, parent);
 
 }
 
