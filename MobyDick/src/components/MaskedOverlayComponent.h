@@ -26,8 +26,8 @@ protected:
 	std::vector<std::shared_ptr<GameObject>> m_overlayObjects{};
 	std::vector<std::shared_ptr<GameObject>> m_maskObjects{};
 
-	std::shared_ptr<Texture> m_compositeTexture{};
-	std::shared_ptr<Texture> m_tempTexture{};
+	std::shared_ptr<SDLTexture> m_compositeTexture{};
+	std::shared_ptr<SDLTexture> m_tempTexture{};
 
 	SDL_FPoint m_maskPosition{};
 	std::vector<std::string> m_maskObjectNames{};

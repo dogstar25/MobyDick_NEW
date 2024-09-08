@@ -1,8 +1,6 @@
 #include "GLRenderer.h"
 
 
-
-
 #include "LineDrawBatch.h"
 #include "SpriteDrawBatch.h"
 #include "../IMGui/IMGuiUtil.h"
@@ -14,6 +12,17 @@ extern std::unique_ptr<Game> game;
 GLRenderer::GLRenderer()
 {
 
+
+}
+
+GLRenderer::~GLRenderer()
+{
+
+	//glDeleteTextures(1, texture_id);
+
+	//glDeleteVertexArrays(1, &m_vao);
+
+	SDL_GL_DeleteContext(m_glcontext);
 
 }
 
@@ -269,17 +278,6 @@ void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, 
 
 }
 
-GLRenderer::~GLRenderer()
-{
-
-	//glDeleteTextures(1, texture_id);
-
-	//glDeleteVertexArrays(1, &m_vao);
-
-    SDL_GL_DeleteContext(m_glcontext);
-
-}
-
 void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, 
 	GLShaderType shaderType, RenderBlendMode textureBlendMode, int layer)
 {
@@ -342,7 +340,7 @@ void GLRenderer::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVert
 }
 
 
-void GLRenderer::prepTexture(Texture* texture)
+void GLRenderer::prepTexture(OpenGLTexture* texture)
 {
 
 	SDL_Surface* surf = texture->surface;

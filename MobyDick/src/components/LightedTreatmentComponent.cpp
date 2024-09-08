@@ -11,7 +11,7 @@ LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON, 
 	Component(ComponentTypes::LIGHTED_TREATMENT_COMPONENT, parent)
 {
 
-	m_lightCompositeTexture = std::make_shared<Texture>();
+	m_lightCompositeTexture = std::make_shared<SDLTexture>();
 
 }
 

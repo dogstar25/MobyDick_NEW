@@ -1,4 +1,6 @@
 #include "AnimationComponent.h"
+
+#include "../TextureManager.h"
 #include "RenderComponent.h"
 #include "../game.h"
 

@@ -87,9 +87,6 @@
     <ClCompile Include="src\components\PlayerControlComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\DebugPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\LevelManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -336,9 +333,6 @@
     <ClCompile Include="src\components\MaskedOverlayComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\components\TextComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\components\EnvironmentComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -438,9 +432,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\PlayerControlComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DebugPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LevelManager.h">
@@ -699,9 +690,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\MaskedOverlayComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\components\TextComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\EnvironmentComponent.h">

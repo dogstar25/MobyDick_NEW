@@ -19,8 +19,8 @@ MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, GameOb
 		m_maskObjectNames.push_back(objectItr.asString());
 	}
 
-	m_compositeTexture = std::make_shared<Texture>();
-	m_tempTexture = std::make_shared<Texture>();
+	m_compositeTexture = std::make_shared<SDLTexture>();
+	m_tempTexture = std::make_shared<SDLTexture>();
 
 }
 

@@ -218,6 +218,8 @@ EnumMap::EnumMap()
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2;
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3;
 	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_5"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_5;
+	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_6"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_6;
 	m_enumMap["GL_TextureIndexType::IMGUI_TEXTURE_ATLAS"] = (int)GL_TextureIndexType::IMGUI_TEXTURE_ATLAS;
 	
 	//Texure Blend Modes

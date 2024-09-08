@@ -126,10 +126,6 @@ std::shared_ptr<Component> ComponentFactory::create(
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::STATE_COMPONENT);
 			component = std::make_shared<StateComponent>(componentJSON, parent);
 			break;
-		case ComponentTypes::TEXT_COMPONENT:
-			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TEXT_COMPONENT);
-			component = std::make_shared<TextComponent>(gameObjectTextType, componentJSON, parent);
-			break;
 		case ComponentTypes::TRANSFORM_COMPONENT:
 			componentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TRANSFORM_COMPONENT);
 			component = std::make_shared<TransformComponent>(componentJSON, parent, xMapPos, yMapPos, angleAdjust, sizeOverride);

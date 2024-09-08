@@ -1,5 +1,4 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
@@ -8,21 +7,22 @@
 
 class Texture
 {
-public:
-	SDL_Texture* sdlTexture{};
-	SDL_Surface* surface{};
-	SDL_Rect textureAtlasQuad{};
-	bool isRootTexture{ false };
-	bool applyFlip{ false };
-	GL_TextureIndexType openglTextureIndex{};
+	public:
+		SDL_Surface* surface{};
+		SDL_Rect textureAtlasQuad{};
+		bool applyFlip{ false };
 };
 
-class AtlasTexture : public Texture
+class SDLTexture : public Texture
 {
-public:
-	SDL_Texture* sdlTexture{};
-	SDL_Surface* surface{};
+	public:
+		SDL_Texture* sdlTexture{};
 };
 
-#endif
+class OpenGLTexture : public Texture
+{
+	public:
+		GL_TextureIndexType openglTextureIndex{};
+};
+
 

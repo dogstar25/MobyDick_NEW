@@ -86,6 +86,7 @@ class Renderer
 public:
 
 	Renderer() = default;
+	~Renderer() = default;
 
 	virtual void init(SDL_Window* window) = 0;;
 	virtual bool present() = 0;

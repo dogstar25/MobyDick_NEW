@@ -15,20 +15,34 @@ TextureManager::TextureManager()
 TextureManager::~TextureManager()
 {
 
-	for (auto&& textureItem : m_textureMap) {
+	for (auto textureItem : m_textureAtlasMap) {
 
-		if (textureItem.second->isRootTexture == true) {
-			if (textureItem.second != NULL) {
+		if (textureItem.second != NULL) {
 
-				if (textureItem.second->surface != nullptr) {
-					SDL_FreeSurface(textureItem.second->surface);
-					textureItem.second->surface = nullptr;
+			if (textureItem.second->surface != nullptr) {
+				SDL_FreeSurface(textureItem.second->surface);
+				textureItem.second->surface = nullptr;
+			}
+
+			if (GameConfig::instance().rendererType() == RendererType::SDL) {
+
+				std::shared_ptr<SDLTexture> texture = std::static_pointer_cast<SDLTexture>(textureItem.second);
+
+				if (texture->sdlTexture != nullptr) {
+					SDL_DestroyTexture(texture->sdlTexture);
+					texture->sdlTexture = nullptr;
 				}
-				if (textureItem.second->sdlTexture != nullptr) {
-					SDL_DestroyTexture(textureItem.second->sdlTexture);
-					textureItem.second->sdlTexture = nullptr;
-				}
+			}
+		}
+	}
 
+	for (auto textureItem : m_blueprintMap) {
+
+		if (textureItem.second != NULL) {
+
+			if (textureItem.second->surface != nullptr) {
+				SDL_FreeSurface(textureItem.second->surface);
+				textureItem.second->surface = nullptr;
 			}
 		}
 	}
@@ -51,144 +65,72 @@ TextureManager& TextureManager::instance()
 
 }
 
-bool TextureManager::init()
+void TextureManager::loadTextures(std::string textureAtlas)
 {
-
-	//load("textureAssets");
-
-	return true;
-}
-
-bool TextureManager::hasTexture(std::string textureId)
-{
-
-	if (m_textureMap.find(textureId) == m_textureMap.end())
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-
-
-}
-
-void TextureManager::addOrReplaceTexture(std::string textureId, std::shared_ptr<Texture> texture)
-{
-	std::shared_ptr<Texture> tempTexture;
-
-	if (hasTexture(textureId) == false)
-	{
-		m_textureMap.emplace(textureId, texture);
-	}
-	else
-	{
-		tempTexture = getTexture(textureId);
-
-		SDL_FreeSurface(tempTexture->surface);
-		if (tempTexture->sdlTexture != NULL) {
-			SDL_DestroyTexture(tempTexture->sdlTexture);
-		}
-
-		//Use [] for the replacing of an item already there
-		m_textureMap[textureId] = texture;
-
-	}
-
-}
-
-
-bool TextureManager::load(std::string texturesAssetsFile)
-{
-
 	//Read file and stream it to a JSON object
 	Json::Value root;
-	std::string texturefilename = "assets/" + texturesAssetsFile + ".json";
-	std::ifstream ifs(texturefilename);
+	std::string atlasConfigfilename = "assets/" + textureAtlas + ".json";
+	std::string atlasImagefilename = "assets/" + textureAtlas + ".png";
+	std::ifstream ifs(atlasConfigfilename);
 
 	assert(ifs.fail() == false && "Opening TextureAsset file failed!!");
 
+	std::string atlasIdStr = textureAtlas.substr(textureAtlas.size() - 2);
+	int atlasIdInt = std::stoi(atlasIdStr);
+	atlasIdStr = "ATLAS_" + atlasIdStr;
+
 	ifs >> root;
 
-	//Get and store config values
-	std::string  id, imageFilename;
-	bool retainSurface = false;
+	std::shared_ptr<Texture> atlasTexture;
 
-	SDL_Texture* sdlTexture;
-	Texture* textureObject;
+	//Build the render specific texture object
+	if (GameConfig::instance().rendererType() == RendererType::SDL) {
+		
+		std::shared_ptr<SDLTexture> atlasTextureSDL = std::make_shared<SDLTexture>();
+		atlasTextureSDL->surface = IMG_Load(atlasImagefilename.c_str());
+		atlasTextureSDL->sdlTexture = SDL_CreateTextureFromSurface(game->renderer()->sdlRenderer(), atlasTextureSDL->surface);
+		atlasTexture = atlasTextureSDL;
 
-	for (auto itr : root["textureAtlas"])
+	}
+	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
+
+		std::shared_ptr<OpenGLTexture> atlasTextureGL = std::make_shared<OpenGLTexture>();
+		atlasTextureGL->surface = IMG_Load(atlasImagefilename.c_str());
+
+		GL_TextureIndexType textureIndex = (GL_TextureIndexType)atlasIdInt;
+
+		GLuint textureAtlasId = static_cast<GLRenderer*>(game->renderer())->getTextureId(textureIndex);
+		glActiveTexture((int)textureIndex);
+		glBindTexture(GL_TEXTURE_2D, textureAtlasId);
+		atlasTextureGL->openglTextureIndex = textureIndex;
+		static_cast<GLRenderer*>(game->renderer())->prepTexture(atlasTextureGL.get());
+		atlasTexture = atlasTextureGL;
+
+	}
+
+	//Store the atlas texture
+	m_textureAtlasMap.emplace(atlasIdStr, atlasTexture);
+
+	std::shared_ptr<Texture> texture{};
+
+	//Store all individual textures
+	for (auto itr : root["textures"])
 	{
-		//textureObject = new Texture();
-		textureObject = new Texture();
-
-		//This is a texture object that will store the texture assets that other texture items will share
-		textureObject->isRootTexture = true;
-
-		id = itr["id"].asString();
-		imageFilename = itr["filename"].asString();
-
-		//Load the file
-		textureObject->surface = IMG_Load(imageFilename.c_str());
-
-		//If this is the SDL Renderer then create the SDL texture
 		if (GameConfig::instance().rendererType() == RendererType::SDL) {
-			sdlTexture = SDL_CreateTextureFromSurface(game->renderer()->sdlRenderer(), textureObject->surface);
-			textureObject->sdlTexture = sdlTexture;
+
+			std::shared_ptr<SDLTexture> textureSDL = std::make_shared<SDLTexture>();
+			textureSDL->sdlTexture = std::static_pointer_cast<SDLTexture>(m_textureAtlasMap[atlasIdStr])->sdlTexture;
+			texture = textureSDL;
+
 		}
 		else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-			GL_TextureIndexType textureIndex = (GL_TextureIndexType)game->enumMap()->toEnum(itr["openglTextureIndex"].asString());
-
-			GLuint textureAtlasId = static_cast<GLRenderer*>(game->renderer())->getTextureId(textureIndex);
-			glActiveTexture((int)textureIndex);
-			glBindTexture(GL_TEXTURE_2D, textureAtlasId);
-			textureObject->openglTextureIndex = textureIndex;
-			static_cast<GLRenderer*>(game->renderer())->prepTexture(textureObject);
+			std::shared_ptr<OpenGLTexture> atlasTextureGL = std::make_shared<OpenGLTexture>();
+			atlasTextureGL->openglTextureIndex = std::static_pointer_cast<OpenGLTexture>(m_textureAtlasMap[atlasIdStr])->openglTextureIndex;
+			texture = atlasTextureGL;
 
 		}
 
-		m_textureMap.emplace(id, std::make_shared<Texture>(*textureObject));
-
-	}
-
-	//Loop through every texture defined in the config file, create a texture object
-	//and store it in the main texture map
-	for(auto itr : root["textureBlueprints"])
-	{
-		//textureObject = new Texture();
-		textureObject = new Texture();
-
-		//This is a texture object that will store the texture assets that other texture items will share
-		textureObject->isRootTexture = true;
-
-		id = itr["id"].asString();
-		imageFilename = itr["filename"].asString();
-
-		//Load the file
-		textureObject->surface = IMG_Load(imageFilename.c_str());
-
-		//If this is the SDL Renderer then create the SDL texture and potentially free the image surface
-		if (GameConfig::instance().rendererType() == RendererType::SDL) {
-			sdlTexture = SDL_CreateTextureFromSurface(game->renderer()->sdlRenderer(), textureObject->surface);
-			textureObject->sdlTexture = sdlTexture;
-		}
-
-		m_textureMap.emplace(id, std::make_shared<Texture>(*textureObject));
-
-	}
-
-	//Loop through every texture atlas defined in the config file, create a texture object
-	//and store it in the main texture map.
-	//Texture Atlas' must be done first since hte next texture items could reference the atlas
-	for (auto itr : root["textures"])
-	{
-		//textureObject = new Texture();
-		textureObject = new Texture();
-
-		id = itr["id"].asString();
-		auto atlasId = itr["atlas"].asString();
 		auto quadX = itr["quadPosition"]["x"].asInt();
 		auto quadY = itr["quadPosition"]["y"].asInt();
 		auto quadWidth = itr["quadPosition"]["width"].asInt();
@@ -196,67 +138,101 @@ bool TextureManager::load(std::string texturesAssetsFile)
 
 		SDL_Rect quad = { quadX , quadY, quadWidth, quadHeight };
 
-		textureObject->textureAtlasQuad = std::move(quad);
+		texture->textureAtlasQuad = std::move(quad);
+		texture->applyFlip = itr["flip"].asBool();
 
-		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-			textureObject->openglTextureIndex = m_textureMap[atlasId]->openglTextureIndex;
+		auto textureId = itr["id"].asString();
 
-		}
+		//surface
+		texture->surface = m_textureAtlasMap[atlasIdStr]->surface;
+
+		m_textureMap.emplace(textureId, texture);
+
+	}
+}
+
+void TextureManager::loadBlueprints(std::string blueprintAssets)
+{
+
+	Json::Value root;
+	std::string filename = "assets/" + blueprintAssets + ".json";
+	std::ifstream ifs(filename);
+
+	assert(ifs.fail() == false && "Opening blueprintAssets file failed!!");
+
+	ifs >> root;
+
+	for (auto itr : root["textureBlueprints"])
+	{
+		//textureObject = new Texture();
+		std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+
+		auto id = itr["id"].asString();
+		auto imageFilename = itr["filename"].asString();
 
 		//Load the file
-		textureObject->surface = m_textureMap[atlasId]->surface;
+		texture->surface = IMG_Load(imageFilename.c_str());
 
-		//If this is the SDL Renderer then create the SDL texture and potentially free the image surface
-		if (GameConfig::instance().rendererType() == RendererType::SDL) {
-			textureObject->sdlTexture = m_textureMap[atlasId]->sdlTexture;
-		}
-
-		//Is Flipped
-		textureObject->applyFlip = itr["flip"].asBool();
-
-		m_textureMap.emplace(id, std::make_shared<Texture>(*textureObject));
-
+		m_blueprintMap.emplace(id, texture);
 
 	}
 
+}
 
-	// Loop through every font defined and store it in the main font map
-		for (auto itr : root["fonts"])
-		{
-			id = itr["id"].asString();
-			imageFilename = itr["filename"].asString();
-			m_fontMap.emplace(id, imageFilename);
+void TextureManager::loadFonts(std::string fontAssets)
+{
 
+	Json::Value root;
+	std::string filename = "assets/" + fontAssets + ".json";
+	std::ifstream ifs(filename);
+
+	assert(ifs.fail() == false && "Opening fontAssets file failed!!");
+
+	ifs >> root;
+
+	for (auto itr : root["fonts"])
+	{
+		auto id = itr["id"].asString();
+		auto imageFilename = itr["filename"].asString();
+		m_fontMap.emplace(id, imageFilename);
+
+	}
+
+}
+
+void TextureManager::loadCursors(std::string cursorAtlas)
+{
+	Json::Value root;
+	std::string filename = "assets/" + cursorAtlas + ".json";
+	std::ifstream ifs(filename);
+
+	assert(ifs.fail() == false && "Opening cursorAtlas file failed!!");
+
+	ifs >> root;
+
+	for (auto itr : root["mouseCursors"])
+	{
+		SDL_Point hotspot{};
+		auto id = itr["id"].asString();
+		if (itr.isMember("hotSpot")) {
+			hotspot = { itr["hotSpot"]["x"].asInt(), itr["hotSpot"]["y"].asInt() };
 		}
+		std::string textureId = itr["textureId"].asString();
+		auto surface = getTexture(textureId)->surface;
+		auto quad = getTexture(textureId)->textureAtlasQuad;
+		SDL_Surface* cursorSurface = SDL_CreateRGBSurfaceWithFormat(0, quad.w, quad.h, 32, SDL_PIXELFORMAT_RGBA32);
 
-		// Loop through every mouse cursor , build it from the textures we already have loaded earlier
-		for (auto itr : root["mouseCursors"])
-		{
-			SDL_Point hotspot{};
-			id = itr["id"].asString();
-			if (itr.isMember("hotSpot")) {
-				hotspot = { itr["hotSpot"]["x"].asInt(), itr["hotSpot"]["y"].asInt() };
-			}
-			std::string textureId = itr["textureId"].asString();
-			auto surface = getTexture(textureId)->surface;
-			auto quad = getTexture(textureId)->textureAtlasQuad;
-			//SDL_Surface* cursorSurface = SDL_CreateRGBSurface(0, quad.w, quad.y, 32, 0, 0, 0, 0);
-			SDL_Surface* cursorSurface = SDL_CreateRGBSurfaceWithFormat(0, quad.w, quad.h, 32, SDL_PIXELFORMAT_RGBA32);
+		SDL_SetSurfaceBlendMode(cursorSurface, SDL_BLENDMODE_BLEND);
 
-			SDL_SetSurfaceBlendMode(cursorSurface, SDL_BLENDMODE_BLEND);
+		SDL_BlitSurface(surface, &quad, cursorSurface, NULL);
 
-			SDL_BlitSurface(surface, &quad, cursorSurface, NULL);
+		SDL_Cursor* cursor = SDL_CreateColorCursor(cursorSurface, hotspot.x, hotspot.y);
+		m_mouseCursorMap.emplace(id, cursor);
 
-			SDL_Cursor* cursor = SDL_CreateColorCursor(cursorSurface, hotspot.x, hotspot.y);
-			m_mouseCursorMap.emplace(id, cursor);
+		SDL_FreeSurface(cursorSurface);
 
-			SDL_FreeSurface(cursorSurface);
+	}
 
-			//m_mouseCursorMap.emplace(SDL_CreateColorCursor(surface, hotspot.x, hotspot.y));
-
-		}
-
-	return true;
 }
 
 SDL_Cursor* TextureManager::getMouseCursor(std::string id)
@@ -275,7 +251,6 @@ SDL_Cursor* TextureManager::getMouseCursor(std::string id)
 	}
 
 }
-
 
 std::string TextureManager::getFont(std::string id)
 {
@@ -322,6 +297,50 @@ std::shared_ptr<Texture> TextureManager::getTexture(std::string id)
 	return textureObject;
 }
 
+
+std::shared_ptr<Texture> TextureManager::getTextureAtlas(std::string id)
+{
+	std::shared_ptr<Texture> textureObject;
+
+	auto iter = m_textureAtlasMap.find(id);
+
+	if (iter != m_textureAtlasMap.end())
+	{
+		textureObject = iter->second;
+	}
+	else
+	{
+		//If the texture was not found and it is being used as a blueprint for a composite or a level
+		//Then we cannot use the default texture
+		if (id.empty() == false) {
+			assert(id.find("BLUEPRINT") != std::string::npos && "Cannot use a default texture for a blueprint texture");
+		}
+
+		textureObject = m_textureAtlasMap["TX_DEFAULT"];
+
+	}
+
+	return textureObject;
+}
+
+std::shared_ptr<Texture> TextureManager::getBlueprint(std::string id)
+{
+	std::shared_ptr<Texture> textureObject;
+
+	auto iter = m_blueprintMap.find(id);
+
+	if (iter != m_blueprintMap.end())
+	{
+		textureObject = iter->second;
+	}
+	else
+	{
+		assert(false && std::string::npos && "Blueprint not found");
+
+	}
+
+	return textureObject;
+}
 
 
 

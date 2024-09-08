@@ -19,7 +19,10 @@
 #include "Shader.h"
 #include "../BaseConstants.h"
 
+
+
 class DrawBatch;
+class OpenGLTexture;
 
 enum class GL_TextureIndexType {
 	MAIN_TEXTURE_ATLAS_0 = 0,
@@ -27,6 +30,8 @@ enum class GL_TextureIndexType {
 	MAIN_TEXTURE_ATLAS_2,
 	MAIN_TEXTURE_ATLAS_3,
 	MAIN_TEXTURE_ATLAS_4,
+	MAIN_TEXTURE_ATLAS_5,
+	MAIN_TEXTURE_ATLAS_6,
 	IMGUI_TEXTURE_ATLAS,
 	DYNAMICALLY_LOADED,
 
@@ -45,7 +50,7 @@ class GLRenderer : public Renderer
 
 public:
 	GLRenderer();
-	~GLRenderer();
+	virtual ~GLRenderer();
 
 	SDL_Renderer* sdlRenderer() { return nullptr; }
 	void init(SDL_Window* window);
@@ -58,7 +63,7 @@ public:
 	void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer);
 	const GLDrawer& spriteDrawer(){ return m_spriteDrawer; }
 	const GLDrawer& lineDrawer() { return m_lineDrawer; }
-	void prepTexture(Texture* texture);
+	void prepTexture(OpenGLTexture* texture);
 	GLuint getTextureId(GL_TextureIndexType textureindex);
 	void renderPrimitives(int layerIndex);
 

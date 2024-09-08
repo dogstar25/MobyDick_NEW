@@ -55,7 +55,7 @@ void HudStatusText::update(GameObject* parentGameObject)
 	//Update the dynamic text item that is used by this TextObject
 	//NOTE: This statusObject should already be a text item and already pointing to a specific
 	//      statusValie, this is probably not necesaary
-	auto textComponent = m_statusObject->getComponent<TextComponent>(ComponentTypes::TEXT_COMPONENT);
+	//auto textComponent = m_statusObject->getComponent<TextComponent>(ComponentTypes::TEXT_COMPONENT);
 	//textComponent->setDynamicValueId(m_statusValueId);
 	m_statusObject->update();
 

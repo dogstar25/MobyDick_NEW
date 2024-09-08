@@ -7,10 +7,6 @@ RendererSDL::RendererSDL()
 {
 
 }
-RendererSDL::~RendererSDL()
-{
-
-}
 
 void RendererSDL::init(SDL_Window* window)
 {
@@ -72,32 +68,34 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeOverride)
 {
 
+	SDLTexture* sdlTexture = static_cast<SDLTexture*>(texture);
+
 	if (textureBlendMode == RenderBlendMode::BLEND) {
-		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_BLEND);
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_BLEND);
 	}
 	else if (textureBlendMode == RenderBlendMode::ADD) {
-		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_ADD);
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_ADD);
 	}
 	else if (textureBlendMode == RenderBlendMode::MULTIPLY) {
-		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_MUL);
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_MUL);
 	}
 	else if (textureBlendMode == RenderBlendMode::MODULATE) {
-		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_MOD);
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_MOD);
 	}
 	else if (textureBlendMode == RenderBlendMode::CUSTOM) {
-		int customReturn = SDL_SetTextureBlendMode(texture->sdlTexture, sdlBlendModeOverride);
+		int customReturn = SDL_SetTextureBlendMode(sdlTexture->sdlTexture, sdlBlendModeOverride);
 	}
 	else{
-		SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_NONE);
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_NONE);
 	}
 
 	//SDL_SetTextureAlphaMod can only lower the alpha value of how the texture will render, never increate it. 
 	// so a 255, will be src pixel * (255/255) which is unchanged
-	SDL_SetTextureAlphaMod(texture->sdlTexture, color.a);
-	SDL_SetTextureColorMod(texture->sdlTexture, color.r, color.g, color.b);
+	SDL_SetTextureAlphaMod(sdlTexture->sdlTexture, color.a);
+	SDL_SetTextureColorMod(sdlTexture->sdlTexture, color.r, color.g, color.b);
 
 	SDL_RendererFlip flip = SDL_RendererFlip::SDL_FLIP_NONE;
-	if (texture->applyFlip == true) {
+	if (sdlTexture->applyFlip == true) {
 		flip = SDL_RendererFlip::SDL_FLIP_HORIZONTAL;
 
 	}
@@ -105,7 +103,7 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 	//Render the texture
 	SDL_RenderCopyExF(
 		m_sdlRenderer,
-		texture->sdlTexture,
+		sdlTexture->sdlTexture,
 		textureSrcQuad,
 		&destQuad,
 		angle,
@@ -137,8 +135,10 @@ void RendererSDL::renderPrimitives(int layerIndex)
 void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
 	bool clear, SDL_BlendMode customBlendMode)
 {
+	SDLTexture* sdlDestTexture = static_cast<SDLTexture*>(destTexture);
+
 	//Set the render target to the texture destination texture
-	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
+	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), sdlDestTexture->sdlTexture);
 	if (clear) {
 		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
 		game->renderer()->clear();
