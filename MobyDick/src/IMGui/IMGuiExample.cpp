@@ -24,8 +24,9 @@ glm::vec2 IMGuiExample::render()
 	else {
 
 		//SDL2 Texture void* is the SDL_Texture*
-		SDL_Texture* sdlTexture = TextureManager::instance().getTexture("TEXTURE_ATLAS_0")->sdlTexture;
-		ImGui::Image((void*)(SDL_Texture*)sdlTexture, ImVec2(64, 64), ImVec2(.0009765, .048828), ImVec2(.01635, .0642));
+		std::shared_ptr<Texture> texture = TextureManager::instance().getTexture("TEXTURE_ATLAS_0");
+		std::shared_ptr<SDLTexture> sdlTexture = std::static_pointer_cast<SDLTexture>(texture);
+		ImGui::Image((void*)(SDL_Texture*)sdlTexture.get()->sdlTexture, ImVec2(64, 64), ImVec2(.0009765, .048828), ImVec2(.01635, .0642));
 	}
 
 

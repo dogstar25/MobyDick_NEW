@@ -1,5 +1,7 @@
 #include "Blueprint.h"
 
+
+#include "TextureManager.h"
 #include <fstream>
 
 #include "game.h"
@@ -17,7 +19,7 @@ Blueprint::Blueprint(std::string blueprintName)
 
 	//Build the legend
 	 auto blueprintTextureName = root["blueprint"].asString();
-	 auto surface = TextureManager::instance().getTexture(blueprintTextureName)->surface;
+	 auto surface = TextureManager::instance().getBlueprint(blueprintTextureName)->surface;
 	 int bpp = surface->format->BytesPerPixel;
 	 Uint8 red, green, blue, alpha;
 

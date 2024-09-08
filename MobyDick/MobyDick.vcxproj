@@ -246,7 +246,6 @@
     <ClCompile Include="src\components\IMGuiComponent.cpp" />
     <ClCompile Include="src\components\SoundComponent.cpp" />
     <ClCompile Include="src\components\StateComponent.cpp" />
-    <ClCompile Include="src\components\TextComponent.cpp" />
     <ClCompile Include="src\cutScenes\CutScene.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneExample.cpp" />
     <ClCompile Include="src\cutScenes\CutSceneFactory.cpp" />
@@ -303,7 +302,6 @@
     <ClCompile Include="src\components\InventoryComponent.cpp" />
     <ClCompile Include="src\components\ActionComponent.cpp" />
     <ClCompile Include="src\actions\Action.cpp" />
-    <ClCompile Include="src\DebugPanel.cpp" />
     <ClCompile Include="src\components\PlayerControlComponent.cpp" />
     <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\ObjectPoolManager.cpp" />
@@ -366,7 +364,6 @@
     <ClInclude Include="src\components\IMGuiComponent.h" />
     <ClInclude Include="src\components\SoundComponent.h" />
     <ClInclude Include="src\components\StateComponent.h" />
-    <ClInclude Include="src\components\TextComponent.h" />
     <ClInclude Include="src\cutScenes\CutScene.h" />
     <ClInclude Include="src\cutScenes\CutSceneExample.h" />
     <ClInclude Include="src\cutScenes\CutSceneFactory.h" />
@@ -427,7 +424,6 @@
     <ClInclude Include="src\components\InventoryComponent.h" />
     <ClInclude Include="src\components\ActionComponent.h" />
     <ClInclude Include="src\actions\Action.h" />
-    <ClInclude Include="src\DebugPanel.h" />
     <ClInclude Include="src\components\PlayerControlComponent.h" />
     <ClInclude Include="src\LevelManager.h" />
     <ClInclude Include="src\ObjectPoolManager.h" />

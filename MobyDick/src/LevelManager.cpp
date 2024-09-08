@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "TextureManager.h"
 #include "EnumMap.h"
 #include "Game.h"
 #include "ColorMap.h"
@@ -201,7 +202,7 @@ void LevelManager::loadLevel(std::string levelId, Scene* scene)
 	_loadDefinition(levelId);
 
 	//I am representing the level grid as a png image file 
-	surface = TextureManager::instance().getTexture(m_blueprintTexture)->surface;
+	surface = TextureManager::instance().getBlueprint(m_blueprintTexture)->surface;
 
 	//Log warning if the bluprint image size doesnt match what we ahve in config
 	int surfaceWidth = surface->w;

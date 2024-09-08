@@ -17,7 +17,6 @@ class RendererSDL : public Renderer
 {
 public:
 	RendererSDL();
-	~RendererSDL();
 
 	void init(SDL_Window* window);
 

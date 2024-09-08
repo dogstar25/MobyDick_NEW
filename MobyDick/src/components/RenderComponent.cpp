@@ -6,6 +6,7 @@
 #include "../ColorMap.h"
 #include "../game.h"
 #include "../BaseConstants.h"
+#include "../TextureManager.h"
 
 
 extern std::unique_ptr<Game> game;
@@ -68,6 +69,9 @@ RenderComponent::RenderComponent(Json::Value componentJSON, GameObject* parent):
 	}
 
 	m_texture = TextureManager::instance().getTexture(componentJSON["textureId"].asString());
+
+	std::shared_ptr<SDLTexture> test = std::static_pointer_cast<SDLTexture>(m_texture);
+	int todd = 1;
 	
 	
 
@@ -310,12 +314,6 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 
 		//SDL_FRect destQuad = getRenderDestRect();
 		SDL_Rect* textureSourceQuad = getRenderTextureRect(texture);
-
-		//SDL Only Stuff
-		if (GameConfig::instance().rendererType() == RendererType::SDL) {
-
-			SDL_Texture* sdlTexture = texture->sdlTexture;
-		}
 
 		//Alter the render variables if there is an Overlay applied!
 		if (m_displayOverlay.has_value()) {

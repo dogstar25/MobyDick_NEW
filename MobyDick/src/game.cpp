@@ -1,3 +1,4 @@
+
 #include "Game.h"
 #include "SceneManager.h"
 #include "GameObject.h"
@@ -7,6 +8,9 @@
 #include "SoundManager.h"
 #include "GameStateManager.h"
 #include <memory>
+#include <SDL2/SDL_ttf.h>
+
+
 
 
 
@@ -96,12 +100,12 @@ bool Game::init(
 
 	if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-		m_renderer = std::make_shared<GLRenderer>(GLRenderer());
+		m_renderer = std::make_shared<GLRenderer>();
 
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::SDL) {
 
-		m_renderer = std::make_shared<RendererSDL>(RendererSDL());
+		m_renderer = std::make_shared<RendererSDL>();
 
 	}
 
@@ -207,9 +211,8 @@ void Game::_displayLoadingMsg()
 {
 
 	static int statusDots{};
+	std::shared_ptr<Texture> texture{};
 	std::string statusMsg{ "Loading" };
-	Texture texture{};
-	SDL_Texture* sdlTexture{};
 
 	statusDots++;
 	if (statusDots > 4) {
@@ -228,12 +231,15 @@ void Game::_displayLoadingMsg()
 
 	//Create the surface
 	SDL_Surface* tempSurface = TTF_RenderText_Blended(m_fontObject, statusMsg.c_str(), SDL_Color(255, 255, 255, 255));
-	texture.surface = tempSurface;
 
 	//Do different stuff based on if we're using SDL or direct OpenGL to render
 	if (GameConfig::instance().rendererType() == RendererType::SDL) {
-		sdlTexture = SDL_CreateTextureFromSurface(m_renderer->sdlRenderer(), tempSurface);
-		texture.sdlTexture = sdlTexture;
+
+		std::shared_ptr<SDLTexture> sdlTexture = std::make_shared<SDLTexture>();
+		sdlTexture->surface = tempSurface;
+
+		sdlTexture->sdlTexture = SDL_CreateTextureFromSurface(m_renderer->sdlRenderer(), tempSurface);
+		texture = sdlTexture;
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
@@ -242,17 +248,21 @@ void Game::_displayLoadingMsg()
 		int test = (GLuint)ImGui::GetIO().Fonts->TexID;
 		/////
 
+		std::shared_ptr<OpenGLTexture> openGLTexture = std::make_shared<OpenGLTexture>();
+		openGLTexture->surface = tempSurface;
+
 		GL_TextureIndexType textureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
-		GLuint textureAtlasId = static_cast<GLRenderer*>(renderer())->getTextureId(textureIndex);
+		GLuint textureAtlasId = static_cast<GLRenderer*>(renderer())->getTextureId((GL_TextureIndexType)test);
 		glActiveTexture((int)textureIndex);
 		glBindTexture(GL_TEXTURE_2D, textureAtlasId);
-		texture.openglTextureIndex = textureIndex;
+		openGLTexture->openglTextureIndex = textureIndex;
+		texture = openGLTexture;
 	}
 
 	SDL_Rect quad = { 0 , 0, tempSurface->w, tempSurface->h };
-	texture.textureAtlasQuad = std::move(quad);
-	texture.sdlTexture = sdlTexture;
-	texture.surface = tempSurface;
+
+	texture->textureAtlasQuad = std::move(quad);
+	texture->surface = tempSurface;
 
 	TTF_CloseFont(m_fontObject);
 	SDL_FRect dest = {
@@ -260,30 +270,25 @@ void Game::_displayLoadingMsg()
 		m_gameScreenResolution.y / (float)2 - (float)42,
 		(float)tempSurface->w, (float)tempSurface->h };
 
-	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, &texture, &texture.textureAtlasQuad, 0, false, SDL_Color{}, 
+	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, texture.get(), &texture->textureAtlasQuad, 0, false, SDL_Color{},
 		RenderBlendMode::BLEND);
 	m_renderer->present();
 
-	if (texture.surface != nullptr) {
-		SDL_FreeSurface(texture.surface);
+	if (texture->surface != nullptr) {
+		SDL_FreeSurface(texture->surface);
 	}
-	if (texture.sdlTexture != nullptr) {
-		SDL_DestroyTexture(texture.sdlTexture);
+
+	if (GameConfig::instance().rendererType() == RendererType::SDL) {
+
+		std::shared_ptr<SDLTexture> sdlTexture = std::static_pointer_cast<SDLTexture>(texture);
+
+		if (sdlTexture->sdlTexture != nullptr) {
+			SDL_DestroyTexture(sdlTexture->sdlTexture);
+		}
+
 	}
 
 }
-
-//std::optional<std::shared_ptr<GameObject>> Game::getGameObject(std::string name)
-//{
-//	std::optional<std::shared_ptr<GameObject>> foundGameObject{};
-//
-//	Scene& currentScene = SceneManager::instance().currentScene();
-//
-//	foundGameObject = currentScene.getGameObject(name);
-//
-//	return foundGameObject;
-//
-//}
 
 SDL_FPoint Game::getMouseWorldPosition()
 {

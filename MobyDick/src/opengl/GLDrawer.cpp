@@ -1,6 +1,6 @@
 #include "GLDrawer.h"
 
-
+#include "../texture.h"
 #include "../game.h"
 
 extern std::unique_ptr<Game> game;
@@ -57,6 +57,8 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	Shader& shader, Texture* texture, RenderBlendMode textureBlendMode)
 {
 
+	OpenGLTexture* openGLTexture = static_cast<OpenGLTexture*>(texture);
+
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glEnable(GL_BLEND);
 
@@ -98,11 +100,11 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	// 1 = Any Dynamically Generated Texture
 
 	if (texture != nullptr) {
-		GLuint textureId = static_cast<GLRenderer*>(game->renderer())->getTextureId(texture->openglTextureIndex);
+		GLuint textureId = static_cast<GLRenderer*>(game->renderer())->getTextureId(openGLTexture->openglTextureIndex);
 		glBindTexture(GL_TEXTURE_2D, textureId);
 
-		if (texture->openglTextureIndex == GL_TextureIndexType::DYNAMICALLY_LOADED) {
-			static_cast<GLRenderer*>(game->renderer())->prepTexture(texture);
+		if (openGLTexture->openglTextureIndex == GL_TextureIndexType::DYNAMICALLY_LOADED) {
+			static_cast<GLRenderer*>(game->renderer())->prepTexture(openGLTexture);
 		}
 
 	}

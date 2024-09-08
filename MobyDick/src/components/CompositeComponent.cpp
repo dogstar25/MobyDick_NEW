@@ -1,4 +1,6 @@
 #include "CompositeComponent.h"
+
+#include "../TextureManager.h"
 #include "../ColorMap.h"
 #include "../game.h"
 
@@ -159,7 +161,7 @@ void CompositeComponent::_buildComposite(Scene* parentScene, std::string parentN
 
 	//Get the texture and the surface
 	blueprintTexureId = m_blueprint.textureId;
-	blueprintSurface = TextureManager::instance().getTexture(blueprintTexureId)->surface;
+	blueprintSurface = TextureManager::instance().getBlueprint(blueprintTexureId)->surface;
 	int bpp = blueprintSurface->format->BytesPerPixel;
 
 	SDL_LockSurface(blueprintSurface);

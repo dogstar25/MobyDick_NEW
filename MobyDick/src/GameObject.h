@@ -33,7 +33,6 @@
 #include "components/PhysicsComponent.h"
 #include "components/PlayerControlComponent.h"
 #include "components/RenderComponent.h"
-#include "components/TextComponent.h"
 #include "components/VitalityComponent.h"
 #include "components/WeaponComponent.h"
 #include "components/PoolComponent.h"
