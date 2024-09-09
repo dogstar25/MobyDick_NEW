@@ -49,6 +49,13 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, GameObject* pa
 
 		}
 		
+		//We can set the inventories texture and color here
+
+
+
+
+
+
 		parentScene->addGameObject(displayObject, displayLayer);
 		displayObject->disablePhysics();
 		displayObject->disableRender();
