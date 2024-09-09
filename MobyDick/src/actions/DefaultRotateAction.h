@@ -8,7 +8,7 @@ public:
 	DefaultRotateAction(Json::Value properties, GameObject* parent)
 		:Action(properties, parent) {}
 
-	void perform(GameObject* gameObject, float angularVelocity) override;
+	void perform( float angularVelocity) override;
 
 };
 

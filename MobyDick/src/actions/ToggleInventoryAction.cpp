@@ -10,22 +10,22 @@ extern std::unique_ptr<Game> game;
 //		this gameObject as the parameter
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ToggleInventoryAction::perform(GameObject* gameObject)
+void ToggleInventoryAction::perform()
 {
 
-	const auto& inventoryComponent = gameObject->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+	const auto& inventoryComponent = m_parent->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
 	if (inventoryComponent->isOpen()) {
 
-		const auto& actionComponent = gameObject->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
+		const auto& actionComponent = m_parent->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
 
 		const auto& closeAction = actionComponent->getAction(Actions::CLOSE);
-		closeAction->perform(gameObject);
+		closeAction->perform();
 
 	}
 	else {
 
-		const auto& childComponent = gameObject->parent().value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
+		const auto& childComponent = m_parent->parent().value()->getComponent<ChildrenComponent>(ComponentTypes::CHILDREN_COMPONENT);
 		childComponent->addStepChild(inventoryComponent->getDisplayObject().value().lock(), PositionAlignment::TOP_CENTER);
 
 		inventoryComponent->setOpen(true);

@@ -3,9 +3,9 @@
 
 #include "../GameObject.h"
 
-void DefaultOnHoverAction::perform(GameObject* gameObject)
+void DefaultOnHoverAction::perform()
 {
-	const auto& renderComponent = gameObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	const auto& renderComponent = m_parent->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 	renderComponent->applyDisplayOverlay(displayOverlays::outline_GREEN1);
 
 

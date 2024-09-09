@@ -5,7 +5,7 @@
 
 extern std::unique_ptr<Game> game;
 
-void OnOffToggleAction::perform(GameObject* gameObject)
+void OnOffToggleAction::perform()
 {
 
 	GameObjectState stateToPropogate{};
@@ -20,24 +20,24 @@ void OnOffToggleAction::perform(GameObject* gameObject)
 	else {
 
 		//Flip the switch on/off state
-		if (gameObject->hasState(GameObjectState::ON)) {
+		if (m_parent->hasState(GameObjectState::ON)) {
 
-			gameObject->addState(GameObjectState::OFF);
+			m_parent->addState(GameObjectState::OFF);
 			stateToPropogate = GameObjectState::OFF;
 		}
 		else {
 
-			gameObject->addState(GameObjectState::ON);
+			m_parent->addState(GameObjectState::ON);
 			stateToPropogate = GameObjectState::ON;
 		}
 
 	}
 
-	if (gameObject->hasTrait(TraitTag::toggle_switch)) {
+	if (m_parent->hasTrait(TraitTag::toggle_switch)) {
 
 
-		std::string buttonTargetObjectName = gameObject->name() + "_TARGET";
-		auto targetObjects = gameObject->parentScene()->getGameObjectsByName(buttonTargetObjectName);
+		std::string buttonTargetObjectName = m_parent->name() + "_TARGET";
+		auto targetObjects = m_parent->parentScene()->getGameObjectsByName(buttonTargetObjectName);
 		if (targetObjects.empty() == false) {
 
 
@@ -53,21 +53,21 @@ void OnOffToggleAction::perform(GameObject* gameObject)
 			}
 
 		}
-		else if (gameObject->parent().has_value() &&
-			gameObject->parent().value()->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
+		else if (m_parent->parent().has_value() &&
+			m_parent->parent().value()->hasComponent(ComponentTypes::CHILDREN_COMPONENT)) {
 
 
-			if (gameObject->parent().value()->hasTrait(TraitTag::toggleable)) {
-				gameObject->parent().value()->addState(stateToPropogate);
+			if (m_parent->parent().value()->hasTrait(TraitTag::toggleable)) {
+				m_parent->parent().value()->addState(stateToPropogate);
 			}
-			StateComponent::propogateStateToAllChildren(gameObject->parent().value(), stateToPropogate, TraitTag::toggleable);
+			StateComponent::propogateStateToAllChildren(m_parent->parent().value(), stateToPropogate, TraitTag::toggleable);
 
 		}
 	}
 	//If this is a toggleable, then we will propogate the state to the children only
-	else if (gameObject->hasTrait(TraitTag::toggleable)) {
+	else if (m_parent->hasTrait(TraitTag::toggleable)) {
 
-		StateComponent::propogateStateToAllChildren(gameObject, stateToPropogate, TraitTag::toggleable);
+		StateComponent::propogateStateToAllChildren(m_parent, stateToPropogate, TraitTag::toggleable);
 	}
 
 }

@@ -11,8 +11,8 @@ public:
 	ProgressiveMoveByAction(Json::Value properties, GameObject* parent)
 		:Action(properties, parent) {}
 
-	void perform(GameObject* gameObject, b2Vec2 direction, float speed) override;
-	void perform(GameObject* gameObject) override;
+	void perform( b2Vec2 direction, float speed) override;
+	void perform() override;
 
 	virtual void update() override;
 

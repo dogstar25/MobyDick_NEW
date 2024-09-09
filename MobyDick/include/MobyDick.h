@@ -62,7 +62,6 @@
 #include "../src/actions/DefaultOnHoverOutAction.h"
 #include "../src/actions/DefaultRotateAction.h"
 #include "../src/actions/DroneMoveAction.h"
-#include "../src/actions/InteractAction.h"
 #include "../src/actions/NoAction.h"
 #include "../src/actions/PrimitiveMoveAction.h"
 #include "../src/actions/UseAction.h"

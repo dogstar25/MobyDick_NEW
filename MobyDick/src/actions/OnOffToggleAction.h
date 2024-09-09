@@ -10,7 +10,7 @@ public:
     OnOffToggleAction(Json::Value properties, GameObject* parent)
         :Action(properties, parent) {}
 
-    virtual void perform(GameObject* gameObject) override;
+    virtual void perform() override;
 
 
 };

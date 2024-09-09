@@ -4,24 +4,24 @@
 
 extern std::unique_ptr<Game> game;
 
-void TakeItemAction::perform(GameObject* gameObject)
+void TakeItemAction::perform()
 {
 
 	//Only if this object is obtainable. This action can fire for inventory items that are sometime in inventory and NOT obtainable
 	 
-	if ( (gameObject->hasState(GameObjectState::ITEM_OBTAINABLE) && gameObject->hasState(GameObjectState::ITEM_LOOSE) == false ) ||
-		(gameObject->hasState(GameObjectState::ITEM_OBTAINABLE) && gameObject->hasState(GameObjectState::ITEM_LOOSE) == true && gameObject->isTouchingByTrait(TraitTag::player)) ||
-		(gameObject->hasState(GameObjectState::ITEM_OBTAINABLE) && gameObject->hasState(GameObjectState::ITEM_STORED_OPEN) == true && gameObject->isTouchingByTrait(TraitTag::player))) {
+	if ( (m_parent->hasState(GameObjectState::ITEM_OBTAINABLE) && m_parent->hasState(GameObjectState::ITEM_LOOSE) == false ) ||
+		(m_parent->hasState(GameObjectState::ITEM_OBTAINABLE) && m_parent->hasState(GameObjectState::ITEM_LOOSE) == true && m_parent->isTouchingByTrait(TraitTag::player)) ||
+		(m_parent->hasState(GameObjectState::ITEM_OBTAINABLE) && m_parent->hasState(GameObjectState::ITEM_STORED_OPEN) == true && m_parent->isTouchingByTrait(TraitTag::player))) {
 		//Get the players inventory
-		const auto& player = gameObject->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
+		const auto& player = m_parent->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
 		const auto& inventoryComponent = player.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
 		//If this item is loose then add it to the inventory and remove it from the world
-		if (gameObject->hasState(GameObjectState::ITEM_LOOSE) && gameObject->hasState(GameObjectState::ITEM_STORED_OPEN) == false) {
+		if (m_parent->hasState(GameObjectState::ITEM_LOOSE) && m_parent->hasState(GameObjectState::ITEM_STORED_OPEN) == false) {
 
 			if (inventoryComponent->isFull() == false) {
 
-				auto extractedGameObject = gameObject->parentScene()->extractGameObject(gameObject->id());
+				auto extractedGameObject = m_parent->parentScene()->extractGameObject(m_parent->id());
 
 				//This object could have been a child of another object so if it is remove it from that parent as well
 				if (extractedGameObject.value()->isChild == true) {
@@ -35,13 +35,13 @@ void TakeItemAction::perform(GameObject* gameObject)
 
 					inventoryComponent->refreshInventoryDisplay();
 
-					const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+					const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 					physicsComponent->setIsSensor(true);
 
 				}
 				else {
 					//If it failed to add for some reason then add it back to the world, because we extracted it above
-					gameObject->parentScene()->addGameObject(extractedGameObject.value(), extractedGameObject.value()->layer());
+					m_parent->parentScene()->addGameObject(extractedGameObject.value(), extractedGameObject.value()->layer());
 					std::cout << "Failed to add!" << std::endl;
 				}
 			}
@@ -49,20 +49,20 @@ void TakeItemAction::perform(GameObject* gameObject)
 		}
 		else {
 
-			const auto& gameObjectParent = gameObject->parent();
+			const auto& gameObjectParent = m_parent->parent();
 			const auto& sourceInventoryObject = gameObjectParent.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
-			const auto& gameObjectShrPtr = gameObject->parentScene()->getGameObject(gameObject->id());
+			const auto& gameObjectShrPtr = m_parent->parentScene()->getGameObject(m_parent->id());
 
 			//First remove it
-			std::shared_ptr<GameObject> gameObjectSharedPtr = sourceInventoryObject->removeItem(gameObject);
+			std::shared_ptr<GameObject> gameObjectSharedPtr = sourceInventoryObject->removeItem(m_parent);
 
 			if (inventoryComponent->addItem(gameObjectShrPtr.value()) == true) {
 				
 				inventoryComponent->refreshInventoryDisplay();
 				sourceInventoryObject->refreshInventoryDisplay();
 
-				const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+				const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 				physicsComponent->setIsSensor(true);
 
 			}
@@ -75,10 +75,10 @@ void TakeItemAction::perform(GameObject* gameObject)
 		}
 
 		//Make sure we clear of this gameObject as the current object interface
-		if (gameObject->hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
+		if (m_parent->hasComponent(ComponentTypes::INTERFACE_COMPONENT)) {
 
-			const auto& interfaceComponent = gameObject->getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
-			interfaceComponent->clearSpecificGameObjectInterface(gameObject);
+			const auto& interfaceComponent = m_parent->getComponent<InterfaceComponent>(ComponentTypes::INTERFACE_COMPONENT);
+			interfaceComponent->clearSpecificGameObjectInterface(m_parent);
 		}
 
 		
