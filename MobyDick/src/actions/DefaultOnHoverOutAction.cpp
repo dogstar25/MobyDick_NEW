@@ -4,9 +4,9 @@
 #include "../GameObject.h"
 
 
-void DefaultOnHoverOutAction::perform(GameObject* gameObject)
+void DefaultOnHoverOutAction::perform()
 {
-	const auto& renderComponent = gameObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	const auto& renderComponent = m_parent->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
 	renderComponent->removeDisplayOverlay();
 

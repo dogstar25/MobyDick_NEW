@@ -43,17 +43,17 @@ public:
 	//the proper perform override and whoever is calling these actions should be passing in the correct paramters
 	//If we end up calling base, then throw an assert
 	//virtual void perform() { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, int) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, int, int) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, b2Vec2) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, b2Vec2, float) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, float) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform() { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(int) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(int, int) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(b2Vec2) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(b2Vec2, float) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(float) { assert(false && "An Empty Action was executed!"); };
 	virtual void perform(SDL_FRect*, glm::vec2, float) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(SDL_Scancode) { assert(false && "An Empty Action was executed!"); };
 	virtual void perform(GameObject*, SDL_Scancode) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, GameObject*, SDL_Scancode) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, GameObject*, b2Vec2) { assert(false && "An Empty Action was executed!"); };
-	virtual void perform(GameObject*, GameObject*) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(GameObject*, b2Vec2) { assert(false && "An Empty Action was executed!"); };
+	virtual void perform(GameObject*) { assert(false && "An Empty Action was executed!"); };
 
 protected:
 	

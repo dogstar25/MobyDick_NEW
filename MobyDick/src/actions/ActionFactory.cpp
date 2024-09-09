@@ -5,7 +5,6 @@
 #include "DefaultOnHoverOutAction.h"
 #include "PrimitiveMoveAction.h"
 #include "DroneMoveAction.h"
-#include "InteractAction.h"
 #include "NoAction.h"
 #include "ActorWarpAction.h"
 #include "ToggleInventoryAction.h"
@@ -14,7 +13,6 @@
 #include "ItemhHighlightApplyAction.h"
 #include "ItemhHighlightRemoveAction.h"
 #include "TakeItemAction.h"
-#include "CloseShelfInventoryAction.h"
 #include "OnOffToggleAction.h"
 #include "ProgressiveMoveByAction.h"
 #include "PlayCutSceneAction.h"
@@ -55,10 +53,6 @@ std::shared_ptr<Action> ActionFactory::create(std::string actionType, Json::Valu
 
         action = std::make_shared<DroneMoveAction>(properties, parent);
     }
-    else if (actionType == "Interact") {
-
-        action = std::make_shared<InteractAction>(properties, parent);
-    }
     else if (actionType == "COLL_Player_Wall") {
 
         action = std::make_shared<NoAction>(properties, parent);
@@ -90,10 +84,6 @@ std::shared_ptr<Action> ActionFactory::create(std::string actionType, Json::Valu
     else if (actionType == "TakeItemAction") {
 
         action = std::make_shared<TakeItemAction>(properties, parent);
-    }
-    else if (actionType == "CloseShelfInventoryAction") {
-
-        action = std::make_shared<CloseShelfInventoryAction>(properties, parent);
     }
     else if (actionType == "OnOffToggleAction") {
 

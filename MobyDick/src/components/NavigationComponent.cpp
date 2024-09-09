@@ -36,7 +36,7 @@ void NavigationComponent::navigateStop()
 
 	if (actionComponent->getAction(Actions::MOVE)) {
 		const auto& moveAction = actionComponent->getAction(Actions::MOVE);
-		moveAction->perform(parent(), trajectory);
+		moveAction->perform(trajectory);
 	}
 
 	//if (actionComponent->getAction(ACTION_ROTATE)) {
@@ -526,11 +526,11 @@ void NavigationComponent::_moveTo(SDL_Point destinationTile)
 	const auto& actionComponent = parent()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
 	const auto& moveAction = actionComponent->getAction(Actions::MOVE);
 
-	moveAction->perform(parent(), trajectory);
+	moveAction->perform(trajectory);
 
 	_applyAvoidanceMovement(trajectory);
 
-	moveAction->perform(parent(), trajectory);
+	moveAction->perform(trajectory);
 
 
 

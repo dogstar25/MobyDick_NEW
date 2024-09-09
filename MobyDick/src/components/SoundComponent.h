@@ -11,7 +11,6 @@
 #include <box2d/box2d.h>
 
 #include "../actions/Action.h"
-#include "../actions/InteractAction.h"
 #include "../actions/UseAction.h"
 #include "../actions/NoAction.h"
 #include "../Util.h"

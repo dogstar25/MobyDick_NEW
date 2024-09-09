@@ -2,9 +2,9 @@
 
 #include "../GameObject.h"
 
-void ActorWarpAction::perform(GameObject* interactingObject, GameObject* interactionObject, b2Vec2 destination)
+void ActorWarpAction::perform(b2Vec2 destination)
 {
-	const auto& physicsComponent = interactingObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+	const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
 	auto b2Destination = util::toBox2dPoint(destination);
 

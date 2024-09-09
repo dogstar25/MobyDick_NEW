@@ -3,9 +3,9 @@
 #include "../GameObject.h"
 
 
-void DefaultRotateAction::perform(GameObject* gameObject, float angularVelocity)
+void DefaultRotateAction::perform(float angularVelocity)
 {
-	const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+	const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
 	physicsComponent->applyRotation(angularVelocity);
 

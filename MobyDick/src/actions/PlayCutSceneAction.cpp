@@ -1,7 +1,7 @@
 #include "PlayCutSceneAction.h"
 #include "../Util.h"
 
-void PlayCutSceneAction::perform(GameObject* gameObject)
+void PlayCutSceneAction::perform()
 {
 
 	SDL_Event event;

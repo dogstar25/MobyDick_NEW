@@ -154,7 +154,7 @@ void InterfaceComponent::update()
 					//Only execute actions that are NOT tied to a user input like mouse click or keydown
 					if (isUserInputTiedAction(actionEvent.second->actionId) == false) {
 						const auto& action = actionComponent->getAction(actionEvent.second->actionId);
-						action->perform(parent());
+						action->perform();
 					}
 				}
 			}
@@ -246,7 +246,7 @@ void InterfaceComponent::update()
 						if (isUserInputTiedAction(actionEvent.second->actionId) == true) {
 
 							const auto& action = actionComponent->getAction(actionEvent.second->actionId);
-							action->perform(parent());
+							action->perform();
 							inputEvent = SceneManager::instance().playerInputEvents().erase(inputEvent);
 							found = true;
 							break;

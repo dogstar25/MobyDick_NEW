@@ -5,11 +5,11 @@
 #include "../GameObject.h"
 
 
-void ProgressiveMoveByAction::perform(GameObject* gameObject, b2Vec2 pixels, float speed)
+void ProgressiveMoveByAction::perform(b2Vec2 pixels, float speed)
 {
 	m_status = ProgressionStatus::IN_PROGRESS;
 
-	const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+	const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
 
 	//set destination and calculate trajectory
@@ -23,16 +23,16 @@ void ProgressiveMoveByAction::perform(GameObject* gameObject, b2Vec2 pixels, flo
 
 }
 
-void ProgressiveMoveByAction::perform(GameObject* gameObject)
+void ProgressiveMoveByAction::perform()
 {
 
 	m_status = ProgressionStatus::IN_PROGRESS;
 
-	const auto& physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+	const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-	if (gameObject->hasComponent(ComponentTypes::ACTION_COMPONENT)) {
+	if (m_parent->hasComponent(ComponentTypes::ACTION_COMPONENT)) {
 
-		const auto& actionComponent = gameObject->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
+		const auto& actionComponent = m_parent->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
 
 		float directionX = getActionProperty("xPixels").asFloat();
 		float directionY = getActionProperty("yPixels").asFloat();
@@ -42,8 +42,8 @@ void ProgressiveMoveByAction::perform(GameObject* gameObject)
 		b2Vec2 moveTrajectory = { directionX, directionY };
 
 		m_destination = {
-			gameObject->getCenterPosition().x + moveTrajectory.x,
-			gameObject->getCenterPosition().y + moveTrajectory.y
+			m_parent->getCenterPosition().x + moveTrajectory.x,
+			m_parent->getCenterPosition().y + moveTrajectory.y
 		};
 
 		moveTrajectory.Normalize();
