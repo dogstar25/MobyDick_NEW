@@ -108,6 +108,24 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			lightComponent->setSpreadsToOtherAreas(itrChild["lightSpreadsToOtherAreas"].asBool());
 		}
 
+		//Inventory display override color
+		if (itrChild.isMember("inventoryDisplayObjectColor")) {
+
+			const auto& inventoryComponent = childObject->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+			SDL_Color color = game->colorMap()->toSDLColor(itrChild["inventoryDisplayObjectColor"].asString());
+			inventoryComponent->setDisplayObjectColor(color);
+
+		}
+
+		//Inventory display override texture
+		if (itrChild.isMember("inventoryDisplayObjectTexture")) {
+
+			const auto& inventoryComponent = childObject->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+			std::string textureId = itrChild["inventoryDisplayObjectTexture"].asString();
+			inventoryComponent->setDisplayObjectTexture(textureId);
+
+		}
+
 		//Standard Slot
 		if (itrChild.isMember("standardSlot")) {
 
