@@ -16,8 +16,6 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, GameObject* pa
 	m_componentType = ComponentTypes::INVENTORY_COMPONENT;
 	
 	m_maxCapacity = componentJSON["maxCapacity"].asFloat();
-	m_activeItem = 0;
-
 	m_isAlwaysOpen = componentJSON["isAlwaysOpen"].asBool();
 
 	//Create the display object
@@ -49,12 +47,19 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, GameObject* pa
 
 		}
 		
-		//We can set the inventories texture and color here
+		if (displayObjectJSON.isMember("color")) {
 
+			SDL_Color color = game->colorMap()->toSDLColor(displayObjectJSON["color"].asString());
+			displayObject->setColor(color);
 
+		}
 
+		if (displayObjectJSON.isMember("texture")) {
 
+			std::string textureId = displayObjectJSON["texture"].asString();
+			displayObject->setTexture(textureId);
 
+		}
 
 		parentScene->addGameObject(displayObject, displayLayer);
 		displayObject->disablePhysics();
@@ -161,11 +166,13 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 
 }
 
-bool InventoryComponent::addItem(std::string gameObjectType)
+bool InventoryComponent::addItem(std::string gameObjectType, std::string name)
 {
 
 	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, parent(),  - 50.0F, -50.0F, 0.F,
-		parent()->parentScene(), GameLayer::GUI_2);
+		parent()->parentScene(), GameLayer::GUI_2, false, name);
+
+	gameObject->postInit();
 
 	if (addItem(gameObject) == false) {
 
@@ -177,11 +184,11 @@ bool InventoryComponent::addItem(std::string gameObjectType)
 
 }
 
-bool InventoryComponent::addItem(std::string gameObjectType, int slot)
+bool InventoryComponent::addItem(std::string gameObjectType, int slot, std::string name)
 {
 
 	auto gameObject = parent()->parentScene()->createGameObject(gameObjectType, parent(),  - 50.0F, -50.0F, 0.F,
-		parent()->parentScene(), GameLayer::GUI_2);
+		parent()->parentScene(), GameLayer::GUI_2, false, name);
 
 	return addItem(gameObject, slot);
 
@@ -221,7 +228,20 @@ std::shared_ptr<GameObject> InventoryComponent::removeItem(GameObject* gameObjec
 
 }
 
-std::optional<std::shared_ptr<GameObject>> InventoryComponent::getItem(const int traitTag)
+std::optional<std::shared_ptr<GameObject>> InventoryComponent::getFirstByType(std::string gameObjectType)
+{
+
+	for (auto item : m_items) {
+
+		if (item.has_value() && item.value()->type() == gameObjectType) {
+			return item;
+		}
+	}
+
+	return std::nullopt;
+}
+
+std::optional<std::shared_ptr<GameObject>> InventoryComponent::getFirstByTrait(const int traitTag)
 {
 
 	for (auto item : m_items) {
@@ -407,6 +427,28 @@ void InventoryComponent::clearInventory()
 	}
 
 	_removeFromWorldPass();
+
+}
+
+void InventoryComponent::setDisplayObjectColor(SDL_Color color)
+{
+
+	if (m_displayObject.has_value()) {
+
+		m_displayObject.value().lock()->setColor(color);
+
+	}
+
+}
+
+void InventoryComponent::setDisplayObjectTexture(std::string textureId)
+{
+
+	if (m_displayObject.has_value()) {
+
+		m_displayObject.value().lock()->setTexture(textureId);
+
+	}
 
 }
 

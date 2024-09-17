@@ -72,6 +72,7 @@ public:
 	void setAbsolutePositionaing(bool absolutePositionaing);
 	void revertToOriginalAbsolutePositionaing();
 	void setColor(SDL_Color color);
+	void setTexture(std::string textureId);
 	void setWeaponForce(float force);
 	void setWeaponColor(SDL_Color color);
 	void setCompositePieceLevelCap(int levelCap);

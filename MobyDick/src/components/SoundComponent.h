@@ -25,6 +25,7 @@ struct SoundItem {
 	bool isContinuous{};
 	std::optional<int> soundChannel{};
 	int soundRange{};
+	int lineOfSightAdjustment{};
 };
 
 
@@ -49,7 +50,8 @@ private:
 	std::unordered_map<std::string, SoundItem > m_sounds{};
 
 
-	int _calculateSoundDistanceMagnitude(SDL_FPoint, SDL_FPoint, int soundRange);
+	int _calculateSoundDistanceAdjustment(SDL_FPoint, SDL_FPoint, int soundRange, int lineOfSightAdjustment);
+	float _adjustForLineOfSight(int currentSOundMagnitude, int lineOfSightAdjustment);
 	
 
 };

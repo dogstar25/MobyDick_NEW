@@ -3,6 +3,7 @@
 
 
 #include "GameObjectManager.h"
+#include "TextureManager.h"
 #include "game.h"
 #include "EnumMap.h"
 
@@ -1013,6 +1014,15 @@ void GameObject::setColor(SDL_Color color)
 
 	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 	renderComponent->setColor(color);
+
+}
+
+void GameObject::setTexture(std::string textureId)
+{
+
+	const auto& texture = TextureManager::instance().getTexture(textureId);
+	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	renderComponent->setTexture(texture);
 
 }
 

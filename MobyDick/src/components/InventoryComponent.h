@@ -29,16 +29,17 @@ class InventoryComponent : public Component
 
 		bool addItem(std::shared_ptr<GameObject> gameObject, int slot);
 		bool addItem(std::shared_ptr<GameObject> gameObject);
-		bool addItem(std::string gameObjectType);
-		bool addItem(std::string gameObjectType, int slot);
+		bool addItem(std::string gameObjectType, std::string name="");
+		bool addItem(std::string gameObjectType, int slot, std::string name="");
 		bool hasItem(int slot);
 		std::optional<int> getSlot(GameObject* gameObject);
 		std::shared_ptr<GameObject> removeItem(int slot);
 		std::shared_ptr<GameObject> removeItem(GameObject* gameObject);
 		std::vector<std::optional<std::shared_ptr<GameObject>>> items() { return m_items; }
-		int activeItem() {	return m_activeItem; }
 
-		std::optional<std::shared_ptr<GameObject>> getItem(const int traitTag);
+		std::optional<std::shared_ptr<GameObject>> getFirstByType(std::string gameObjectType);
+		std::optional<std::shared_ptr<GameObject>> getFirstByTrait(const int traitTag);
+
 		int addCollectible(const CollectibleTypes, int count);
 	
 		const std::map<CollectibleTypes, int>& collectibles() { return m_collectibles; }
@@ -52,10 +53,11 @@ class InventoryComponent : public Component
 		bool isOpen() { return m_isOpen; }
 		void setOpen(bool open) { m_isOpen = open; }
 		std::optional<std::weak_ptr<GameObject>> getDisplayObject() { return m_displayObject; }
+		void setDisplayObjectColor(SDL_Color color);
+		void setDisplayObjectTexture(std::string textureId);
 
 	private:
 
-		int m_activeItem{ 0 };
 		bool m_isOpen{};
 		bool m_isAlwaysOpen{};
 		std::vector<std::optional<std::shared_ptr<GameObject>>> m_items{};
