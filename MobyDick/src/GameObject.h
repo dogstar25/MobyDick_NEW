@@ -82,6 +82,8 @@ public:
 	void setContainerStartCount(int containerStartCount);
 	void setContainerCapacity(int containerCapacity);
 	void setSize(b2Vec2 size);
+	void setSizeToWorldViewOverride();
+	bool hasSizeToWorldViewOverride();
 	void setDescription(std::string description);
 	bool intersectsWith(GameObject* gameObject);
 	void setWindowRelativePosition(PositionAlignment windowPosition, float adjustX, float adjustY);

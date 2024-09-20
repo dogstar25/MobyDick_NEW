@@ -13,8 +13,8 @@ void TakeItemAction::perform()
 		(m_parent->hasState(GameObjectState::ITEM_OBTAINABLE) && m_parent->hasState(GameObjectState::ITEM_LOOSE) == true && m_parent->isTouchingByTrait(TraitTag::player)) ||
 		(m_parent->hasState(GameObjectState::ITEM_OBTAINABLE) && m_parent->hasState(GameObjectState::ITEM_STORED_OPEN) == true && m_parent->isTouchingByTrait(TraitTag::player))) {
 		//Get the players inventory
-		const auto& player = m_parent->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
-		const auto& inventoryComponent = player.value()->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
+		const auto& player = m_parent->parentScene()->player();
+		const auto& inventoryComponent = player->getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
 		//If this item is loose then add it to the inventory and remove it from the world
 		if (m_parent->hasState(GameObjectState::ITEM_LOOSE) && m_parent->hasState(GameObjectState::ITEM_STORED_OPEN) == false) {

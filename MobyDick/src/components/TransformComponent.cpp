@@ -23,6 +23,15 @@ TransformComponent::TransformComponent(Json::Value componentJSON, GameObject* pa
 			size.y = componentJSON["size"]["height"].asFloat();
 		}
 
+		//Do we have a world display size
+		if (componentJSON.isMember("worldDisplaySizeOverride")) {
+
+			m_worldDisplaySizeOverride = b2Vec2();
+			m_worldDisplaySizeOverride->x = componentJSON["worldDisplaySizeOverride"]["width"].asFloat();
+			m_worldDisplaySizeOverride->y = componentJSON["worldDisplaySizeOverride"]["height"].asFloat();
+
+		}
+
 		m_originalTilePosition = { xMapPos , yMapPos };
 		setPosition(util::tileToPixelPlacementLocation(xMapPos, yMapPos, size.x, size.y)	);
 
@@ -147,6 +156,15 @@ void TransformComponent::setSize(float xSize, float ySize)
 {
 	m_size.x = xSize;
 	m_size.y = ySize;
+}
+
+void TransformComponent::setToWorldDisplayOverrideSize()
+{
+
+	if (m_worldDisplaySizeOverride.has_value()) {
+
+		m_size = m_worldDisplaySizeOverride.value();
+	}
 }
 
 void TransformComponent::setAngle(float angle)

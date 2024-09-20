@@ -108,9 +108,9 @@ void InterfaceComponent::update()
 	
 	if (parent()->isTouchingByTrait(TraitTag::player) ) {
 
-		const auto& playerObject = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
+		const auto& playerObject = parent()->parentScene()->player();
 
-		if (util::hasLineOfSight(playerObject.value().get(), parent())) {
+		if (util::hasLineOfSight(playerObject.get(), parent())) {
 			newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
 		}
 

@@ -1043,6 +1043,22 @@ void GameObject::setSize(b2Vec2 size)
 
 }
 
+void GameObject::setSizeToWorldViewOverride()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	transformComponent->setToWorldDisplayOverrideSize();
+
+}
+
+bool GameObject::hasSizeToWorldViewOverride()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	return transformComponent->hasWorldDisplayOverrideSize();
+
+}
+
 void GameObject::setWeaponColor(SDL_Color color)
 {
 

@@ -74,9 +74,9 @@ void SoundComponent::update()
 
 		if (itr->second.isDistanceSensitive == true) {
 
-			const auto player = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
-			if (player.has_value() && itr->second.soundChannel.has_value()) {
-				const auto playerPosition = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player).value()->getCenterPosition();
+			const auto player = parent()->parentScene()->player();
+			if (itr->second.soundChannel.has_value()) {
+				const auto playerPosition = parent()->parentScene()->player()->getCenterPosition();
 				const auto parentPosition = parent()->getCenterPosition();
 				int soundDistanceAdjustment = _calculateSoundDistanceAdjustment(playerPosition, parentPosition, itr->second.soundRange, itr->second.lineOfSightAdjustment);
 
@@ -163,7 +163,7 @@ int SoundComponent::playSound(std::string soundId)
 
 		if (m_sounds.at(soundId).isDistanceSensitive) {
 
-			const auto playerPosition = parent()->parentScene()->getGameObjectsByTrait(TraitTag::player)[0]->getCenterPosition();
+			const auto playerPosition = parent()->parentScene()->player()->getCenterPosition();
 			const auto parentPosition = parent()->getCenterPosition();
 
 			soundDistanceMagnitude = _calculateSoundDistanceAdjustment(playerPosition, parentPosition, (m_sounds.at(soundId).soundRange),
@@ -201,12 +201,12 @@ int SoundComponent::_calculateSoundDistanceAdjustment(SDL_FPoint playerPosition,
 float SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfSightAdjustment)
 {
 
-	const auto& player = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
+	const auto& player = parent()->parentScene()->player();
 	bool applyLightOfSightAdjustment{};
 	int newSoundMagnitude{ currentSoundMagnitude };
 
 	b2Vec2 begin = { parent()->getCenterPosition().x, parent()->getCenterPosition().y };
-	b2Vec2 end = { player.value()->getCenterPosition().x, player.value()->getCenterPosition().y};
+	b2Vec2 end = { player->getCenterPosition().x, player->getCenterPosition().y};
 
 	util::toBox2dPoint(begin);
 	util::toBox2dPoint(end);

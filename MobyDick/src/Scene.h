@@ -110,6 +110,7 @@ public:
 
 	//Accessor Functions
 	std::string id() {	return m_id;}
+	std::shared_ptr<GameObject> player() { return m_player; }
 	int parentSceneIndex() { return m_parentSceneIndex; }
 	b2World* physicsWorld() { return m_physicsWorld;	}
 	int inputControlMode() { return m_inputControlMode; }
@@ -166,6 +167,7 @@ private:
 	bool m_hasPhysics{};
 	SDL_FPoint m_playerOrigSpawnPoint{};
 	bool m_navigationMapChanged{};
+	std::shared_ptr<GameObject> m_player;
 
 	SceneState m_state{};
 	std::optional<std::shared_ptr<CutScene>> m_cutScene{};
