@@ -222,8 +222,14 @@ void GridDisplayComponent::render()
 			//If we are not dragging, then show the item at the size that matches the grid display slots
 			if (slot.gameObject.value().lock()->isDragging() == false) {
 
-				float slotSize = getItemSlotSize();
-				slot.gameObject.value().lock()->setSize(b2Vec2(slotSize, slotSize));
+				//Dont set the size to the slot size if this is an open inventory and the object has a 
+				//worldSize override
+				if (slot.gameObject.value().lock()->hasSizeToWorldViewOverride() == false || (slot.gameObject.value().lock()->hasSizeToWorldViewOverride() == true) &&
+					parent()->hasTrait(TraitTag::inventory_open) == false) {
+
+					float slotSize = getItemSlotSize();
+					slot.gameObject.value().lock()->setSize(b2Vec2(slotSize, slotSize));
+				}
 				
 			}
 

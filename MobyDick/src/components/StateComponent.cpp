@@ -293,28 +293,6 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::OPENED, false);
 			break;
 
-		case GameObjectState::ITEM_OBTAINABLE:
-
-			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-			break;
-
-		case GameObjectState::ITEM_STORED_ENCLOSED:
-
-			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-			break;
-
-		case GameObjectState::ITEM_STORED_OPEN:
-
-			m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
-			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-			break;
-
-		case GameObjectState::ITEM_LOOSE:
-
-			m_states.set((int)GameObjectState::ITEM_STORED_PLAYER, false);
-			m_states.set((int)GameObjectState::ITEM_STORED_ENCLOSED, false);
-			break;
-
 		case GameObjectState::WALK_LEFT:
 
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);

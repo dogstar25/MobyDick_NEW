@@ -401,10 +401,7 @@ void SceneManager::respawnPlayer()
 	}
 
 	//Get the player gameObject
-	auto playerObject = m_scenes.back().getGameObjectsByTrait(TraitTag::player);
-	assert(!playerObject.empty() && "GameObject wasnt found!");
-	//There should only be one player
-	auto player = playerObject[0];
+	auto player = m_scenes.back().player();
 
 	//Determine spawn position. Either the furthest checkpoint or the original spawn location
 	SDL_FPoint spawnLocation{};

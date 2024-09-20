@@ -364,8 +364,8 @@ void InventoryComponent::showInventory()
 
 		//This is an unfortunately needed workaround for when an inventory holder goes from disabled to enabled,
 		//the box2d isTouching doesnt get triggered unless we very slightly move the player to force refresh
-		const auto& player = parent()->parentScene()->getFirstGameObjectByTrait(TraitTag::player);
-		const auto& playerPhysics = player.value()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		const auto& player = parent()->parentScene()->player();
+		const auto& playerPhysics = player->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		playerPhysics->applyImpulse(50, {0,0});
 		playerPhysics->setLinearVelocity({0.,0.});
 

@@ -392,6 +392,12 @@ std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, 
 
 	//Add to the main gameObject lookup collection where every gameObject must live
 	m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
+
+	//If this is the player object, then store it for easy access
+	if (gameObject->hasTrait(TraitTag::player)) {
+
+		m_player = gameObject;
+	}
 	
 
 	return gameObject;

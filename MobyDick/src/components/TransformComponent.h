@@ -25,6 +25,7 @@ public:
 	void setPosition(float xPosition, float yPosition, float angle);
 	void setSize(b2Vec2 size);
 	void setSize(float xSize, float ySize);
+	void setToWorldDisplayOverrideSize();
 	void setAngle(float angle);
 	void setLine(b2Vec2 start, b2Vec2 end);
 	void setAbsolutePositioning(bool absolutePositioning);
@@ -37,6 +38,7 @@ public:
 	b2Vec2 revertToOriginalSize() { return m_size = m_originalSize; }
 	b2Vec2 originalPosition() {	return m_originalPosition; }
 	b2Vec2 originalTilePosition() { return m_originalTilePosition; }
+	bool hasWorldDisplayOverrideSize() { return m_worldDisplaySizeOverride.has_value(); }
 	float originalAngle() { return m_originalAngle; }
 	float angle() {	return m_angle;	}
 	bool absolutePositioning() { return m_absolutePositioning; }
@@ -56,6 +58,7 @@ private:
 	b2Vec2 m_size;
 	b2Vec2 m_originalTilePosition;
 	b2Vec2 m_originalPosition;
+	std::optional<b2Vec2> m_worldDisplaySizeOverride;
 	b2Vec2 m_originalSize;
 
 	bool m_absolutePositioning;
