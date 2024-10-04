@@ -220,6 +220,7 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\NavigationManager.cpp" />
     <ClCompile Include="src\actions\PlayCutSceneAction.cpp" />
     <ClCompile Include="src\actions\ProgressiveMoveByAction.cpp" />
     <ClCompile Include="src\components\EnvironmentComponent.cpp" />
@@ -336,6 +337,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\MobyDick.h" />
+    <ClInclude Include="src\NavigationManager.h" />
     <ClInclude Include="src\actions\PlayCutSceneAction.h" />
     <ClInclude Include="src\actions\ProgressiveMoveByAction.h" />
     <ClInclude Include="src\components\EnvironmentComponent.h" />

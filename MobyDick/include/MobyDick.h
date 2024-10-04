@@ -14,6 +14,7 @@
 #include <chrono>
 #include <queue>
 #include <variant>
+#include <random>
 
 
 //Vendors
@@ -128,6 +129,7 @@
 #include "../src/EnvironmentEvents/NoEvent.h"
 #include "../src/texture.h"
 #include "../src/TextureManager.h"
+#include "../src/NavigationManager.h"
 #include "../src/Timer.h"
 #include "../src/Util.h"
 

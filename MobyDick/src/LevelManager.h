@@ -109,7 +109,6 @@ private:
 	void _buildTiledLayers(Scene* scene);
 	void _buildParallax(Scene* scene);
 	void _buildLevelCage(Scene* scene);
-	void _buildNavigationMapItem(GameObject* gameObject, Scene* scene);
 	void _buildDebugGridObjects(Scene* scene);
 	void _startBackgroundMusic();
 	bool _isColorDefinedObject(SDL_Color color);

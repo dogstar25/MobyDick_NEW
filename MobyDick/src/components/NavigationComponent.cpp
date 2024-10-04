@@ -70,7 +70,7 @@ NavigationStatus NavigationComponent::navigateTo(float pixelX, float pixelY)
 	// OR
 	// this objects destination changed, then
 
-	if (parent()->parentScene()->navigationMapChanged() == true || 
+	if (game->navigationManager()->navigationMapChanged() == true ||
 		destinationChanged == true ||
 		m_solutionPath.empty() == true || 
 		m_pathRefreshTimer.hasMetTargetDuration()) {
@@ -386,7 +386,7 @@ void NavigationComponent::_addNeighbor(int x, int y, std::vector<std::shared_ptr
 bool NavigationComponent::_isValidNode(const int x, const int y) 
 {
 
-	const auto& navMap = parent()->parentScene()->navigationMap();
+	const auto& navMap = game->navigationManager()->navigationMap();
 	int xMax = navMap.size();
 	int yMax = navMap[0].size();
 	bool passable{true};
@@ -424,7 +424,7 @@ bool NavigationComponent::_isValidNode(const int x, const int y)
 
 bool NavigationComponent::_applyNavObjectSizeCheck(int x, int y, int objectCategory)
 {
-	const auto& navMap = parent()->parentScene()->navigationMap();
+	const auto& navMap = game->navigationManager()->navigationMap();
 	int xMax = navMap.size();
 	int yMax = navMap[0].size();
 	bool passable{ true };
