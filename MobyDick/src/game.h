@@ -28,6 +28,7 @@
 #include "EnvironmentEvents/EnvironmentEventFactory.h"
 #include "ContactListener.h"
 #include "gameStateManager.h"
+#include "NavigationManager.h"
 #include "ContactFilter.h"
 #include "ContextManager.h"
 #include "Renderer.h"
@@ -59,6 +60,7 @@ public:
 		std::shared_ptr<EnvironmentEventFactory>,
 		std::shared_ptr<ContextManager>, 
 		std::shared_ptr<GameStateManager>,
+		std::shared_ptr<NavigationManager>,
 		std::shared_ptr<EnumMap>, 
 		std::shared_ptr<ColorMap>
 	) = 0;
@@ -119,6 +121,10 @@ public:
 	std::shared_ptr<EnvironmentEventFactory> environmentEventFactory() {
 		return m_environmentEventFactory;
 	}
+	std::shared_ptr<NavigationManager> navigationManager() {
+		return m_navigationManager;
+	}
+
 	std::shared_ptr<EnumMap> enumMap() {
 		return m_enumMap;
 	}
@@ -149,6 +155,7 @@ protected:
 	std::shared_ptr<TriggerFactory> m_triggerFactory{};
 	std::shared_ptr<PuzzleFactory> m_puzzleFactory{};
 	std::shared_ptr<EnvironmentEventFactory> m_environmentEventFactory{};
+	std::shared_ptr<NavigationManager> m_navigationManager{};
 	std::shared_ptr<EnumMap> m_enumMap{};
 	std::shared_ptr<ColorMap> m_colorMap{};
 

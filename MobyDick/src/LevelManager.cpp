@@ -222,7 +222,7 @@ void LevelManager::loadLevel(std::string levelId, Scene* scene)
 	setLevelObjectArraySize(m_width, m_height);
 
 	//Allocate the 2 dimentional vector for the level nagigation map 2d array
-	scene->setNavigationMapArraySize(m_width, m_height);
+	game->navigationManager()->setNavigationMapArraySize(m_width, m_height);
 
 	//Loop through entire image, top to bottom, left to right and build the
 	//2 dimensional array of tile objects
@@ -760,54 +760,6 @@ bool LevelManager::_isColorDefinedObject(SDL_Color color)
 
 }
 
-void LevelManager::_buildNavigationMapItem(GameObject* gameObject, Scene* scene)
-{
-
-	NavigationMapItem navigationMapItem{};
-
-	//This is a normal wall
-	if (gameObject->hasTrait(TraitTag::impasse) || 
-		gameObject->hasTrait(TraitTag::conditional_impasse) || 
-		gameObject->hasTrait(TraitTag::complex_impasse))
-	{
-
-		//Find this objects shared_ptr so we can store the weak_ptr of it here
-		auto gameObjectSharedPtr = scene->getGameObject(gameObject->id()).value();
-		auto angle = gameObjectSharedPtr->getAngleInDegrees();
-
-		navigationMapItem.gameObject = gameObjectSharedPtr;
-
-		//If this is impasse, then it will always be so set it now so that the 
-		//the navigationComponent will work on the first pass
-		if(gameObject->hasTrait(TraitTag::impasse)){
-			navigationMapItem.passable = false;
-		}
-
-		//Add the initial navigationMapItem to the collection
-		scene->addNavigationMapItem(navigationMapItem, 
-			(int)gameObject->getOriginalTilePosition().x, 
-			(int)gameObject->getOriginalTilePosition().y);
-
-		//Assert check that certain conditional na objects have to be a 0 or 90
-		if (gameObject->hasTrait(TraitTag::conditional_impasse) || 
-			gameObject->hasTrait(TraitTag::complex_impasse)) {
-
-			assert((angle == 0 || angle == 90) && "A conditional_impasse object needs to be 0 or 90 degrees,(top to bottom or Left to right)");
-
-		}
-
-	}
-	else {
-
-		navigationMapItem.passable = true;
-		scene->addNavigationMapItem(navigationMapItem,
-			(int)gameObject->getOriginalTilePosition().x,
-			(int)gameObject->getOriginalTilePosition().y);
-
-	}
-
-}
-
 void LevelManager::_buildLevelObjects(Scene* scene)
 {
 	LevelObject* levelObject;
@@ -890,7 +842,7 @@ void LevelManager::_buildLevelObjects(Scene* scene)
 				}
 
 				//Build the navigation map item for this object
-				_buildNavigationMapItem(gameObject, scene);
+				game->navigationManager()->buildNavigationMapItem(gameObject, scene);
 
 			}
 

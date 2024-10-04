@@ -7,12 +7,9 @@
 #include "IMGui/IMGuiUtil.h"
 #include "SoundManager.h"
 #include "GameStateManager.h"
+#include "NavigationManager.h"
 #include <memory>
 #include <SDL2/SDL_ttf.h>
-
-
-
-
 
 
 Game::~Game()
@@ -35,6 +32,7 @@ bool Game::init(
 	std::shared_ptr<EnvironmentEventFactory> environmentEventFactory,
 	std::shared_ptr<ContextManager> contextManager, 
 	std::shared_ptr<GameStateManager> gameStateManager,
+	std::shared_ptr<NavigationManager> navigationManager,
 	std::shared_ptr<EnumMap> enumMap,
 	std::shared_ptr<ColorMap> colorMap
 )
@@ -52,6 +50,7 @@ bool Game::init(
 	m_iMGUIFactory = iMGuiFactory;
 	m_triggerFactory = triggerFactory;
 	m_environmentEventFactory = environmentEventFactory;
+	m_navigationManager = navigationManager;
 	m_puzzleFactory = puzzleFactory;
 	m_enumMap = enumMap;
 	m_colorMap = colorMap;

@@ -40,13 +40,6 @@ struct Parallax
 	float rate{1};
 };
 
-struct NavigationMapItem
-{
-	bool passable{ true };
-	std::optional<std::weak_ptr<GameObject>>gameObject{};
-};
-
-
 void _updatePhysics(b2World* physicsWorld);
 
 class Scene
@@ -78,7 +71,6 @@ public:
 	void addGameObjectFromPool(std::shared_ptr<GameObject> gameObject, GameLayer layer);
 
 	void addGameObjectIndex(std::shared_ptr<GameObject> gameObject);
-	void addNavigationMapItem(NavigationMapItem& navigationMapItem, int x, int y);
 	void addLevelObjective(Objective objective);
 	void addLevelTrigger(std::shared_ptr<Trigger> trigger);
 	void addKeyAction(SDL_Keycode, SceneAction);
@@ -116,9 +108,6 @@ public:
 	int inputControlMode() { return m_inputControlMode; }
 	const std::vector<Objective>& objectives() { return m_levelObjectives; }
 
-	std::vector < std::vector<NavigationMapItem>>& navigationMap() { return m_navigationMap; }
-	void setNavigationMapArraySize(int width, int height);
-
 	void setState(SceneState state) { m_state = state; }
 	SceneState state() { return m_state; }
 
@@ -146,15 +135,12 @@ public:
 	void setDebugSetting(int setting);
 	bool isDebugSetting(int setting);
 	void resetGridDisplay();
+	void showNavigationMap();
 	void updateGridDisplay(int xPos, int yPos, int operation, SDL_Color color);
 
 	void setDraggingObject(std::weak_ptr<GameObject> gameObject);
 
 	std::unordered_map<std::string, std::weak_ptr<GameObject>>& getGameObjectLookup() { return m_gameObjectLookup; }
-
-	bool navigationMapChanged() {
-		return m_navigationMapChanged;
-	}
 
 private:
 
@@ -166,7 +152,6 @@ private:
 	int m_parentSceneIndex{};
 	bool m_hasPhysics{};
 	SDL_FPoint m_playerOrigSpawnPoint{};
-	bool m_navigationMapChanged{};
 	std::shared_ptr<GameObject> m_player;
 
 	SceneState m_state{};
@@ -177,8 +162,6 @@ private:
 
 	std::unordered_map<std::string, std::weak_ptr<GameObject>> m_gameObjectLookup;
 	std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::GameLayer_COUNT> m_gameObjects;
-
-	std::vector < std::vector<NavigationMapItem>> m_navigationMap{};
 
 	std::bitset<8> m_sceneTags;
 	std::bitset<8> m_sceneDebugSettings{};
