@@ -36,6 +36,12 @@ public:
 		return m_sdlRenderer;
 	}
 
+	int setRenderTarget(Texture* targetTexture) override;
+	void resetRenderTarget() override;
+	std::shared_ptr<Texture> createEmptyTexture(int width, int height) override;
+
+
+
 private:
 	SDL_Renderer* m_sdlRenderer;
 

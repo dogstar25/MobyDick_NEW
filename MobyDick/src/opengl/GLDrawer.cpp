@@ -87,7 +87,7 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	//Set the Projection matrix uniform
 	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
-	auto projection_matrix = static_cast<GLRenderer*>(game->renderer())->projectionMatrix();
+	auto projection_matrix = static_cast<RendererGL*>(game->renderer())->projectionMatrix();
 	glUniformMatrix4fv(matrixId, 1, false, (float*)&projection_matrix);
 
 	//Initialize the texture and set the texture uniform
@@ -100,11 +100,11 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	// 1 = Any Dynamically Generated Texture
 
 	if (texture != nullptr) {
-		GLuint textureId = static_cast<GLRenderer*>(game->renderer())->getTextureId(openGLTexture->openglTextureIndex);
+		GLuint textureId = static_cast<RendererGL*>(game->renderer())->getTextureId(openGLTexture->openglTextureIndex);
 		glBindTexture(GL_TEXTURE_2D, textureId);
 
 		if (openGLTexture->openglTextureIndex == GL_TextureIndexType::DYNAMICALLY_LOADED) {
-			static_cast<GLRenderer*>(game->renderer())->prepTexture(openGLTexture);
+			static_cast<RendererGL*>(game->renderer())->prepTexture(openGLTexture);
 		}
 
 	}
@@ -141,7 +141,7 @@ void GLDrawer::draw(const std::vector<LineVertex>& lineVertices, int vertexCount
 
 	//Set the Projection matrix uniform
 	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
-	auto projection_matrix = static_cast<GLRenderer*>(game->renderer())->projectionMatrix();
+	auto projection_matrix = static_cast<RendererGL*>(game->renderer())->projectionMatrix();
 	glUniformMatrix4fv(matrixId, 1, false, (float*)&projection_matrix);
 
 	//Submit the vertices

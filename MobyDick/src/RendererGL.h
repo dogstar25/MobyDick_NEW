@@ -12,12 +12,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "GLDebugCallback.h"
-#include "GLDrawer.h"
-#include "../Renderer.h"
-#include "Vertex.h"
-#include "Shader.h"
-#include "../BaseConstants.h"
+#include "opengl/GLDebugCallback.h"
+#include "opengl/GLDrawer.h"
+#include "Renderer.h"
+#include "opengl/Vertex.h"
+#include "opengl/Shader.h"
+#include "BaseConstants.h"
 
 
 
@@ -39,7 +39,7 @@ enum class GL_TextureIndexType {
 	COUNT
 };
 
-class GLRenderer : public Renderer
+class RendererGL : public Renderer
 {
 
 	inline static constexpr int MAX_TEXTURES_IDS = 5;
@@ -49,8 +49,8 @@ class GLRenderer : public Renderer
 
 
 public:
-	GLRenderer();
-	virtual ~GLRenderer();
+	RendererGL();
+	virtual ~RendererGL();
 
 	SDL_Renderer* sdlRenderer() { return nullptr; }
 	void init(SDL_Window* window);
@@ -72,6 +72,12 @@ public:
 	}
 
 	glm::mat4  projectionMatrix() { return m_projectionMatrix; }
+
+	//new
+	int setRenderTarget(Texture* targetTexture) override;
+	void resetRenderTarget() override;
+	std::shared_ptr<Texture> createEmptyTexture(int width, int height) override;
+
 
 private:
 

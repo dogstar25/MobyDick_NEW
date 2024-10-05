@@ -1,5 +1,7 @@
 #include "RendererSDL.h"
 #include "game.h"
+#include "texture.h"
+#include <memory>
 
 extern std::unique_ptr<Game> game;
 
@@ -168,6 +170,37 @@ void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToR
 	//Set the render target back to the graphics card
 	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
 
+}
+
+int RendererSDL::setRenderTarget(Texture* targetTexture)
+{
+
+	auto result = SDL_SetRenderTarget(m_sdlRenderer, static_cast<SDLTexture*>(targetTexture)->sdlTexture);
+	return result;
+
+}
+
+void RendererSDL::resetRenderTarget()
+{
+
+	SDL_SetRenderTarget(m_sdlRenderer, NULL);
+
+}
+
+std::shared_ptr<Texture> RendererSDL::createEmptyTexture(int width, int height)
+{
+
+	std::shared_ptr<SDLTexture> texture{};
+
+	texture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
+		SDL_TEXTUREACCESS_TARGET, (int)width, (int)height);
+
+	texture->textureAtlasQuad.x = 0;
+	texture->textureAtlasQuad.y = 0;
+	texture->textureAtlasQuad.w = width;
+	texture->textureAtlasQuad.w = height;
+
+	return texture;
 }
 
 

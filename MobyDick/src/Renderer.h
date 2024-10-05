@@ -1,16 +1,19 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
 
 #include <vector>
 #include <map>
 #include <optional>
+#include <memory>
+
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <box2d/box2d.h>
 #include "imgui.h"
 #include "BaseConstants.h"
 
+
 class GameObject;
+
 
 
 struct DisplayOverlay
@@ -106,6 +109,11 @@ public:
 	virtual void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
 		bool clear = false, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID) {};
 
+	//new
+	virtual int setRenderTarget(Texture* targetTexture) = 0;
+	virtual void resetRenderTarget() = 0;
+	virtual std::shared_ptr<Texture> createEmptyTexture(int width, int height) = 0;
+
 
 protected:
 
@@ -118,4 +126,3 @@ protected:
 };
 
 
-#endif

@@ -7,8 +7,8 @@ extern std::unique_ptr<Game> game;
 LineDrawBatch::LineDrawBatch(GLShaderType shaderType)
 {
 
-	m_glDrawer = static_cast<GLRenderer*>(game->renderer())->lineDrawer();
-	m_shader = static_cast<GLRenderer*>(game->renderer())->shader(shaderType);
+	m_glDrawer = static_cast<RendererGL*>(game->renderer())->lineDrawer();
+	m_shader = static_cast<RendererGL*>(game->renderer())->shader(shaderType);
 
 }
 

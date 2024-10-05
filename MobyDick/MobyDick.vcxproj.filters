@@ -174,7 +174,7 @@
     <ClCompile Include="src\opengl\GLDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\opengl\GLRenderer.cpp">
+    <ClCompile Include="src\RendererGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\opengl\Shader.cpp">
@@ -527,7 +527,7 @@
     <ClInclude Include="src\opengl\GLDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\opengl\GLRenderer.h">
+    <ClInclude Include="src\RendererGL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\opengl\Shader.h">

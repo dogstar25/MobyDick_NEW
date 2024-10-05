@@ -18,8 +18,24 @@ LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON, 
 LightedTreatmentComponent::~LightedTreatmentComponent()
 {
 	//Destroy texture
-	SDL_DestroyTexture(m_lightCompositeTexture->sdlTexture);
-	m_lightCompositeTexture->sdlTexture = nullptr;
+	//SDL_DestroyTexture(m_lightCompositeTexture->sdlTexture);
+	//m_lightCompositeTexture->sdlTexture = nullptr;
+
+	if (m_lightCompositeTexture->surface != nullptr) {
+		SDL_FreeSurface(m_lightCompositeTexture->surface);
+		m_lightCompositeTexture->surface = nullptr;
+	}
+
+	if (GameConfig::instance().rendererType() == RendererType::SDL) {
+
+		std::shared_ptr<SDLTexture> texture = std::static_pointer_cast<SDLTexture>(m_lightCompositeTexture);
+
+		if (texture->sdlTexture != nullptr) {
+			SDL_DestroyTexture(texture->sdlTexture);
+			texture->sdlTexture = nullptr;
+		}
+	}
+
 
 }
 
@@ -31,8 +47,10 @@ void LightedTreatmentComponent::postInit()
 		(int)parent()->getSize().y);
 
 	//Make an SDL texture
-	m_lightCompositeTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
+	//m_lightCompositeTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
+	//	SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
+
+	m_lightCompositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y);
 
 }
 
@@ -82,8 +100,9 @@ void LightedTreatmentComponent::render()
 	SDL_Rect tempRect{};
 
 	//Set the target render to the composite texture for this component
-	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), m_lightCompositeTexture->sdlTexture);
-	SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
+	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), m_lightCompositeTexture->sdlTexture);
+	game->renderer()->setRenderTarget(m_lightCompositeTexture.get());
+	//SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
 	game->renderer()->clear();
 
 	//Render this object onto the composite texture
@@ -113,7 +132,8 @@ void LightedTreatmentComponent::render()
 	}
 
 	//Set the renderer to target back to the main window again
-	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+	game->renderer()->resetRenderTarget();
 
 	//Finally render the composite texture to th main scren buffer using modulate
 	renderComponent->render(m_lightCompositeTexture.get(), Colors::WHITE, RenderBlendMode::MODULATE);
