@@ -35,14 +35,13 @@ enum class GL_TextureIndexType {
 	IMGUI_TEXTURE_ATLAS,
 	DYNAMICALLY_LOADED,
 
-	LAST_INDEX,
 	COUNT
 };
 
 class RendererGL : public Renderer
 {
 
-	inline static constexpr int MAX_TEXTURES_IDS = 5;
+	inline static constexpr int MAX_TEXTURES_IDS = 8;
 	const std::vector<glm::uint> spriteindexBuffer{ 0,1,2,2,3,0 };
 	const std::vector<glm::uint> fspriteindexBuffer{ 1,0,3,3,2,1 };
 	const std::vector<glm::uint> lineindexBuffer{ 0,1};
@@ -96,7 +95,8 @@ private:
 	std::map<std::string, std::shared_ptr<DrawBatch>> m_drawBatches;
 	std::array<Shader, int(GLShaderType::count) +1> m_shaders;
 
-	GLuint m_textureIds[MAX_TEXTURES_IDS];
+	//GLuint m_textureIds[(int)GL_TextureIndexType::COUNT];
+	std::array<GLuint, static_cast<int>(GL_TextureIndexType::COUNT)> m_textureIds;
 
 	
 

@@ -47,7 +47,7 @@ void LightedTreatmentComponent::postInit()
 		(int)parent()->getSize().y);
 
 	//Make an SDL texture
-	//m_lightCompositeTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
+	//static_cast<SDLTexture*>(m_lightCompositeTexture.get())->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
 	//	SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
 
 	m_lightCompositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y);
@@ -99,8 +99,8 @@ void LightedTreatmentComponent::render()
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 	SDL_Rect tempRect{};
 
-	//Set the target render to the composite texture for this component
-	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), m_lightCompositeTexture->sdlTexture);
+	//Set the target render to the composite texture for this component static_cast<SDLTexture*>(targetTexture)->sdlTexture)
+	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), static_cast<SDLTexture*>(m_lightCompositeTexture.get())->sdlTexture);
 	game->renderer()->setRenderTarget(m_lightCompositeTexture.get());
 	//SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
 	game->renderer()->clear();

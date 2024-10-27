@@ -237,12 +237,20 @@ std::optional<SceneAction> SceneManager::pollEvents()
 			}
 			case SDL_USEREVENT:
 			{
-				int* type = static_cast<int*>(event.user.data1);
-				sceneAction = *(static_cast<std::optional<SceneAction>*>(event.user.data1));
-				delete event.user.data1;
+				// Cast `event.user.data1` directly to an optional SceneAction pointer
+				auto* actionData = static_cast<std::optional<SceneAction>*>(event.user.data1);
+
+				// Check for null to avoid undefined behavior
+				if (actionData && actionData->has_value()) {
+					// Directly copy the SceneAction from actionData into sceneAction
+					sceneAction = *actionData;
+				}
+
+				// Safely delete the dynamically allocated memory
+				delete actionData;
+				event.user.data1 = nullptr;
 
 				break;
-
 			}
 			case SDL_MOUSEBUTTONUP:
 			case SDL_MOUSEBUTTONDOWN:

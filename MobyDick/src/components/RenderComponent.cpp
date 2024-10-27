@@ -70,10 +70,6 @@ RenderComponent::RenderComponent(Json::Value componentJSON, GameObject* parent):
 
 	m_texture = TextureManager::instance().getTexture(componentJSON["textureId"].asString());
 
-	std::shared_ptr<SDLTexture> test = std::static_pointer_cast<SDLTexture>(m_texture);
-	int todd = 1;
-	
-	
 
 }
 

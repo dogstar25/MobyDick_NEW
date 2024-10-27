@@ -91,13 +91,8 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	glUniformMatrix4fv(matrixId, 1, false, (float*)&projection_matrix);
 
 	//Initialize the texture and set the texture uniform
-
 	GLuint textureArrayUniformId = glGetUniformLocation(shader.shaderProgramId(), "u_Texture");
-	glUniform1i(textureArrayUniformId, GL_TEXTURE0);
-
-	//Texture Index
-	// 0 = Texture Atlas
-	// 1 = Any Dynamically Generated Texture
+	glUniform1i(textureArrayUniformId, 0);
 
 	if (texture != nullptr) {
 		GLuint textureId = static_cast<RendererGL*>(game->renderer())->getTextureId(openGLTexture->openglTextureIndex);

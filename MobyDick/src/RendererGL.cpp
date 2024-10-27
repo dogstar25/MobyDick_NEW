@@ -77,7 +77,8 @@ void RendererGL::init(SDL_Window* window)
 	}
 	
 	//Generate the maximum number of possible texture Id's
-	glGenTextures((int)GL_TextureIndexType::COUNT, m_textureIds);
+	//glGenTextures((int)GL_TextureIndexType::COUNT, m_textureIds.data());
+	glGenTextures(static_cast<GLsizei>(m_textureIds.size()), m_textureIds.data());
 
 }
 
@@ -294,8 +295,8 @@ std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height)
 
 
 
-	//GLuint textureId;
-	//glGenTextures(1, &textureId);
+	GLuint textureId;
+	glGenTextures(1, &textureId);
 
 	texture->openglTextureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
 
@@ -438,7 +439,8 @@ void RendererGL::prepTexture(OpenGLTexture* texture)
 GLuint RendererGL::getTextureId(GL_TextureIndexType textureIndex)
 {
 
-	GLuint textureId = m_textureIds[(int)textureIndex];
+	GLuint textureId = m_textureIds.at(static_cast<size_t>(textureIndex));
+
 	return textureId;
 
 }
