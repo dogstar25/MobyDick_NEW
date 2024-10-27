@@ -276,7 +276,7 @@
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\ContactFilter.cpp" />
     <ClCompile Include="src\opengl\GLDrawer.cpp" />
-    <ClCompile Include="src\opengl\GLRenderer.cpp" />
+    <ClCompile Include="src\RendererGL.cpp" />
     <ClCompile Include="src\opengl\Shader.cpp" />
     <ClCompile Include="src\opengl\DrawBatch.cpp" />
     <ClCompile Include="src\particleEffects\ParticleEffectsFactory.cpp" />
@@ -392,7 +392,7 @@
     <ClInclude Include="src\Blueprint.h" />
     <ClInclude Include="src\BrainAABBCallback.h" />
     <ClInclude Include="src\opengl\GLDrawer.h" />
-    <ClInclude Include="src\opengl\GLRenderer.h" />
+    <ClInclude Include="src\RendererGL.h" />
     <ClInclude Include="src\opengl\Shader.h" />
     <ClInclude Include="src\opengl\DrawBatch.h" />
     <ClInclude Include="src\particleEffects\ParticleEffectsFactory.h" />

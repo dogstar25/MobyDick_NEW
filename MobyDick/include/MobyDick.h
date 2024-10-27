@@ -112,7 +112,7 @@
 #include "../src/opengl/DrawBatch.h"
 #include "../src/opengl/GLDebugCallback.h"
 #include "../src/opengl/GLDrawer.h"
-#include "../src/opengl/GLRenderer.h"
+#include "../src/RendererGL.h"
 #include "../src/opengl/LineDrawBatch.h"
 #include "../src/opengl/Shader.h"
 //#include "../src/opengl/shaderCode.h"

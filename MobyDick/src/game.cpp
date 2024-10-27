@@ -99,7 +99,7 @@ bool Game::init(
 
 	if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-		m_renderer = std::make_shared<GLRenderer>();
+		m_renderer = std::make_shared<RendererGL>();
 
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::SDL) {
@@ -251,7 +251,7 @@ void Game::_displayLoadingMsg()
 		openGLTexture->surface = tempSurface;
 
 		GL_TextureIndexType textureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
-		GLuint textureAtlasId = static_cast<GLRenderer*>(renderer())->getTextureId((GL_TextureIndexType)test);
+		GLuint textureAtlasId = static_cast<RendererGL*>(renderer())->getTextureId((GL_TextureIndexType)test);
 		glActiveTexture((int)textureIndex);
 		glBindTexture(GL_TEXTURE_2D, textureAtlasId);
 		openGLTexture->openglTextureIndex = textureIndex;

@@ -83,6 +83,7 @@ void TextureManager::loadTextures(std::string textureAtlas)
 
 	std::shared_ptr<Texture> atlasTexture;
 
+
 	//Build the render specific texture object
 	if (GameConfig::instance().rendererType() == RendererType::SDL) {
 		
@@ -99,11 +100,11 @@ void TextureManager::loadTextures(std::string textureAtlas)
 
 		GL_TextureIndexType textureIndex = (GL_TextureIndexType)atlasIdInt;
 
-		GLuint textureAtlasId = static_cast<GLRenderer*>(game->renderer())->getTextureId(textureIndex);
+		GLuint textureAtlasId = static_cast<RendererGL*>(game->renderer())->getTextureId(textureIndex);
 		glActiveTexture((int)textureIndex);
 		glBindTexture(GL_TEXTURE_2D, textureAtlasId);
 		atlasTextureGL->openglTextureIndex = textureIndex;
-		static_cast<GLRenderer*>(game->renderer())->prepTexture(atlasTextureGL.get());
+		static_cast<RendererGL*>(game->renderer())->prepTexture(atlasTextureGL.get());
 		atlasTexture = atlasTextureGL;
 
 	}

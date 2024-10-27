@@ -1,21 +1,21 @@
-#include "GLRenderer.h"
+#include "RendererGL.h"
 
 
-#include "LineDrawBatch.h"
-#include "SpriteDrawBatch.h"
-#include "../IMGui/IMGuiUtil.h"
+#include "opengl/LineDrawBatch.h"
+#include "opengl/SpriteDrawBatch.h"
+#include "IMGui/IMGuiUtil.h"
 
-#include "../game.h"
+#include "game.h"
 
 extern std::unique_ptr<Game> game;
 
-GLRenderer::GLRenderer()
+RendererGL::RendererGL()
 {
 
 
 }
 
-GLRenderer::~GLRenderer()
+RendererGL::~RendererGL()
 {
 
 	//glDeleteTextures(1, texture_id);
@@ -27,7 +27,7 @@ GLRenderer::~GLRenderer()
 }
 
 
-void GLRenderer::init(SDL_Window* window)
+void RendererGL::init(SDL_Window* window)
 {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
@@ -77,11 +77,12 @@ void GLRenderer::init(SDL_Window* window)
 	}
 	
 	//Generate the maximum number of possible texture Id's
-	glGenTextures((int)GL_TextureIndexType::COUNT, m_textureIds);
+	//glGenTextures((int)GL_TextureIndexType::COUNT, m_textureIds.data());
+	glGenTextures(static_cast<GLsizei>(m_textureIds.size()), m_textureIds.data());
 
 }
 
-bool GLRenderer::clear()
+bool RendererGL::clear()
 {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -89,7 +90,7 @@ bool GLRenderer::clear()
 	return true;
 }
 
-void GLRenderer::drawBatches()
+void RendererGL::drawBatches()
 {
 
 	//Draw each batch if batching is turned on
@@ -105,7 +106,7 @@ void GLRenderer::drawBatches()
 
 }
 
-bool GLRenderer::present()
+bool RendererGL::present()
 {
 
 	SDL_GL_SwapWindow(game->window());
@@ -114,7 +115,7 @@ bool GLRenderer::present()
 	return true;
 }
 
-void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
+void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle,
 	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride)
 {
 
@@ -225,7 +226,7 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		_addVertexBufferToBatch(spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
 	}
 	else {
-		Shader& shader = static_cast<GLRenderer*>(game->renderer())->shader(shadertype);
+		Shader& shader = static_cast<RendererGL*>(game->renderer())->shader(shadertype);
 		m_spriteDrawer.draw(spriteVertexBuffer, spriteindexBuffer, shader, texture, textureBlendMode);
 
 	}
@@ -239,7 +240,7 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 }
 
-void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer)
+void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer)
 {
 
 	glm::vec4 normalizedcolor = util::glNormalizeColor(color);
@@ -272,13 +273,70 @@ void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, 
 		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype, layer);
 	}
 	else {
-		Shader shader = static_cast<GLRenderer*>(game->renderer())->shader(shadertype);
+		Shader shader = static_cast<RendererGL*>(game->renderer())->shader(shadertype);
 		m_lineDrawer.draw(lineVertexBuffer, 2, shader);
 	}
 
 }
 
-void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, 
+void RendererGL::resetRenderTarget() 
+{
+	// Unbind the framebuffer (go back to the default framebuffer, i.e., the screen)
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Reset viewport to the window size
+	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
+}
+
+std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height)
+{
+
+	std::shared_ptr<OpenGLTexture> texture = std::make_shared<OpenGLTexture>();
+
+
+
+	GLuint textureId;
+	glGenTextures(1, &textureId);
+
+	texture->openglTextureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
+
+
+	texture->textureAtlasQuad.x = 0;
+	texture->textureAtlasQuad.y = 0;
+	texture->textureAtlasQuad.w = width;
+	texture->textureAtlasQuad.h = height;
+
+	return texture;
+}
+
+
+int RendererGL::setRenderTarget(Texture* targetTexture)
+{
+	GLuint fbo;
+	glGenFramebuffers(1, &fbo);
+
+	// Bind the framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	OpenGLTexture* openGLTexture = static_cast<OpenGLTexture*>(targetTexture);
+	GLuint textureId = static_cast<RendererGL*>(game->renderer())->getTextureId(openGLTexture->openglTextureIndex);
+
+	// Attach the target texture to the FBO
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+
+	// Check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "Error: Framebuffer is not complete!" << std::endl;
+		return -1;
+	}
+
+	// Set the viewport to the size of the target texture
+	glViewport(0, 0, targetTexture->textureAtlasQuad.w, targetTexture->textureAtlasQuad.h);
+
+	return 0;
+}
+
+void RendererGL::_addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture,
 	GLShaderType shaderType, RenderBlendMode textureBlendMode, int layer)
 {
 
@@ -314,7 +372,7 @@ void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& sprite
 }
 
 
-void GLRenderer::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer)
+void RendererGL::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer)
 {
 
 	std::stringstream keyString;
@@ -340,7 +398,7 @@ void GLRenderer::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVert
 }
 
 
-void GLRenderer::prepTexture(OpenGLTexture* texture)
+void RendererGL::prepTexture(OpenGLTexture* texture)
 {
 
 	SDL_Surface* surf = texture->surface;
@@ -378,15 +436,16 @@ void GLRenderer::prepTexture(OpenGLTexture* texture)
 	return;
 }
 
-GLuint GLRenderer::getTextureId(GL_TextureIndexType textureIndex)
+GLuint RendererGL::getTextureId(GL_TextureIndexType textureIndex)
 {
 
-	GLuint textureId = m_textureIds[(int)textureIndex];
+	GLuint textureId = m_textureIds.at(static_cast<size_t>(textureIndex));
+
 	return textureId;
 
 }
 
-void GLRenderer::renderPrimitives(int layerIndex)
+void RendererGL::renderPrimitives(int layerIndex)
 {
 
 	for (auto& line : m_primitiveLines) {

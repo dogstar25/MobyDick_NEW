@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 #include <glad/glad.h>
-#include "opengl/GLRenderer.h"
+#include "RendererGL.h"
 
 class Texture
 {

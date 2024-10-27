@@ -1,7 +1,7 @@
 #include "EnumMap.h"
 #include "hud/HudItemFactory.h"
 #include "Renderer.h"
-#include "opengl/GLRenderer.h"
+#include "RendererGL.h"
 #include "components/PhysicsComponent.h"
 #include "ContextManager.h"
 

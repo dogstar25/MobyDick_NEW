@@ -12,12 +12,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "GLDebugCallback.h"
-#include "GLDrawer.h"
-#include "../Renderer.h"
-#include "Vertex.h"
-#include "Shader.h"
-#include "../BaseConstants.h"
+#include "opengl/GLDebugCallback.h"
+#include "opengl/GLDrawer.h"
+#include "Renderer.h"
+#include "opengl/Vertex.h"
+#include "opengl/Shader.h"
+#include "BaseConstants.h"
 
 
 
@@ -35,22 +35,21 @@ enum class GL_TextureIndexType {
 	IMGUI_TEXTURE_ATLAS,
 	DYNAMICALLY_LOADED,
 
-	LAST_INDEX,
 	COUNT
 };
 
-class GLRenderer : public Renderer
+class RendererGL : public Renderer
 {
 
-	inline static constexpr int MAX_TEXTURES_IDS = 5;
+	inline static constexpr int MAX_TEXTURES_IDS = 8;
 	const std::vector<glm::uint> spriteindexBuffer{ 0,1,2,2,3,0 };
 	const std::vector<glm::uint> fspriteindexBuffer{ 1,0,3,3,2,1 };
 	const std::vector<glm::uint> lineindexBuffer{ 0,1};
 
 
 public:
-	GLRenderer();
-	virtual ~GLRenderer();
+	RendererGL();
+	virtual ~RendererGL();
 
 	SDL_Renderer* sdlRenderer() { return nullptr; }
 	void init(SDL_Window* window);
@@ -73,6 +72,12 @@ public:
 
 	glm::mat4  projectionMatrix() { return m_projectionMatrix; }
 
+	//new
+	int setRenderTarget(Texture* targetTexture) override;
+	void resetRenderTarget() override;
+	std::shared_ptr<Texture> createEmptyTexture(int width, int height) override;
+
+
 private:
 
 	void _addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, GLShaderType shaderType,
@@ -90,7 +95,8 @@ private:
 	std::map<std::string, std::shared_ptr<DrawBatch>> m_drawBatches;
 	std::array<Shader, int(GLShaderType::count) +1> m_shaders;
 
-	GLuint m_textureIds[MAX_TEXTURES_IDS];
+	//GLuint m_textureIds[(int)GL_TextureIndexType::COUNT];
+	std::array<GLuint, static_cast<int>(GL_TextureIndexType::COUNT)> m_textureIds;
 
 	
 
