@@ -33,6 +33,17 @@ TextureManager::~TextureManager()
 					texture->sdlTexture = nullptr;
 				}
 			}
+
+			if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
+
+				std::shared_ptr<OpenGLTexture> texture = std::static_pointer_cast<OpenGLTexture>(textureItem.second);
+
+				if (texture->fbo != 0) {
+					glDeleteFramebuffers(1, &texture->fbo);
+				}
+
+			}
+
 		}
 	}
 
@@ -75,14 +86,9 @@ void TextureManager::loadTextures(std::string textureAtlas)
 
 	assert(ifs.fail() == false && "Opening TextureAsset file failed!!");
 
-	std::string atlasIdStr = textureAtlas.substr(textureAtlas.size() - 2);
-	int atlasIdInt = std::stoi(atlasIdStr);
-	atlasIdStr = "ATLAS_" + atlasIdStr;
-
 	ifs >> root;
 
 	std::shared_ptr<Texture> atlasTexture;
-
 
 	//Build the render specific texture object
 	if (GameConfig::instance().rendererType() == RendererType::SDL) {
@@ -98,19 +104,19 @@ void TextureManager::loadTextures(std::string textureAtlas)
 		std::shared_ptr<OpenGLTexture> atlasTextureGL = std::make_shared<OpenGLTexture>();
 		atlasTextureGL->surface = IMG_Load(atlasImagefilename.c_str());
 
-		GL_TextureIndexType textureIndex = (GL_TextureIndexType)atlasIdInt;
+		GLuint textureId;
+		glGenTextures(1, &textureId);
 
-		GLuint textureAtlasId = static_cast<RendererGL*>(game->renderer())->getTextureId(textureIndex);
-		glActiveTexture((int)textureIndex);
-		glBindTexture(GL_TEXTURE_2D, textureAtlasId);
-		atlasTextureGL->openglTextureIndex = textureIndex;
+		atlasTextureGL->textureId = textureId;
+		glActiveTexture(textureId);
+		glBindTexture(GL_TEXTURE_2D, textureId);
 		static_cast<RendererGL*>(game->renderer())->prepTexture(atlasTextureGL.get());
 		atlasTexture = atlasTextureGL;
 
 	}
 
 	//Store the atlas texture
-	m_textureAtlasMap.emplace(atlasIdStr, atlasTexture);
+	m_textureAtlasMap.emplace(textureAtlas, atlasTexture);
 
 	std::shared_ptr<Texture> texture{};
 
@@ -120,15 +126,15 @@ void TextureManager::loadTextures(std::string textureAtlas)
 		if (GameConfig::instance().rendererType() == RendererType::SDL) {
 
 			std::shared_ptr<SDLTexture> textureSDL = std::make_shared<SDLTexture>();
-			textureSDL->sdlTexture = std::static_pointer_cast<SDLTexture>(m_textureAtlasMap[atlasIdStr])->sdlTexture;
+			textureSDL->sdlTexture = std::static_pointer_cast<SDLTexture>(m_textureAtlasMap[textureAtlas])->sdlTexture;
 			texture = textureSDL;
 
 		}
 		else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-			std::shared_ptr<OpenGLTexture> atlasTextureGL = std::make_shared<OpenGLTexture>();
-			atlasTextureGL->openglTextureIndex = std::static_pointer_cast<OpenGLTexture>(m_textureAtlasMap[atlasIdStr])->openglTextureIndex;
-			texture = atlasTextureGL;
+			std::shared_ptr<OpenGLTexture> textureGL = std::make_shared<OpenGLTexture>();
+			textureGL->textureId = std::static_pointer_cast<OpenGLTexture>(m_textureAtlasMap[textureAtlas])->textureId;
+			texture = textureGL;
 
 		}
 
@@ -145,7 +151,7 @@ void TextureManager::loadTextures(std::string textureAtlas)
 		auto textureId = itr["id"].asString();
 
 		//surface
-		texture->surface = m_textureAtlasMap[atlasIdStr]->surface;
+		texture->surface = m_textureAtlasMap[textureAtlas]->surface;
 
 		m_textureMap.emplace(textureId, texture);
 

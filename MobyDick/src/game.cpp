@@ -235,9 +235,9 @@ void Game::_displayLoadingMsg()
 	if (GameConfig::instance().rendererType() == RendererType::SDL) {
 
 		std::shared_ptr<SDLTexture> sdlTexture = std::make_shared<SDLTexture>();
-		sdlTexture->surface = tempSurface;
 
 		sdlTexture->sdlTexture = SDL_CreateTextureFromSurface(m_renderer->sdlRenderer(), tempSurface);
+		texture->surface = tempSurface;
 		texture = sdlTexture;
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
@@ -248,26 +248,30 @@ void Game::_displayLoadingMsg()
 		/////
 
 		std::shared_ptr<OpenGLTexture> openGLTexture = std::make_shared<OpenGLTexture>();
-		openGLTexture->surface = tempSurface;
 
-		GL_TextureIndexType textureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
-		GLuint textureAtlasId = static_cast<RendererGL*>(renderer())->getTextureId((GL_TextureIndexType)test);
-		glActiveTexture((int)textureIndex);
-		glBindTexture(GL_TEXTURE_2D, textureAtlasId);
-		openGLTexture->openglTextureIndex = textureIndex;
+		GLuint textureId;
+		glGenTextures(1, &textureId);
+		openGLTexture->textureId = textureId;
+		glBindTexture(GL_TEXTURE_2D, openGLTexture->textureId);
+
+		SDL_Surface* formattedSurface = SDL_ConvertSurfaceFormat(tempSurface, SDL_PIXELFORMAT_ABGR8888, 0);
+		openGLTexture->surface = formattedSurface;
+		static_cast<RendererGL*>(renderer())->prepTexture(openGLTexture.get());
+
 		texture = openGLTexture;
+
+		//texture = renderer()->createEmptyTexture(tempSurface->w, tempSurface->h);
 	}
 
-	SDL_Rect quad = { 0 , 0, tempSurface->w, tempSurface->h };
+	SDL_Rect quad = { 0 , 0, texture->surface->w, texture->surface->h };
 
 	texture->textureAtlasQuad = std::move(quad);
-	texture->surface = tempSurface;
 
 	TTF_CloseFont(m_fontObject);
 	SDL_FRect dest = {
 		m_gameScreenResolution.x / (float)2 - (float)100,
 		m_gameScreenResolution.y / (float)2 - (float)42,
-		(float)tempSurface->w, (float)tempSurface->h };
+		(float)texture->surface->w, (float)texture->surface->h };
 
 	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, texture.get(), &texture->textureAtlasQuad, 0, false, SDL_Color{},
 		RenderBlendMode::BLEND);

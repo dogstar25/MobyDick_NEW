@@ -78,16 +78,3 @@ private:
 
 
 };
-
-
-// Serialization and Deserialization
-namespace Json {
-
-	template<>
-	void serialize<RenderComponent>(Json::Value& value, RenderComponent& o);
-
-	template<>
-	void deserialize<RenderComponent>(Json::Value& value, RenderComponent& o);
-}
-
-

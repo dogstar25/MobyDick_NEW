@@ -87,22 +87,17 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	//Set the Projection matrix uniform
 	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
-	auto projection_matrix = static_cast<RendererGL*>(game->renderer())->projectionMatrix();
+
+	glm::mat4 projection_matrix = static_cast<RendererGL*>(game->renderer())->projectionMatrix();
+
 	glUniformMatrix4fv(matrixId, 1, false, (float*)&projection_matrix);
 
 	//Initialize the texture and set the texture uniform
 	GLuint textureArrayUniformId = glGetUniformLocation(shader.shaderProgramId(), "u_Texture");
 	glUniform1i(textureArrayUniformId, 0);
 
-	if (texture != nullptr) {
-		GLuint textureId = static_cast<RendererGL*>(game->renderer())->getTextureId(openGLTexture->openglTextureIndex);
-		glBindTexture(GL_TEXTURE_2D, textureId);
-
-		if (openGLTexture->openglTextureIndex == GL_TextureIndexType::DYNAMICALLY_LOADED) {
-			static_cast<RendererGL*>(game->renderer())->prepTexture(openGLTexture);
-		}
-
-	}
+	GLuint textureId = static_cast<OpenGLTexture*>(texture)->textureId;
+	glBindTexture(GL_TEXTURE_2D, textureId);
 
 	//Submit the vertices
 	auto bufferSize = spriteVertices.size() * sizeof(SpriteVertex);
@@ -115,6 +110,11 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	glDrawElements(GL_TRIANGLES, (GLsizei)spriteVertexIndexes.size(), GL_UNSIGNED_INT, 0);
 
+	// Unbind resources to prevent unintended state changes
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void GLDrawer::draw(const std::vector<LineVertex>& lineVertices, int vertexCount, Shader& shader)
