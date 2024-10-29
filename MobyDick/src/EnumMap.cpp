@@ -202,7 +202,6 @@ EnumMap::EnumMap()
 	m_enumMap["GameLayer::ABSTRACT"] = GameLayer::ABSTRACT;
 	m_enumMap["GameLayer::GRID_DISPLAY"] = GameLayer::GRID_DISPLAY;
 
-
 	//Game Object Display Modes
 	m_enumMap["DISPLAY_UI_MODE_STANDARD"] = DISPLAY_UI_MODE_STANDARD;
 	m_enumMap["DISPLAY_UI_MODE_ONHOVER"] = DISPLAY_UI_MODE_ONHOVER;
@@ -211,28 +210,6 @@ EnumMap::EnumMap()
 	//Particle Emitter types
 	m_enumMap["ParticleEmitterType::ONETIME"] = ParticleEmitterType::ONETIME;
 	m_enumMap["ParticleEmitterType::CONTINUOUS"] = ParticleEmitterType::CONTINUOUS;
-
-	//OpenGL Texture Index values
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_0;
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_1;
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_2;
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_3;
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_4;
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_5"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_5;
-	m_enumMap["GL_TextureIndexType::MAIN_TEXTURE_ATLAS_6"] = (int)GL_TextureIndexType::MAIN_TEXTURE_ATLAS_6;
-	m_enumMap["GL_TextureIndexType::IMGUI_TEXTURE_ATLAS"] = (int)GL_TextureIndexType::IMGUI_TEXTURE_ATLAS;
-	
-	//Texure Blend Modes
-	//m_enumMap["SDL_BLENDMODE_BLEND"] = SDL_BLENDMODE_BLEND;
-	//m_enumMap["SDL_BLENDMODE_ADD"] = SDL_BLENDMODE_ADD;
-	//m_enumMap["SDL_BLENDMODE_NONE"] = SDL_BLENDMODE_NONE;
-
-	//GameObject Types
-	//m_enumMap["GameObjectType::ABSTRACT"] = GameObjectType::ABSTRACT;
-	//m_enumMap["GameObjectType::SPRITE"] = GameObjectType::SPRITE;
-	//m_enumMap["GameObjectType::LINE"] = GameObjectType::LINE;
-	//m_enumMap["GameObjectType::POINT"] = GameObjectType::POINT;
-	//m_enumMap["GameObjectType::RECTANGLE"] = GameObjectType::RECTANGLE;
 
 	//GameObject Trait Tags
 	m_enumMap["player"] = TraitTag::player;

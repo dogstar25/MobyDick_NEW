@@ -22,7 +22,8 @@ class SDLTexture : public Texture
 class OpenGLTexture : public Texture
 {
 	public:
-		GL_TextureIndexType openglTextureIndex{};
+		GLuint textureId{};
+		GLuint fbo{};//frame buffer - used only if this texture is used as a target to render to
 };
 
 

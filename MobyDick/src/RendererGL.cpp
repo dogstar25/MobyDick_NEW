@@ -76,10 +76,6 @@ void RendererGL::init(SDL_Window* window)
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 	
-	//Generate the maximum number of possible texture Id's
-	//glGenTextures((int)GL_TextureIndexType::COUNT, m_textureIds.data());
-	glGenTextures(static_cast<GLsizei>(m_textureIds.size()), m_textureIds.data());
-
 }
 
 bool RendererGL::clear()
@@ -162,7 +158,6 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		x3 = 0;
 		x4 = glSize.x;
 	}
-
 
 	SpriteVertex vertex;
 	//v0
@@ -284,6 +279,9 @@ void RendererGL::resetRenderTarget()
 	// Unbind the framebuffer (go back to the default framebuffer, i.e., the screen)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	//Reset projection Matrix
+	m_projectionMatrix = glm::ortho(0.0f, (float)game->gameScreenResolution().x, (float)game->gameScreenResolution().y, 0.0f, 0.0f, 10.0f);
+
 	// Reset viewport to the window size
 	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
 }
@@ -293,18 +291,44 @@ std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height)
 
 	std::shared_ptr<OpenGLTexture> texture = std::make_shared<OpenGLTexture>();
 
-
-
 	GLuint textureId;
 	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId); // Bind it so that subsequent texture functions apply to it
 
-	texture->openglTextureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
-
+	texture->textureId = textureId;
 
 	texture->textureAtlasQuad.x = 0;
 	texture->textureAtlasQuad.y = 0;
 	texture->textureAtlasQuad.w = width;
 	texture->textureAtlasQuad.h = height;
+
+	texture->surface= SDL_CreateRGBSurface(0, width, height, 32,
+		0x00FF0000, // Red mask
+		0x0000FF00, // Green mask
+		0x000000FF, // Blue mask
+		0xFF000000  // Alpha mask
+	);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->surface->pixels);
+
+	static_cast<RendererGL*>(game->renderer())->prepTexture(texture.get());
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Generate and bind the framebuffer only once
+	glGenFramebuffers(1, &texture->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, texture->fbo);
+
+	// Cast texture and attach it to the framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->textureId, 0);
+
+	// Check for framebuffer completeness
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "Error: Framebuffer is not complete!" << std::endl;
+	}
+
+	// Unbind framebuffer to reset to default
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return texture;
 }
@@ -312,23 +336,13 @@ std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height)
 
 int RendererGL::setRenderTarget(Texture* targetTexture)
 {
-	GLuint fbo;
-	glGenFramebuffers(1, &fbo);
-
 	// Bind the framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, static_cast<OpenGLTexture*>(targetTexture)->fbo);
 
-	OpenGLTexture* openGLTexture = static_cast<OpenGLTexture*>(targetTexture);
-	GLuint textureId = static_cast<RendererGL*>(game->renderer())->getTextureId(openGLTexture->openglTextureIndex);
-
-	// Attach the target texture to the FBO
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
-
-	// Check if framebuffer is complete
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "Error: Framebuffer is not complete!" << std::endl;
-		return -1;
-	}
+	//set projection matrix size to match the render target
+	//The vertical size is the oppositte of the normal projection matrix when rendering to a texture
+	m_projectionMatrix = glm::ortho(0.0f, (float)static_cast<OpenGLTexture*>(targetTexture)->textureAtlasQuad.w, 
+		0.0f, (float)static_cast<OpenGLTexture*>(targetTexture)->textureAtlasQuad.h, 0.0f, 1.0f);
 
 	// Set the viewport to the size of the target texture
 	glViewport(0, 0, targetTexture->textureAtlasQuad.w, targetTexture->textureAtlasQuad.h);
@@ -394,12 +408,11 @@ void RendererGL::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVert
 
 	}
 
-
 }
-
 
 void RendererGL::prepTexture(OpenGLTexture* texture)
 {
+
 
 	SDL_Surface* surf = texture->surface;
 	GLenum texture_format{ GL_RGB };
@@ -434,15 +447,6 @@ void RendererGL::prepTexture(OpenGLTexture* texture)
 	glTexImage2D(GL_TEXTURE_2D, 0, texture_format, surf->w, surf->h, 0, texture_format, GL_UNSIGNED_BYTE, surf->pixels);
 
 	return;
-}
-
-GLuint RendererGL::getTextureId(GL_TextureIndexType textureIndex)
-{
-
-	GLuint textureId = m_textureIds.at(static_cast<size_t>(textureIndex));
-
-	return textureId;
-
 }
 
 void RendererGL::renderPrimitives(int layerIndex)

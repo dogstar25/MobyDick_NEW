@@ -391,24 +391,3 @@ void RenderComponent::removeDisplayOverlay()
 {
 	m_displayOverlay.reset();
 }
-
-
-// Serialization and Deserialization
-namespace Json {
-
-	template<>
-	void serialize<RenderComponent>(Json::Value& value, RenderComponent& o) {
-
-		Json::Value baseComponentValue;
-		Json::serialize(baseComponentValue, static_cast<const Component&>(o));
-		value["component"] = baseComponentValue;
-
-	}
-
-	template<>
-	void deserialize<RenderComponent>(Json::Value& value, RenderComponent& o) {
-
-		const Json::Value& actionsArray = value["actions"];
-
-	}
-}
