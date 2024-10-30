@@ -42,8 +42,11 @@ void RendererGL::init(SDL_Window* window)
 
 	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-
 	SDL_GLContext m_glcontext = SDL_GL_CreateContext(window);
+
+	if (SDL_GL_SetSwapInterval(0) != 0) {
+		std::cerr << "Warning: Unable to disable VSync. " << SDL_GetError() << std::endl;
+	}
 
 	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
 	{
@@ -76,6 +79,12 @@ void RendererGL::init(SDL_Window* window)
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 	
+}
+
+void RendererGL::setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+
+	glClearColor(static_cast<GLfloat>(r), static_cast<GLfloat>(g), static_cast<GLfloat>(b), static_cast<GLfloat>(a));
 }
 
 bool RendererGL::clear()
@@ -112,7 +121,7 @@ bool RendererGL::present()
 }
 
 void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle,
-	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride)
+	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
 {
 
 	auto normalizedcolor = util::glNormalizeColor(color);

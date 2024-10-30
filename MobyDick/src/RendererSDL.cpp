@@ -14,7 +14,7 @@ void RendererSDL::init(SDL_Window* window)
 {
 	//SDL_SetHint(SDL_HINT_RENDER_DRIVER, "openGL");
 	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
-	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 	
 
@@ -29,6 +29,13 @@ bool RendererSDL::present()
 	SDL_SetRenderDrawColor(m_sdlRenderer, 0, 0, 0, 255);
 
 	return true;
+}
+
+void RendererSDL::setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+
+	SDL_SetRenderDrawColor(m_sdlRenderer, r, g, b, a);
+
 }
 
 bool RendererSDL::clear()
@@ -67,7 +74,7 @@ void RendererSDL::drawPoints(SDL_FPoint* points, SDL_Color color)
 
 
 void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeOverride)
+	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
 {
 
 	SDLTexture* sdlTexture = static_cast<SDLTexture*>(texture);
@@ -84,8 +91,18 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 	else if (textureBlendMode == RenderBlendMode::MODULATE) {
 		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_MOD);
 	}
-	else if (textureBlendMode == RenderBlendMode::CUSTOM) {
-		int customReturn = SDL_SetTextureBlendMode(sdlTexture->sdlTexture, sdlBlendModeOverride);
+	else if (textureBlendMode == RenderBlendMode::CUSTOM_1_MASKED_OVERLAY) {
+
+		SDL_BlendMode maskedOverlayBlendMode =
+			SDL_ComposeCustomBlendMode(
+				SDL_BLENDFACTOR_ZERO,
+				SDL_BLENDFACTOR_ZERO,
+				SDL_BLENDOPERATION_MAXIMUM,
+				SDL_BLENDFACTOR_ZERO,
+				SDL_BLENDFACTOR_ZERO,
+				SDL_BLENDOPERATION_MINIMUM);
+
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, maskedOverlayBlendMode);
 	}
 	else{
 		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_NONE);
@@ -134,6 +151,7 @@ void RendererSDL::renderPrimitives(int layerIndex)
 
 }
 
+[[deprecated("Use the setRenderTarget() and resetRenderTarget() functions instead")]]
 void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
 	bool clear, SDL_BlendMode customBlendMode)
 {
@@ -163,7 +181,7 @@ void RendererSDL::renderToTexture(Texture* destTexture, GameObject* gameObectToR
 		SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
 
 		game->renderer()->drawSprite(gameObectToRender->layer(), destQuad, color, renderComponent->getRenderTexture().get(),
-			textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
+			textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode);
 
 	}
 

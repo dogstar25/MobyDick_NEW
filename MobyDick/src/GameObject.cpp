@@ -410,7 +410,7 @@ void GameObject::render()
 			getComponent<GridDisplayComponent>(ComponentTypes::GRID_DISPLAY_COMPONENT)->render();
 		}
 
-		//If you have a Light treatment component, then render it
+		////If you have a Light treatment component, then render it
 		if (hasComponent(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)) {
 
 			getComponent<LightedTreatmentComponent>(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)->render();
