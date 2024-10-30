@@ -62,7 +62,7 @@ enum class RenderBlendMode {
 	MULTIPLY,
 	MODULATE,
 	NONE,
-	CUSTOM
+	CUSTOM_1_MASKED_OVERLAY
 
 };
 
@@ -94,8 +94,9 @@ public:
 	virtual void init(SDL_Window* window) = 0;;
 	virtual bool present() = 0;
 	virtual bool clear() = 0;
+	virtual void setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)=0;
 	virtual void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride= SDL_BLENDMODE_INVALID) = 0;
+		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) = 0;
 	virtual void renderPrimitives(int layerIndex) = 0;
 
 	void addLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color);

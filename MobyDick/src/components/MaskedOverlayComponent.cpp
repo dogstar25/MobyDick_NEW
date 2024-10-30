@@ -19,23 +19,17 @@ MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, GameOb
 		m_maskObjectNames.push_back(objectItr.asString());
 	}
 
-	m_compositeTexture = std::make_shared<SDLTexture>();
-	m_tempTexture = std::make_shared<SDLTexture>();
-
 }
 
 void MaskedOverlayComponent::postInit()
 {
 
-	//this is very important for textures that get created on the fly
-	//The textureatlasQuad has to be set to the right size.
-	//See if there's a better solution to this. need a mobyDick create texture function
+	m_compositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y);
+
 	m_compositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
 		(int)parent()->getSize().x,
 		(int)parent()->getSize().y);
 
-	m_compositeTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
 
 	//Go and find the mask objects to be added to this component.
 	//These are masks that are already created like the player mask
@@ -104,72 +98,34 @@ std::optional<std::shared_ptr<GameObject>> MaskedOverlayComponent::getOverlayObj
 void MaskedOverlayComponent::render()
 {
 
-	///////////////////////TEMP FOR BLEND DEBUGGING////////////////////////////////////////
-
-	static SDL_BlendFactor srcColorFactor = SDL_BLENDFACTOR_DST_COLOR;
-	static SDL_BlendFactor dstColorFactor = SDL_BLENDFACTOR_DST_COLOR;
-	static SDL_BlendOperation colorOperation = SDL_BLENDOPERATION_ADD;
-	static SDL_BlendFactor srcAlphaFactor = SDL_BLENDFACTOR_DST_COLOR;
-	static SDL_BlendFactor dstAlphaFactor = SDL_BLENDFACTOR_DST_COLOR;
-	static SDL_BlendOperation alphaOperation = SDL_BLENDOPERATION_ADD;
-
-	const SDL_BlendFactor items[] = { SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE };
-	ImGui::SetNextWindowPos(ImVec2(100, 500));
-	ImGui::Begin("blending");
-
-		ImGui::InputInt("srcColorFactor", (int*) & srcColorFactor);
-		ImGui::InputInt("dstColorFactor", (int*)&dstColorFactor);
-		ImGui::InputInt("colorOperation", (int*)&colorOperation);
-		ImGui::InputInt("srcAlphaFactor", (int*)&srcAlphaFactor);
-		ImGui::InputInt("dstAlphaFactor", (int*)&dstAlphaFactor);
-		ImGui::InputInt("alphaOperation", (int*)&alphaOperation);
-
-	ImGui::End();
-
-	SDL_BlendMode customBlendMode = SDL_ComposeCustomBlendMode(
-		srcColorFactor,
-		dstColorFactor,
-		colorOperation,
-		srcAlphaFactor,
-		dstAlphaFactor,
-		alphaOperation);
-
-	////////////////////////////////////////////////////////////////////////////////////
-
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
-	//Best Mask blending for mask object to display house gradiently is
-	//SDL_BlendMode customBlendModeFinal =
-	//	SDL_ComposeCustomBlendMode(
-	//		SDL_BLENDFACTOR_ZERO,
-	//		SDL_BLENDFACTOR_ZERO,
-	//		SDL_BLENDOPERATION_ADD,
-	//		SDL_BLENDFACTOR_ZERO,
-	//		SDL_BLENDFACTOR_ZERO,
-	//		SDL_BLENDOPERATION_SUBTRACT);
-
-	SDL_BlendMode customBlendModeFinal =
-		SDL_ComposeCustomBlendMode(
-			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDOPERATION_MAXIMUM,
-			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDFACTOR_ZERO,
-			SDL_BLENDOPERATION_MINIMUM);
+	//Set the target render to the composite texture for this component static_cast<SDLTexture*>(targetTexture)->sdlTexture)
+	game->renderer()->setRenderTarget(m_compositeTexture.get());
+	game->renderer()->clear();
 
 	//Render the overlay objects to the composite texture
 	bool first = true;
 	for (auto& overlayObject : m_overlayObjects) {
 
-		bool clear = first;
-		
-		//Only clear on the first one
-		if (overlayObject->hasState(GameObjectState::DISABLED_RENDER) == false) {
+		SDL_FPoint position { 0.,0. };
 
+		if (first) {
 			first = false;
-			game->renderer()->renderToTexture(m_compositeTexture.get(), overlayObject.get(), { 0.,0. }, RenderBlendMode::BLEND, clear);
-
+			game->renderer()->setClearColor(0,0,0,0);
+			game->renderer()->clear();
 		}
+
+		if (overlayObject->hasComponent(ComponentTypes::PARTICLE_COMPONENT)) {
+
+			const auto& particleComponent = overlayObject->getComponent<ParticleComponent>(ComponentTypes::PARTICLE_COMPONENT);
+			particleComponent->render();
+		}
+		else {
+			overlayObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(position, RenderBlendMode::BLEND);
+		}
+
+		
 	}
 
 	//Render the mask objects to the composite texture
@@ -182,13 +138,17 @@ void MaskedOverlayComponent::render()
 
 			SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
 
-			game->renderer()->renderToTexture(m_compositeTexture.get(), maskObject.get(), newPosition, RenderBlendMode::CUSTOM, false, customBlendModeFinal);
+			maskObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(newPosition, RenderBlendMode::CUSTOM_1_MASKED_OVERLAY);
+
 		}
 
 	}
 
+	//Reset the reder target to the screen
+	game->renderer()->resetRenderTarget();
+
 	//Finally render the composite texture
-	renderComponent->render(m_compositeTexture.get(), Colors::WHITE, RenderBlendMode::BLEND);
+	renderComponent->render(m_compositeTexture.get(), RenderBlendMode::BLEND);
 
 	///////////////////////////////////////////
 	//NOTE: when rendering to a texture OR rendering a specific texture passed in as an argument

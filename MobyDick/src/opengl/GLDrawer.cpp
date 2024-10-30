@@ -74,6 +74,12 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	else if (textureBlendMode == RenderBlendMode::MODULATE) {
 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
 	}
+	else if (textureBlendMode == RenderBlendMode::CUSTOM_1_MASKED_OVERLAY) {
+		glBlendFuncSeparate(GL_ZERO, GL_ZERO, GL_ZERO, GL_ZERO);
+
+		// Set blend equations to maximum for color, minimum for alpha
+		glBlendEquationSeparate(GL_MAX, GL_MIN);
+	}
 	else if (textureBlendMode == RenderBlendMode::NONE) {
 		glBlendFunc(GL_ONE, GL_ZERO);
 	}
@@ -115,6 +121,11 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	//reset blend mode
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendEquation(GL_FUNC_ADD);
+
 }
 
 void GLDrawer::draw(const std::vector<LineVertex>& lineVertices, int vertexCount, Shader& shader)

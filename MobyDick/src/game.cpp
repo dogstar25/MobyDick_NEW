@@ -237,7 +237,7 @@ void Game::_displayLoadingMsg()
 		std::shared_ptr<SDLTexture> sdlTexture = std::make_shared<SDLTexture>();
 
 		sdlTexture->sdlTexture = SDL_CreateTextureFromSurface(m_renderer->sdlRenderer(), tempSurface);
-		texture->surface = tempSurface;
+		sdlTexture->surface = tempSurface;
 		texture = sdlTexture;
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {

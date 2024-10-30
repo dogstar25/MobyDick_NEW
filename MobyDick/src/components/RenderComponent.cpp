@@ -228,9 +228,11 @@ void RenderComponent::render()
 		return;
 	}
 
-	//If this object has a lighted treatment component then skip the render
-	//because the lighted treatment component will do the rendering
 	if (parent()->hasComponent(ComponentTypes::LIGHTED_TREATMENT_COMPONENT)) {
+
+		//const auto& lightedTreatmentComponent = parent()->getComponent<LightedTreatmentComponent>(ComponentTypes::LIGHTED_TREATMENT_COMPONENT);
+		//lightedTreatmentComponent->render();
+
 		return;
 	}
 
@@ -241,6 +243,9 @@ void RenderComponent::render()
 
 	SDL_FRect destQuad = { getRenderDestRect() };
 	render(getRenderTexture().get(), m_color, destQuad, m_textureBlendMode);
+
+
+
 
 }
 
@@ -262,11 +267,29 @@ void RenderComponent::render(SDL_FPoint destPoint)
 
 }
 
+void RenderComponent::render(SDL_FPoint destPoint, RenderBlendMode textureBlendMode)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	destQuad.x = destPoint.x;
+	destQuad.y = destPoint.y;
+	render(getRenderTexture().get(), m_color, destQuad, textureBlendMode);
+
+}
+
 void RenderComponent::render(Texture* texture)
 {
 
 	SDL_FRect destQuad = { getRenderDestRect() };
 	render(texture, m_color, destQuad, m_textureBlendMode);
+
+}
+
+void RenderComponent::render(Texture* texture, RenderBlendMode textureBlendMode)
+{
+
+	SDL_FRect destQuad = { getRenderDestRect() };
+	render(texture, m_color, destQuad, textureBlendMode);
 
 }
 
@@ -339,34 +362,6 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 	}
 
  }      
-
-//void RenderComponent::renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
-//	bool clear, SDL_BlendMode customBlendMode)
-//{
-//	//Set the render target to the texture destination texture
-//	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), destTexture->sdlTexture);
-//	if (clear) {
-//		SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
-//		game->renderer()->clear();
-//	}
-//
-//	const auto& renderComponent = gameObectToRender->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-//
-//	SDL_Color color = gameObectToRender->getColor();
-//	float angle = gameObectToRender->getAngle();
-//
-//	SDL_Rect* textureSourceQuad = getRenderTextureRect(renderComponent->getRenderTexture().get());
-//	SDL_FRect destQuad = { destPoint.x, destPoint.y, gameObectToRender->getSize().x, gameObectToRender->getSize().y };
-//	
-//
-//	game->renderer()->drawSprite(parent()->layer(), destQuad, color, renderComponent->getRenderTexture().get(), 
-//		textureSourceQuad, angle, false, Colors::CLOUD, textureBlendMode, customBlendMode);
-//
-//	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
-//
-//}
-
-
 
 void RenderComponent::applyDisplayOverlay(DisplayOverlay displayOverlay)
 {
