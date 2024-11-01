@@ -62,7 +62,7 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 
 		//Create the child
 		std::shared_ptr<GameObject> childObject = 
-			parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name, sizeOverride);
+			parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, parent->layer(), false, name, sizeOverride);
 		childObject->isChild = true;
 
 		//If this is a stepchild then we need to add it to the world where the scene will be responsible for it
@@ -247,6 +247,28 @@ void ChildrenComponent::update()
 
 	_removeFromWorldPass();
 	
+}
+
+void ChildrenComponent::render()
+{
+
+	for (auto& slotItr : m_childSlots) {
+
+		for (auto& child : slotItr.second) {
+
+			if (child.gameObject.has_value()) {
+
+				//Stepchildren will render theirselves
+				if (child.isStepChild == false) {
+
+					child.gameObject.value()->render();
+
+				}
+			}
+		}
+	}
+
+
 }
 
 ChildSlotType ChildrenComponent::_getSlotType(std::string slotKey)
@@ -721,28 +743,6 @@ std::string ChildrenComponent::_determineSlotKey(PositionAlignment positionAlign
 	}
 
 	return slotKey;
-
-
-}
-
-void ChildrenComponent::render()
-{
-
-	for (auto& slotItr : m_childSlots) {
-
-		for (auto& child : slotItr.second) {
-
-			if (child.gameObject.has_value()) {
-
-				//Stepchildren will render theirselves
-				if (child.isStepChild == false) {
-
-					child.gameObject.value()->render();
-
-				}
-			}
-		}
-	}
 
 
 }

@@ -78,7 +78,9 @@ private:
 	//Projection matrix
 	glm::mat4  m_projectionMatrix{1.0};
 
-	std::map<std::string, std::shared_ptr<DrawBatch>> m_drawBatches;
+	using BatchKey = std::tuple<int, GLDrawerType, GLuint, GLShaderType, RenderBlendMode>;
+	std::map<BatchKey, std::shared_ptr<DrawBatch>> m_drawBatches;
+
 	std::array<Shader, int(GLShaderType::count) +1> m_shaders;
 
 	
