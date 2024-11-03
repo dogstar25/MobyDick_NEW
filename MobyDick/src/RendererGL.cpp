@@ -126,6 +126,14 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 	auto normalizedcolor = util::glNormalizeColor(color);
 
+	//if (static_cast<OpenGLTexture*>(texture)->textureId == 16) {
+
+	//	int todd = 1;
+	//	destQuad.x = 0;
+	//	destQuad.y = 0;
+
+
+	//}
 
 	glm::vec2 glPosition{ destQuad.x, destQuad.y};
 	glm::vec2 glSize{ destQuad.w, destQuad.h };
@@ -215,6 +223,11 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 	spriteVertexBuffer.push_back(vertex);
 
+	if (static_cast<OpenGLTexture*>(texture)->textureId == 16) {
+
+		int todd = 1;
+
+	}
 	//Apply the tranlation matrix to each vertex
 	for (int i = 0; i < 4; i++) {
 
@@ -295,10 +308,12 @@ void RendererGL::resetRenderTarget()
 	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
 }
 
-std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height)
+std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height, std::string name)
 {
 
 	std::shared_ptr<OpenGLTexture> texture = std::make_shared<OpenGLTexture>();
+
+	texture->name = name;
 
 	GLuint textureId;
 	glGenTextures(1, &textureId);

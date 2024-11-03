@@ -11,6 +11,12 @@ LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON, 
 	Component(ComponentTypes::LIGHTED_TREATMENT_COMPONENT, parent)
 {
 
+	m_lightCompositeTexture = game->renderer()->createEmptyTexture((int)parent->getSize().x, (int)parent->getSize().y, parent->name());
+
+	m_lightCompositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
+		(int)parent->getSize().x,
+		(int)parent->getSize().y);
+
 
 }
 
@@ -41,11 +47,6 @@ LightedTreatmentComponent::~LightedTreatmentComponent()
 void LightedTreatmentComponent::postInit()
 {
 
-	m_lightCompositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y);
-
-	m_lightCompositeTexture->textureAtlasQuad = SDL_Rect(0, 0, 
-		(int)parent()->getSize().x, 
-		(int)parent()->getSize().y);
 }
 
 void LightedTreatmentComponent::update()

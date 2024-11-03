@@ -61,7 +61,7 @@ public:
 	//new
 	int setRenderTarget(Texture* targetTexture) override;
 	void resetRenderTarget() override;
-	std::shared_ptr<Texture> createEmptyTexture(int width, int height) override;
+	std::shared_ptr<Texture> createEmptyTexture(int width, int height, std::string name) override;
 
 
 private:

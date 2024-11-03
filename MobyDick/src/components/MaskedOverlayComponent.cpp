@@ -24,7 +24,7 @@ MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, GameOb
 void MaskedOverlayComponent::postInit()
 {
 
-	m_compositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y);
+	m_compositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y, parent()->name());
 
 	m_compositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
 		(int)parent()->getSize().x,
@@ -130,19 +130,19 @@ void MaskedOverlayComponent::render()
 
 	//Render the mask objects to the composite texture
 	auto parentTopLeftPos = parent()->getTopLeftPosition();
-	for (auto& maskObject : m_maskObjects) {
+	//for (auto& maskObject : m_maskObjects) {
 
-		if (maskObject->hasState(GameObjectState::ON)) {
+	//	if (maskObject->hasState(GameObjectState::ON)) {
 
-			auto topLeftPos = maskObject->getTopLeftPosition();
+	//		auto topLeftPos = maskObject->getTopLeftPosition();
 
-			SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
+	//		SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
 
-			maskObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(newPosition, RenderBlendMode::CUSTOM_1_MASKED_OVERLAY);
+	//		maskObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(newPosition, RenderBlendMode::CUSTOM_1_MASKED_OVERLAY);
 
-		}
+	//	}
 
-	}
+	//}
 
 	//Reset the reder target to the screen
 	game->renderer()->resetRenderTarget();

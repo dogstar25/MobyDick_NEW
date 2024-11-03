@@ -205,10 +205,12 @@ void RendererSDL::resetRenderTarget()
 
 }
 
-std::shared_ptr<Texture> RendererSDL::createEmptyTexture(int width, int height)
+std::shared_ptr<Texture> RendererSDL::createEmptyTexture(int width, int height, std::string name)
 {
 
 	std::shared_ptr<SDLTexture> texture = std::make_shared<SDLTexture>();
+
+	texture->name = name;
 
 	texture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET, (int)width, (int)height);

@@ -153,6 +153,9 @@ void TextureManager::loadTextures(std::string textureAtlas)
 		//surface
 		texture->surface = m_textureAtlasMap[textureAtlas]->surface;
 
+		//name
+		texture->name = textureAtlas;
+
 		m_textureMap.emplace(textureId, texture);
 
 	}

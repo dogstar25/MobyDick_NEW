@@ -28,6 +28,7 @@ protected:
 	GLDrawer m_glDrawer;
 	Shader m_shader;
 	int m_objectCount{};
+	std::string m_textureName{};
 
 	//virtual void _addSpriteIndexBuffer() = 0;
 

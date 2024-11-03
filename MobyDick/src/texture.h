@@ -8,6 +8,7 @@
 class Texture
 {
 	public:
+		std::string name{};
 		SDL_Surface* surface{};
 		SDL_Rect textureAtlasQuad{};
 		bool applyFlip{ false };
