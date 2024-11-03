@@ -212,6 +212,7 @@ void Game::_displayLoadingMsg()
 	static int statusDots{};
 	std::shared_ptr<Texture> texture{};
 	std::string statusMsg{ "Loading" };
+	GLuint displayLoadingTextureId{};
 
 	statusDots++;
 	if (statusDots > 4) {
@@ -249,9 +250,10 @@ void Game::_displayLoadingMsg()
 
 		std::shared_ptr<OpenGLTexture> openGLTexture = std::make_shared<OpenGLTexture>();
 
-		GLuint textureId;
-		glGenTextures(1, &textureId);
-		openGLTexture->textureId = textureId;
+		
+		glGenTextures(1, &displayLoadingTextureId);
+		
+		openGLTexture->textureId = displayLoadingTextureId;
 		glBindTexture(GL_TEXTURE_2D, openGLTexture->textureId);
 
 		SDL_Surface* formattedSurface = SDL_ConvertSurfaceFormat(tempSurface, SDL_PIXELFORMAT_ABGR8888, 0);
@@ -260,7 +262,6 @@ void Game::_displayLoadingMsg()
 
 		texture = openGLTexture;
 
-		//texture = renderer()->createEmptyTexture(tempSurface->w, tempSurface->h);
 	}
 
 	SDL_Rect quad = { 0 , 0, texture->surface->w, texture->surface->h };
@@ -275,6 +276,12 @@ void Game::_displayLoadingMsg()
 
 	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, texture.get(), &texture->textureAtlasQuad, 0, false, SDL_Color{},
 		RenderBlendMode::BLEND);
+
+	if (GameConfig::instance().rendererType() == RendererType::OPENGL &&
+		GameConfig::instance().openGLBatching() == true) {
+		m_renderer->drawBatches();
+	}
+
 	m_renderer->present();
 
 	if (texture->surface != nullptr) {
@@ -289,6 +296,9 @@ void Game::_displayLoadingMsg()
 			SDL_DestroyTexture(sdlTexture->sdlTexture);
 		}
 
+	}
+	else {
+		glDeleteTextures(1, &displayLoadingTextureId);
 	}
 
 }

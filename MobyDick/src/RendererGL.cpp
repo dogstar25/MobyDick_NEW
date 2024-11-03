@@ -44,7 +44,7 @@ void RendererGL::init(SDL_Window* window)
 
 	SDL_GLContext m_glcontext = SDL_GL_CreateContext(window);
 
-	if (SDL_GL_SetSwapInterval(0) != 0) {
+	if (SDL_GL_SetSwapInterval(1) != 0) {
 		std::cerr << "Warning: Unable to disable VSync. " << SDL_GetError() << std::endl;
 	}
 
@@ -102,7 +102,9 @@ void RendererGL::drawBatches()
 	if (GameConfig::instance().openGLBatching() == true) {
 
 		for (auto& drawBatch : m_drawBatches) {
+
 			drawBatch.second->draw();
+
 		}
 
 		m_drawBatches.erase(m_drawBatches.begin(), m_drawBatches.end());
@@ -126,6 +128,14 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 	auto normalizedcolor = util::glNormalizeColor(color);
 
+	//if (static_cast<OpenGLTexture*>(texture)->textureId == 16) {
+
+	//	int todd = 1;
+	//	destQuad.x = 0;
+	//	destQuad.y = 0;
+
+
+	//}
 
 	glm::vec2 glPosition{ destQuad.x, destQuad.y};
 	glm::vec2 glSize{ destQuad.w, destQuad.h };
@@ -215,6 +225,11 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 	spriteVertexBuffer.push_back(vertex);
 
+	if (static_cast<OpenGLTexture*>(texture)->textureId == 16) {
+
+		int todd = 1;
+
+	}
 	//Apply the tranlation matrix to each vertex
 	for (int i = 0; i < 4; i++) {
 
@@ -226,7 +241,7 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 	auto shadertype = GLShaderType::BASIC;
 	//auto shadertype = GLShaderType::GLOW;
 
-	if (GameConfig::instance().openGLBatching() == true) {
+	if (GameConfig::instance().openGLBatching() == true && isRenderingToScreen()){
 		_addVertexBufferToBatch(spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
 	}
 	else {
@@ -295,10 +310,12 @@ void RendererGL::resetRenderTarget()
 	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
 }
 
-std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height)
+std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height, std::string name)
 {
 
 	std::shared_ptr<OpenGLTexture> texture = std::make_shared<OpenGLTexture>();
+
+	texture->name = name;
 
 	GLuint textureId;
 	glGenTextures(1, &textureId);
@@ -363,31 +380,22 @@ void RendererGL::_addVertexBufferToBatch(const std::vector<SpriteVertex>& sprite
 	GLShaderType shaderType, RenderBlendMode textureBlendMode, int layer)
 {
 
-	std::stringstream texturePtrString;
-	std::stringstream keyString;
-
-	if (texture == nullptr) {
-
-		texturePtrString << "NO_TEXTURE";
-	}
-	else {
-		texturePtrString << texture->surface;
-	}
-	
 	//Build the map key
-	keyString << (int)layer << "_" << (int)objectType << "_" << texturePtrString.str() << "_" << (int)shaderType << "_" << (int)textureBlendMode;
+	//keyString << (int)layer << "_" << (int)objectType << "_" << texturePtrString.str() << "_" << (int)shaderType << "_" << (int)textureBlendMode;
+	auto textureId = static_cast<OpenGLTexture*>(texture)->textureId;
+	BatchKey key = std::make_tuple(layer, objectType, textureId, shaderType, textureBlendMode);
 
 	//See if the drawBatch for this combo exists yet
-	if (m_drawBatches.find(keyString.str()) == m_drawBatches.end()) {
+	if (m_drawBatches.find(key) == m_drawBatches.end()) {
 
 		auto spriteBatch = std::make_shared<SpriteDrawBatch>(objectType, texture, shaderType, textureBlendMode);
 		spriteBatch->addVertexBuffer(spriteVertices);
-		m_drawBatches[keyString.str()] = spriteBatch;
+		m_drawBatches[key] = spriteBatch;
 
 	}
 	else {
 
-		m_drawBatches[keyString.str()]->addVertexBuffer(spriteVertices);
+		m_drawBatches[key]->addVertexBuffer(spriteVertices);
 
 	}
 
@@ -402,18 +410,19 @@ void RendererGL::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVert
 
 	//Build the map key
 	keyString << (int)layer << "_" <<(int)objectType << "_" << (int)shaderType;
+	BatchKey key = std::make_tuple(layer, objectType, (GLuint)0, shaderType, RenderBlendMode::BLEND);
 
 	//See if the drawBatch for this combo exists yet
-	if (m_drawBatches.find(keyString.str()) == m_drawBatches.end()) {
+	if (m_drawBatches.find(key) == m_drawBatches.end()) {
 
 		auto lineBatch = std::make_shared<LineDrawBatch>(shaderType);
 		lineBatch->addVertexBuffer(lineVertices);
-		m_drawBatches[keyString.str()] = lineBatch;
+		m_drawBatches[key] = lineBatch;
 
 	}
 	else {
 
-		m_drawBatches[keyString.str()]->addVertexBuffer(lineVertices);
+		m_drawBatches[key]->addVertexBuffer(lineVertices);
 
 	}
 
@@ -469,5 +478,21 @@ void RendererGL::renderPrimitives(int layerIndex)
 
 	m_primitiveLines.clear();
 
+}
+
+bool RendererGL::isRenderingToScreen()
+{
+	GLint currentFramebuffer = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
+
+	if (currentFramebuffer == 0) {
+
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
 }
 

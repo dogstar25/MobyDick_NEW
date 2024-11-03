@@ -24,7 +24,7 @@ MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, GameOb
 void MaskedOverlayComponent::postInit()
 {
 
-	m_compositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y);
+	m_compositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y, parent()->name());
 
 	m_compositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
 		(int)parent()->getSize().x,
@@ -102,7 +102,6 @@ void MaskedOverlayComponent::render()
 
 	//Set the target render to the composite texture for this component static_cast<SDLTexture*>(targetTexture)->sdlTexture)
 	game->renderer()->setRenderTarget(m_compositeTexture.get());
-	game->renderer()->clear();
 
 	//Render the overlay objects to the composite texture
 	bool first = true;

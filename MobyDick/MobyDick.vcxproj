@@ -465,8 +465,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.md" />
-    <None Include="src\opengl\shaders\basic.glsl" />
-    <None Include="src\opengl\shaders\uberShader.glsl" />
     <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

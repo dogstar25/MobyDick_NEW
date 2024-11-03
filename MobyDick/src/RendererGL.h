@@ -50,6 +50,7 @@ public:
 	const GLDrawer& lineDrawer() { return m_lineDrawer; }
 	void prepTexture(OpenGLTexture* texture);
 	void renderPrimitives(int layerIndex);
+	virtual bool isRenderingToScreen() override;
 
 	Shader& shader(GLShaderType shaderType) {
 		return m_shaders[(int)shaderType];
@@ -61,7 +62,7 @@ public:
 	//new
 	int setRenderTarget(Texture* targetTexture) override;
 	void resetRenderTarget() override;
-	std::shared_ptr<Texture> createEmptyTexture(int width, int height) override;
+	std::shared_ptr<Texture> createEmptyTexture(int width, int height, std::string name) override;
 
 
 private:
@@ -78,7 +79,9 @@ private:
 	//Projection matrix
 	glm::mat4  m_projectionMatrix{1.0};
 
-	std::map<std::string, std::shared_ptr<DrawBatch>> m_drawBatches;
+	using BatchKey = std::tuple<int, GLDrawerType, GLuint, GLShaderType, RenderBlendMode>;
+	std::map<BatchKey, std::shared_ptr<DrawBatch>> m_drawBatches;
+
 	std::array<Shader, int(GLShaderType::count) +1> m_shaders;
 
 	

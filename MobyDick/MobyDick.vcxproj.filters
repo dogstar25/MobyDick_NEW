@@ -729,8 +729,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\opengl\shaders\basic.glsl" />
-    <None Include="src\opengl\shaders\uberShader.glsl" />
     <None Include="readme.md" />
     <None Include="vcpkg.json" />
   </ItemGroup>

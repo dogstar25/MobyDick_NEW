@@ -12,6 +12,7 @@ SpriteDrawBatch::SpriteDrawBatch(GLDrawerType objectType, Texture* texture, GLSh
 	m_shader = static_cast<RendererGL*>(game->renderer())->shader(shaderType);
 
 	m_texture = texture;
+	m_textureName = texture->name;
 
 }
 
