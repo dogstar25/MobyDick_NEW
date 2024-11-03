@@ -102,7 +102,9 @@ void RendererGL::drawBatches()
 	if (GameConfig::instance().openGLBatching() == true) {
 
 		for (auto& drawBatch : m_drawBatches) {
+
 			drawBatch.second->draw();
+
 		}
 
 		m_drawBatches.erase(m_drawBatches.begin(), m_drawBatches.end());
@@ -239,7 +241,7 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 	auto shadertype = GLShaderType::BASIC;
 	//auto shadertype = GLShaderType::GLOW;
 
-	if (GameConfig::instance().openGLBatching() == true) {
+	if (GameConfig::instance().openGLBatching() == true && isRenderingToScreen()){
 		_addVertexBufferToBatch(spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
 	}
 	else {
@@ -476,5 +478,21 @@ void RendererGL::renderPrimitives(int layerIndex)
 
 	m_primitiveLines.clear();
 
+}
+
+bool RendererGL::isRenderingToScreen()
+{
+	GLint currentFramebuffer = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
+
+	if (currentFramebuffer == 0) {
+
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
 }
 

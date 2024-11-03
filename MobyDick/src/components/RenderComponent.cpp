@@ -316,12 +316,18 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 		(int)Camera::instance().frame().w + game->worldTileSize().x,
 		(int)Camera::instance().frame().h + game->worldTileSize().y };
 
+	if (parent()->type() == "FULL_HOUSE_FRONT_EXTERIOR") {
+		int todd = 1;
+	}
+
 	/*
-	If this object is within the viewable are or if its absolute positioned and therefore is not dependent on the camera
-	or it is being parallaxed then render it
+	If this object is within the viewable area or if its absolute positioned and therefore is not dependent on the camera
+	or it is being parallaxed , or this is a render to a texture, not the screen then render it
 	*/
-	if (SDL_HasIntersection(&gameObjectPosRect, &cameraRect) ||
-		transform->absolutePositioning() == true || m_parallaxRate.has_value() == true)
+	if (SDL_HasIntersection(&gameObjectPosRect, &cameraRect)  ||
+		game->renderer()->isRenderingToScreen() == false ||
+		transform->absolutePositioning() == true || 
+		m_parallaxRate.has_value() == true )
 	{
 
 		//One and only place to increment render sequence
@@ -354,6 +360,10 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 
 			outline = m_renderOutline;
 			outlineColor = m_outLineColor;
+		}
+
+		if (parent()->type() == "LIT_AREA") {
+			int todd = 1;
 		}
 
 		game->renderer()->drawSprite(parent()->layer(), destQuad, color, texture, textureSourceQuad, angle, outline, outlineColor, 

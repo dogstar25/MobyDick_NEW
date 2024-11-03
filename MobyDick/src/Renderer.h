@@ -115,6 +115,7 @@ public:
 	virtual int setRenderTarget(Texture* targetTexture) = 0;
 	virtual void resetRenderTarget() = 0;
 	virtual std::shared_ptr<Texture> createEmptyTexture(int width, int height, std::string name) = 0;
+	virtual bool isRenderingToScreen()=0;
 
 
 protected:

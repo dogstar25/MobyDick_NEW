@@ -102,7 +102,6 @@ void MaskedOverlayComponent::render()
 
 	//Set the target render to the composite texture for this component static_cast<SDLTexture*>(targetTexture)->sdlTexture)
 	game->renderer()->setRenderTarget(m_compositeTexture.get());
-	game->renderer()->clear();
 
 	//Render the overlay objects to the composite texture
 	bool first = true;
@@ -130,19 +129,19 @@ void MaskedOverlayComponent::render()
 
 	//Render the mask objects to the composite texture
 	auto parentTopLeftPos = parent()->getTopLeftPosition();
-	//for (auto& maskObject : m_maskObjects) {
+	for (auto& maskObject : m_maskObjects) {
 
-	//	if (maskObject->hasState(GameObjectState::ON)) {
+		if (maskObject->hasState(GameObjectState::ON)) {
 
-	//		auto topLeftPos = maskObject->getTopLeftPosition();
+			auto topLeftPos = maskObject->getTopLeftPosition();
 
-	//		SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
+			SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
 
-	//		maskObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(newPosition, RenderBlendMode::CUSTOM_1_MASKED_OVERLAY);
+			maskObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(newPosition, RenderBlendMode::CUSTOM_1_MASKED_OVERLAY);
 
-	//	}
+		}
 
-	//}
+	}
 
 	//Reset the reder target to the screen
 	game->renderer()->resetRenderTarget();

@@ -50,6 +50,7 @@ public:
 	const GLDrawer& lineDrawer() { return m_lineDrawer; }
 	void prepTexture(OpenGLTexture* texture);
 	void renderPrimitives(int layerIndex);
+	virtual bool isRenderingToScreen() override;
 
 	Shader& shader(GLShaderType shaderType) {
 		return m_shaders[(int)shaderType];

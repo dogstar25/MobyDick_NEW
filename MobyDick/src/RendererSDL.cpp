@@ -223,4 +223,17 @@ std::shared_ptr<Texture> RendererSDL::createEmptyTexture(int width, int height, 
 	return texture;
 }
 
+bool RendererSDL::isRenderingToScreen()
+{
+	auto renderingToScreen = SDL_GetRenderTarget(game->renderer()->sdlRenderer());
+
+	//A null retuned means we are rendering to the screen instead of a texture
+	if (renderingToScreen) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
 
