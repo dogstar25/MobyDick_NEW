@@ -67,13 +67,6 @@ void ParticleComponent::render()
 
 }
 
-
-//void ParticleComponent::setEmissionInterval(std::chrono::duration<float> emissionInterval)
-//{
-//	m_emissionInterval = emissionInterval;
-//}
-
-
 void ParticleComponent::update()
 {
 	bool activeParticleFound = false;

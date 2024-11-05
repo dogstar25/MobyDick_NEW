@@ -57,31 +57,49 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	Shader& shader, Texture* texture, RenderBlendMode textureBlendMode)
 {
 
+	static RenderBlendMode lastRenderBlendMode{ RenderBlendMode::NONE };
+	static GLuint lastTextureId = 0;
+	static GLuint lastShaderProgramId = 0;
+
 	OpenGLTexture* openGLTexture = static_cast<OpenGLTexture*>(texture);
 
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glEnable(GL_BLEND);
+	if (textureBlendMode != lastRenderBlendMode) {
+		lastRenderBlendMode = textureBlendMode;
 
-	if (textureBlendMode == RenderBlendMode::BLEND) {
+		glClearColor(0.0, 0.0, 0.0, 0.0);
+		glEnable(GL_BLEND);
+
+		//reset blend mode
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else if (textureBlendMode == RenderBlendMode::ADD) {
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	}
-	else if (textureBlendMode == RenderBlendMode::MULTIPLY) {
-		glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else if (textureBlendMode == RenderBlendMode::MODULATE) {
-		glBlendFunc(GL_DST_COLOR, GL_ZERO);
-	}
-	else if (textureBlendMode == RenderBlendMode::CUSTOM_1_MASKED_OVERLAY) {
-		glBlendFuncSeparate(GL_ZERO, GL_ZERO, GL_ZERO, GL_ZERO);
+		glBlendEquation(GL_FUNC_ADD);
 
-		// Set blend equations to maximum for color, minimum for alpha
-		glBlendEquationSeparate(GL_MAX, GL_MIN);
-	}
-	else if (textureBlendMode == RenderBlendMode::NONE) {
-		glBlendFunc(GL_ONE, GL_ZERO);
+		switch (textureBlendMode) {
+
+		case RenderBlendMode::BLEND:
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquation(GL_FUNC_ADD);
+			break;
+		case RenderBlendMode::ADD:
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glBlendEquation(GL_FUNC_ADD);
+			break;
+		case RenderBlendMode::MULTIPLY:
+			glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquation(GL_FUNC_ADD);
+			break;
+		case RenderBlendMode::MODULATE:
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			glBlendEquation(GL_FUNC_ADD);
+			break;
+		case RenderBlendMode::CUSTOM_1_MASKED_OVERLAY:
+			glBlendFuncSeparate(GL_ZERO, GL_ZERO, GL_ZERO, GL_ZERO);
+			glBlendEquationSeparate(GL_MAX, GL_MIN);
+			break;
+		case RenderBlendMode::NONE:
+			glBlendFunc(GL_ONE, GL_ZERO);
+			glBlendEquation(GL_FUNC_ADD);
+			break;
+		}
 	}
 	
 	prepare();
@@ -89,7 +107,11 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	glBufferData(GL_ARRAY_BUFFER, sizeof(SpriteVertex) * spriteVertices.size(), nullptr, GL_DYNAMIC_DRAW);
 
 	//Use the program first
-	glUseProgram(shader.shaderProgramId());
+	GLuint shaderProgramId = shader.shaderProgramId();
+	if (lastShaderProgramId != shaderProgramId) {
+		lastShaderProgramId = shaderProgramId;
+		glUseProgram(shaderProgramId);
+	}
 
 	//Set the Projection matrix uniform
 	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
@@ -103,7 +125,10 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	glUniform1i(textureArrayUniformId, 0);
 
 	GLuint textureId = static_cast<OpenGLTexture*>(texture)->textureId;
-	glBindTexture(GL_TEXTURE_2D, textureId);
+	if (lastTextureId != textureId) {
+		lastTextureId = textureId;
+		glBindTexture(GL_TEXTURE_2D, textureId);
+	}
 
 	//Submit the vertices
 	auto bufferSize = spriteVertices.size() * sizeof(SpriteVertex);
@@ -117,14 +142,11 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	glDrawElements(GL_TRIANGLES, (GLsizei)spriteVertexIndexes.size(), GL_UNSIGNED_INT, 0);
 
 	// Unbind resources to prevent unintended state changes
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
 
-	//reset blend mode
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendEquation(GL_FUNC_ADD);
 
 }
 
