@@ -63,7 +63,7 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	OpenGLTexture* openGLTexture = static_cast<OpenGLTexture*>(texture);
 
-	if (textureBlendMode != lastRenderBlendMode) {
++	//if (textureBlendMode != lastRenderBlendMode) {
 		lastRenderBlendMode = textureBlendMode;
 
 		glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -100,7 +100,7 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 			glBlendEquation(GL_FUNC_ADD);
 			break;
 		}
-	}
+	//}
 	
 	prepare();
 
@@ -108,10 +108,10 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	//Use the program first
 	GLuint shaderProgramId = shader.shaderProgramId();
-	if (lastShaderProgramId != shaderProgramId) {
+//	if (lastShaderProgramId != shaderProgramId) {
 		lastShaderProgramId = shaderProgramId;
 		glUseProgram(shaderProgramId);
-	}
+//	}
 
 	//Set the Projection matrix uniform
 	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
@@ -125,10 +125,10 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	glUniform1i(textureArrayUniformId, 0);
 
 	GLuint textureId = static_cast<OpenGLTexture*>(texture)->textureId;
-	if (lastTextureId != textureId) {
+//	if (lastTextureId != textureId) {
 		lastTextureId = textureId;
 		glBindTexture(GL_TEXTURE_2D, textureId);
-	}
+	//}
 
 	//Submit the vertices
 	auto bufferSize = spriteVertices.size() * sizeof(SpriteVertex);

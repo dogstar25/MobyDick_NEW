@@ -63,6 +63,8 @@ private:
 
 	Timer m_emissionTimer{};
 
+	void createParticles();
+
 
 
 };
