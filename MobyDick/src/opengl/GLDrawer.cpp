@@ -63,7 +63,7 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	OpenGLTexture* openGLTexture = static_cast<OpenGLTexture*>(texture);
 
-+	//if (textureBlendMode != lastRenderBlendMode) {
+	//if (textureBlendMode != lastRenderBlendMode) {
 		lastRenderBlendMode = textureBlendMode;
 
 		glClearColor(0.0, 0.0, 0.0, 0.0);
