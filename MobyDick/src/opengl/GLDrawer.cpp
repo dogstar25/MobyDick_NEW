@@ -5,6 +5,11 @@
 
 extern std::unique_ptr<Game> game;
 
+//initialize static variables
+RenderBlendMode GLDrawer::m_lastRenderBlendMode = RenderBlendMode::NONE;
+GLuint GLDrawer::m_lastTextureId = 0;
+GLuint GLDrawer::m_lastShaderProgramId = 0;
+
 GLDrawer::GLDrawer(GLDrawerType drawerType)
 {
 
@@ -57,14 +62,10 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	Shader& shader, Texture* texture, RenderBlendMode textureBlendMode)
 {
 
-	static RenderBlendMode lastRenderBlendMode{ RenderBlendMode::NONE };
-	static GLuint lastTextureId = 0;
-	static GLuint lastShaderProgramId = 0;
-
 	OpenGLTexture* openGLTexture = static_cast<OpenGLTexture*>(texture);
 
-	//if (textureBlendMode != lastRenderBlendMode) {
-		lastRenderBlendMode = textureBlendMode;
+	if (textureBlendMode != m_lastRenderBlendMode) {
+		m_lastRenderBlendMode = textureBlendMode;
 
 		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glEnable(GL_BLEND);
@@ -100,7 +101,7 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 			glBlendEquation(GL_FUNC_ADD);
 			break;
 		}
-	//}
+	}
 	
 	prepare();
 
@@ -108,10 +109,10 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	//Use the program first
 	GLuint shaderProgramId = shader.shaderProgramId();
-//	if (lastShaderProgramId != shaderProgramId) {
-		lastShaderProgramId = shaderProgramId;
+	if (m_lastShaderProgramId != shaderProgramId) {
+		m_lastShaderProgramId = shaderProgramId;
 		glUseProgram(shaderProgramId);
-//	}
+	}
 
 	//Set the Projection matrix uniform
 	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
@@ -125,10 +126,10 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 	glUniform1i(textureArrayUniformId, 0);
 
 	GLuint textureId = static_cast<OpenGLTexture*>(texture)->textureId;
-//	if (lastTextureId != textureId) {
-		lastTextureId = textureId;
+	if (m_lastTextureId != textureId) {
+		m_lastTextureId = textureId;
 		glBindTexture(GL_TEXTURE_2D, textureId);
-	//}
+	}
 
 	//Submit the vertices
 	auto bufferSize = spriteVertices.size() * sizeof(SpriteVertex);
@@ -136,17 +137,9 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 
 	//Submit the vertex indices
 	auto indexBufferSize = sizeof(GL_UNSIGNED_INT) * spriteVertexIndexes.size();
-	//auto indexBufferSize = sizeof(glm::uint) * m_indexes.size();
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, &spriteVertexIndexes[0], GL_DYNAMIC_DRAW);
 
 	glDrawElements(GL_TRIANGLES, (GLsizei)spriteVertexIndexes.size(), GL_UNSIGNED_INT, 0);
-
-	// Unbind resources to prevent unintended state changes
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//glBindVertexArray(0);
-
 
 }
 
@@ -155,17 +148,25 @@ void GLDrawer::draw(const std::vector<LineVertex>& lineVertices, int vertexCount
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glEnable(GL_BLEND);
-	//GL_ONE_MINUS_SRC_ALPHA
-	//GL_DST_ALPHA
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	//Primitives are always blend mode for now
+	if (RenderBlendMode::BLEND != m_lastRenderBlendMode) {
+
+		m_lastRenderBlendMode = RenderBlendMode::BLEND;
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquation(GL_FUNC_ADD);
+	}
 
 	prepare();
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(LineVertex) * lineVertices.size(), nullptr, GL_DYNAMIC_DRAW);
 
-	//Use the program first
-	glUseProgram(shader.shaderProgramId());
+	GLuint shaderProgramId = shader.shaderProgramId();
+	if (m_lastShaderProgramId != shaderProgramId) {
+		m_lastShaderProgramId = shaderProgramId;
+		glUseProgram(shader.shaderProgramId());
+	}
 
 	//Set the Projection matrix uniform
 	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
@@ -176,15 +177,8 @@ void GLDrawer::draw(const std::vector<LineVertex>& lineVertices, int vertexCount
 	auto swize = sizeof(LineVertex);
 	auto bufferSize = lineVertices.size() * sizeof(LineVertex);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, &lineVertices[0]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), &lineVertices[0], GL_DYNAMIC_DRAW);
-
-	//Submit the vertex indices
-	//const std::vector<glm::uint>lineVertexIndexes{0,1};
-	//auto indexBufferSize = sizeof(GL_UNSIGNED_INT) * lineVertexIndexes.size();
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, &lineVertexIndexes[0], GL_DYNAMIC_DRAW);
 
 	glDrawArrays(GL_LINES, 0, vertexCount);
-	//glDrawElements(GL_TRIANGLES, lineVertices.size(), GL_UNSIGNED_INT, 0);
 
 }
 

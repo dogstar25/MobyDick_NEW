@@ -288,7 +288,7 @@ void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, 
 	//shader needs to be passed in
 	auto shadertype = GLShaderType::LINE;
 
-	if (GameConfig::instance().openGLBatching() == true) {
+	if (GameConfig::instance().openGLBatching() == true && isRenderingToScreen()) {
 		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype, layer);
 	}
 	else {

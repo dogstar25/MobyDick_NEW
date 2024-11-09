@@ -37,6 +37,10 @@ private:
 
 	void _setVertexBufferAttriubuteLayout(GLDrawerType drawerType);
 
+	static RenderBlendMode m_lastRenderBlendMode;
+	static GLuint m_lastTextureId;
+	static GLuint m_lastShaderProgramId;
+
 
 };
 
