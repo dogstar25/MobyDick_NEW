@@ -43,8 +43,13 @@ ParticleComponent::~ParticleComponent()
 void ParticleComponent::render()
 {
 
+	//creating the particles runs asynchronously, so only render them if that is complete
+	if (!m_creationComplete) {
+		return;
+	}
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
+	std::lock_guard<std::mutex> lock(m_particlesMutex);
 	for (auto& particle : m_particles) {
 
 		if (particle.isActive == true) {
@@ -67,18 +72,72 @@ void ParticleComponent::render()
 
 }
 
-
-//void ParticleComponent::setEmissionInterval(std::chrono::duration<float> emissionInterval)
-//{
-//	m_emissionInterval = emissionInterval;
-//}
-
-
 void ParticleComponent::update()
 {
 	bool activeParticleFound = false;
 
 	//First update the position,lifetime,etc of all active particles
+	//for (auto& particle : m_particles) {
+
+	//	if (particle.isActive == true) {
+
+	//		activeParticleFound = true;
+
+	//		if (particle.lifetimeTimer.hasMetTargetDuration()) {
+
+	//			particle.isAvailable = true;
+	//			particle.isActive = false;
+	//		}
+	//		else {
+	//		}
+
+	//		float timeFactor{ GameConfig::instance().gameLoopStep() };
+	//		if (SceneManager::instance().gameTimer().timeRemaining().count() > 0) {
+	//			timeFactor = SceneManager::instance().gameTimer().timeRemaining().count();
+	//		}
+	//		particle.position.x += particle.velocity.x * timeFactor;
+	//		particle.position.y += particle.velocity.y * timeFactor;
+
+	//		if (particle.alphaFade == true) {
+	//			Uint8 alpha = int(particle.originalALpha * (100 - particle.lifetimeTimer.percentTargetMet()));
+	//			particle.color.a = alpha;
+	//		}
+	//	}
+
+	//}
+
+	//Now emit more particles IF,
+	//The emission interval timer has been met AND
+	//this is either a continuous emitter or a onetime emitter that hasnt fired yet
+
+		if (m_creationComplete) {
+			m_creationComplete = false;  // Reset completion flag
+			m_creationThread = std::thread(&ParticleComponent::createParticles, this);
+			m_creationThread.detach();  // Run asynchronously without waiting
+		}
+
+
+	//If this is a one-time emission and all particles that were emitted are now inactive, 
+	// then mark this emitter object to be removed
+	if (m_type == ParticleEmitterType::ONETIME && activeParticleFound == false) {
+		parent()->setRemoveFromWorld(true);
+	}
+
+}
+
+
+void ParticleComponent::addParticleEffect(ParticleEffect particleEffect)
+{
+	m_particleEffects.push_back(particleEffect);
+}
+
+void ParticleComponent::createParticles()
+{ 
+	
+	std::lock_guard<std::mutex> lock(m_particlesMutex);
+
+	bool activeParticleFound{};
+
 	for (auto& particle : m_particles) {
 
 		if (particle.isActive == true) {
@@ -108,11 +167,9 @@ void ParticleComponent::update()
 
 	}
 
-	//Now emit more particles IF,
-	//The emission interval timer has been met AND
-	//this is either a continuous emitter or a onetime emitter that hasnt fired yet
 	if ((m_type == ParticleEmitterType::CONTINUOUS && m_emissionTimer.hasMetTargetDuration() == true) ||
-		(m_type == ParticleEmitterType::ONETIME && m_oneTimeEmitted == false )) {
+		(m_type == ParticleEmitterType::ONETIME && m_oneTimeEmitted == false)) {
+
 
 		for (auto& effect : m_particleEffects) {
 
@@ -151,13 +208,13 @@ void ParticleComponent::update()
 					//Size
 					if (effect.particleSizeMin.has_value()) {
 						float size = util::generateRandomNumber(effect.particleSizeMin.value(), effect.particleSizeMax.value());
-						particle.value()->size = {size, size};
+						particle.value()->size = { size, size };
 					}
 					else if (effect.particleSizeMinWidth.has_value()) {
 						float width = util::generateRandomNumber(effect.particleSizeMinWidth.value(), effect.particleSizeMaxWidth.value());
 						float height = util::generateRandomNumber(effect.particleSizeMinHeight.value(), effect.particleSizeMaxHeight.value());
 
-						particle.value()->size = {width, height};
+						particle.value()->size = { width, height };
 					}
 
 					//Set the particles lifetime
@@ -212,20 +269,8 @@ void ParticleComponent::update()
 
 		}
 	}
-
-	//If this is a one-time emission and all particles that were emitted are now inactive, 
-	// then mark this emitter object to be removed
-	if (m_type == ParticleEmitterType::ONETIME && activeParticleFound == false) {
-		parent()->setRemoveFromWorld(true);
-	}
-
-}
-
-
-void ParticleComponent::addParticleEffect(ParticleEffect particleEffect) 
-{ 
 	
-	m_particleEffects.push_back(particleEffect); 
+	m_creationComplete = true;
 
 }
 

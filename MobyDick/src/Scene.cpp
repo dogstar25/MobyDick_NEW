@@ -323,7 +323,7 @@ void Scene::render() {
 	}
 
 	//Draw primitive lines and pixels
-	game->renderer()->renderPrimitives(0);
+	game->renderer()->renderPrimitives(GameLayer::FOREGROUND_FINAL);
 
 }
 
