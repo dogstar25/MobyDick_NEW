@@ -277,7 +277,6 @@ void Scene::update() {
 	//Update the navigationMap
 	game->navigationManager()->updateNavigationMap();
 
-
 	//If the Debug display navigation grid is turned on then build it
 	if (isDebugSetting(DebugSceneSettings::SHOW_NAVIGATION_DEBUG_MAP)) {
 		_showNavigationMap();
@@ -286,7 +285,6 @@ void Scene::update() {
 }
 
 void Scene::render() {
-
 
 	//Render all of the layers
 	for (auto& gameLayer : m_gameObjects)
@@ -299,10 +297,6 @@ void Scene::render() {
 			gameObject->render();
 
 		}
-
-		//Render any primitive object for this layer (lines and single pixels/points)
-		//ToDo:Make this use the layer that we are passing it
-		//game->renderer()->renderPrimitives(gameLayerIndex);
 
 	}
 
@@ -321,9 +315,6 @@ void Scene::render() {
 	{
 		m_physicsWorld->DebugDraw();
 	}
-
-	//Draw primitive lines and pixels
-	game->renderer()->renderPrimitives(GameLayer::FOREGROUND_FINAL);
 
 }
 
@@ -357,7 +348,6 @@ void Scene::resetGridDisplay()
 		gameObject->disableRender();
 
 	}
-
 
 }
 
@@ -397,7 +387,6 @@ std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, 
 
 		m_player = gameObject;
 	}
-	
 
 	return gameObject;
 }

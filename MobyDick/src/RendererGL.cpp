@@ -253,13 +253,13 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 	//Outline the object if defined so
 	if (outline) {
 
-		outlineObject(destQuad, outlineColor);
+		outlineObject(destQuad, outlineColor, (GameLayer)layer);
 	}
 
 
 }
 
-void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer)
+void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer)
 {
 
 	glm::vec4 normalizedcolor = util::glNormalizeColor(color);
@@ -289,11 +289,27 @@ void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, 
 	auto shadertype = GLShaderType::LINE;
 
 	if (GameConfig::instance().openGLBatching() == true && isRenderingToScreen()) {
-		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype, layer);
+		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype, (int)layer);
 	}
 	else {
 		Shader shader = static_cast<RendererGL*>(game->renderer())->shader(shadertype);
 		m_lineDrawer.draw(lineVertexBuffer, 2, shader);
+	}
+
+}
+
+void RendererGL::drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer)
+{
+
+	for (size_t i = 0; i < points.size() - 1; ++i) {
+
+		glm::vec2 pointA(points[i].x, points[i].y);
+		glm::vec2 pointB(points[i+1].x, points[i+1].y);
+		
+		glm::uvec4 colorGL = { color.r,color.b, color.g, color.a };
+
+		drawLine(pointA, pointB, colorGL, layer);
+
 	}
 
 }
@@ -406,10 +422,6 @@ void RendererGL::_addVertexBufferToBatch(const std::vector<SpriteVertex>& sprite
 void RendererGL::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer)
 {
 
-	std::stringstream keyString;
-
-	//Build the map key
-	keyString << (int)layer << "_" <<(int)objectType << "_" << (int)shaderType;
 	BatchKey key = std::make_tuple(layer, objectType, (GLuint)0, shaderType, RenderBlendMode::BLEND);
 
 	//See if the drawBatch for this combo exists yet
@@ -465,19 +477,6 @@ void RendererGL::prepTexture(OpenGLTexture* texture)
 	glTexImage2D(GL_TEXTURE_2D, 0, texture_format, surf->w, surf->h, 0, texture_format, GL_UNSIGNED_BYTE, surf->pixels);
 
 	return;
-}
-
-void RendererGL::renderPrimitives(int layerIndex)
-{
-
-	for (auto& line : m_primitiveLines) {
-
-		drawLine(line.pointA, line.pointB, line.color, layerIndex);
-
-	}
-
-	m_primitiveLines.clear();
-
 }
 
 bool RendererGL::isRenderingToScreen()
