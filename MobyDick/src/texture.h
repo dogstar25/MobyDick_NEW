@@ -2,7 +2,6 @@
 
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
-#include <glad/glad.h>
 #include "RendererGL.h"
 
 class Texture

@@ -325,7 +325,7 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 	or it is being parallaxed , or this is a render to a texture, not the screen then render it
 	*/
 	if (SDL_HasIntersection(&gameObjectPosRect, &cameraRect)  ||
-		game->renderer()->isRenderingToScreen() == false ||
+		game->renderer()->currentRenderTargetType() == RenderTargetType::TEXTURE ||
 		transform->absolutePositioning() == true || 
 		m_parallaxRate.has_value() == true )
 	{

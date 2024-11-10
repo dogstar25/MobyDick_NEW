@@ -198,7 +198,7 @@ int SoundComponent::_calculateSoundDistanceAdjustment(SDL_FPoint playerPosition,
 	return soundMagnitude;
 }
 
-float SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfSightAdjustment)
+int SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfSightAdjustment)
 {
 
 	const auto& player = parent()->parentScene()->player();

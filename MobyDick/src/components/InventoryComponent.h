@@ -63,7 +63,7 @@ class InventoryComponent : public Component
 		std::vector<std::optional<std::shared_ptr<GameObject>>> m_items{};
 		std::map<CollectibleTypes, int> m_collectibles{};
 		std::optional<std::weak_ptr<GameObject>> m_displayObject{};
-		float m_maxCapacity{};
+		int m_maxCapacity{};
 
 		void _removeFromWorldPass();
 

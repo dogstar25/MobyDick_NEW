@@ -64,9 +64,9 @@ Shader::Shader(GLShaderType shaderType)
 	//Link and use the program
 	glLinkProgram(m_shaderProgramId);
 
-    //cleanup
-    //glDeleteShader(m_vertextShaderId);
-    //glDeleteShader(m_fragmentShaderId);
+    //Get and store various uniforms locations
+    m_projectionMatrixUniformId = glGetUniformLocation(m_shaderProgramId, "u_projection_matrix");
+    m_textureUniformId = glGetUniformLocation(m_shaderProgramId, "u_Texture");
 
 
 }

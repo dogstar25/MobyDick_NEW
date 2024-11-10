@@ -1476,20 +1476,20 @@ void GameObject::_imGuiDebugObject()
 		renderComponent->setColorAlpha(alpha);
 
 		//Width
-		static int width = transformComponent->getPositionRect().w;
+		static int width = static_cast<int>(transformComponent->getPositionRect().w);
 		ImGui::InputInt("#width", &width,3, 100);
 
 		//Height
-		static int height = transformComponent->getPositionRect().h;
+		static int height = static_cast<int>(transformComponent->getPositionRect().h);
 		ImGui::InputInt("#height", &height, 3, 100);
-		transformComponent->setSize(width, height);
+		transformComponent->setSize(static_cast<float>(width), static_cast<float>(height));
 
 		//XPos
-		static int xPos = transformComponent->getCenterPosition().x;
+		static int xPos = static_cast<int>(transformComponent->getCenterPosition().x);
 		ImGui::InputInt("#xPos", &xPos, 3, 100);
 
 		//yPos
-		static int yPos = transformComponent->getCenterPosition().y;
+		static int yPos = static_cast<int>(transformComponent->getCenterPosition().y);
 		ImGui::InputInt("#yPos", &yPos, 3, 100);
 
 		transformComponent->setPosition(SDL_FPoint{(float)xPos,(float)yPos});

@@ -796,6 +796,7 @@ PositionAlignment ChildrenComponent::_translateStandardSlotPositionAlignment(std
 
 	SDL_assert(false && "No match for slotType!");
 
+	return PositionAlignment::CENTER;
 }
 
 std::vector<SlotMeasure> ChildrenComponent::_calculateSlotMeasurements(std::string slotKey)

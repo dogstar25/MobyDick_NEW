@@ -232,14 +232,8 @@ void Game::_displayLoadingMsg()
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-		//here how we get the texureId used by imgui
-		//USE it here below ToDo!
-		int test = (GLuint)ImGui::GetIO().Fonts->TexID;
-		/////
-
 		std::shared_ptr<OpenGLTexture> openGLTexture = std::make_shared<OpenGLTexture>();
 
-		
 		glGenTextures(1, &displayLoadingTextureId);
 		
 		openGLTexture->textureId = displayLoadingTextureId;

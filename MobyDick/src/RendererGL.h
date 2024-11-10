@@ -49,7 +49,6 @@ public:
 	const GLDrawer& spriteDrawer(){ return m_spriteDrawer; }
 	const GLDrawer& lineDrawer() { return m_lineDrawer; }
 	void prepTexture(OpenGLTexture* texture);
-	virtual bool isRenderingToScreen() override;
 
 	virtual void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer) override;
 	virtual void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer) override;
@@ -69,22 +68,21 @@ public:
 
 private:
 
-	void _addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, GLShaderType shaderType,
-		RenderBlendMode textureBlendMode, int layer);
-	void _addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer);
-	
-	GLuint _addTexture(Texture* texture);
 	SDL_GLContext m_glcontext{};
 	GLDrawer m_spriteDrawer;
 	GLDrawer m_lineDrawer;
-
-	//Projection matrix
 	glm::mat4  m_projectionMatrix{1.0};
-
 	using BatchKey = std::tuple<int, GLDrawerType, GLuint, GLShaderType, RenderBlendMode>;
 	std::map<BatchKey, std::shared_ptr<DrawBatch>> m_drawBatches;
-
 	std::array<Shader, int(GLShaderType::count) +1> m_shaders;
+	std::vector<LineVertex> m_lineVertexBuffer;
+	std::vector<SpriteVertex> m_spriteVertexBuffer;
+
+	void _addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, GLShaderType shaderType,
+		RenderBlendMode textureBlendMode, int layer);
+	void _addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer);
+
+
 
 	
 };

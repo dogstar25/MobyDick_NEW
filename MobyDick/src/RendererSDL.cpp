@@ -7,7 +7,7 @@ extern std::unique_ptr<Game> game;
 
 RendererSDL::RendererSDL()
 {
-
+	
 }
 
 void RendererSDL::init(SDL_Window* window)
@@ -179,6 +179,9 @@ int RendererSDL::setRenderTarget(Texture* targetTexture)
 {
 
 	auto result = SDL_SetRenderTarget(m_sdlRenderer, static_cast<SDLTexture*>(targetTexture)->sdlTexture);
+
+	m_currentRenderTargetType = RenderTargetType::TEXTURE;
+
 	return result;
 
 }
@@ -187,6 +190,8 @@ void RendererSDL::resetRenderTarget()
 {
 
 	SDL_SetRenderTarget(m_sdlRenderer, NULL);
+
+	m_currentRenderTargetType = RenderTargetType::SCREEN;
 
 }
 
@@ -208,17 +213,5 @@ std::shared_ptr<Texture> RendererSDL::createEmptyTexture(int width, int height, 
 	return texture;
 }
 
-bool RendererSDL::isRenderingToScreen()
-{
-	auto renderingToScreen = SDL_GetRenderTarget(game->renderer()->sdlRenderer());
-
-	//A null retuned means we are rendering to the screen instead of a texture
-	if (renderingToScreen) {
-		return false;
-	}
-	else {
-		return true;
-	}
-}
 
 

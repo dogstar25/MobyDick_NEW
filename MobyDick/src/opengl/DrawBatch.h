@@ -1,11 +1,9 @@
 #pragma once
-#include <glad/glad.h>
 #include <vector>
 #include <memory>
 
 #include "GLDrawer.h"
 #include "Vertex.h"
-//#include "IndexBuffer.h"
 #include "Shader.h"
 #include "../texture.h"
 

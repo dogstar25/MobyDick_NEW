@@ -66,6 +66,13 @@ enum class RenderBlendMode {
 
 };
 
+enum class RenderTargetType {
+
+	SCREEN,
+	TEXTURE
+
+};
+
 class Texture;
 
 class Renderer
@@ -74,6 +81,8 @@ public:
 
 	Renderer() = default;
 	~Renderer() = default;
+
+	RenderTargetType currentRenderTargetType() { return m_currentRenderTargetType; }
 
 	virtual void init(SDL_Window* window) = 0;;
 	virtual bool present() = 0;
@@ -97,13 +106,13 @@ public:
 	virtual int setRenderTarget(Texture* targetTexture) = 0;
 	virtual void resetRenderTarget() = 0;
 	virtual std::shared_ptr<Texture> createEmptyTexture(int width, int height, std::string name) = 0;
-	virtual bool isRenderingToScreen()=0;
 
 
 protected:
 
 	void outlineObject(SDL_FRect quad, SDL_Color color, GameLayer layer);
-	
+
+	RenderTargetType m_currentRenderTargetType{ RenderTargetType ::SCREEN};
 
 };
 

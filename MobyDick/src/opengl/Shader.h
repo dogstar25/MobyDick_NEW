@@ -27,6 +27,8 @@ public:
 	GLuint vertexshaderId() { return m_vertextShaderId; }
 	GLuint fragmentshaderId() { return m_fragmentShaderId; }
 	GLuint shaderProgramId() { return m_shaderProgramId; }
+	GLuint projectionMatrixUniformId() { return m_projectionMatrixUniformId; }
+	GLuint textureUniformId() { return m_textureUniformId; }
 	
 
 private:
@@ -36,6 +38,8 @@ private:
 	unsigned int m_fragmentShaderId{};
 	GLuint m_shaderId{};
 	GLuint m_shaderProgramId{};
+	GLuint m_projectionMatrixUniformId{};
+	GLuint m_textureUniformId{};
 
 
 	ShaderSource _parseShaderSource(const std::string& shaderFilename);
