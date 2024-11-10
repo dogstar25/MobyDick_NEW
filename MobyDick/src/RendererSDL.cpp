@@ -51,27 +51,26 @@ SDL_Texture* RendererSDL::createTextureFromSurface(SDL_Surface* surface)
 	return sdlTexture;
 }
 
-
-void RendererSDL::drawPoints(SDL_FPoint* points, SDL_Color color)
+void RendererSDL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer)
 {
-	SDL_Color saveCurrentColor = {};
-	SDL_GetRenderDrawColor(m_sdlRenderer, &saveCurrentColor.r, &saveCurrentColor.g, &saveCurrentColor.b, &saveCurrentColor.a);
-	SDL_SetRenderDrawColor(m_sdlRenderer, color.r, color.b, color.g, color.a);
 
-	SDL_RenderDrawLinesF(m_sdlRenderer, points, 5);
-
-	SDL_SetRenderDrawColor(m_sdlRenderer, saveCurrentColor.r, saveCurrentColor.b, saveCurrentColor.g, saveCurrentColor.a);
+	SDL_SetRenderDrawColor(m_sdlRenderer, color.r, color.g, color.b, color.a);
+	SDL_RenderDrawLineF(m_sdlRenderer, pointA.x, pointA.y, pointB.x, pointB.y);
 
 }
 
-//void RendererSDL::drawLine(b2Vec2 start, b2Vec2 end, SDL_Color color)
-//{
-//
-//	SDL_SetRenderDrawColor(m_sdlRenderer, color.r, color.b, color.g, color.a);
-//	SDL_RenderDrawLineF(m_sdlRenderer, start.x, start.y, end.x, end.y);
-//
-//}
 
+void RendererSDL::drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer)
+{
+	//SDL_Color saveCurrentColor = {};
+	//SDL_GetRenderDrawColor(m_sdlRenderer, &saveCurrentColor.r, &saveCurrentColor.g, &saveCurrentColor.b, &saveCurrentColor.a);
+	SDL_SetRenderDrawColor(m_sdlRenderer, color.r, color.b, color.g, color.a);
+
+	SDL_RenderDrawLinesF(m_sdlRenderer, points.data(), 5);
+
+	//SDL_SetRenderDrawColor(m_sdlRenderer, saveCurrentColor.r, saveCurrentColor.b, saveCurrentColor.g, saveCurrentColor.a);
+
+}
 
 void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
 	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
@@ -132,22 +131,8 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 	//outline the object if defined to
 	if (outline) {
 
-		outlineObject(destQuad, outlineColor);
+		outlineObject(destQuad, outlineColor, (GameLayer)layer);
 	}
-
-}
-
-void RendererSDL::renderPrimitives(int layerIndex)
-{
-
-	for (auto& line : m_primitiveLines) {
-
-		SDL_SetRenderDrawColor(m_sdlRenderer, line.color.r, line.color.g, line.color.b, line.color.a);
-		SDL_RenderDrawLineF(m_sdlRenderer, line.pointA.x, line.pointA.y, line.pointB.x, line.pointB.y);
-
-	}
-
-	m_primitiveLines.clear();
 
 }
 

@@ -24,11 +24,14 @@ public:
 	virtual void setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) override;
 	bool clear();
 	SDL_Texture* createTextureFromSurface(SDL_Surface* surface);
-	void drawPoints(SDL_FPoint*, SDL_Color color);
+	
+	void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer);
+
+	void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer);
 	void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
 		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) override;
 
-	void renderPrimitives(int layerIndex);
+	//void renderPrimitives(int layerIndex);
 	void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
 		bool clear = false, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID) override;
 

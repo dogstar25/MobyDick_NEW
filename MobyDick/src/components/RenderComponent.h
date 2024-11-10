@@ -42,7 +42,6 @@ public:
 	void setColor(int red, int green, int blue, int alpha);
 	void setTexture(std::shared_ptr<Texture> texture) { m_texture = texture; }
 
-	void outlineObject(SDL_Color color);
 	void setDependencyReferences(GameObject* gameObject);
 	void applyDisplayOverlay(DisplayOverlay displayOverlay);
 	void removeDisplayOverlay();

@@ -1,15 +1,19 @@
+#pragma once
+
+#include <memory>
+
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl.h"
+#include "IMGui/IMGuiUtil.h"
+
+#include <SDL2/SDL_ttf.h>
 
 #include "Game.h"
 #include "SceneManager.h"
 #include "GameObject.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl.h"
-#include "IMGui/IMGuiUtil.h"
 #include "SoundManager.h"
 #include "GameStateManager.h"
 #include "NavigationManager.h"
-#include <memory>
-#include <SDL2/SDL_ttf.h>
 
 
 Game::~Game()
@@ -71,13 +75,11 @@ bool Game::init(
 		m_gameScreenResolution = gameResolution.value();
 	}
 
-	//SDL_HINT_RENDER_SCALE_QUALITY
-
 	//Create the game window
 	uint16 windowFlags = 0 | SDL_WINDOW_OPENGL;
 	if (GameConfig::instance().windowFullscreen() == true)
 	{
-		//Swict these depending on if you are building for a release executable or just local development
+		//Switch these depending on if you are building for a release executable or just local development
 		//SDL_WINDOW_FULLSCREEN_DESKTOP for local development
 		//windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN;
 		windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -94,8 +96,6 @@ bool Game::init(
 		m_gameScreenResolution.x,
 		m_gameScreenResolution.y,
 		windowFlags);
-
-	//SDL_GL_SetSwapInterval(1);
 
 	if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
@@ -124,17 +124,6 @@ void Game::play()
 
 
 	while (m_gameState != GameState::QUIT) {
-
-		//Test spot for detecting if user has alt tabbed out of game
-		//SDL_GetWindowFlags
-		//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "error", "There was an error", this->window());
-		//SDL_assert
-		//setenv("SDL_VIDEO_MINIMIZE_ON_FOCUS", "0", 0);
-		//SDL_HINT_ALLOW_ALT_TAB_WHILE_GRABBED
-		//SDL_WINDOWEVENT_FOCUS_GAINED
-		//SDL_SetWindowKeyboardGrab
-		//SDL_SetWindowMouseGrab
-
 
 		std::optional<SceneAction> action = SceneManager::instance().pollEvents();
 

@@ -183,6 +183,5 @@ private:
 	bool _updateNavigationMap();
 	void _resetRenderSequence() { m_renderSequence = 0; }
 	
-
 };
 

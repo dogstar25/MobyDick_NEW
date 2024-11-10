@@ -55,7 +55,6 @@ namespace displayOverlays {
 	*/
 }
 
-
 enum class RenderBlendMode {
 
 	BLEND,
@@ -66,22 +65,6 @@ enum class RenderBlendMode {
 	CUSTOM_1_MASKED_OVERLAY
 
 };
-
-struct PrimitivePoint{
-	glm::vec2 point{};
-	glm::uvec4 color{};
-};
-
-class PrimitiveLine {
-
-public:
-	//PrimitiveLine(glm::vec2 pointA, glm::vec2 pointB, glm::vec4 color) :
-	//	pointA(pointA), pointB(pointB), color(color) {}
-	glm::vec2 pointA{};
-	glm::vec2 pointB{};
-	glm::uvec4 color{};
-};
-
 
 class Texture;
 
@@ -98,11 +81,6 @@ public:
 	virtual void setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)=0;
 	virtual void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
 		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) = 0;
-	virtual void renderPrimitives(int layerIndex) = 0;
-
-	void addLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color);
-	void addLine(PrimitiveLine line);
-	void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color = { 255,255,255,255 });
 
 	//SDL Specific stuff
 	virtual SDL_Texture* createTextureFromSurface(SDL_Surface* surface) = 0;
@@ -110,6 +88,10 @@ public:
 	virtual void drawBatches() {};
 	virtual void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
 		bool clear = false, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID) {};
+
+	virtual void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer) = 0;
+	virtual void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer) = 0;
+
 
 	//new
 	virtual int setRenderTarget(Texture* targetTexture) = 0;
@@ -120,10 +102,7 @@ public:
 
 protected:
 
-	void outlineObject(SDL_FRect quad, SDL_Color color);
-	
-	std::vector<PrimitivePoint> m_primitivePoints{};
-	std::vector<PrimitiveLine> m_primitiveLines{};
+	void outlineObject(SDL_FRect quad, SDL_Color color, GameLayer layer);
 	
 
 };
