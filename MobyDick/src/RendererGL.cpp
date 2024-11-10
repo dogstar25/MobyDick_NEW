@@ -12,7 +12,8 @@ extern std::unique_ptr<Game> game;
 RendererGL::RendererGL()
 {
 
-
+	m_lineVertexBuffer.reserve(2);
+	m_spriteVertexBuffer.reserve(4);
 }
 
 RendererGL::~RendererGL()
@@ -128,22 +129,12 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 	auto normalizedcolor = util::glNormalizeColor(color);
 
-	//if (static_cast<OpenGLTexture*>(texture)->textureId == 16) {
-
-	//	int todd = 1;
-	//	destQuad.x = 0;
-	//	destQuad.y = 0;
-
-
-	//}
-
 	glm::vec2 glPosition{ destQuad.x, destQuad.y};
 	glm::vec2 glSize{ destQuad.w, destQuad.h };
 	glm::vec4 glColor{ normalizedcolor.r, normalizedcolor.g, normalizedcolor.b, normalizedcolor.a};
-	//std::shared_ptr<SpriteVertex> vertex;
 
 	//Array of 4 vertices
-	std::vector<SpriteVertex> spriteVertexBuffer;
+	m_spriteVertexBuffer.clear();
 
 	//Initilaize a new translation matrix with one to start it out as an identity matrix
 	glm::mat4 translationMatrix(1.0f);
@@ -166,16 +157,16 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 	//xPosition values
 	int x1 = 0;
-	int x2 = glSize.x;
-	int x3 = glSize.x;
+	int x2 = static_cast<int>(glSize.x);
+	int x3 = static_cast<int>(glSize.x);
 	int x4 = 0;
 
 	//Horizontal Flip
 	if (texture->applyFlip == true) {
-		x1 = glSize.x;
+		x1 = static_cast<int>(glSize.x);
 		x2 = 0;
 		x3 = 0;
-		x4 = glSize.x;
+		x4 = static_cast<int>(glSize.x);
 	}
 
 	SpriteVertex vertex;
@@ -187,7 +178,7 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ calculatedTextureCoordinates.x, calculatedTextureCoordinates.y }, 
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
 	//v1
 	vertex.positionAttribute = glm::vec3{ x2, 0, zIndex };
@@ -199,7 +190,7 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
 
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
 	//v2
 	vertex.positionAttribute = glm::vec3{ x3, glSize.y, zIndex };
@@ -211,7 +202,7 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
 
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
 	//v3
 	vertex.positionAttribute = glm::vec3{ x4, glSize.y, zIndex };
@@ -223,7 +214,7 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
 
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
 	if (static_cast<OpenGLTexture*>(texture)->textureId == 16) {
 
@@ -233,7 +224,7 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 	//Apply the tranlation matrix to each vertex
 	for (int i = 0; i < 4; i++) {
 
-		spriteVertexBuffer[i].positionAttribute = translationMatrix * glm::vec4(spriteVertexBuffer[i].positionAttribute, 1.0);
+		m_spriteVertexBuffer[i].positionAttribute = translationMatrix * glm::vec4(m_spriteVertexBuffer[i].positionAttribute, 1.0);
 
 	}
 
@@ -241,12 +232,11 @@ void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 	auto shadertype = GLShaderType::BASIC;
 	//auto shadertype = GLShaderType::GLOW;
 
-	if (GameConfig::instance().openGLBatching() == true && isRenderingToScreen()){
-		_addVertexBufferToBatch(spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
+	if (GameConfig::instance().openGLBatching() == true && m_currentRenderTargetType == RenderTargetType::SCREEN){
+		_addVertexBufferToBatch(m_spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
 	}
 	else {
-		Shader& shader = static_cast<RendererGL*>(game->renderer())->shader(shadertype);
-		m_spriteDrawer.draw(spriteVertexBuffer, spriteindexBuffer, shader, texture, textureBlendMode);
+		m_spriteDrawer.draw(m_spriteVertexBuffer, spriteindexBuffer, this->shader(shadertype), texture, textureBlendMode);
 
 	}
 
@@ -266,7 +256,7 @@ void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, 
 	glm::vec4 redcolor = util::glNormalizeColor(glm::uvec4(255,0,0,255));
 
 	//Array of 4 vertices
-	std::vector<LineVertex> lineVertexBuffer;
+	m_lineVertexBuffer.clear();
 
 	//
 	// Vertex Buffer Data
@@ -278,22 +268,21 @@ void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, 
 	//v0
 	vertex.positionAttribute = glm::vec3{ pointA.x, pointA.y, zIndex };
 	vertex.colorAttribute = normalizedcolor;
-	lineVertexBuffer.push_back(vertex);
+	m_lineVertexBuffer.push_back(vertex);
 
 	//v1
 	vertex.positionAttribute = glm::vec3{ pointB.x, pointB.y, zIndex };
 	vertex.colorAttribute = normalizedcolor;
-	lineVertexBuffer.push_back(vertex);
+	m_lineVertexBuffer.push_back(vertex);
 
 	//shader needs to be passed in
 	auto shadertype = GLShaderType::LINE;
 
-	if (GameConfig::instance().openGLBatching() == true && isRenderingToScreen()) {
-		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype, (int)layer);
+	if (GameConfig::instance().openGLBatching() == true && m_currentRenderTargetType == RenderTargetType::SCREEN) {
+		_addVertexBufferToBatch(m_lineVertexBuffer, GLDrawerType::GLLINE, shadertype, (int)layer);
 	}
 	else {
-		Shader shader = static_cast<RendererGL*>(game->renderer())->shader(shadertype);
-		m_lineDrawer.draw(lineVertexBuffer, 2, shader);
+		m_lineDrawer.draw(m_lineVertexBuffer, 2, this->shader(shadertype));
 	}
 
 }
@@ -312,18 +301,6 @@ void RendererGL::drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, Gam
 
 	}
 
-}
-
-void RendererGL::resetRenderTarget() 
-{
-	// Unbind the framebuffer (go back to the default framebuffer, i.e., the screen)
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//Reset projection Matrix
-	m_projectionMatrix = glm::ortho(0.0f, (float)game->gameScreenResolution().x, (float)game->gameScreenResolution().y, 0.0f, 0.0f, 10.0f);
-
-	// Reset viewport to the window size
-	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
 }
 
 std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height, std::string name)
@@ -375,6 +352,20 @@ std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height, s
 	return texture;
 }
 
+void RendererGL::resetRenderTarget()
+{
+	// Unbind the framebuffer (go back to the default framebuffer, i.e., the screen)
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//Reset projection Matrix
+	m_projectionMatrix = glm::ortho(0.0f, (float)game->gameScreenResolution().x, (float)game->gameScreenResolution().y, 0.0f, 0.0f, 10.0f);
+
+	// Reset viewport to the window size
+	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
+
+	m_currentRenderTargetType = RenderTargetType::SCREEN;
+}
+
 
 int RendererGL::setRenderTarget(Texture* targetTexture)
 {
@@ -388,6 +379,9 @@ int RendererGL::setRenderTarget(Texture* targetTexture)
 
 	// Set the viewport to the size of the target texture
 	glViewport(0, 0, targetTexture->textureAtlasQuad.w, targetTexture->textureAtlasQuad.h);
+
+
+	m_currentRenderTargetType = RenderTargetType::TEXTURE;
 
 	return 0;
 }
@@ -479,19 +473,4 @@ void RendererGL::prepTexture(OpenGLTexture* texture)
 	return;
 }
 
-bool RendererGL::isRenderingToScreen()
-{
-	GLint currentFramebuffer = 0;
-	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
-
-	if (currentFramebuffer == 0) {
-
-		return true;
-	}
-	else {
-		return false;
-	}
-
-	return false;
-}
 

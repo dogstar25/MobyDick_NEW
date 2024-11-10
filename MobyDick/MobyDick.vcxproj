@@ -276,7 +276,10 @@
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\ContactFilter.cpp" />
     <ClCompile Include="src\opengl\GLDrawer.cpp" />
-    <ClCompile Include="src\RendererGL.cpp" />
+    <ClCompile Include="src\RendererGL.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
+    </ClCompile>
     <ClCompile Include="src\opengl\Shader.cpp" />
     <ClCompile Include="src\opengl\DrawBatch.cpp" />
     <ClCompile Include="src\particleEffects\ParticleEffectsFactory.cpp" />
@@ -317,7 +320,10 @@
     <ClCompile Include="src\Clock.cpp" />
     <ClCompile Include="src\components\TransformComponent.cpp" />
     <ClCompile Include="src\components\WeaponComponent.cpp" />
-    <ClCompile Include="src\DebugDraw.cpp" />
+    <ClCompile Include="src\DebugDraw.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
+    </ClCompile>
     <ClCompile Include="src\EnumMap.cpp" />
     <ClCompile Include="src\GameConfig.cpp" />
     <ClCompile Include="src\GameObject.cpp" />

@@ -108,7 +108,7 @@ namespace ImGui
 		auto windowWidth = ImGui::GetWindowSize().x;
 		auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
 
-		int diff = std::fmax((windowWidth - textWidth), 0.);
+		float diff = std::fmax((windowWidth - textWidth), 0.);
 		if (diff == 0.) {
 			ImGui::SetCursorPosX(10);
 		}

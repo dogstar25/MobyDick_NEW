@@ -15,7 +15,7 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, GameObject* pa
 
 	m_componentType = ComponentTypes::INVENTORY_COMPONENT;
 	
-	m_maxCapacity = componentJSON["maxCapacity"].asFloat();
+	m_maxCapacity = componentJSON["maxCapacity"].asInt();
 	m_isAlwaysOpen = componentJSON["isAlwaysOpen"].asBool();
 
 	//Create the display object

@@ -227,7 +227,7 @@ void GridDisplayComponent::addItem(std::shared_ptr<GameObject> itemObject, int s
 void GridDisplayComponent::addItem(std::shared_ptr<GameObject> itemObject, SDL_FPoint gridLocation)
 {
 
-	int slotIndex = gridLocation.y * m_columns + gridLocation.x;
+	int slotIndex = static_cast<int>(gridLocation.y) * m_columns + static_cast<int>(gridLocation.x);
 	m_gridSlots[slotIndex].gameObject = itemObject;
 
 }

@@ -30,16 +30,8 @@ GLDrawer::GLDrawer(GLDrawerType drawerType)
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	switch (drawerType){
-		case GLDrawerType::GLSPRITE:
-			m_vertexSize = sizeof(SpriteVertex);
-			break;
-		case GLDrawerType::GLLINE:
-			//m_vertexSize = sizeof(SpriteVertex);
-			break;
-	}
-
-
+	//Get a reference to the openGL renderer
+	m_rendererGL = static_cast<RendererGL*>(game->renderer());
 
 }
 
@@ -114,16 +106,12 @@ void GLDrawer::draw(const std::vector<SpriteVertex>& spriteVertices, const std::
 		glUseProgram(shaderProgramId);
 	}
 
-	//Set the Projection matrix uniform
-	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
+	glm::mat4 projection_matrix = m_rendererGL->projectionMatrix();
 
-	glm::mat4 projection_matrix = static_cast<RendererGL*>(game->renderer())->projectionMatrix();
-
-	glUniformMatrix4fv(matrixId, 1, false, (float*)&projection_matrix);
+	glUniformMatrix4fv(shader.projectionMatrixUniformId(), 1, false, (float*)&projection_matrix);
 
 	//Initialize the texture and set the texture uniform
-	GLuint textureArrayUniformId = glGetUniformLocation(shader.shaderProgramId(), "u_Texture");
-	glUniform1i(textureArrayUniformId, 0);
+	glUniform1i(shader.textureUniformId(), 0);
 
 	GLuint textureId = static_cast<OpenGLTexture*>(texture)->textureId;
 	if (m_lastTextureId != textureId) {
@@ -169,9 +157,8 @@ void GLDrawer::draw(const std::vector<LineVertex>& lineVertices, int vertexCount
 	}
 
 	//Set the Projection matrix uniform
-	GLuint matrixId = glGetUniformLocation(shader.shaderProgramId(), "u_projection_matrix");
-	auto projection_matrix = static_cast<RendererGL*>(game->renderer())->projectionMatrix();
-	glUniformMatrix4fv(matrixId, 1, false, (float*)&projection_matrix);
+	auto projection_matrix = m_rendererGL->projectionMatrix();
+	glUniformMatrix4fv(shader.projectionMatrixUniformId(), 1, false, (float*)&projection_matrix);
 
 	//Submit the vertices
 	auto swize = sizeof(LineVertex);

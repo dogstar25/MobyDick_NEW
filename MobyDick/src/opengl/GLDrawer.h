@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-
 #include <vector>
 
 #include "Vertex.h"
@@ -10,6 +8,7 @@
 #include "../BaseConstants.h"
 
 class Texture;
+class RendererGL;
 
 class GLDrawer
 {
@@ -33,13 +32,14 @@ private:
 	GLuint m_vaoId{};
 	GLuint m_vboId{};
 	GLuint m_iboId{};
-	float m_vertexSize{};
 
 	void _setVertexBufferAttriubuteLayout(GLDrawerType drawerType);
 
 	static RenderBlendMode m_lastRenderBlendMode;
 	static GLuint m_lastTextureId;
 	static GLuint m_lastShaderProgramId;
+
+	RendererGL* m_rendererGL{};
 
 
 };

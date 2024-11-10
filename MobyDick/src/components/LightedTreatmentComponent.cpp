@@ -159,29 +159,3 @@ bool LightedTreatmentComponent::_hasLineOfSightToLitArea(GameObject* lightObject
 
 }
 
-//void LightedTreatmentComponent::render()
-//{
-
-	//SDL_Texture* outputTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
-	//	SDL_TEXTUREACCESS_STREAMING, parent()->getSize().x, parent()->getSize().y);
-
-	////Render the Dark onto this temporary texture object
-	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), outputTexture);
-
-	//parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render();
-
-
-
-	////Set the renderer to target the main window again
-	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), nullptr);
-
-	////Now render the new texture like normal
-	//parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render();
-
-
-
-
-
-
-
-//}
