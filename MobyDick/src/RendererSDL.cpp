@@ -21,6 +21,19 @@ void RendererSDL::init(SDL_Window* window)
 	m_sdlRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(m_sdlRenderer, 0, 0, 0, 0);
 
+
+	SDL_RendererInfo rendererInfo;
+	if (SDL_GetRendererInfo(m_sdlRenderer, &rendererInfo) == 0) {
+		int maxTextureWidth = rendererInfo.max_texture_width;
+		int maxTextureHeight = rendererInfo.max_texture_height;
+
+		std::cout << "Maximum texture size: " << maxTextureWidth << " x " << maxTextureHeight << std::endl;
+	}
+	else {
+		std::cerr << "Failed to get renderer info: " << SDL_GetError() << std::endl;
+	}
+
+
 }
 
 bool RendererSDL::present()

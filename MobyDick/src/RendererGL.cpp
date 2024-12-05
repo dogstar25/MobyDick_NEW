@@ -79,7 +79,8 @@ void RendererGL::init(SDL_Window* window)
 		glDebugMessageCallback(GLDebugCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
-	
+
+
 }
 
 void RendererGL::setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
