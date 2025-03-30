@@ -55,20 +55,19 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 	points.push_back(firstPoint);
 
 	SDL_Color sdlColor = { 255,255,255,255 };
-	game->renderer()->drawPoints(points);
-	//RendererSDL::instance().drawPoints(points, sdlColor);
+	game->renderer()->drawPoints(points, sdlColor, GameLayer::GRID_DISPLAY);
 
 }
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& color)
 {
 	b2Vec2 axis;
-	DrawSolidCircle(center, radius, axis, color);
+	//DrawSolidCircle(center, radius, axis, color);
 }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
 {
-
+	
 	//convert to propert game scale
 	b2Vec2 newCenter = center;
 	newCenter.x *= GameConfig::instance().scaleFactor();
@@ -103,8 +102,7 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 		glm::vec2 startPoint = {start.x, start.y};
 		glm::vec2 endPoint = { end.x, end.y };
 		glm::uvec4 color = { 255,255,255,255 };
-		game->renderer()->addLine(startPoint, endPoint, color);
-		//game->renderer()->drawLine(start, end, sdlColor);
+		game->renderer()->drawLine(startPoint, endPoint, color, GameLayer::GRID_DISPLAY);
 	}
 
 
@@ -138,7 +136,7 @@ void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c
 	points.push_back(point);
 
 	SDL_Color sdlColor = { 255,255,255,255 };
-	game->renderer()->drawPoints(points);
+	game->renderer()->drawPoints(points, sdlColor, GameLayer::GRID_DISPLAY);
 
 }
 

@@ -51,7 +51,7 @@ private:
 
 
 	int _calculateSoundDistanceAdjustment(SDL_FPoint, SDL_FPoint, int soundRange, int lineOfSightAdjustment);
-	float _adjustForLineOfSight(int currentSOundMagnitude, int lineOfSightAdjustment);
+	int _adjustForLineOfSight(int currentSOundMagnitude, int lineOfSightAdjustment);
 	
 
 };

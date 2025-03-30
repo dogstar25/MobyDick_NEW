@@ -2,6 +2,7 @@
 #pragma warning(disable : 4251)
 #pragma warning(disable : 4275)
 
+
 //Base
 #include <iostream>
 #include <filesystem>
@@ -18,8 +19,8 @@
 
 
 //Vendors
-//#include "vcpkg_installed/x64-windows/x64-windows/include/json/json.h"
 #include <json/json.h>
+
 #include <box2d/box2d.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -112,7 +113,7 @@
 #include "../src/opengl/DrawBatch.h"
 #include "../src/opengl/GLDebugCallback.h"
 #include "../src/opengl/GLDrawer.h"
-#include "../src/opengl/GLRenderer.h"
+#include "../src/RendererGL.h"
 #include "../src/opengl/LineDrawBatch.h"
 #include "../src/opengl/Shader.h"
 //#include "../src/opengl/shaderCode.h"

@@ -1,21 +1,22 @@
-#include "GLRenderer.h"
+#include "RendererGL.h"
 
 
-#include "LineDrawBatch.h"
-#include "SpriteDrawBatch.h"
-#include "../IMGui/IMGuiUtil.h"
+#include "opengl/LineDrawBatch.h"
+#include "opengl/SpriteDrawBatch.h"
+#include "IMGui/IMGuiUtil.h"
 
-#include "../game.h"
+#include "game.h"
 
 extern std::unique_ptr<Game> game;
 
-GLRenderer::GLRenderer()
+RendererGL::RendererGL()
 {
 
-
+	m_lineVertexBuffer.reserve(2);
+	m_spriteVertexBuffer.reserve(4);
 }
 
-GLRenderer::~GLRenderer()
+RendererGL::~RendererGL()
 {
 
 	//glDeleteTextures(1, texture_id);
@@ -27,7 +28,7 @@ GLRenderer::~GLRenderer()
 }
 
 
-void GLRenderer::init(SDL_Window* window)
+void RendererGL::init(SDL_Window* window)
 {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
@@ -42,8 +43,11 @@ void GLRenderer::init(SDL_Window* window)
 
 	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-
 	SDL_GLContext m_glcontext = SDL_GL_CreateContext(window);
+
+	if (SDL_GL_SetSwapInterval(1) != 0) {
+		std::cerr << "Warning: Unable to disable VSync. " << SDL_GetError() << std::endl;
+	}
 
 	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
 	{
@@ -75,13 +79,17 @@ void GLRenderer::init(SDL_Window* window)
 		glDebugMessageCallback(GLDebugCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
-	
-	//Generate the maximum number of possible texture Id's
-	glGenTextures((int)GL_TextureIndexType::COUNT, m_textureIds);
+
 
 }
 
-bool GLRenderer::clear()
+void RendererGL::setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+
+	glClearColor(static_cast<GLfloat>(r), static_cast<GLfloat>(g), static_cast<GLfloat>(b), static_cast<GLfloat>(a));
+}
+
+bool RendererGL::clear()
 {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -89,14 +97,16 @@ bool GLRenderer::clear()
 	return true;
 }
 
-void GLRenderer::drawBatches()
+void RendererGL::drawBatches()
 {
 
 	//Draw each batch if batching is turned on
 	if (GameConfig::instance().openGLBatching() == true) {
 
 		for (auto& drawBatch : m_drawBatches) {
+
 			drawBatch.second->draw();
+
 		}
 
 		m_drawBatches.erase(m_drawBatches.begin(), m_drawBatches.end());
@@ -105,7 +115,7 @@ void GLRenderer::drawBatches()
 
 }
 
-bool GLRenderer::present()
+bool RendererGL::present()
 {
 
 	SDL_GL_SwapWindow(game->window());
@@ -114,20 +124,18 @@ bool GLRenderer::present()
 	return true;
 }
 
-void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride)
+void RendererGL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle,
+	bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode)
 {
 
 	auto normalizedcolor = util::glNormalizeColor(color);
 
-
 	glm::vec2 glPosition{ destQuad.x, destQuad.y};
 	glm::vec2 glSize{ destQuad.w, destQuad.h };
 	glm::vec4 glColor{ normalizedcolor.r, normalizedcolor.g, normalizedcolor.b, normalizedcolor.a};
-	//std::shared_ptr<SpriteVertex> vertex;
 
 	//Array of 4 vertices
-	std::vector<SpriteVertex> spriteVertexBuffer;
+	m_spriteVertexBuffer.clear();
 
 	//Initilaize a new translation matrix with one to start it out as an identity matrix
 	glm::mat4 translationMatrix(1.0f);
@@ -150,18 +158,17 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 
 	//xPosition values
 	int x1 = 0;
-	int x2 = glSize.x;
-	int x3 = glSize.x;
+	int x2 = static_cast<int>(glSize.x);
+	int x3 = static_cast<int>(glSize.x);
 	int x4 = 0;
 
 	//Horizontal Flip
 	if (texture->applyFlip == true) {
-		x1 = glSize.x;
+		x1 = static_cast<int>(glSize.x);
 		x2 = 0;
 		x3 = 0;
-		x4 = glSize.x;
+		x4 = static_cast<int>(glSize.x);
 	}
-
 
 	SpriteVertex vertex;
 	//v0
@@ -172,7 +179,7 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ calculatedTextureCoordinates.x, calculatedTextureCoordinates.y }, 
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
 	//v1
 	vertex.positionAttribute = glm::vec3{ x2, 0, zIndex };
@@ -184,7 +191,7 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
 
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
 	//v2
 	vertex.positionAttribute = glm::vec3{ x3, glSize.y, zIndex };
@@ -196,7 +203,7 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
 
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
 	//v3
 	vertex.positionAttribute = glm::vec3{ x4, glSize.y, zIndex };
@@ -208,12 +215,17 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 		{ texture->surface->w, texture->surface->h });
 	vertex.textureCoordsAttribute = normalizedTextureCoords;
 
-	spriteVertexBuffer.push_back(vertex);
+	m_spriteVertexBuffer.push_back(vertex);
 
+	if (static_cast<OpenGLTexture*>(texture)->textureId == 16) {
+
+		int todd = 1;
+
+	}
 	//Apply the tranlation matrix to each vertex
 	for (int i = 0; i < 4; i++) {
 
-		spriteVertexBuffer[i].positionAttribute = translationMatrix * glm::vec4(spriteVertexBuffer[i].positionAttribute, 1.0);
+		m_spriteVertexBuffer[i].positionAttribute = translationMatrix * glm::vec4(m_spriteVertexBuffer[i].positionAttribute, 1.0);
 
 	}
 
@@ -221,32 +233,31 @@ void GLRenderer::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Text
 	auto shadertype = GLShaderType::BASIC;
 	//auto shadertype = GLShaderType::GLOW;
 
-	if (GameConfig::instance().openGLBatching() == true) {
-		_addVertexBufferToBatch(spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
+	if (GameConfig::instance().openGLBatching() == true && m_currentRenderTargetType == RenderTargetType::SCREEN){
+		_addVertexBufferToBatch(m_spriteVertexBuffer, GLDrawerType::GLSPRITE, texture, shadertype, textureBlendMode, layer);
 	}
 	else {
-		Shader& shader = static_cast<GLRenderer*>(game->renderer())->shader(shadertype);
-		m_spriteDrawer.draw(spriteVertexBuffer, spriteindexBuffer, shader, texture, textureBlendMode);
+		m_spriteDrawer.draw(m_spriteVertexBuffer, spriteindexBuffer, this->shader(shadertype), texture, textureBlendMode);
 
 	}
 
 	//Outline the object if defined so
 	if (outline) {
 
-		outlineObject(destQuad, outlineColor);
+		outlineObject(destQuad, outlineColor, (GameLayer)layer);
 	}
 
 
 }
 
-void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, int layer)
+void RendererGL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer)
 {
 
 	glm::vec4 normalizedcolor = util::glNormalizeColor(color);
 	glm::vec4 redcolor = util::glNormalizeColor(glm::uvec4(255,0,0,255));
 
 	//Array of 4 vertices
-	std::vector<LineVertex> lineVertexBuffer;
+	m_lineVertexBuffer.clear();
 
 	//
 	// Vertex Buffer Data
@@ -258,55 +269,144 @@ void GLRenderer::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, 
 	//v0
 	vertex.positionAttribute = glm::vec3{ pointA.x, pointA.y, zIndex };
 	vertex.colorAttribute = normalizedcolor;
-	lineVertexBuffer.push_back(vertex);
+	m_lineVertexBuffer.push_back(vertex);
 
 	//v1
 	vertex.positionAttribute = glm::vec3{ pointB.x, pointB.y, zIndex };
 	vertex.colorAttribute = normalizedcolor;
-	lineVertexBuffer.push_back(vertex);
+	m_lineVertexBuffer.push_back(vertex);
 
 	//shader needs to be passed in
 	auto shadertype = GLShaderType::LINE;
 
-	if (GameConfig::instance().openGLBatching() == true) {
-		_addVertexBufferToBatch(lineVertexBuffer, GLDrawerType::GLLINE, shadertype, layer);
+	if (GameConfig::instance().openGLBatching() == true && m_currentRenderTargetType == RenderTargetType::SCREEN) {
+		_addVertexBufferToBatch(m_lineVertexBuffer, GLDrawerType::GLLINE, shadertype, (int)layer);
 	}
 	else {
-		Shader shader = static_cast<GLRenderer*>(game->renderer())->shader(shadertype);
-		m_lineDrawer.draw(lineVertexBuffer, 2, shader);
+		m_lineDrawer.draw(m_lineVertexBuffer, 2, this->shader(shadertype));
 	}
 
 }
 
-void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture, 
+void RendererGL::drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer)
+{
+
+	for (size_t i = 0; i < points.size() - 1; ++i) {
+
+		glm::vec2 pointA(points[i].x, points[i].y);
+		glm::vec2 pointB(points[i+1].x, points[i+1].y);
+		
+		glm::uvec4 colorGL = { color.r,color.b, color.g, color.a };
+
+		drawLine(pointA, pointB, colorGL, layer);
+
+	}
+
+}
+
+std::shared_ptr<Texture> RendererGL::createEmptyTexture(int width, int height, std::string name)
+{
+
+	std::shared_ptr<OpenGLTexture> texture = std::make_shared<OpenGLTexture>();
+
+	texture->name = name;
+
+	GLuint textureId;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId); // Bind it so that subsequent texture functions apply to it
+
+	texture->textureId = textureId;
+
+	texture->textureAtlasQuad.x = 0;
+	texture->textureAtlasQuad.y = 0;
+	texture->textureAtlasQuad.w = width;
+	texture->textureAtlasQuad.h = height;
+
+	texture->surface= SDL_CreateRGBSurface(0, width, height, 32,
+		0x00FF0000, // Red mask
+		0x0000FF00, // Green mask
+		0x000000FF, // Blue mask
+		0xFF000000  // Alpha mask
+	);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->surface->pixels);
+
+	static_cast<RendererGL*>(game->renderer())->prepTexture(texture.get());
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Generate and bind the framebuffer only once
+	glGenFramebuffers(1, &texture->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, texture->fbo);
+
+	// Cast texture and attach it to the framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->textureId, 0);
+
+	// Check for framebuffer completeness
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "Error: Framebuffer is not complete!" << std::endl;
+	}
+
+	// Unbind framebuffer to reset to default
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return texture;
+}
+
+void RendererGL::resetRenderTarget()
+{
+	// Unbind the framebuffer (go back to the default framebuffer, i.e., the screen)
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//Reset projection Matrix
+	m_projectionMatrix = glm::ortho(0.0f, (float)game->gameScreenResolution().x, (float)game->gameScreenResolution().y, 0.0f, 0.0f, 10.0f);
+
+	// Reset viewport to the window size
+	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
+
+	m_currentRenderTargetType = RenderTargetType::SCREEN;
+}
+
+
+int RendererGL::setRenderTarget(Texture* targetTexture)
+{
+	// Bind the framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, static_cast<OpenGLTexture*>(targetTexture)->fbo);
+
+	//set projection matrix size to match the render target
+	//The vertical size is the oppositte of the normal projection matrix when rendering to a texture
+	m_projectionMatrix = glm::ortho(0.0f, (float)static_cast<OpenGLTexture*>(targetTexture)->textureAtlasQuad.w, 
+		0.0f, (float)static_cast<OpenGLTexture*>(targetTexture)->textureAtlasQuad.h, 0.0f, 1.0f);
+
+	// Set the viewport to the size of the target texture
+	glViewport(0, 0, targetTexture->textureAtlasQuad.w, targetTexture->textureAtlasQuad.h);
+
+
+	m_currentRenderTargetType = RenderTargetType::TEXTURE;
+
+	return 0;
+}
+
+void RendererGL::_addVertexBufferToBatch(const std::vector<SpriteVertex>& spriteVertices, GLDrawerType objectType, Texture* texture,
 	GLShaderType shaderType, RenderBlendMode textureBlendMode, int layer)
 {
 
-	std::stringstream texturePtrString;
-	std::stringstream keyString;
-
-	if (texture == nullptr) {
-
-		texturePtrString << "NO_TEXTURE";
-	}
-	else {
-		texturePtrString << texture->surface;
-	}
-	
 	//Build the map key
-	keyString << (int)layer << "_" << (int)objectType << "_" << texturePtrString.str() << "_" << (int)shaderType << "_" << (int)textureBlendMode;
+	//keyString << (int)layer << "_" << (int)objectType << "_" << texturePtrString.str() << "_" << (int)shaderType << "_" << (int)textureBlendMode;
+	auto textureId = static_cast<OpenGLTexture*>(texture)->textureId;
+	BatchKey key = std::make_tuple(layer, objectType, textureId, shaderType, textureBlendMode);
 
 	//See if the drawBatch for this combo exists yet
-	if (m_drawBatches.find(keyString.str()) == m_drawBatches.end()) {
+	if (m_drawBatches.find(key) == m_drawBatches.end()) {
 
 		auto spriteBatch = std::make_shared<SpriteDrawBatch>(objectType, texture, shaderType, textureBlendMode);
 		spriteBatch->addVertexBuffer(spriteVertices);
-		m_drawBatches[keyString.str()] = spriteBatch;
+		m_drawBatches[key] = spriteBatch;
 
 	}
 	else {
 
-		m_drawBatches[keyString.str()]->addVertexBuffer(spriteVertices);
+		m_drawBatches[key]->addVertexBuffer(spriteVertices);
 
 	}
 
@@ -314,34 +414,30 @@ void GLRenderer::_addVertexBufferToBatch(const std::vector<SpriteVertex>& sprite
 }
 
 
-void GLRenderer::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer)
+void RendererGL::_addVertexBufferToBatch(const std::vector<LineVertex>& lineVertices, GLDrawerType objectType, GLShaderType shaderType, int layer)
 {
 
-	std::stringstream keyString;
-
-	//Build the map key
-	keyString << (int)layer << "_" <<(int)objectType << "_" << (int)shaderType;
+	BatchKey key = std::make_tuple(layer, objectType, (GLuint)0, shaderType, RenderBlendMode::BLEND);
 
 	//See if the drawBatch for this combo exists yet
-	if (m_drawBatches.find(keyString.str()) == m_drawBatches.end()) {
+	if (m_drawBatches.find(key) == m_drawBatches.end()) {
 
 		auto lineBatch = std::make_shared<LineDrawBatch>(shaderType);
 		lineBatch->addVertexBuffer(lineVertices);
-		m_drawBatches[keyString.str()] = lineBatch;
+		m_drawBatches[key] = lineBatch;
 
 	}
 	else {
 
-		m_drawBatches[keyString.str()]->addVertexBuffer(lineVertices);
+		m_drawBatches[key]->addVertexBuffer(lineVertices);
 
 	}
 
-
 }
 
-
-void GLRenderer::prepTexture(OpenGLTexture* texture)
+void RendererGL::prepTexture(OpenGLTexture* texture)
 {
+
 
 	SDL_Surface* surf = texture->surface;
 	GLenum texture_format{ GL_RGB };
@@ -378,24 +474,4 @@ void GLRenderer::prepTexture(OpenGLTexture* texture)
 	return;
 }
 
-GLuint GLRenderer::getTextureId(GL_TextureIndexType textureIndex)
-{
-
-	GLuint textureId = m_textureIds[(int)textureIndex];
-	return textureId;
-
-}
-
-void GLRenderer::renderPrimitives(int layerIndex)
-{
-
-	for (auto& line : m_primitiveLines) {
-
-		drawLine(line.pointA, line.pointB, line.color, layerIndex);
-
-	}
-
-	m_primitiveLines.clear();
-
-}
 

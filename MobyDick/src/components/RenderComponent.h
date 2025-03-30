@@ -27,8 +27,10 @@ public:
 	void render();
 	void render(Texture* texture, SDL_Color color, SDL_FRect destQuad, RenderBlendMode textureBlendMode);
 	void render(Texture* texture, SDL_Color color, RenderBlendMode textureBlendMode);
+	void render(Texture* texture, RenderBlendMode textureBlendMode);
 	void render(SDL_FRect destQuad);
 	void render(SDL_FPoint destPoint);
+	void render(SDL_FPoint destPoint, RenderBlendMode textureBlendMode);
 	void render(Texture* texture);
 
 	//void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
@@ -40,7 +42,6 @@ public:
 	void setColor(int red, int green, int blue, int alpha);
 	void setTexture(std::shared_ptr<Texture> texture) { m_texture = texture; }
 
-	void outlineObject(SDL_Color color);
 	void setDependencyReferences(GameObject* gameObject);
 	void applyDisplayOverlay(DisplayOverlay displayOverlay);
 	void removeDisplayOverlay();
@@ -74,4 +75,3 @@ private:
 	std::optional<DisplayOverlay> m_displayOverlay;
 
 };
-

@@ -47,28 +47,33 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			sizeOverride = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
 		}
 
+		if (childObjectType == "LIT_AREA") {
+
+			int todd = 1;
+
+		}
 		//StepChild?
 		//StepChildren live in in main gameObjects collection for the scene and NOT under the parentObject
 		bool isStepChild = itrChild["isStepChild"].asBool();
 
 		//Child Layer Override
 		//Layer can only be spercified for step children because regular children always display on same layer as parent
-		GameLayer stepChildGameLayer{parent->layer()};
+		GameLayer childGameLayer{parent->layer()};
 		if (itrChild.isMember("layer") && isStepChild) {
 
-			stepChildGameLayer = static_cast<GameLayer>(game->enumMap()->toEnum(itrChild["layer"].asString()));
+			childGameLayer = static_cast<GameLayer>(game->enumMap()->toEnum(itrChild["layer"].asString()));
 
 		}
-
+		 
 		//Create the child
 		std::shared_ptr<GameObject> childObject = 
-			parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false, name, sizeOverride);
+			parentScene->createGameObject(childObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, childGameLayer, false, name, sizeOverride);
 		childObject->isChild = true;
 
 		//If this is a stepchild then we need to add it to the world where the scene will be responsible for it
 		if (isStepChild == true) {
 
-			parentScene->addGameObject(childObject, stepChildGameLayer);
+			parentScene->addGameObject(childObject, childGameLayer);
 		}
 
 		//Begin States
@@ -247,6 +252,28 @@ void ChildrenComponent::update()
 
 	_removeFromWorldPass();
 	
+}
+
+void ChildrenComponent::render()
+{
+
+	for (auto& slotItr : m_childSlots) {
+
+		for (auto& child : slotItr.second) {
+
+			if (child.gameObject.has_value()) {
+
+				//Stepchildren will render theirselves
+				if (child.isStepChild == false) {
+
+					child.gameObject.value()->render();
+
+				}
+			}
+		}
+	}
+
+
 }
 
 ChildSlotType ChildrenComponent::_getSlotType(std::string slotKey)
@@ -725,28 +752,6 @@ std::string ChildrenComponent::_determineSlotKey(PositionAlignment positionAlign
 
 }
 
-void ChildrenComponent::render()
-{
-
-	for (auto& slotItr : m_childSlots) {
-
-		for (auto& child : slotItr.second) {
-
-			if (child.gameObject.has_value()) {
-
-				//Stepchildren will render theirselves
-				if (child.isStepChild == false) {
-
-					child.gameObject.value()->render();
-
-				}
-			}
-		}
-	}
-
-
-}
-
 
 std::string ChildrenComponent::_buildChildName(std::string parentName, int childCount)
 {
@@ -791,6 +796,7 @@ PositionAlignment ChildrenComponent::_translateStandardSlotPositionAlignment(std
 
 	SDL_assert(false && "No match for slotType!");
 
+	return PositionAlignment::CENTER;
 }
 
 std::vector<SlotMeasure> ChildrenComponent::_calculateSlotMeasurements(std::string slotKey)

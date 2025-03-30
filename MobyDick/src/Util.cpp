@@ -73,12 +73,13 @@ namespace util
 
 		SDL_Event event;
 
-		SceneAction* sceneAction = new SceneAction();
-		sceneAction->actionCode = sceneActionCode;
-		sceneAction->actionId = sceneActionCodeId;
+		auto* sceneAction = new std::optional<SceneAction>();
+		sceneAction->emplace();  // Initialize the optional with a SceneAction object
+		sceneAction->value().actionCode = sceneActionCode;
+		sceneAction->value().actionId = sceneActionCodeId;
 
 		event.type = SDL_USEREVENT;
-		event.user.data1 = sceneAction;
+		event.user.data1 = sceneAction;  // Store the pointer in data1
 		SDL_PushEvent(&event);
 
 

@@ -35,7 +35,7 @@ GridDisplayComponent::GridDisplayComponent(Json::Value componentJSON, GameObject
 	if (componentJSON.isMember("slotBackgroundImage")) {
 
 		std::string imageObjectType = componentJSON["slotBackgroundImage"].asString();
-		m_slotImageObject = parentScene->createGameObject(imageObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, GameLayer::MAIN, false);
+		m_slotImageObject = parentScene->createGameObject(imageObjectType, parent, -1.0F, -1.0F, 0.F, parentScene, parent->layer(), false);
 	}
 
 }
@@ -52,6 +52,82 @@ void GridDisplayComponent::postInit()
 {
 	if (m_slotImageObject.has_value()) {
 		m_slotImageObject.value()->postInit();
+	}
+
+}
+
+void GridDisplayComponent::update()
+{
+
+
+
+	for (auto& gridSlot : m_gridSlots)
+	{
+
+		if (gridSlot.gameObject.has_value() && gridSlot.gameObject.value().expired() == false) {
+
+			if (gridSlot.gameObject.value().lock()->isDragging() == false) {
+				b2Vec2 newPosition =
+				{ parent()->getCenterPosition().x + gridSlot.positionOffset.x,
+				parent()->getCenterPosition().y + gridSlot.positionOffset.y };
+
+
+				gridSlot.gameObject.value().lock()->setPosition(newPosition, -1);
+			}
+		}
+
+
+	}
+
+
+}
+
+void GridDisplayComponent::render()
+{
+
+	for (auto& slot : m_gridSlots) {
+
+
+		SDL_FRect slotImageObjectLocation{};
+		slotImageObjectLocation.x = parent()->getCenterPosition().x + slot.positionOffset.x;
+		slotImageObjectLocation.y = parent()->getCenterPosition().y + slot.positionOffset.y;
+		slotImageObjectLocation.w = m_itemSize;
+		slotImageObjectLocation.h = m_itemSize;
+
+		//Get top left for rendering
+		slotImageObjectLocation.x -= slotImageObjectLocation.w / 2;
+		slotImageObjectLocation.y -= slotImageObjectLocation.h / 2;
+
+		if (m_slotImageObject) {
+			const auto& slotImageRenderComponent = m_slotImageObject.value()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+			SDL_FRect slotImageObjectRenderLocation = slotImageRenderComponent->getRenderDestRect(slotImageObjectLocation);
+
+			m_slotImageObject.value()->render(slotImageObjectRenderLocation);
+		}
+
+		if (slot.gameObject.has_value() && slot.gameObject.value().expired() == false) {
+
+			//If we are not dragging, then show the item at the size that matches the grid display slots
+			if (slot.gameObject.value().lock()->isDragging() == false) {
+
+				//Dont set the size to the slot size if this is an open inventory and the object has a 
+				//worldSize override
+				if (slot.gameObject.value().lock()->hasSizeToWorldViewOverride() == false || (slot.gameObject.value().lock()->hasSizeToWorldViewOverride() == true) &&
+					parent()->hasTrait(TraitTag::inventory_open) == false) {
+
+					float slotSize = getItemSlotSize();
+					slot.gameObject.value().lock()->setSize(b2Vec2(slotSize, slotSize));
+				}
+
+			}
+
+			//const auto& itemRenderComponent = slot.gameObject.value().lock()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+			//itemRenderComponent->render();
+
+			slot.gameObject.value().lock()->render();
+
+		}
+
 	}
 
 }
@@ -117,31 +193,6 @@ void GridDisplayComponent::_buildGridSlots()
 
 }
 
-void GridDisplayComponent::update()
-{
-
-
-
-	for (auto& gridSlot : m_gridSlots)
-	{
-
-		if (gridSlot.gameObject.has_value() && gridSlot.gameObject.value().expired() == false) {
-
-			if (gridSlot.gameObject.value().lock()->isDragging() == false) {
-				b2Vec2 newPosition =
-				{ parent()->getCenterPosition().x + gridSlot.positionOffset.x,
-				parent()->getCenterPosition().y + gridSlot.positionOffset.y };
-
-
-				gridSlot.gameObject.value().lock()->setPosition(newPosition, -1);
-			}
-		}
-
-
-	}
-
-
-}
 
 std::optional<int> GridDisplayComponent::getClosestSlot(SDL_FPoint position)
 {
@@ -176,7 +227,7 @@ void GridDisplayComponent::addItem(std::shared_ptr<GameObject> itemObject, int s
 void GridDisplayComponent::addItem(std::shared_ptr<GameObject> itemObject, SDL_FPoint gridLocation)
 {
 
-	int slotIndex = gridLocation.y * m_columns + gridLocation.x;
+	int slotIndex = static_cast<int>(gridLocation.y) * m_columns + static_cast<int>(gridLocation.x);
 	m_gridSlots[slotIndex].gameObject = itemObject;
 
 }
@@ -193,55 +244,6 @@ void GridDisplayComponent::clear()
 }
 
 
-void GridDisplayComponent::render()
-{
-
-	
-	for (auto& slot : m_gridSlots) {
-
-
-		SDL_FRect slotImageObjectLocation{};
-		slotImageObjectLocation.x = parent()->getCenterPosition().x + slot.positionOffset.x;
-		slotImageObjectLocation.y = parent()->getCenterPosition().y + slot.positionOffset.y;
-		slotImageObjectLocation.w = m_itemSize;
-		slotImageObjectLocation.h = m_itemSize;
-
-		//Get top left for rendering
-		slotImageObjectLocation.x -= slotImageObjectLocation.w /2;
-		slotImageObjectLocation.y -= slotImageObjectLocation.h /2;
-
-		if (m_slotImageObject) {
-			const auto& slotImageRenderComponent = m_slotImageObject.value()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-			SDL_FRect slotImageObjectRenderLocation = slotImageRenderComponent->getRenderDestRect(slotImageObjectLocation);
-
-			m_slotImageObject.value()->render(slotImageObjectRenderLocation);
-		}
-
-		if (slot.gameObject.has_value() && slot.gameObject.value().expired() == false) {
-
-			//If we are not dragging, then show the item at the size that matches the grid display slots
-			if (slot.gameObject.value().lock()->isDragging() == false) {
-
-				//Dont set the size to the slot size if this is an open inventory and the object has a 
-				//worldSize override
-				if (slot.gameObject.value().lock()->hasSizeToWorldViewOverride() == false || (slot.gameObject.value().lock()->hasSizeToWorldViewOverride() == true) &&
-					parent()->hasTrait(TraitTag::inventory_open) == false) {
-
-					float slotSize = getItemSlotSize();
-					slot.gameObject.value().lock()->setSize(b2Vec2(slotSize, slotSize));
-				}
-				
-			}
-
-			//todd fix hold spot
-			slot.gameObject.value().lock()->render();
-			
-		}
-
-	}
-
-
-}
 
 
 

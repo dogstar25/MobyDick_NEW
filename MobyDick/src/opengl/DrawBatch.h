@@ -1,11 +1,9 @@
 #pragma once
-#include <glad/glad.h>
 #include <vector>
 #include <memory>
 
 #include "GLDrawer.h"
 #include "Vertex.h"
-//#include "IndexBuffer.h"
 #include "Shader.h"
 #include "../texture.h"
 
@@ -28,6 +26,7 @@ protected:
 	GLDrawer m_glDrawer;
 	Shader m_shader;
 	int m_objectCount{};
+	std::string m_textureName{};
 
 	//virtual void _addSpriteIndexBuffer() = 0;
 

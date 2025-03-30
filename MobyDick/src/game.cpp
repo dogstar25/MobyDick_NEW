@@ -1,15 +1,19 @@
+#pragma once
+
+#include <memory>
+
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl.h"
+#include "IMGui/IMGuiUtil.h"
+
+#include <SDL2/SDL_ttf.h>
 
 #include "Game.h"
 #include "SceneManager.h"
 #include "GameObject.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl.h"
-#include "IMGui/IMGuiUtil.h"
 #include "SoundManager.h"
 #include "GameStateManager.h"
 #include "NavigationManager.h"
-#include <memory>
-#include <SDL2/SDL_ttf.h>
 
 
 Game::~Game()
@@ -71,13 +75,11 @@ bool Game::init(
 		m_gameScreenResolution = gameResolution.value();
 	}
 
-	//SDL_HINT_RENDER_SCALE_QUALITY
-
 	//Create the game window
 	uint16 windowFlags = 0 | SDL_WINDOW_OPENGL;
 	if (GameConfig::instance().windowFullscreen() == true)
 	{
-		//Swict these depending on if you are building for a release executable or just local development
+		//Switch these depending on if you are building for a release executable or just local development
 		//SDL_WINDOW_FULLSCREEN_DESKTOP for local development
 		//windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN;
 		windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -95,11 +97,9 @@ bool Game::init(
 		m_gameScreenResolution.y,
 		windowFlags);
 
-	//SDL_GL_SetSwapInterval(1);
-
 	if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-		m_renderer = std::make_shared<GLRenderer>();
+		m_renderer = std::make_shared<RendererGL>();
 
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::SDL) {
@@ -124,17 +124,6 @@ void Game::play()
 
 
 	while (m_gameState != GameState::QUIT) {
-
-		//Test spot for detecting if user has alt tabbed out of game
-		//SDL_GetWindowFlags
-		//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "error", "There was an error", this->window());
-		//SDL_assert
-		//setenv("SDL_VIDEO_MINIMIZE_ON_FOCUS", "0", 0);
-		//SDL_HINT_ALLOW_ALT_TAB_WHILE_GRABBED
-		//SDL_WINDOWEVENT_FOCUS_GAINED
-		//SDL_SetWindowKeyboardGrab
-		//SDL_SetWindowMouseGrab
-
 
 		std::optional<SceneAction> action = SceneManager::instance().pollEvents();
 
@@ -212,6 +201,7 @@ void Game::_displayLoadingMsg()
 	static int statusDots{};
 	std::shared_ptr<Texture> texture{};
 	std::string statusMsg{ "Loading" };
+	GLuint displayLoadingTextureId{};
 
 	statusDots++;
 	if (statusDots > 4) {
@@ -235,42 +225,46 @@ void Game::_displayLoadingMsg()
 	if (GameConfig::instance().rendererType() == RendererType::SDL) {
 
 		std::shared_ptr<SDLTexture> sdlTexture = std::make_shared<SDLTexture>();
-		sdlTexture->surface = tempSurface;
 
 		sdlTexture->sdlTexture = SDL_CreateTextureFromSurface(m_renderer->sdlRenderer(), tempSurface);
+		sdlTexture->surface = tempSurface;
 		texture = sdlTexture;
 	}
 	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-		//here how we get the texureId used by imgui
-		//USE it here below ToDo!
-		int test = (GLuint)ImGui::GetIO().Fonts->TexID;
-		/////
-
 		std::shared_ptr<OpenGLTexture> openGLTexture = std::make_shared<OpenGLTexture>();
-		openGLTexture->surface = tempSurface;
 
-		GL_TextureIndexType textureIndex = GL_TextureIndexType::DYNAMICALLY_LOADED;
-		GLuint textureAtlasId = static_cast<GLRenderer*>(renderer())->getTextureId((GL_TextureIndexType)test);
-		glActiveTexture((int)textureIndex);
-		glBindTexture(GL_TEXTURE_2D, textureAtlasId);
-		openGLTexture->openglTextureIndex = textureIndex;
+		glGenTextures(1, &displayLoadingTextureId);
+		
+		openGLTexture->textureId = displayLoadingTextureId;
+		glBindTexture(GL_TEXTURE_2D, openGLTexture->textureId);
+
+		SDL_Surface* formattedSurface = SDL_ConvertSurfaceFormat(tempSurface, SDL_PIXELFORMAT_ABGR8888, 0);
+		openGLTexture->surface = formattedSurface;
+		static_cast<RendererGL*>(renderer())->prepTexture(openGLTexture.get());
+
 		texture = openGLTexture;
+
 	}
 
-	SDL_Rect quad = { 0 , 0, tempSurface->w, tempSurface->h };
+	SDL_Rect quad = { 0 , 0, texture->surface->w, texture->surface->h };
 
 	texture->textureAtlasQuad = std::move(quad);
-	texture->surface = tempSurface;
 
 	TTF_CloseFont(m_fontObject);
 	SDL_FRect dest = {
 		m_gameScreenResolution.x / (float)2 - (float)100,
 		m_gameScreenResolution.y / (float)2 - (float)42,
-		(float)tempSurface->w, (float)tempSurface->h };
+		(float)texture->surface->w, (float)texture->surface->h };
 
 	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, texture.get(), &texture->textureAtlasQuad, 0, false, SDL_Color{},
 		RenderBlendMode::BLEND);
+
+	if (GameConfig::instance().rendererType() == RendererType::OPENGL &&
+		GameConfig::instance().openGLBatching() == true) {
+		m_renderer->drawBatches();
+	}
+
 	m_renderer->present();
 
 	if (texture->surface != nullptr) {
@@ -285,6 +279,9 @@ void Game::_displayLoadingMsg()
 			SDL_DestroyTexture(sdlTexture->sdlTexture);
 		}
 
+	}
+	else {
+		glDeleteTextures(1, &displayLoadingTextureId);
 	}
 
 }

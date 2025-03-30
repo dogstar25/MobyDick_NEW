@@ -11,28 +11,41 @@ LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON, 
 	Component(ComponentTypes::LIGHTED_TREATMENT_COMPONENT, parent)
 {
 
-	m_lightCompositeTexture = std::make_shared<SDLTexture>();
+	m_lightCompositeTexture = game->renderer()->createEmptyTexture((int)parent->getSize().x, (int)parent->getSize().y, parent->name());
+
+	m_lightCompositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
+		(int)parent->getSize().x,
+		(int)parent->getSize().y);
+
 
 }
 
 LightedTreatmentComponent::~LightedTreatmentComponent()
 {
 	//Destroy texture
-	SDL_DestroyTexture(m_lightCompositeTexture->sdlTexture);
-	m_lightCompositeTexture->sdlTexture = nullptr;
+	//SDL_DestroyTexture(m_lightCompositeTexture->sdlTexture);
+	//m_lightCompositeTexture->sdlTexture = nullptr;
+
+	if (m_lightCompositeTexture->surface != nullptr) {
+		SDL_FreeSurface(m_lightCompositeTexture->surface);
+		m_lightCompositeTexture->surface = nullptr;
+	}
+
+	if (GameConfig::instance().rendererType() == RendererType::SDL) {
+
+		std::shared_ptr<SDLTexture> texture = std::static_pointer_cast<SDLTexture>(m_lightCompositeTexture);
+
+		if (texture->sdlTexture != nullptr) {
+			SDL_DestroyTexture(texture->sdlTexture);
+			texture->sdlTexture = nullptr;
+		}
+	}
+
 
 }
 
 void LightedTreatmentComponent::postInit()
 {
-
-	m_lightCompositeTexture->textureAtlasQuad = SDL_Rect(0, 0, 
-		(int)parent()->getSize().x, 
-		(int)parent()->getSize().y);
-
-	//Make an SDL texture
-	m_lightCompositeTexture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET, (int)parent()->getSize().x, (int)parent()->getSize().y);
 
 }
 
@@ -81,17 +94,13 @@ void LightedTreatmentComponent::render()
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 	SDL_Rect tempRect{};
 
-	//Set the target render to the composite texture for this component
-	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), m_lightCompositeTexture->sdlTexture);
-	SDL_SetRenderDrawColor(game->renderer()->sdlRenderer(), 0, 0, 0, 0);
+	//Set the target render to the composite texture for this component static_cast<SDLTexture*>(targetTexture)->sdlTexture)
+	game->renderer()->setRenderTarget(m_lightCompositeTexture.get());
 	game->renderer()->clear();
 
 	//Render this object onto the composite texture
 	renderComponent->render(SDL_FPoint(0, 0)); 
 	SDL_FPoint baseObjectDestPosition = { renderComponent->getRenderDestRect().x, renderComponent->getRenderDestRect().y };
-
-	//Try using this function that may be slow because it switches the render target TO and BACK on every call
-	//renderToTexture
 
 	//Render all of the lights to this texture also
 	for (auto& light : m_lights) {
@@ -113,9 +122,9 @@ void LightedTreatmentComponent::render()
 	}
 
 	//Set the renderer to target back to the main window again
-	SDL_SetRenderTarget(game->renderer()->sdlRenderer(), NULL);
+	game->renderer()->resetRenderTarget();
 
-	//Finally render the composite texture to th main scren buffer using modulate
+	//Finally render the composite texture to the main scren buffer using modulate
 	renderComponent->render(m_lightCompositeTexture.get(), Colors::WHITE, RenderBlendMode::MODULATE);
 
 }
@@ -150,29 +159,3 @@ bool LightedTreatmentComponent::_hasLineOfSightToLitArea(GameObject* lightObject
 
 }
 
-//void LightedTreatmentComponent::render()
-//{
-
-	//SDL_Texture* outputTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
-	//	SDL_TEXTUREACCESS_STREAMING, parent()->getSize().x, parent()->getSize().y);
-
-	////Render the Dark onto this temporary texture object
-	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), outputTexture);
-
-	//parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render();
-
-
-
-	////Set the renderer to target the main window again
-	//SDL_SetRenderTarget(game->renderer()->sdlRenderer(), nullptr);
-
-	////Now render the new texture like normal
-	//parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render();
-
-
-
-
-
-
-
-//}

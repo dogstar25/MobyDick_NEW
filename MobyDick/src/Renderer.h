@@ -1,16 +1,20 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
 
 #include <vector>
 #include <map>
 #include <optional>
+#include <memory>
+#include <string>
+
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <box2d/box2d.h>
 #include "imgui.h"
 #include "BaseConstants.h"
 
+
 class GameObject;
+
 
 
 struct DisplayOverlay
@@ -51,7 +55,6 @@ namespace displayOverlays {
 	*/
 }
 
-
 enum class RenderBlendMode {
 
 	BLEND,
@@ -59,25 +62,16 @@ enum class RenderBlendMode {
 	MULTIPLY,
 	MODULATE,
 	NONE,
-	CUSTOM
+	CUSTOM_1_MASKED_OVERLAY
 
 };
 
-struct PrimitivePoint{
-	glm::vec2 point{};
-	glm::uvec4 color{};
+enum class RenderTargetType {
+
+	SCREEN,
+	TEXTURE
+
 };
-
-class PrimitiveLine {
-
-public:
-	//PrimitiveLine(glm::vec2 pointA, glm::vec2 pointB, glm::vec4 color) :
-	//	pointA(pointA), pointB(pointB), color(color) {}
-	glm::vec2 pointA{};
-	glm::vec2 pointB{};
-	glm::uvec4 color{};
-};
-
 
 class Texture;
 
@@ -88,16 +82,14 @@ public:
 	Renderer() = default;
 	~Renderer() = default;
 
+	RenderTargetType currentRenderTargetType() { return m_currentRenderTargetType; }
+
 	virtual void init(SDL_Window* window) = 0;;
 	virtual bool present() = 0;
 	virtual bool clear() = 0;
+	virtual void setClearColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)=0;
 	virtual void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
-		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode, SDL_BlendMode sdlBlendModeoverride= SDL_BLENDMODE_INVALID) = 0;
-	virtual void renderPrimitives(int layerIndex) = 0;
-
-	void addLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color);
-	void addLine(PrimitiveLine line);
-	void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color = { 255,255,255,255 });
+		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) = 0;
 
 	//SDL Specific stuff
 	virtual SDL_Texture* createTextureFromSurface(SDL_Surface* surface) = 0;
@@ -106,16 +98,22 @@ public:
 	virtual void renderToTexture(Texture* destTexture, GameObject* gameObectToRender, SDL_FPoint destPoint, RenderBlendMode textureBlendMode,
 		bool clear = false, SDL_BlendMode customBlendMode = SDL_BLENDMODE_INVALID) {};
 
+	virtual void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer) = 0;
+	virtual void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer) = 0;
+
+
+	//new
+	virtual int setRenderTarget(Texture* targetTexture) = 0;
+	virtual void resetRenderTarget() = 0;
+	virtual std::shared_ptr<Texture> createEmptyTexture(int width, int height, std::string name) = 0;
+
 
 protected:
 
-	void outlineObject(SDL_FRect quad, SDL_Color color);
-	
-	std::vector<PrimitivePoint> m_primitivePoints{};
-	std::vector<PrimitiveLine> m_primitiveLines{};
-	
+	void outlineObject(SDL_FRect quad, SDL_Color color, GameLayer layer);
+
+	RenderTargetType m_currentRenderTargetType{ RenderTargetType ::SCREEN};
 
 };
 
 
-#endif

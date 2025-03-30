@@ -7,11 +7,12 @@ extern std::unique_ptr<Game> game;
 SpriteDrawBatch::SpriteDrawBatch(GLDrawerType objectType, Texture* texture, GLShaderType shaderType, RenderBlendMode textureBlendMode)
 {
 
-	m_glDrawer = static_cast<GLRenderer*>(game->renderer())->spriteDrawer();
+	m_glDrawer = static_cast<RendererGL*>(game->renderer())->spriteDrawer();
 	m_textureBlendMode = textureBlendMode;
-	m_shader = static_cast<GLRenderer*>(game->renderer())->shader(shaderType);
+	m_shader = static_cast<RendererGL*>(game->renderer())->shader(shaderType);
 
 	m_texture = texture;
+	m_textureName = texture->name;
 
 }
 

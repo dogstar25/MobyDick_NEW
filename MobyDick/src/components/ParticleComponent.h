@@ -6,6 +6,10 @@
 #include <chrono>
 #include <vector>
 #include <optional>
+#include <thread>
+#include <mutex>
+#include <atomic>
+
 
 #include <json/json.h>
 
@@ -63,7 +67,11 @@ private:
 
 	Timer m_emissionTimer{};
 
+	void createParticles();
 
+	std::atomic<bool> m_creationComplete{ true };
+	std::thread m_creationThread;
+	std::mutex m_particlesMutex;
 
 };
 

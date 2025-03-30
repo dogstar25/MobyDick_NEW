@@ -2,12 +2,12 @@
 
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
-#include <glad/glad.h>
-#include "opengl/GLRenderer.h"
+#include "RendererGL.h"
 
 class Texture
 {
 	public:
+		std::string name{};
 		SDL_Surface* surface{};
 		SDL_Rect textureAtlasQuad{};
 		bool applyFlip{ false };
@@ -22,7 +22,8 @@ class SDLTexture : public Texture
 class OpenGLTexture : public Texture
 {
 	public:
-		GL_TextureIndexType openglTextureIndex{};
+		GLuint textureId{};
+		GLuint fbo{};//frame buffer - used only if this texture is used as a target to render to
 };
 
 

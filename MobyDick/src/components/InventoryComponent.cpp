@@ -15,7 +15,7 @@ InventoryComponent::InventoryComponent(Json::Value componentJSON, GameObject* pa
 
 	m_componentType = ComponentTypes::INVENTORY_COMPONENT;
 	
-	m_maxCapacity = componentJSON["maxCapacity"].asFloat();
+	m_maxCapacity = componentJSON["maxCapacity"].asInt();
 	m_isAlwaysOpen = componentJSON["isAlwaysOpen"].asBool();
 
 	//Create the display object
@@ -87,20 +87,46 @@ void InventoryComponent::postInit()
 
 }
 
+void InventoryComponent::update()
+{
 
-//void InventoryComponent::setParent(GameObject* gameObject)
-//{
-//	//Call base component setParent
-//	Component::setParent(gameObject);
-//
-//	//Parent for this interactionMenuObject if it exists
-//	if (m_displayObject) {
-//		m_displayObject.value().lock()->setParent(gameObject);
-//
-//	}
-//
-//}
+	if (m_isAlwaysOpen == true) {
 
+		m_isOpen = true;
+	}
+
+	if (m_isOpen) {
+
+		for (const auto& inventoryObject : m_items) {
+
+
+			if (inventoryObject.has_value() == true) {
+
+				inventoryObject.value()->update();
+
+				//Its possiblwe that this object was removed from this inventory during the update above
+				if (inventoryObject.has_value()) {
+
+					if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT)) {
+
+						inventoryObject.value()->setLayer(parent()->layer());
+					}
+					else if(m_displayObject.has_value()){
+
+						inventoryObject.value()->setLayer(m_displayObject.value().lock()->layer());
+
+					}
+				}
+
+			}
+
+		}
+
+	}
+
+	_removeFromWorldPass();
+
+}
 bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject)
 {
 
@@ -263,38 +289,7 @@ int InventoryComponent::addCollectible(const CollectibleTypes collectableType, i
 	return m_collectibles.at(collectableType);
 }
 
-void InventoryComponent::update()
-{
 
-	if (m_isAlwaysOpen == true) {
-
-		m_isOpen = true;
-	}
-
-	if (m_isOpen) {
-
-		for (const auto& inventoryObject : m_items) {
-
-
-			if (inventoryObject.has_value() == true) {
-
-				inventoryObject.value()->update();
-
-				//Its possiblwe that this object was removed from this inventory during the update above
-				if (inventoryObject.has_value()) {
-
-					inventoryObject.value()->setLayer(parent()->layer());
-				}
-
-			}
-
-		}
-
-	}
-
-	_removeFromWorldPass();
-
-}
 
 void InventoryComponent::refreshInventoryDisplay() {
 
