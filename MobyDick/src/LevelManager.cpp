@@ -298,6 +298,7 @@ void LevelManager::_buildDebugGridObjects(Scene* scene)
 			gridObject->disableRender();
 
 
+
 		}
 	}
 

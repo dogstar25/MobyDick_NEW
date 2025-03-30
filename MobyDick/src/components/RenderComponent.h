@@ -74,8 +74,4 @@ private:
 
 	std::optional<DisplayOverlay> m_displayOverlay;
 
-	friend void Json::serialize(Json::Value& value, GameObject& o);
-	friend void Json::deserialize(Json::Value& value, GameObject& o);
-
-
 };

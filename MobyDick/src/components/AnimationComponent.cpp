@@ -137,7 +137,7 @@ void AnimationComponent::postInit()
 void AnimationComponent::update()
 {
 
-	if (parent()->type() == "SKULL") {
+	if (parent()->type() == "GHOST") {
 		int todd = 1;
 
 	}
