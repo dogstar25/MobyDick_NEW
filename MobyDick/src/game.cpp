@@ -185,6 +185,9 @@ void Game::play()
 			else if (action->actionCode == SCENE_ACTION_START_NEW) {
 				SceneManager::instance().startNewGame();
 			}
+			else if (action->actionCode == SCENE_ACTION_SPAWN_CRYSTAL) {
+				SceneManager::instance().spawnCrystal();
+			}
 
 		}
 

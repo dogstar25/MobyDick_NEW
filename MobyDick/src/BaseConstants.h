@@ -418,6 +418,8 @@ inline constexpr int SCENE_ACTION_QUICK_SAVE = 14;
 inline constexpr int SCENE_ACTION_QUICK_LOAD = 15;
 inline constexpr int SCENE_ACTION_START_NEW = 16;
 
+inline constexpr int SCENE_ACTION_SPAWN_CRYSTAL = 17;
+
 
 //Scene Tags
 inline constexpr int SCENETAG_MENU = 1;
