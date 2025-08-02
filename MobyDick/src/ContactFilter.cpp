@@ -3,6 +3,15 @@
 #include "GameObject.h"
 #include "components/PhysicsComponent.h"
 
+
+ContactFilter& ContactFilter::instance()
+{
+
+	static ContactFilter singletonInstance;
+	return singletonInstance;
+
+}
+
 ContactFilter::ContactFilter()
 {
 
@@ -20,16 +29,20 @@ ContactFilter::ContactFilter()
 	//Initialize the level frame one
 	m_contactMasks[LEVEL_CAGE].reset();
 
+	
 }
 
-bool ContactFilter::ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB)
+bool ContactFilter::ShouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* context)
 {
 
-	ContactDefinition* contactDefinitionA = reinterpret_cast<ContactDefinition*>(fixtureA->GetUserData().pointer);
-	ContactDefinition* contactDefinitionB = reinterpret_cast<ContactDefinition*>(fixtureB->GetUserData().pointer);
+	auto userDataA = b2Shape_GetUserData(shapeAId);
+	auto userDataB = b2Shape_GetUserData(shapeBId);
 
-	int contactTagA = contactDefinitionA->contactTag;
-	int contactTagB = contactDefinitionB->contactTag;
+	ContactDefinition* defA = reinterpret_cast<ContactDefinition*>(userDataA);
+	ContactDefinition* defB = reinterpret_cast<ContactDefinition*>(userDataB);
+
+	int contactTagA = defA->contactTag;
+	int contactTagB = defB->contactTag;
 
 	//If one of these objects is GENERAL_SOLID and the other one is NOT GENERAL_FREE then collide
 	if ((contactTagA == ContactTag::GENERAL_SOLID && contactTagB != ContactTag::GENERAL_FREE ) || 

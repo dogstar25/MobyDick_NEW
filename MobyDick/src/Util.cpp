@@ -151,7 +151,7 @@ namespace util
 
 	const float radiansToDegrees(float angleInRadians)
 	{
-		float angle = angleInRadians / b2_pi * 180;
+		float angle = angleInRadians / B2_PI * 180;
 		return angle;
 
 	}

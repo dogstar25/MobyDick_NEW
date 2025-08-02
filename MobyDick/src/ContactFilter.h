@@ -9,15 +9,16 @@
 #include "Util.h"
 #include "BaseConstants.h"
 
-class ContactFilter : public b2ContactFilter
+class ContactFilter
 {
 public:
 	ContactFilter();
+	static ContactFilter& instance();
 
-	bool virtual ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB) override;
+	static bool ShouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* context );
 
 protected:
-	std::vector<std::bitset<ContactTag::MAX_OBJECT_CATEGORIES>> m_contactMasks;
+	static std::vector<std::bitset<ContactTag::MAX_OBJECT_CATEGORIES>> m_contactMasks;
 
 };
 

@@ -10,18 +10,12 @@
 class GameObject;
 
 
-class ContactListener : public b2ContactListener
+class ContactListener
 {
 public:
 	ContactListener() = default;
 
-	//static ContactListener& instance();
-
-	//Override functions
-	void virtual BeginContact(b2Contact*) override;
-	void virtual EndContact(b2Contact*) override;
-
-	void virtual handleContact(b2Contact* contact, b2Vec2 contactPoint);
+	void virtual handleContacts(const b2WorldId physicsWorldId);
 
 private:
 	

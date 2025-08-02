@@ -67,14 +67,15 @@ private:
 
 	void setPhysicsBodyActive(bool  active);
 
-	b2Body* _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, b2Vec2 sizeOverride);
-	uint16 _setCollisionMask(Json::Value physicsComponentJSON);
+	b2BodyId _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2WorldId physicsWorldId, b2Vec2 sizeOverride);
+	uint16_t _setCollisionMask(Json::Value physicsComponentJSON);
 
-	b2Body* m_physicsBody{ nullptr };
-	uint16 m_physicsType{ 0 };
+	b2BodyId m_physicsBodyId{ 0 };
+	uint16_t m_physicsType{ 0 };
 	b2Vec2 m_objectAnchorPoint{ 0 , 0 };
 	std::optional<b2Vec2> m_changePositionPosition{};
 	bool m_touchingObjectsCapturedRequired{ true };
+	static const int m_maxBodyShapes{ 16 };
 
 };
 

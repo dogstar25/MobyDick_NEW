@@ -8,6 +8,7 @@
 #include "game.h"
 #include "LevelManager.h"
 
+
 extern std::unique_ptr<Game> game;
 
 Scene::Scene(std::string sceneId)
@@ -67,8 +68,8 @@ Scene::Scene(std::string sceneId)
 	//Debug Mode
 	if (m_hasPhysics == true)
 	{
-		DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit | DebugDraw::e_jointBit);
-		m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
+		//DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit | DebugDraw::e_jointBit);
+		//m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
 	}
 
 	//If there is background music specified then play it
@@ -197,8 +198,9 @@ void Scene::reset()
 	//Debug Mode
 	if (m_hasPhysics == true)
 	{
-		DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit);
-		m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
+		
+		//DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit);
+		//m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
 	}
 
 	//DebugSettings
@@ -224,7 +226,8 @@ void Scene::clear()
 	m_gameObjectLookup.clear();
 
 	if (m_hasPhysics) {
-		delete m_physicsWorld;
+		b2DestroyWorld(m_physicsWorld);
+		m_physicsWorld = b2_nullWorldId;
 	}
 
 }
@@ -313,7 +316,9 @@ void Scene::render() {
 	//DebugDraw
 	if (m_hasPhysics && isDebugSetting(DebugSceneSettings::SHOW_PHYSICS_DEBUG) == true)
 	{
-		m_physicsWorld->DebugDraw();
+		debugDraw().
+		//b2DebugRenderWorld(m_physicsWorld, &debugDraw);
+
 	}
 
 }
@@ -516,35 +521,29 @@ void Scene::_processGameObjectInterdependecies()
 void Scene::_buildPhysicsWorld(Json::Value physicsJSON)
 {
 
- 	m_physicsConfig.gravity.Set(physicsJSON["gravity"]["x"].asFloat(), physicsJSON["gravity"]["y"].asFloat());
+	m_physicsConfig.gravity = { physicsJSON["gravity"]["x"].asFloat(), physicsJSON["gravity"]["y"].asFloat() };
 	m_physicsConfig.timeStep = physicsJSON["timeStep"].asFloat();
-	m_physicsConfig.velocityIterations = physicsJSON["velocityIterations"].asInt();
-	m_physicsConfig.positionIterations = physicsJSON["positionIterations"].asInt();
-	//m_physicsConfig.b2DebugDrawMode = physicsJSON["b2DebugDrawMode"].asBool();
+	m_physicsConfig.subSteps = physicsJSON["subSteps"].asInt();
 
 	//Build the box2d physics world
-	m_physicsWorld = new b2World(m_physicsConfig.gravity);
+	b2WorldDef worldDef = b2DefaultWorldDef();
+	worldDef.gravity = m_physicsConfig.gravity;
+	m_physicsWorld = b2CreateWorld(&worldDef);
 
 	//Add a collision contact listener and filter for box2d callbacks
-	m_physicsWorld->SetContactFilter(game->contactFilter().get());
-	m_physicsWorld->SetContactListener(game->contactListener().get());
-
+	//m_physicsWorld->SetContactFilter(game->contactFilter().get());
+	//m_physicsWorld->SetContactListener(game->contactListener().get());
+	//b2World_SetCustomFilterCallback(m_physicsWorld, &ContactFilter::ShouldCollide, nullptr);
+	b2World_SetCustomFilterCallback(m_physicsWorld, &_shouldCollide, this);
+	
 }
 
-
-void Scene::flashContactListener()
+bool Scene::_shouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* context)
 {
-
-	m_physicsWorld->SetContactFilter(nullptr);
-	m_physicsWorld->SetContactFilter(game->contactFilter().get());
+	game->contactFilter()->ShouldCollide( shapeAId,  shapeBId, context);
 
 }
 
-void _updatePhysics(b2World* physicsWorld)
-{
-	//Update ALL physics object states
-	physicsWorld->Step(.016, 6, 2);
-}
 
 void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 {
@@ -859,3 +858,11 @@ void Scene::_showNavigationMap()
 
 }
 
+void Scene::stepB2PhysicsWorld() {
+
+	b2World_Step(m_physicsWorld, m_physicsConfig.timeStep, 4);
+
+	//call contact listener code to handle all contact stuff
+	game->contactListener()->handleContacts(m_physicsWorld);
+
+}

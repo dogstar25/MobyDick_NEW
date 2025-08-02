@@ -7,8 +7,8 @@
 
 extern std::unique_ptr<Game> game;
 
-PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust,
-	b2Vec2 sizeOverride) :
+PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene, float xMapPos, float yMapPos, 
+	float angleAdjust,	b2Vec2 sizeOverride) :
 	Component(ComponentTypes::PHYSICS_COMPONENT, parent)
 {
 
@@ -22,7 +22,7 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 		physicsComponentJSON["anchorPoint"]["y"].asFloat());
 
 	//Build the physics body
-	m_physicsBody = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld(), sizeOverride);
+	m_physicsBodyId = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld(), sizeOverride);
 
 	//Calculate the spawn position
 	b2Vec2 position{};
@@ -44,11 +44,13 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 	}
 	
 	//Angle adjustment if any in radians
+	
 	float newAngle = util::degreesToRadians(angleAdjust);
+	b2Rot rotation = {cos(newAngle), sin(newAngle)};
 
 	//The width and height can change when a rectangle shape is rotated
-	float objectWidthAfterAngle = abs(sin(newAngle) * size.y + cos(newAngle) * size.x);
-	float objectHeightAfterAngle = abs(sin(newAngle) * size.x + cos(newAngle) * size.y);
+	float objectWidthAfterAngle = abs(rotation.s * size.y + rotation.c * size.x);
+	float objectHeightAfterAngle = abs(rotation.s * size.x + rotation.c * size.y);
 
 	//Get the pixel position of where we are placing the object. Divide by 2 to get the center
 	position.x = (xMapPos * game->worldTileSize().x + (objectWidthAfterAngle / 2));
@@ -58,7 +60,7 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 	position = util::toBox2dPoint(position);
 
 	//Initial spawn position
-	m_physicsBody->SetTransform(position, newAngle);
+	b2Body_SetTransform(m_physicsBodyId, position, rotation);
 
 }
 
@@ -68,17 +70,18 @@ PhysicsComponent::~PhysicsComponent()
 	//We need to free the memory associated with our special object that we store in each fixture's userdata
 	//NOTE:this should be the only spot where we do not depend on smart pointers
 	//std::cout << this->parent()->id() << " PhysicsComponent Destructor called" << std::endl;
-	for (auto fixture = m_physicsBody->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
-	{
+	b2ShapeId shapeArray[m_maxBodyShapes];
 
-		ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
+	int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
+	for (int i; i < shapeCount; i++)
+	{
+		ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(b2Shape_GetUserData(shapeArray[i]));
 		if (contactDefinition) {
 			delete contactDefinition;
 		}
-
 	}
 
-	parent()->parentScene()->physicsWorld()->DestroyBody(m_physicsBody);
+	b2DestroyBody(m_physicsBodyId);
 
 }
 
@@ -86,73 +89,84 @@ void PhysicsComponent::postInit()
 {
 
 
-	}
+}
 
-//void PhysicsComponent::setParent(GameObject* gameObject)
-//{
-//	Component::setParent(gameObject);
-//	m_physicsBody->GetUserData().pointer = reinterpret_cast<uintptr_t>(gameObject);
-//}
-
-void PhysicsComponent::setTransform(b2Vec2 positionVector, float angle)
+void PhysicsComponent::setTransform(b2Vec2 positionVector, float angleInRadians)
 {
-	m_physicsBody->SetTransform(positionVector, angle);
+
+	b2Rot rotation = { cos(angleInRadians), sin(angleInRadians) };
+
+	b2Body_SetTransform(m_physicsBodyId, positionVector, rotation);
+
 }
 
 void PhysicsComponent::setTransform(b2Vec2 positionVector)
 {
-	m_physicsBody->SetTransform(positionVector, m_physicsBody->GetAngle());
+
+	b2Body_SetTransform(m_physicsBodyId, positionVector, b2Body_GetRotation(m_physicsBodyId));
+
 }
 
 void PhysicsComponent::setPhysicsBodyActive(bool  active)
 {
-	m_physicsBody->SetEnabled(active);
+
+	b2Body_Enable(m_physicsBodyId);
 
 }
 
 void PhysicsComponent::setLinearVelocity(b2Vec2 velocityVector)
 {
-	m_physicsBody->SetLinearVelocity(velocityVector);
+
+	b2Body_SetLinearVelocity(m_physicsBodyId, velocityVector);
+
 }
 
 void PhysicsComponent::setLinearDamping(float linearDamping)
 {
-	m_physicsBody->SetLinearDamping(linearDamping);
+
+	b2Body_SetLinearDamping(m_physicsBodyId, linearDamping);
+
 }
 
 void PhysicsComponent::setAngularDamping(float angularDamping)
 {
-	m_physicsBody->SetAngularDamping(angularDamping);
+	b2Body_SetAngularDamping(m_physicsBodyId, angularDamping);
 }
 
 void PhysicsComponent::setGravityScale(float gravityScale)
 {
-	m_physicsBody->SetGravityScale(gravityScale);
+	b2Body_SetGravityScale(m_physicsBodyId, gravityScale);
 }
 
 void PhysicsComponent::setAngle(float angle)
 {
-	auto normalizedAngle = util::normalizeRadians(angle);
-
-	b2Vec2 currentPosition = { m_physicsBody->GetPosition().x , m_physicsBody->GetPosition().y };
-	m_physicsBody->SetTransform(currentPosition, normalizedAngle);
+	b2Rot rotation = b2MakeRot(angle);
+	b2Vec2 pos = b2Body_GetPosition(m_physicsBodyId);
+	b2Body_SetTransform(m_physicsBodyId, pos, rotation);
 
 }
 
+b2Vec2 PhysicsComponent::position() 
+{ 
+	return b2Body_GetPosition(m_physicsBodyId);
+}
+
+float PhysicsComponent::angle() 
+{ 
+	float angle = b2Rot_GetAngle(b2Body_GetRotation(m_physicsBodyId));
+
+	return angle; 
+}
 
 void PhysicsComponent::update()
 {
 
-	//We want to make sure that the angle stays in the range of 0 to 360 for various concerns throughtout the game
-	//Unfortunately, box2d's only function to set an angle value directly is the setTransform which also takes
-	// X and Y position, so we have to send setTransform the current X,Y position as well as the updated angle
-	// value 
-	auto normalizedAngle = util::normalizeRadians(m_physicsBody->GetAngle());
-
+	
 	//If we were given a position change from our contactListener, since we cannnot change position within
 	//contactListener, we set it here. An example would be warping the player to a new location after making contact
 	//with a portal object
-	b2Vec2 currentPosition = { m_physicsBody->GetPosition().x , m_physicsBody->GetPosition().y };
+	//TODO:This can be put into the contactListener now in box2d v3 so do it , like for warping an object
+	b2Vec2 currentPosition = b2Body_GetPosition(m_physicsBodyId);
 	if (m_changePositionPosition.has_value()) {
 		currentPosition = { m_changePositionPosition->x , m_changePositionPosition->y };
 		m_changePositionPosition.reset();
@@ -171,46 +185,30 @@ void PhysicsComponent::update()
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-	//Set the transform
-	m_physicsBody->SetTransform(currentPosition, normalizedAngle);
-
+	b2Body_SetTransform(m_physicsBodyId, currentPosition, b2Body_GetRotation(m_physicsBodyId));
 
 	//Transfer the physicsComponent coordinates to the transformComponent
 	//converting the angle to degrees
-	b2Vec2 convertedPosition{ 0,0 };
-	float convertedAngle = util::radiansToDegrees(m_physicsBody->GetAngle());
+	b2Vec2 convertedPosition{};
+	float convertedAngle = util::radiansToDegrees(angle());
 
-	convertedPosition.x = m_physicsBody->GetPosition().x * GameConfig::instance().scaleFactor();
-	convertedPosition.y = m_physicsBody->GetPosition().y * GameConfig::instance().scaleFactor();
+	convertedPosition = b2MulSV(GameConfig::instance().scaleFactor(), b2Body_GetPosition(m_physicsBodyId));
 
 	parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->setPosition(convertedPosition, convertedAngle);
 }
 
-void PhysicsComponent::setIsSensor(bool isSensor)
-{
 
-	for (auto fixture = physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext()){
-
-		fixture->SetSensor(isSensor);
-		//fixture->Refilter();
-	}
-}
-
-
-b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, 
+b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2WorldId physicsWorldId,
 	b2Vec2 sizeOverride)
 {
-	b2BodyDef bodyDef;
-	bodyDef.type = static_cast<b2BodyType>(m_physicsType);
 
-	//Default the position to zero.
-	bodyDef.position.SetZero();
-	bodyDef.allowSleep = true;
-	b2Body* body = physicsWorld->CreateBody(&bodyDef);
+	b2BodyDef bodyDef = b2DefaultBodyDef();
+	bodyDef.type = static_cast<b2BodyType>(m_physicsType);
+	bodyDef.position = b2Vec2( 0.0f, 0.0f );
+	b2BodyId bodyId = b2CreateBody(physicsWorldId, &bodyDef);
 
 	//Store a reference to the parent object in the userData pointer field
-	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(parent());
+	b2Body_SetUserData(bodyId, parent());
 
 	if (physicsComponentJSON.isMember("linearDamping")) {
 		body->SetLinearDamping(physicsComponentJSON["linearDamping"].asFloat());
