@@ -110,8 +110,10 @@ void InterfaceComponent::update()
 
 		const auto& playerObject = parent()->parentScene()->player();
 
-		if (util::hasLineOfSight(playerObject.get(), parent())) {
+		if (util::hasLineOfSight(playerObject.get(), parent(), parent()->parentScene()->physicsWorld())) {
+
 			newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
+
 		}
 
 	}
@@ -376,10 +378,11 @@ void InterfaceComponent::clearDragging()
 
 	m_currentEventsState.set((int)InterfaceEvents::ON_DRAG, false);
 
-	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true && m_b2MouseJoint != nullptr) {
+	if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true && b2Joint_IsValid(m_b2MouseJointId)) {
 
-		parent()->parentScene()->physicsWorld()->DestroyJoint(m_b2MouseJoint);
-		m_b2MouseJoint = nullptr;
+		const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		physicsComponent->destroyJoint(m_b2MouseJointId);
+		m_b2MouseJointId = b2_nullJointId;
 	}
 
 }
@@ -417,7 +420,7 @@ void InterfaceComponent::_initializeDragging(SDL_FPoint mouseWorldPosition)
 
 		//Build a mouse joint for physics dragging
 		const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-		m_b2MouseJoint = physicsComponent->createB2MouseJoint();
+		m_b2MouseJointId = physicsComponent->createB2MouseJoint();
 
 	}
 
@@ -453,7 +456,7 @@ void InterfaceComponent::handleDragging()
 
 			mouseWorldPosition = util::toBox2dPoint(mouseWorldPosition);
 
-			m_b2MouseJoint->SetTarget({ mouseWorldPosition.x, mouseWorldPosition.y });
+			b2MouseJoint_SetTarget(m_b2MouseJointId, { mouseWorldPosition.x, mouseWorldPosition.y });
 
 			//Right side the object
 			parent()->setAngleInDegrees(0);

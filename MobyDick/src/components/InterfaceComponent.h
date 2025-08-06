@@ -60,7 +60,7 @@ protected:
 	bool m_autoInteractOnPuzzleComplete{};
 	std::optional<float> m_LocationHintDistance{};
 	SDL_FPoint m_dragOffset{};
-	b2MouseJoint* m_b2MouseJoint{};
+	b2JointId m_b2MouseJointId{};
 	std::bitset<MAX_EVENT_STATES> m_currentEventsState{};
 
 	

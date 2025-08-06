@@ -161,12 +161,8 @@ void StateComponent::removeState(GameObjectState newState)
 			//enable collisions
 			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-				for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
-				{
-					ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
-					contactDefinition->contactTag = contactDefinition->saveOriginalContactTag;
-					fixture->Refilter();
-				}
+				physicsComponent->enableAllContacts(true);
+				physicsComponent->enableAllSensors(true);
 
 			}
 
@@ -615,15 +611,10 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		case GameObjectState::DISABLED_COLLISION:
 
 			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
+
 				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-				for (auto fixture = physicsComponent->physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
-				{
-					if (fixture->IsSensor() == false) {
-						ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
-						contactDefinition->contactTag = ContactTag::GENERAL_FREE;
-						fixture->Refilter();
-					}
-				}
+				physicsComponent->enableAllContacts(false);
+				physicsComponent->enableAllSensors(false);
 			}
 
 			break;

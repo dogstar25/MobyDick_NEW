@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "components/PhysicsComponent.h"
 
+std::vector<std::bitset<ContactTag::MAX_OBJECT_CATEGORIES>> ContactFilter::m_contactMasks;
 
 ContactFilter& ContactFilter::instance()
 {
@@ -38,8 +39,14 @@ bool ContactFilter::ShouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* 
 	auto userDataA = b2Shape_GetUserData(shapeAId);
 	auto userDataB = b2Shape_GetUserData(shapeBId);
 
-	ContactDefinition* defA = reinterpret_cast<ContactDefinition*>(userDataA);
-	ContactDefinition* defB = reinterpret_cast<ContactDefinition*>(userDataB);
+	auto bodyAId = b2Shape_GetBody(shapeAId);
+	auto bodyBId = b2Shape_GetBody(shapeBId);
+
+	GameObject* gaemObjectA = static_cast<GameObject*>(b2Body_GetUserData(bodyAId));
+	GameObject* gaemObjectB = static_cast<GameObject*>(b2Body_GetUserData(bodyBId));
+
+	ContactDefinition* defA = static_cast<ContactDefinition*>(userDataA);
+	ContactDefinition* defB = static_cast<ContactDefinition*>(userDataB);
 
 	int contactTagA = defA->contactTag;
 	int contactTagB = defB->contactTag;

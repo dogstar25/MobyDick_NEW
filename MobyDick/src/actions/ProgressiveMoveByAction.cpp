@@ -46,7 +46,7 @@ void ProgressiveMoveByAction::perform()
 			m_parent->getCenterPosition().y + moveTrajectory.y
 		};
 
-		moveTrajectory.Normalize();
+		b2Normalize(moveTrajectory);
 
 		physicsComponent->applyMovement(speed, { moveTrajectory.x, moveTrajectory.y });
 

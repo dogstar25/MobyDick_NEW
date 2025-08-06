@@ -26,7 +26,7 @@
 #include "triggers/TriggerFactory.h"
 #include "particleEffects/ParticleEffectsFactory.h"
 #include "EnvironmentEvents/EnvironmentEventFactory.h"
-#include "ContactListener.h"
+#include "ContactHandler.h"
 #include "gameStateManager.h"
 #include "NavigationManager.h"
 #include "ContactFilter.h"
@@ -48,7 +48,7 @@ public:
 	~Game();
 
 	virtual bool init(
-		std::shared_ptr<ContactListener>, 
+		std::shared_ptr<ContactHandler>, 
 		std::shared_ptr<ContactFilter>,
 		std::shared_ptr<ComponentFactory>, 
 		std::shared_ptr<ActionFactory>, 
@@ -85,8 +85,8 @@ public:
 	SDL_Point worldTileSize() {
 		return m_worldTileSize;
 	}
-	std::shared_ptr <ContactListener> contactListener() {
-		return m_contactListener;
+	std::shared_ptr <ContactHandler> contactHandler() {
+		return m_contactHandler;
 	}
 	std::shared_ptr<ContactFilter> contactFilter() {
 		return m_contactFilter;
@@ -143,7 +143,7 @@ protected:
 	SDL_Rect m_worldBounds{};
 	SDL_Point m_gameScreenResolution{};
 	SDL_Point m_worldTileSize{};
-	std::shared_ptr<ContactListener> m_contactListener{};
+	std::shared_ptr<ContactHandler> m_contactHandler{};
 	std::shared_ptr<ContactFilter> m_contactFilter{};
 	std::shared_ptr<ComponentFactory> m_componentFactory{};
 	std::shared_ptr<ActionFactory> m_actionFactory{};

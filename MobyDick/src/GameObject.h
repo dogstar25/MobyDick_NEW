@@ -172,6 +172,7 @@ public:
 	bool isTouchingByName(std::string name);
 	bool isTouchingById(const std::string id);
 	void addTouchingObject(std::shared_ptr<GameObject> touchingObject);
+	void removeTouchingObject(const GameObject* touchingObject);
 	void setParent(GameObject* parentObject);
 	std::optional<GameObject*> parent() { return m_parentObject; }
 	bool isDragging();
@@ -259,7 +260,6 @@ private:
 	std::string _buildName(std::string rootName, std::string gameObjectType, bool isDependent);
 	
 	void _imGuiDebugObject();
-	void _updateTouchingObjects();
 
 	//moving this to private. Traits should not be removed. If so, it should be a state not a trait
 	void removeTrait(int32_t trait) { m_traitTags.set(trait, false); }

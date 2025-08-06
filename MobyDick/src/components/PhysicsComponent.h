@@ -40,6 +40,10 @@ public:
 	void setTransform(b2Vec2 positionVector, float angle);
 	void setTransform(b2Vec2 positionVector);
 	void setLinearVelocity(b2Vec2 velocityVector);
+	void enableAllSensors(bool enable);
+	void enableAllContacts(bool enable);
+
+	void destroyJoint(b2JointId jointId);
 	
 	void setFixedRotation(bool fixedRotation);
 	void setBullet(bool isBullet);
@@ -54,13 +58,14 @@ public:
 	
 	void attachItem(GameObject* inventoryObject, b2JointType jointType, b2Vec2 attachLocation = {0,0});
 	void deleteAllJoints();
-	b2MouseJoint* createB2MouseJoint();
+	b2JointId createB2MouseJoint();
+	void setCollisionTag(int contactTag);
 
 	//Accessor functions
 	b2Vec2 objectAnchorPoint() { return m_objectAnchorPoint; }
-	b2Vec2 position() { return m_physicsBody->GetPosition(); }
-	float angle() { return m_physicsBody->GetAngle(); }
-	b2Body* physicsBody() {	return m_physicsBody; }
+	b2Vec2 position();
+	float angle();
+	b2BodyId physicsBodyId() {	return m_physicsBodyId; }
 	bool isTouchingObjectsCapturedRequired() { return m_touchingObjectsCapturedRequired; }
 
 private:
@@ -76,6 +81,9 @@ private:
 	std::optional<b2Vec2> m_changePositionPosition{};
 	bool m_touchingObjectsCapturedRequired{ true };
 	static const int m_maxBodyShapes{ 16 };
+	static const int m_maxBodyJoints{ 16 };
+
+	std::vector<std::unique_ptr<ContactDefinition>> m_contactDefs;
 
 };
 

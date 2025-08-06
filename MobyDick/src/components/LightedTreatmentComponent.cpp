@@ -1,8 +1,10 @@
 #include "LightedTreatmentComponent.h"
 #include "../GameObject.h"
-#include "../RayCastCallBack.h"
+#include "../RayCastHits.h"
 
 #include "../game.h"
+
+#include <algorithm>
 
 extern std::unique_ptr<Game> game;
 
@@ -126,36 +128,6 @@ void LightedTreatmentComponent::render()
 
 	//Finally render the composite texture to the main scren buffer using modulate
 	renderComponent->render(m_lightCompositeTexture.get(), Colors::WHITE, RenderBlendMode::MODULATE);
-
-}
-
-bool LightedTreatmentComponent::_hasLineOfSightToLitArea(GameObject* lightObject)
-{
-	bool clearPath{true};
-
-	b2Vec2 begin = { lightObject->getCenterPosition().x, lightObject->getCenterPosition().y};
-	b2Vec2 end = { parent()->getCenterPosition().x, parent()->getCenterPosition().y};
-
-	util::toBox2dPoint(begin);
-	util::toBox2dPoint(end);
-
-	//cast a physics raycast from the light object to the center of this lightedArea's center
-	parent()->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), begin, end);
-
-	//Loop through all objects hit between the light object and the center of the lit are being checked
-	for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
-
-		//Is this a barrier and also NOT its own body and the object is not physicsdisabled
-		if ((rayHitObject.gameObject->hasTrait(TraitTag::barrier) || rayHitObject.gameObject->hasState(GameObjectState::IMPASSABLE)) &&
-			rayHitObject.gameObject != parent()) {
-			clearPath = false;
-			break;
-		}
-	}
-
-	RayCastCallBack::instance().reset();
-
-	return clearPath;
 
 }
 

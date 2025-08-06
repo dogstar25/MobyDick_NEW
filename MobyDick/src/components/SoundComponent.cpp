@@ -2,7 +2,6 @@
 #include "../SoundManager.h"
 #include "../LevelManager.h"
 #include "../IMGui/IMGuiUtil.h"
-#include "../RayCastCallBack.h"
 #include <memory.h>
 
 #include "../EnumMap.h"
@@ -211,21 +210,12 @@ int SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfS
 	util::toBox2dPoint(begin);
 	util::toBox2dPoint(end);
 
-	//cast a physics raycast from the light object to the center of this lightedArea's center
-	parent()->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), begin, end);
 
-	//Loop through all objects hit between the sound emitting object and the player
-	for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
+	if (util::hasLineOfSight(parent(), player.get(), parent()->parentScene()->physicsWorld() )) {
 
-		//Is this a barrier and also NOT its own body and the object is not physicsdisabled
-		if ((rayHitObject.gameObject->hasTrait(TraitTag::barrier) || rayHitObject.gameObject->hasState(GameObjectState::IMPASSABLE)) &&
-			rayHitObject.gameObject != parent()) {
-			applyLightOfSightAdjustment = true;
-			break;
-		}
+		applyLightOfSightAdjustment = true;
+
 	}
-
-	RayCastCallBack::instance().reset();
 
 	if (applyLightOfSightAdjustment) {
 

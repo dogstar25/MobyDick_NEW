@@ -1,5 +1,4 @@
-#ifndef CONTACT_LISTENER_H
-#define CONTACT_LISTENER_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -10,16 +9,17 @@
 class GameObject;
 
 
-class ContactListener
+class ContactHandler
 {
 public:
-	ContactListener() = default;
+	ContactHandler() = default;
 
 	void virtual handleContacts(const b2WorldId physicsWorldId);
+
+	void virtual handleSensors(const b2WorldId physicsWorldId);
 
 private:
 	
 };
 
-#endif
 

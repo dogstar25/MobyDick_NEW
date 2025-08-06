@@ -316,7 +316,7 @@ void Scene::render() {
 	//DebugDraw
 	if (m_hasPhysics && isDebugSetting(DebugSceneSettings::SHOW_PHYSICS_DEBUG) == true)
 	{
-		debugDraw().
+		//debugDraw().
 		//b2DebugRenderWorld(m_physicsWorld, &debugDraw);
 
 	}
@@ -534,13 +534,14 @@ void Scene::_buildPhysicsWorld(Json::Value physicsJSON)
 	//m_physicsWorld->SetContactFilter(game->contactFilter().get());
 	//m_physicsWorld->SetContactListener(game->contactListener().get());
 	//b2World_SetCustomFilterCallback(m_physicsWorld, &ContactFilter::ShouldCollide, nullptr);
-	b2World_SetCustomFilterCallback(m_physicsWorld, &_shouldCollide, this);
+	b2World_SetCustomFilterCallback(m_physicsWorld, &Scene::_shouldCollide, this);
 	
 }
 
 bool Scene::_shouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* context)
 {
-	game->contactFilter()->ShouldCollide( shapeAId,  shapeBId, context);
+	auto scene = static_cast<Scene*>(context);
+	return game->contactFilter()->ShouldCollide( shapeAId,  shapeBId, scene);
 
 }
 
@@ -862,7 +863,15 @@ void Scene::stepB2PhysicsWorld() {
 
 	b2World_Step(m_physicsWorld, m_physicsConfig.timeStep, 4);
 
+	//////////////////
+	// can we move the handle contacts and also updateTouching objects into a differnt spot and have them run
+	// on separate threads to speed things up
+	//mmaybe also have a thread to update non-physics objects touching state
+
 	//call contact listener code to handle all contact stuff
-	game->contactListener()->handleContacts(m_physicsWorld);
+	game->contactHandler()->handleContacts(m_physicsWorld);
+
+	game->contactHandler()->handleSensors(m_physicsWorld);
+
 
 }

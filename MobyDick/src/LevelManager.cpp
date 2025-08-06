@@ -348,7 +348,7 @@ void LevelManager::_buildLevelCage(Scene* scene)
 		fixtureDefinition["physicsChainType"] = "PhysicsChainType::CCW_REFLECT_IN";
 	}
 
-	physicsDefinition["fixtures"].append(fixtureDefinition);
+	physicsDefinition["shapes"].append(fixtureDefinition);
 	componentsDefinition["components"].append(physicsDefinition);
 
 	//Add the transform component

@@ -138,9 +138,6 @@
     <ClCompile Include="src\components\BrainComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\RayCastCallBack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\components\NavigationComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -153,10 +150,7 @@
     <ClCompile Include="src\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BrainAABBCallback.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ContactListener.cpp">
+    <ClCompile Include="src\ContactHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\game.cpp">
@@ -357,6 +351,12 @@
     <ClCompile Include="src\NavigationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\RayCastHits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\QueryAABBHits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -470,7 +470,7 @@
     <ClInclude Include="src\actions\DefaultRotateAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ContactListener.h">
+    <ClInclude Include="src\ContactHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ContactFilter.h">
@@ -489,9 +489,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\BrainComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RayCastCallBack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\components\NavigationComponent.h">
@@ -513,9 +510,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BrainAABBCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Blueprint.h">
@@ -717,6 +711,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\NavigationManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RayCastHits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\QueryAABBHits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

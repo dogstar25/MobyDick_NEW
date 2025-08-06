@@ -100,7 +100,8 @@ public:
 	std::shared_ptr<GameObject> player() { return m_player; }
 	int parentSceneIndex() { return m_parentSceneIndex; }
 	b2WorldId physicsWorld() { return m_physicsWorld;	}
-	DebugDraw debugDraw() { return m_debugDraw; }
+	int inputControlMode() { return m_inputControlMode; }
+	//DebugDraw debugDraw() { return m_debugDraw; }
 	const std::vector<Objective>& objectives() { return m_levelObjectives; }
 
 	void setState(SceneState state) { m_state = state; }
@@ -152,7 +153,7 @@ private:
 	SceneState m_state{};
 	std::optional<std::shared_ptr<CutScene>> m_cutScene{};
 	b2WorldId m_physicsWorld;
-	DebugDraw m_debugDraw;
+	//DebugDraw m_debugDraw;
 	PhysicsConfig m_physicsConfig{};
 	ObjectPoolManager m_objectPoolManager{};
 

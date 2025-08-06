@@ -9,7 +9,7 @@
 #include <iostream>
 #include "Scene.h"
 #include "Game.h"
-#include "RayCastCallBack.h"
+#include "RayCastHits.h"
 
 #define NOMINMAX 10000000 // need this so that the compiler doesnt find the min and max in the windows include
 #include <Windows.h>
@@ -19,7 +19,6 @@ extern std::unique_ptr<Game> game;
 
 namespace util
 {
-
 
 	std::string wideStringToString(const std::wstring& wstr)
 	{
@@ -452,23 +451,6 @@ namespace util
 		return Json::Value();
 	}
 
-	b2JointDef* createJoint(b2JointType jointType)
-	{
-		b2JointDef* jointDef = nullptr;
-
-		if (jointType == b2JointType::e_weldJoint) {
-
-			jointDef = new b2WeldJointDef();
-		}
-		else if (jointType == b2JointType::e_motorJoint) {
-
-			jointDef = new b2MotorJointDef();
-		}
-
-		return jointDef;
-		
-	}
-
 	float calculateDistance(SDL_FPoint location1, SDL_FPoint location2)
 	{
 
@@ -522,41 +504,75 @@ namespace util
 	}
 
 
-	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject)
+	std::optional<SeenObjectDetails> hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject, b2WorldId physicsWorldId)
 	{
 		bool clearPath{ true };
+		SeenObjectDetails seenObjectDetails{};
 
 		//Special override for things like the doorknob, which is built into the door which itself
 		//can become impassable or a barrier
 		if (candidateObject->hasTrait(TraitTag::always_in_line_of_sight)) {
 
-			return true;
+			return seenObjectDetails;
 		}
 
 		b2Vec2 sourcePosition = { sourceObject->getCenterPosition().x, sourceObject->getCenterPosition().y };
 		b2Vec2 candidatePosition = { candidateObject->getCenterPosition().x, candidateObject->getCenterPosition().y };
 
-		//convert to box2d coordinates
-		util::toBox2dPoint(sourcePosition);
-		util::toBox2dPoint(candidatePosition);
+		b2Vec2 distance = candidatePosition - sourcePosition;
 
-		//cast a physics raycast from the light object to the center of this lightedArea's center
-		sourceObject->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), sourcePosition, candidatePosition);
+		// If the distance is zero, 
+		//then this object is right on top of the source object so assume its a seen object
+		//and dont call the raycast because box2d will blow up if distance is zero
 
-		//Loop through all objects hit between the player and the center of the mask area
-		for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
+		if (b2LengthSquared(distance) > 0.0f) {
 
-			//Is this a barrier or and also NOT its own body and the object is not physicsdisabled
-			if ((rayHitObject.gameObject->hasTrait(TraitTag::barrier) || rayHitObject.gameObject->hasState(GameObjectState::IMPASSABLE)) &&
-				rayHitObject.gameObject != sourceObject) {
-				clearPath = false;
-				break;
+			//convert to box2d coordinates
+			util::toBox2dPoint(sourcePosition);
+			util::toBox2dPoint(candidatePosition);
+
+			std::vector<RayResultItem> rayCastHits = RayCastHits(physicsWorldId, sourcePosition, candidatePosition);
+
+			//Loop through all objects hit between the brain owner and the detected object
+			//If there is a clear line of sight then store it in seenObjects
+			//We must sort the raycast hit objects by distance because they are not guarenteed to return in
+			//distance order
+			std::sort(rayCastHits.begin(), rayCastHits.end(), intersection_sort_compare());
+
+			//Loop through all objects hit between the light object and the center of the lit are being checked
+			for (RayResultItem rayResultItem : rayCastHits) {
+
+				//Get the body from the shape and then the gameObject from the body
+				b2BodyId bodyId = b2Shape_GetBody(rayResultItem.shapeId);
+				b2Body_GetUserData(bodyId);
+				GameObject* gameObject = static_cast<GameObject*>(b2Body_GetUserData(bodyId));
+
+				//Is this a barrier or and also NOT its own body and the object is not physicsdisabled
+				if ((gameObject->hasTrait(TraitTag::barrier) || gameObject->hasState(GameObjectState::IMPASSABLE)) &&
+					gameObject != sourceObject) {
+
+					clearPath = false;
+					break;
+
+				}
+
+				if (gameObject->id() == candidateObject->id()) {
+
+					seenObjectDetails.distance = rayResultItem.fraction;
+					seenObjectDetails.normal = rayResultItem.normal;
+					break;
+
+				}
 			}
 		}
 
-		RayCastCallBack::instance().reset();
-
-		return clearPath;
+		if (clearPath)
+		{
+			return seenObjectDetails;
+		}
+		else {
+			std::nullopt;
+		}
 
 	}
 

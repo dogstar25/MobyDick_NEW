@@ -1,6 +1,5 @@
 #include "CheckPointComponent.h"
 #include "../EnumMap.h"
-#include "../RayCastCallBack.h"
 #include "../game.h"
 #include "../triggers/TriggerFactory.h"
 

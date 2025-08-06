@@ -77,12 +77,12 @@ EnumMap::EnumMap()
 	m_enumMap["B2_STATIC"] = b2_staticBody;
 	m_enumMap["B2_KINEMATIC"] = b2_kinematicBody;
 	m_enumMap["B2_DYNAMIC"] = b2_dynamicBody;
-	m_enumMap["B2_CIRCLE"] = b2Shape::e_circle;
-	m_enumMap["B2_BOX"] = b2Shape::e_polygon;
-	m_enumMap["B2_CHAIN"] = b2Shape::e_chain;
-	m_enumMap["B2_EDGE"] = b2Shape::e_edge;
-	m_enumMap["B2_WELD"] = b2JointType::e_weldJoint;
-	m_enumMap["B2_REVOLUTE"] = b2JointType::e_revoluteJoint;
+	m_enumMap["B2_CIRCLE"] = b2ShapeType::b2_circleShape;
+	m_enumMap["B2_BOX"] = b2ShapeType::b2_polygonShape;
+	m_enumMap["B2_CHAIN"] = b2ShapeType::b2_chainSegmentShape;
+	m_enumMap["B2_EDGE"] = b2ShapeType::b2_segmentShape;
+	m_enumMap["B2_WELD"] = b2JointType::b2_weldJoint;
+	m_enumMap["B2_REVOLUTE"] = b2JointType::b2_revoluteJoint;
 
 	//Physics chain winding order to reflec outwards or inwards
 	m_enumMap["PhysicsChainType::CCW_REFLECT_IN"] = (int)PhysicsChainType::CCW_REFLECT_IN;
