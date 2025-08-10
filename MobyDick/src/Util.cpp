@@ -571,7 +571,7 @@ namespace util
 			return seenObjectDetails;
 		}
 		else {
-			std::nullopt;
+			return std::nullopt;
 		}
 
 	}

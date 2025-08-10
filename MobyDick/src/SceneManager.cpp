@@ -305,8 +305,10 @@ void SceneManager::spawnCrystal()
 
 	SDL_Point tilePosition = util::pixelToTileLocation(mousePosition.x, mousePosition.y);
 
-	m_scenes.back().addGameObject("CRYSTAL", nullptr, GameLayer::MAIN,
-		static_cast<float>(tilePosition.x), static_cast<float>(tilePosition.y));
+	for (int i = 0; i < 100; i++) {
+		m_scenes.back().addGameObject("CRYSTAL", nullptr, GameLayer::MAIN,
+			static_cast<float>(tilePosition.x), static_cast<float>(tilePosition.y));
+	}
 }
 
 void SceneManager::popScene()

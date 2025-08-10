@@ -57,6 +57,18 @@ bool ContactFilter::ShouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* 
 		return true;
 	}
 
+	if (gaemObjectA->hasTrait(TraitTag::player) ||
+		gaemObjectB->hasTrait(TraitTag::player)) {
+
+		if (contactTagA == 14 || contactTagB ==14) {
+
+			int todd = 1;
+		}
+		
+
+
+	}
+
 	auto& contactAMask = m_contactMasks[contactTagA];
 	auto& contactBMask = m_contactMasks[contactTagB];
 

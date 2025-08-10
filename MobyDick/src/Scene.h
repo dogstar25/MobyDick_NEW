@@ -14,6 +14,8 @@
 #include "GameConfig.h"
 #include "ObjectPoolManager.h"
 #include "triggers/Trigger.h"
+#include "Box2DDebugDraw.h"
+#include "Box2DEnkiAdapter.h"
 
 #include <thread>
 
@@ -97,7 +99,7 @@ public:
 
 	//Accessor Functions
 	std::string id() {	return m_id;}
-	std::shared_ptr<GameObject> player() { return m_player; }
+	std::shared_ptr<GameObject> player() { return m_player.lock(); }
 	int parentSceneIndex() { return m_parentSceneIndex; }
 	b2WorldId physicsWorld() { return m_physicsWorld;	}
 	int inputControlMode() { return m_inputControlMode; }
@@ -148,12 +150,15 @@ private:
 	int m_parentSceneIndex{};
 	bool m_hasPhysics{};
 	SDL_FPoint m_playerOrigSpawnPoint{};
-	std::shared_ptr<GameObject> m_player;
+	std::weak_ptr<GameObject> m_player;
 
 	SceneState m_state{};
 	std::optional<std::shared_ptr<CutScene>> m_cutScene{};
+	
 	b2WorldId m_physicsWorld;
-	//DebugDraw m_debugDraw;
+	Box2DDebugDrawAdapter m_debugDraw;
+	Box2DEnkiAdapter m_enki;
+
 	PhysicsConfig m_physicsConfig{};
 	ObjectPoolManager m_objectPoolManager{};
 

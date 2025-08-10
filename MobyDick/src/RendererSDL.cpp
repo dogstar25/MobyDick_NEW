@@ -75,13 +75,15 @@ void RendererSDL::drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color,
 
 void RendererSDL::drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer)
 {
-	//SDL_Color saveCurrentColor = {};
-	//SDL_GetRenderDrawColor(m_sdlRenderer, &saveCurrentColor.r, &saveCurrentColor.g, &saveCurrentColor.b, &saveCurrentColor.a);
 	SDL_SetRenderDrawColor(m_sdlRenderer, color.r, color.b, color.g, color.a);
-
 	SDL_RenderDrawLinesF(m_sdlRenderer, points.data(), 5);
 
-	//SDL_SetRenderDrawColor(m_sdlRenderer, saveCurrentColor.r, saveCurrentColor.b, saveCurrentColor.g, saveCurrentColor.a);
+}
+
+void RendererSDL::drawPoint(glm::vec2 point, SDL_Color color, GameLayer layer)
+{
+	SDL_SetRenderDrawColor(m_sdlRenderer, color.r, color.b, color.g, color.a);
+	SDL_RenderDrawPointF(m_sdlRenderer, point.x, point.y);
 
 }
 

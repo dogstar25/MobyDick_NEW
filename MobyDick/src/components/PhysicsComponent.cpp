@@ -66,30 +66,11 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 PhysicsComponent::~PhysicsComponent()
 {
 
-	//We need to free the memory associated with our special object that we store in each fixture's userdata
-	//NOTE:this should be the only spot where we do not depend on smart pointers
-	//std::cout << this->parent()->id() << " PhysicsComponent Destructor called" << std::endl;
-	//b2ShapeId shapeArray[m_maxBodyShapes];
-
-	//if (parent()->type() == "LEVEL_CAGE") {
-
-	//	int todd = 1;
-
-	//}
-	//int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
-	//for (int i=0; i < shapeCount; i++)
-	//{
-	//	if (b2Shape_IsValid(shapeArray[i])) {
-	//		ContactDefinition* contactDefinition = static_cast<ContactDefinition*>(b2Shape_GetUserData(shapeArray[i]));
-	//		if (contactDefinition) {
-	//			delete contactDefinition;
-	//		}
-	//	}
-	//}
-
 	m_contactDefs.clear();
 
-	b2DestroyBody(m_physicsBodyId);
+	if (b2Body_IsValid(m_physicsBodyId)) {
+		b2DestroyBody(m_physicsBodyId);
+	}
 
 }
 
@@ -290,6 +271,13 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 
 	b2BodyId bodyId = b2CreateBody(physicsWorldId, &bodyDef);
 
+	//Withbox2d V3 bodies that are still will go to sleep causing them to not get picked up as sesorEvents
+	if (m_physicsType == b2BodyType::b2_dynamicBody) {
+
+		b2Body_EnableSleep(bodyId, false);
+
+	}
+
 	//Store a reference to the parent object in the userData pointer field
 	b2Body_SetUserData(bodyId, parent());
 
@@ -341,6 +329,11 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 		auto contactDefinition = std::make_unique<ContactDefinition>();
 		contactDefinition->contactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
 		contactDefinition->saveOriginalContactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
+
+		if (contactDefinition->contactTag == 14) {
+
+			int todd = 1;
+		}
 		
 		//All shapes except the chain share common code
 		if (collisionShape == b2ShapeType::b2_circleShape ||
@@ -353,6 +346,8 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 			shapeDef.density = shapesJSON["density"].asFloat();
 			shapeDef.isSensor = shapesJSON["isSensor"].asFloat();
 			shapeDef.userData = contactDefinition.get();
+			shapeDef.enableSensorEvents = true;
+
 			m_contactDefs.push_back(std::move(contactDefinition));
 
 			if (collisionShape == b2ShapeType::b2_circleShape)
@@ -399,6 +394,7 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 
 			PhysicsChainType physicsChainType = (PhysicsChainType)game->enumMap()->toEnum(shapesJSON["physicsChainType"].asString());
 			b2ChainDef chainDef = b2DefaultChainDef();
+			chainDef.enableSensorEvents = true;
 
 			float sizeX{};
 			float sizeY{};
@@ -498,18 +494,27 @@ void PhysicsComponent::applyAngleImpulse(float force)
 
 b2JointId PhysicsComponent::createB2MouseJoint()
 {
+	b2JointId jointId{};
 
 	//Find the cage object that should exist for the world
 	const auto& levelCageObject = parent()->parentScene()->getFirstGameObjectByType("LEVEL_CAGE");
 	const auto& cagePhysicsComponent = levelCageObject.value().get()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
 	b2MouseJointDef jointDef = b2DefaultMouseJointDef();
-	jointDef.bodyIdA = m_physicsBodyId;
-	jointDef.bodyIdB = cagePhysicsComponent->physicsBodyId();
+	jointDef.bodyIdA = cagePhysicsComponent->physicsBodyId();
+	jointDef.bodyIdB = m_physicsBodyId;
 	jointDef.target = b2Body_GetPosition(m_physicsBodyId);
-	jointDef.maxForce = 1000.0f;
-	jointDef.hertz = 5000;
-	b2JointId jointId = b2CreateMouseJoint(parent()->parentScene()->physicsWorld(), &jointDef);
+	jointDef.maxForce = 10000.0f;
+	jointDef.hertz = 50000;
+	jointDef.dampingRatio = 0.7f;
+	jointDef.collideConnected = false;
+
+	//i added the IF during DEBUGGING BRO
+	if (b2Body_IsValid(jointDef.bodyIdA) && b2Body_IsValid(jointDef.bodyIdB)) {
+
+		jointId = b2CreateMouseJoint(parent()->parentScene()->physicsWorld(), &jointDef);
+
+	}
 
 	return jointId;
 

@@ -28,6 +28,7 @@ public:
 	void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer);
 
 	void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer);
+	void drawPoint(glm::vec2 point, SDL_Color color, GameLayer layer);
 	void drawSprite(int layer, SDL_FRect quad, SDL_Color color, Texture* texture, SDL_Rect* textureSrcQuad, float angle, 
 		bool outline, SDL_Color outlineColor, RenderBlendMode textureBlendMode) override;
 

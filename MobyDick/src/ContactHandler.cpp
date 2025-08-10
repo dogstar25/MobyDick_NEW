@@ -32,14 +32,31 @@ void ContactHandler::handleSensors(const b2WorldId physicsWorldId)
 
 		//Get the GameObjects associated with these bodies
 		GameObject* sensorGameObject = reinterpret_cast<GameObject*>(sensorBodyUserData);
-		GameObject* vistitorGameObject = reinterpret_cast<GameObject*>(visitorBodyUserData);
+		GameObject* visitorGameObject = reinterpret_cast<GameObject*>(visitorBodyUserData);
+
+		if (sensorGameObject->hasTrait(TraitTag::player) ||
+			visitorGameObject->hasTrait(TraitTag::player)) {
+
+				int todd = 1;
+
+		}
+
 
 		//Store this visitor as a touching gameObject to this sensor gameObject
 		//First get the main sharedpoint that represents this visitor gamemObject
-		auto visitorGameObjectSharedPtr = sensorGameObject->parentScene()->getGameObject(vistitorGameObject->id());
+		auto visitorGameObjectSharedPtr = sensorGameObject->parentScene()->getGameObject(visitorGameObject->id());
 		if (visitorGameObjectSharedPtr) {
 
 			sensorGameObject->addTouchingObject(visitorGameObjectSharedPtr.value());
+
+		}
+
+		//Store this Sensor game obejct as a touching gameObject to this visitor gameObject
+		//First get the main sharedpoint that represents this sensor gamemObject
+		auto sensorGameObjectSharedPtr = sensorGameObject->parentScene()->getGameObject(sensorGameObject->id());
+		if (visitorGameObjectSharedPtr) {
+
+			visitorGameObject->addTouchingObject(sensorGameObjectSharedPtr.value());
 
 		}
 
@@ -58,11 +75,13 @@ void ContactHandler::handleSensors(const b2WorldId physicsWorldId)
 
 		//Get the GameObjects associated with these bodies
 		GameObject* sensorGameObject = reinterpret_cast<GameObject*>(sensorBodyUserData);
-		GameObject* vistitorGameObject = reinterpret_cast<GameObject*>(visitorBodyUserData);
+		GameObject* visitorGameObject = reinterpret_cast<GameObject*>(visitorBodyUserData);
 
-		//Store this visitor as a touching gameObject to this sensor gameObject
-		//First get the main sharedpoint that represents this visitor gamemObject
-		sensorGameObject->removeTouchingObject(vistitorGameObject);
+		//Remove this visitor gameObject from the sensor gameObjects touching list
+		sensorGameObject->removeTouchingObject(visitorGameObject);
+
+		//Remove this sensor gameObject from the visitor gameObjects touching list
+		visitorGameObject->removeTouchingObject(sensorGameObject);
 
 	}
 

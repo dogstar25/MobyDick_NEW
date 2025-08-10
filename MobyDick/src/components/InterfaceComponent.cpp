@@ -110,6 +110,13 @@ void InterfaceComponent::update()
 
 		const auto& playerObject = parent()->parentScene()->player();
 
+		if (parent()->type() == "DOOR_SIDE_ENTRY_POINT")
+		{
+
+			newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
+
+		}
+
 		if (util::hasLineOfSight(playerObject.get(), parent(), parent()->parentScene()->physicsWorld())) {
 
 			newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
@@ -448,15 +455,12 @@ void InterfaceComponent::handleDragging()
 		}
 		else {
 
-			SDL_Point mouseLocation{};
-			SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
+			const auto physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+			//b2Body_SetAwake(physicsComponent->physicsBodyId(), true);
 
-			SDL_FPoint newPosition{};
-			SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y });
-
-			mouseWorldPosition = util::toBox2dPoint(mouseWorldPosition);
-
-			b2MouseJoint_SetTarget(m_b2MouseJointId, { mouseWorldPosition.x, mouseWorldPosition.y });
+			SDL_FPoint mouseLocationSDL = util::getMouseWorldPosition();
+			util::toBox2dPoint(mouseLocationSDL);
+			b2MouseJoint_SetTarget(m_b2MouseJointId, { mouseLocationSDL.x, mouseLocationSDL.y});
 
 			//Right side the object
 			parent()->setAngleInDegrees(0);

@@ -98,6 +98,8 @@
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
     <VcpkgAutoLink>true</VcpkgAutoLink>
+    <VcpkgTriplet>
+    </VcpkgTriplet>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgCurrentInstalledDir>$(VcpkgRoot)\installed\$(VcpkgTriplet)\</VcpkgCurrentInstalledDir>
@@ -220,6 +222,8 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Box2DEnkiAdapter.cpp" />
+    <ClCompile Include="src\Box2DDebugDraw.cpp" />
     <ClCompile Include="src\QueryAABBHits.cpp" />
     <ClCompile Include="src\RayCastHits.cpp" />
     <ClCompile Include="src\NavigationManager.cpp" />
@@ -342,6 +346,8 @@
     <ClCompile Include="src\puzzles\UnLockDoorPuzzle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Box2DEnkiAdapter.h" />
+    <ClInclude Include="src\Box2DDebugDraw.h" />
     <ClInclude Include="include\MobyDick.h" />
     <ClInclude Include="src\QueryAABBHits.h" />
     <ClInclude Include="src\RayCastHits.h" />

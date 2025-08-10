@@ -52,6 +52,7 @@ public:
 
 	virtual void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer) override;
 	virtual void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer) override;
+	virtual void drawPoint(glm::vec2 point, SDL_Color color, GameLayer layer) override;
 
 	Shader& shader(GLShaderType shaderType) {
 		return m_shaders[(int)shaderType];

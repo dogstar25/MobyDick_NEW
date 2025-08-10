@@ -357,6 +357,12 @@
     <ClCompile Include="src\QueryAABBHits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Box2DDebugDraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Box2DEnkiAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -717,6 +723,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\QueryAABBHits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Box2DDebugDraw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Box2DEnkiAdapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
