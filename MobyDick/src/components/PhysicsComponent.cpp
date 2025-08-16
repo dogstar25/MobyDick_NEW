@@ -69,6 +69,17 @@ PhysicsComponent::~PhysicsComponent()
 	m_contactDefs.clear();
 
 	if (b2Body_IsValid(m_physicsBodyId)) {
+
+		b2ShapeId shapeArray[m_maxBodyShapes];
+
+		int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
+		for (int i = 0; i < shapeCount; i++)
+		{
+			b2Shape_SetUserData(shapeArray[i], nullptr);
+		}
+
+		b2Body_SetUserData(m_physicsBodyId, nullptr);
+
 		b2DestroyBody(m_physicsBodyId);
 	}
 
@@ -127,7 +138,7 @@ void PhysicsComponent::setLinearVelocity(b2Vec2 velocityVector)
 
 }
 
-void PhysicsComponent::enableAllContacts(bool enable)
+void PhysicsComponent::enableAllContacts()
 {
 
 	b2ShapeId shapeArray[m_maxBodyShapes];
@@ -135,14 +146,26 @@ void PhysicsComponent::enableAllContacts(bool enable)
 	int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
 	for (int i = 0; i < shapeCount; i++)
 	{
-		b2Shape_EnableContactEvents(shapeArray[i], enable);
-		b2Shape_EnableHitEvents(shapeArray[i], enable);
+
+		auto userData = b2Shape_GetUserData(shapeArray[i]);
+		ContactDefinition* contactDefinition = static_cast<ContactDefinition*>(userData);
+		contactDefinition->contactTag = contactDefinition->originalContactTag;
+		_touchShapeForRefilter(shapeArray[i]);
 
 	}
 
+	b2Body_SetAwake(m_physicsBodyId, true);
 }
 
-void PhysicsComponent::enableAllSensors(bool enable)
+void PhysicsComponent::_touchShapeForRefilter(b2ShapeId shape)
+{
+	b2Filter f = b2Shape_GetFilter(shape);
+	// Flip a no-op category bit to force a change
+	f.categoryBits ^= kRefilterBit;
+	b2Shape_SetFilter(shape, f); // forces refilter, destroys stale contacts
+}
+
+void PhysicsComponent::disableAllContacts()
 {
 
 	b2ShapeId shapeArray[m_maxBodyShapes];
@@ -150,9 +173,15 @@ void PhysicsComponent::enableAllSensors(bool enable)
 	int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
 	for (int i = 0; i < shapeCount; i++)
 	{
-		b2Shape_EnableSensorEvents(shapeArray[i], enable);
+
+		auto userData = b2Shape_GetUserData(shapeArray[i]);
+		ContactDefinition* contactDefinition = static_cast<ContactDefinition*>(userData);
+		contactDefinition->contactTag = ContactTag::GENERAL_FREE;
+		_touchShapeForRefilter(shapeArray[i]);
 
 	}
+
+	b2Body_SetAwake(m_physicsBodyId, true);
 
 }
 
@@ -245,6 +274,21 @@ void PhysicsComponent::update()
 	convertedPosition = b2MulSV(GameConfig::instance().scaleFactor(), b2Body_GetPosition(m_physicsBodyId));
 
 	parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->setPosition(convertedPosition, convertedAngle);
+
+
+
+	////////////////////////////////////////
+	//b2ShapeId shapeArray[m_maxBodyShapes];
+
+	//int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
+	//for (int i = 0; i < shapeCount; i++)
+	//{
+	//	b2Filter filter = b2Shape_GetFilter(shapeArray[i]);
+	//	b2Shape_SetFilter(shapeArray[i], filter); // data unchanged; forces refilter
+	//	b2BodyId body = b2Shape_GetBody(shapeArray[i]);
+	//	b2Body_SetAwake(body, true);
+	//}
+
 }
 
 
@@ -272,11 +316,7 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 	b2BodyId bodyId = b2CreateBody(physicsWorldId, &bodyDef);
 
 	//Withbox2d V3 bodies that are still will go to sleep causing them to not get picked up as sesorEvents
-	if (m_physicsType == b2BodyType::b2_dynamicBody) {
-
-		b2Body_EnableSleep(bodyId, false);
-
-	}
+	b2Body_EnableSleep(bodyId, false);
 
 	//Store a reference to the parent object in the userData pointer field
 	b2Body_SetUserData(bodyId, parent());
@@ -328,7 +368,7 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 
 		auto contactDefinition = std::make_unique<ContactDefinition>();
 		contactDefinition->contactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
-		contactDefinition->saveOriginalContactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
+		contactDefinition->originalContactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
 
 		if (contactDefinition->contactTag == 14) {
 
@@ -356,7 +396,8 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 				circle.radius = shapesJSON["collisionRadius"].asFloat();
 				circle.center = { xOffset, yOffset };
 
-				b2CreateCircleShape(bodyId, &shapeDef, &circle);
+				b2ShapeId shapeId = b2CreateCircleShape(bodyId, &shapeDef, &circle);
+				b2Shape_EnableSensorEvents(shapeId, true);
 
 			}
 			else if (collisionShape == b2ShapeType::b2_polygonShape) 
@@ -385,7 +426,8 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 
 				b2Vec2 offsetLocation = { xOffset, yOffset };
 				box = b2MakeOffsetBox(sizeX, sizeY, offsetLocation, b2Rot_identity);
-				b2CreatePolygonShape(bodyId, &shapeDef, &box);
+				b2ShapeId shapeId = b2CreatePolygonShape(bodyId, &shapeDef, &box);
+				b2Shape_EnableSensorEvents(shapeId, true);
 
 			}
 

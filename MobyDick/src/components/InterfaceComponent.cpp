@@ -110,12 +110,12 @@ void InterfaceComponent::update()
 
 		const auto& playerObject = parent()->parentScene()->player();
 
-		if (parent()->type() == "DOOR_SIDE_ENTRY_POINT")
-		{
+		//if (parent()->type() == "DOOR_SIDE_ENTRY_POINT")
+		//{
 
-			newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
+		//	newEventsState.set((int)InterfaceEvents::ON_TOUCHING, true);
 
-		}
+		//}
 
 		if (util::hasLineOfSight(playerObject.get(), parent(), parent()->parentScene()->physicsWorld())) {
 

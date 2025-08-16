@@ -64,9 +64,6 @@ bool ContactFilter::ShouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* 
 
 			int todd = 1;
 		}
-		
-
-
 	}
 
 	auto& contactAMask = m_contactMasks[contactTagA];

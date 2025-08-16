@@ -236,6 +236,7 @@ void Scene::clear()
 
 void Scene::update() {
 
+
 	//Direct the scne if it has a cutScene assigned
 	if (m_cutScene.has_value() == true) {
 		direct();
@@ -256,7 +257,7 @@ void Scene::update() {
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
 
-			if (gameObjects[i]->type() == "SKULL") {
+			if (gameObjects[i]->hasTrait(TraitTag::player)) {
 				int todd = 1;
 			}
 
@@ -867,7 +868,7 @@ void Scene::stepB2PhysicsWorld() {
 	b2World_Step(m_physicsWorld, m_physicsConfig.timeStep, 4);
 
 	game->contactHandler()->handleContacts(m_physicsWorld);
-	game->contactHandler()->handleSensors(m_physicsWorld);
+	//game->contactHandler()->handleSensors(m_physicsWorld);
 	
 
 

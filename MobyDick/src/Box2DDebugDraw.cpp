@@ -141,7 +141,7 @@ void Box2DDebugDrawAdapter::drawSolidPolygon(const b2Transform& xf, const b2Vec2
 void Box2DDebugDrawAdapter::drawCircle(const b2Vec2& center, float radius, b2HexColor colorHex)
 {
     // --- Camera & scale ---
-    const float S = GameConfig::instance().scaleFactor();
+    const float S =  GameConfig::instance().scaleFactor();
     const SDL_FRect cam = Camera::instance().frame();
 
     // Convert to screen-space

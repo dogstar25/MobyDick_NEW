@@ -12,11 +12,13 @@ class TransformComponent;
 
 struct ContactDefinition {
 	int contactTag{};
-	int saveOriginalContactTag{};
+	int originalContactTag{};
 };
 
 class PhysicsComponent : public Component
 {
+	//This is used to force a refilter on contacts for when we disable or enable conatacts
+	static constexpr uint32_t kRefilterBit = 0x80000000u;
 
 	friend class StateComponent;
 
@@ -40,8 +42,8 @@ public:
 	void setTransform(b2Vec2 positionVector, float angle);
 	void setTransform(b2Vec2 positionVector);
 	void setLinearVelocity(b2Vec2 velocityVector);
-	void enableAllSensors(bool enable);
-	void enableAllContacts(bool enable);
+	void enableAllContacts();
+	void disableAllContacts();
 
 	void destroyJoint(b2JointId jointId);
 	
@@ -74,6 +76,7 @@ private:
 
 	b2BodyId _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2WorldId physicsWorldId, b2Vec2 sizeOverride);
 	uint16_t _setCollisionMask(Json::Value physicsComponentJSON);
+	void _touchShapeForRefilter(b2ShapeId shape);
 
 	b2BodyId m_physicsBodyId{ 0 };
 	uint16_t m_physicsType{ 0 };

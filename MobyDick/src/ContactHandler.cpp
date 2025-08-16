@@ -34,10 +34,20 @@ void ContactHandler::handleSensors(const b2WorldId physicsWorldId)
 		GameObject* sensorGameObject = reinterpret_cast<GameObject*>(sensorBodyUserData);
 		GameObject* visitorGameObject = reinterpret_cast<GameObject*>(visitorBodyUserData);
 
-		if (sensorGameObject->hasTrait(TraitTag::player) ||
-			visitorGameObject->hasTrait(TraitTag::player)) {
+		if (sensorGameObject->hasTrait(TraitTag::player) &&
+			visitorGameObject->type() == "MERMAID_1") {
 
 				int todd = 1;
+
+		}
+
+		if (sensorGameObject->type() == "MERMAID_1" ) {
+
+			int todd3 = 1;
+
+			if (visitorGameObject->hasTrait(TraitTag::player)) {
+				int todd2 = 1;
+			}
 
 		}
 
@@ -54,7 +64,7 @@ void ContactHandler::handleSensors(const b2WorldId physicsWorldId)
 		//Store this Sensor game obejct as a touching gameObject to this visitor gameObject
 		//First get the main sharedpoint that represents this sensor gamemObject
 		auto sensorGameObjectSharedPtr = sensorGameObject->parentScene()->getGameObject(sensorGameObject->id());
-		if (visitorGameObjectSharedPtr) {
+		if (sensorGameObjectSharedPtr) {
 
 			visitorGameObject->addTouchingObject(sensorGameObjectSharedPtr.value());
 
@@ -65,6 +75,11 @@ void ContactHandler::handleSensors(const b2WorldId physicsWorldId)
 	for (int i = 0; i < sensorEvents.endCount; ++i) {
 
 		const b2SensorEndTouchEvent& event = sensorEvents.endEvents[i];
+
+
+		if (b2Shape_IsValid(event.sensorShapeId) == false || b2Shape_IsValid(event.visitorShapeId) == false) {
+			continue;
+		}
 
 		//Get BodyId and Body User Data
 		//This represents the gameObject Itself usually
@@ -77,13 +92,31 @@ void ContactHandler::handleSensors(const b2WorldId physicsWorldId)
 		GameObject* sensorGameObject = reinterpret_cast<GameObject*>(sensorBodyUserData);
 		GameObject* visitorGameObject = reinterpret_cast<GameObject*>(visitorBodyUserData);
 
+		if (sensorGameObject->hasTrait(TraitTag::player) &&
+			visitorGameObject->type() == "MERMAID_1") {
+
+			int todd = 1;
+
+		}
+
+
 		//Remove this visitor gameObject from the sensor gameObjects touching list
-		sensorGameObject->removeTouchingObject(visitorGameObject);
+		auto visitorGameObjectSharedPtr = sensorGameObject->parentScene()->getGameObject(visitorGameObject->id());
+		if (visitorGameObjectSharedPtr) {
+
+			sensorGameObject->removeTouchingObject(visitorGameObject);
+		}
 
 		//Remove this sensor gameObject from the visitor gameObjects touching list
-		visitorGameObject->removeTouchingObject(sensorGameObject);
+		auto sensorGameObjectSharedPtr = sensorGameObject->parentScene()->getGameObject(sensorGameObject->id());
+		if (sensorGameObjectSharedPtr) {
+
+			visitorGameObject->removeTouchingObject(sensorGameObject);
+		}
 
 	}
+
+
 
 }
 

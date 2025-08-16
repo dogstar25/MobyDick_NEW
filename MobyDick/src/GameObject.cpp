@@ -17,6 +17,13 @@
 
 extern std::unique_ptr<Game> game;
 
+struct OverlapCtx {
+	b2BodyId selfBody;
+	b2ShapeId* out;
+	int* outCount;
+	int outCapacity;
+};
+
 
 
 GameObject::~GameObject()
@@ -323,6 +330,7 @@ void GameObject::update()
 {
 
 	if (this->updateDisabled() == false) {
+
 		for (auto& component : m_components)
 		{
 			if (component && component->isDisabled() == false) {
@@ -330,6 +338,7 @@ void GameObject::update()
 			}
 		}
 
+		_updateTouchingObjects();
 	}
 
 }
@@ -1163,6 +1172,13 @@ std::vector<SeenObjectDetails> GameObject::getSeenObjects()
 
 }
 
+b2BodyId GameObject::getB2BodyId()
+{
+	assert(hasComponent(ComponentTypes::PHYSICS_COMPONENT) && "Trying to get b2BodyId on an object without a physicsComponent");
+	const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+	return physicsComponent->physicsBodyId();
+}
+
 std::vector<std::weak_ptr<GameObject>> GameObject::getTouchingByTrait(const int trait)
 {
 
@@ -1328,7 +1344,7 @@ void GameObject::_imGuiDebugObject()
 	//	ImGui::End();
 
 	//}
-	if (type() == "DRAWER_SMALL") {
+	/*if (type() == "DRAWER_SMALL") {
 
 		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
@@ -1358,88 +1374,113 @@ void GameObject::_imGuiDebugObject()
 
 		ImGui::End();
 
-	}
-
+	}*/
+	
 	if (type() == "BOBBY") {
 
-		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
 
+		ImGui::Begin("Bobby Touching");
 
-		ImGui::Begin("Bobby Inventory");
+		for (const auto& item : m_touchingGameObjects) {
 
-		for (const auto& item : inventoryComponent->items()) {
-
-			if (item) {
-				ImGui::Text(item.value()->type().c_str());
+			if (item.second.lock()) {
+				ImGui::Text(item.second.lock()->type().c_str());
 			}
 		}
 
 		ImGui::End();
 
 	}
-	if (type() == "HOUSE_OVERLAY_FRONT") {
 
-		const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	if (name() == "PICTURE_MERMAID") {
 
 
-		ImGui::Begin("test");
+		ImGui::Begin("Mermaid Touching");
 
-		ImGui::Text("House Adjustments");
-
-		//Alpha
-		static int alpha = renderComponent->color().a;
-		ImGui::InputInt("#mouseSensitivity", &alpha, 3, 500);
-		renderComponent->setColorAlpha(alpha);
-
-		//Width
-		static int width = static_cast<int>(transformComponent->getPositionRect().w);
-		ImGui::InputInt("#width", &width,3, 100);
-
-		//Height
-		static int height = static_cast<int>(transformComponent->getPositionRect().h);
-		ImGui::InputInt("#height", &height, 3, 100);
-		transformComponent->setSize(static_cast<float>(width), static_cast<float>(height));
-
-		//XPos
-		static int xPos = static_cast<int>(transformComponent->getCenterPosition().x);
-		ImGui::InputInt("#xPos", &xPos, 3, 100);
-
-		//yPos
-		static int yPos = static_cast<int>(transformComponent->getCenterPosition().y);
-		ImGui::InputInt("#yPos", &yPos, 3, 100);
-
-		transformComponent->setPosition(SDL_FPoint{(float)xPos,(float)yPos});
-
-
-
-		ImGui::End();
-	}
-
-	if (type() == "DRAWER_1X1_INVENTORY_DISPLAY") {
-
-		const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
 		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-		ImGui::Begin("drawer");
+		b2BodyId bodyId = physicsComponent->physicsBodyId();
 
-		ImGui::Text("Drawer info");
+		b2Vec2 position = b2Body_GetPosition(bodyId);
 
-		std::string state{};
+		ImGui::Text("position: (%.2f, %.2f)",                  // 02
+			position.x, position.y);
 
-		for (size_t i = 0; i < stateComponent->getStateBitSet().size(); ++i) {
+		for (const auto& item : m_touchingGameObjects) {
 
-			if (stateComponent->testState(static_cast<GameObjectState>(i))) {
-
-				std::string name = game->enumMap()->findKeyWithValueHint(i, "GameObjectState::");
-
-				ImGui::Text(name.c_str());
+			if (item.second.lock()) {
+				ImGui::Text(item.second.lock()->type().c_str());
 			}
-
 		}
 
+
 		ImGui::End();
+
 	}
+
+	//if (type() == "HOUSE_OVERLAY_FRONT") {
+
+	//	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
+	//	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+
+
+	//	ImGui::Begin("test");
+
+	//	ImGui::Text("House Adjustments");
+
+	//	//Alpha
+	//	static int alpha = renderComponent->color().a;
+	//	ImGui::InputInt("#mouseSensitivity", &alpha, 3, 500);
+	//	renderComponent->setColorAlpha(alpha);
+
+	//	//Width
+	//	static int width = static_cast<int>(transformComponent->getPositionRect().w);
+	//	ImGui::InputInt("#width", &width,3, 100);
+
+	//	//Height
+	//	static int height = static_cast<int>(transformComponent->getPositionRect().h);
+	//	ImGui::InputInt("#height", &height, 3, 100);
+	//	transformComponent->setSize(static_cast<float>(width), static_cast<float>(height));
+
+	//	//XPos
+	//	static int xPos = static_cast<int>(transformComponent->getCenterPosition().x);
+	//	ImGui::InputInt("#xPos", &xPos, 3, 100);
+
+	//	//yPos
+	//	static int yPos = static_cast<int>(transformComponent->getCenterPosition().y);
+	//	ImGui::InputInt("#yPos", &yPos, 3, 100);
+
+	//	transformComponent->setPosition(SDL_FPoint{(float)xPos,(float)yPos});
+
+
+
+	//	ImGui::End();
+	//}
+
+	//if (type() == "DRAWER_1X1_INVENTORY_DISPLAY") {
+
+	//	const auto& stateComponent = getComponent<StateComponent>(ComponentTypes::STATE_COMPONENT);
+	//	const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+	//	ImGui::Begin("drawer");
+
+	//	ImGui::Text("Drawer info");
+
+	//	std::string state{};
+
+	//	for (size_t i = 0; i < stateComponent->getStateBitSet().size(); ++i) {
+
+	//		if (stateComponent->testState(static_cast<GameObjectState>(i))) {
+
+	//			std::string name = game->enumMap()->findKeyWithValueHint(i, "GameObjectState::");
+
+	//			ImGui::Text(name.c_str());
+	//		}
+
+	//	}
+
+	//	ImGui::End();
+	//}
 
 	
 
@@ -1447,5 +1488,52 @@ void GameObject::_imGuiDebugObject()
 
 
 }
+
+void GameObject::_updateTouchingObjects()
+{
+
+	m_touchingGameObjects.clear();
+
+	if (hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
+
+		const auto physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+		b2BodyId bodyId = physicsComponent->physicsBodyId();
+
+		b2ShapeId shapeArray[16];
+		b2ShapeId hits[256];
+		int hitsCount{};
+
+		int shapeCount = b2Body_GetShapes(bodyId, shapeArray, 16);
+		for (int i = 0; i < shapeCount; i++)
+		{
+
+			hitsCount = b2Shape_GetSensorOverlaps(shapeArray[i], hits, 256);
+
+
+		}
+
+		for (int i = 0; i < hitsCount; i++) {
+
+			b2BodyId hitBody = b2Shape_GetBody(hits[i]);
+
+			GameObject* hitGammeObject = static_cast<GameObject*>(b2Body_GetUserData(hitBody));
+
+			auto gameObject = parentScene()->getGameObject(hitGammeObject->id());
+
+			if (gameObject.has_value()) {
+				addTouchingObject(gameObject.value());
+			}
+
+		}
+	}
+
+
+
+
+
+
+}
+
 
 

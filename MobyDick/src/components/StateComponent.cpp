@@ -161,8 +161,7 @@ void StateComponent::removeState(GameObjectState newState)
 			//enable collisions
 			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-				physicsComponent->enableAllContacts(true);
-				physicsComponent->enableAllSensors(true);
+				physicsComponent->enableAllContacts();
 
 			}
 
@@ -613,8 +612,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == true) {
 
 				const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-				physicsComponent->enableAllContacts(false);
-				physicsComponent->enableAllSensors(false);
+				physicsComponent->disableAllContacts();
 			}
 
 			break;
