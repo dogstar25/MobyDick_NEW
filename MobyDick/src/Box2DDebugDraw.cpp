@@ -24,7 +24,7 @@ Box2DDebugDrawAdapter::Box2DDebugDrawAdapter()
     // Enable common views by default
     debugDraw_.drawShapes = false;
     debugDraw_.drawJoints = false;
-    debugDraw_.drawBounds = false;   // AABBs off initially
+    debugDraw_.drawBounds = false;
     debugDraw_.drawMass = false;
     debugDraw_.drawContacts = false;
 }
@@ -99,43 +99,84 @@ void Box2DDebugDrawAdapter::sDrawString(b2Vec2 p, const char* s, b2HexColor c, v
 void Box2DDebugDrawAdapter::drawPolygon(const b2Vec2* vertices, int vertexCount, b2HexColor colorHex)
 {
 
-    if (vertexCount < 2 || vertices == nullptr)
-        return;
+    std::vector< SDL_FPoint> points;
+    //SDL_FPoint *points = new SDL_FPoint[vertexCount + 1];
 
-    const float     S = GameConfig::instance().scaleFactor();
-    const SDL_FRect cam = Camera::instance().frame();
+    SDL_FPoint firstPoint;
+    bool firstFound = false;
+    SDL_FPoint point;
 
-    std::vector<SDL_FPoint> points;
-    points.reserve(static_cast<size_t>(vertexCount) + 1);
+    for (int i = 0; i < vertexCount; ++i) {
 
-    // Convert world (meters) -> screen (pixels) and apply camera offset
-    for (int i = 0; i < vertexCount; ++i)
-    {
-        const b2Vec2& v = vertices[i];
-        SDL_FPoint p;
-        p.x = v.x * S - cam.x;
-        p.y = v.y * S - cam.y;
-        points.push_back(p);
+        b2Vec2 vector = vertices[i];
+
+        //Adjust points based on Gamescale
+        point.x = vector.x * GameConfig::instance().scaleFactor() - Camera::instance().frame().x;
+        point.y = vector.y * GameConfig::instance().scaleFactor() - Camera::instance().frame().y;
+
+        //Adjust position based on current camera position - offset
+        //point.x -= Camera::instance().frame().x;
+        //point.y -= Camera::instance().frame().y;
+
+        //If this is the first point, then save it
+        if (firstFound == false) {
+            firstPoint = point;
+            firstFound = true;
+        }
+
+        //Add point to point array
+        //points[i] = point;
+        points.push_back(point);
     }
 
-    // Close the polygon
-    points.push_back(points.front());
+    //Add the first point to the end to complete closed shape
+    points.push_back(firstPoint);
 
-    // Convert Box2D 0xRRGGBB to SDL color (opaque)
-    SDL_Color c;
-    c.r = (colorHex >> 16) & 0xFF;
-    c.g = (colorHex >> 8) & 0xFF;
-    c.b = (colorHex) & 0xFF;
-    c.a = 255;
-
-    // Your renderer draws connected line segments
-    game->renderer()->drawPoints(points, c, GameLayer::GRID_DISPLAY);
+    SDL_Color sdlColor = { 255,255,255,255 };
+    game->renderer()->drawPoints(points, sdlColor, GameLayer::GRID_DISPLAY);
 
 }
 
+
 void Box2DDebugDrawAdapter::drawSolidPolygon(const b2Transform& xf, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor c)
 {
+    if (vertexCount < 2 || vertices == nullptr) return;
 
+    const float     S = GameConfig::instance().scaleFactor(); // e.g., 100 px/m
+    const SDL_FRect cam = Camera::instance().frame();           // screen-space offset
+
+    std::vector<SDL_FPoint> pts;
+    pts.reserve(static_cast<size_t>(vertexCount) + 1);
+
+    for (int i = 0; i < vertexCount; ++i)
+    {
+        const b2Vec2& v = vertices[i]; // local (shape space)
+
+        // local -> world: w = xf.p + R * v
+        b2Vec2 w;
+        w.x = xf.q.c * v.x - xf.q.s * v.y + xf.p.x;
+        w.y = xf.q.s * v.x + xf.q.c * v.y + xf.p.y;
+
+        // world -> screen
+        SDL_FPoint p;
+        p.x = w.x * S - cam.x;
+        p.y = w.y * S - cam.y;
+
+        pts.push_back(p);
+    }
+
+    // Close the polygon
+    pts.push_back(pts.front());
+
+    // Convert Box2D 0xRRGGBB to SDL color (opaque)
+    SDL_Color col;
+    col.r = 255;
+    col.g = 255;
+    col.b = 255;
+    col.a = 255;
+
+    // Draw outline (or call your fill first, then outline if available)
+    game->renderer()->drawPoints(pts, col, GameLayer::GRID_DISPLAY);
 }
 
 void Box2DDebugDrawAdapter::drawCircle(const b2Vec2& center, float radius, b2HexColor colorHex)
@@ -277,4 +318,41 @@ DDColor Box2DDebugDrawAdapter::toColor(b2HexColor hex, float a)
     float g = ((hex >> 8) & 0xFF) / 255.0f;
     float b = (hex & 0xFF) / 255.0f;
     return { r, g, b, a };
+}
+
+void Box2DDebugDrawAdapter::drawPolygon_old(const b2Vec2* vertices, int vertexCount, b2HexColor colorHex)
+{
+
+    if (vertexCount < 2 || vertices == nullptr)
+        return;
+
+    const float     S = GameConfig::instance().scaleFactor();
+    const SDL_FRect cam = Camera::instance().frame();
+
+    std::vector<SDL_FPoint> points;
+    points.reserve(static_cast<size_t>(vertexCount) + 1);
+
+    // Convert world (meters) -> screen (pixels) and apply camera offset
+    for (int i = 0; i < vertexCount; ++i)
+    {
+        const b2Vec2& v = vertices[i];
+        SDL_FPoint p;
+        p.x = v.x * S - cam.x;
+        p.y = v.y * S - cam.y;
+        points.push_back(p);
+    }
+
+    // Close the polygon
+    points.push_back(points.front());
+
+    // Convert Box2D 0xRRGGBB to SDL color (opaque)
+    SDL_Color c;
+    c.r = (colorHex >> 16) & 0xFF;
+    c.g = (colorHex >> 8) & 0xFF;
+    c.b = (colorHex) & 0xFF;
+    c.a = 255;
+
+    // Your renderer draws connected line segments
+    game->renderer()->drawPoints(points, c, GameLayer::GRID_DISPLAY);
+
 }

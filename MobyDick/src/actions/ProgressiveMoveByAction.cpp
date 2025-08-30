@@ -5,24 +5,6 @@
 #include "../GameObject.h"
 
 
-void ProgressiveMoveByAction::perform(b2Vec2 pixels, float speed)
-{
-	m_status = ProgressionStatus::IN_PROGRESS;
-
-	const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-
-
-	//set destination and calculate trajectory
-
-
-
-
-
-	//
-	// physicsComponent->applyMovement(speed, direction);
-
-}
-
 void ProgressiveMoveByAction::perform()
 {
 
@@ -48,7 +30,12 @@ void ProgressiveMoveByAction::perform()
 
 		b2Normalize(moveTrajectory);
 
+		//Adjust speed property for box2d
+		speed *= .01;
+
 		physicsComponent->applyMovement(speed, { moveTrajectory.x, moveTrajectory.y });
+
+		m_lastSavedDistance.reset();
 
 	}
 
@@ -57,12 +44,17 @@ void ProgressiveMoveByAction::perform()
 void ProgressiveMoveByAction::update()
 {
 
-	auto distance = util::calculateDistance(parent()->getCenterPosition(), { m_destination.x, m_destination.y });
-	if (distance < 1) {
+	auto distance = util::calculateDistance(m_parent->getCenterPosition(), { m_destination.x, m_destination.y });
+	if (m_lastSavedDistance.has_value() && distance >= m_lastSavedDistance) {
 
-		const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+		const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		physicsComponent->setLinearVelocity({ 0,0 });
+		physicsComponent->setTransform(util::toBox2dPoint( m_destination));
 
+		m_status = ProgressionStatus::COMPLETE;
+	}
+	else {
+		m_lastSavedDistance = distance;
 	}
 
 }

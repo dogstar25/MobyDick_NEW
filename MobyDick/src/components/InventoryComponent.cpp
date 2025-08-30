@@ -163,6 +163,17 @@ bool InventoryComponent::addItem(std::shared_ptr<GameObject> gameObject, int slo
 		//All items in inventory are draggable and obtainable if they are not already in the players inventory
 		gameObject->addState(GameObjectState::DRAGGABLE);
 
+		//Once an item has been added to another objects inventory, then it will becaome a kinematic physics object now
+		//This is for the few dynamic game Objects that can be picked up
+		if (gameObject->hasComponent(ComponentTypes::PHYSICS_COMPONENT)) {
+
+			const auto physicsComponent = gameObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+			//Change to kinematic
+			physicsComponent->changePhysicsBodyType(b2BodyType::b2_kinematicBody, true);
+			
+		}
+
 		//if this is a receptacle that has an inventory and gridDisplay in one, like a shelf, then the object is considered loose
 		if (parent()->hasComponent(ComponentTypes::GRID_DISPLAY_COMPONENT) == false) {
 

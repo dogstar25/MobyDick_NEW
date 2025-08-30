@@ -54,10 +54,8 @@ public:
 	void setAngularDamping(float angularDamping);
 	void setGravityScale(float gravityScale);
 	void setIsSensor(bool isSensor);
+	void setOriginalPhysicsType(b2BodyType bodyType) { m_originalPhysicsType = bodyType; }
 
-	//This is when we want to chnage the position of the object from within a box2d callback
-	void setChangePositionPosition(b2Vec2 position) { m_changePositionPosition = position; }
-	
 	void attachItem(GameObject* inventoryObject, b2JointType jointType, b2Vec2 attachLocation = {0,0});
 	void deleteAllJoints();
 	b2JointId createB2MouseJoint();
@@ -69,6 +67,9 @@ public:
 	float angle();
 	b2BodyId physicsBodyId() {	return m_physicsBodyId; }
 	bool isTouchingObjectsCapturedRequired() { return m_touchingObjectsCapturedRequired; }
+	b2BodyType originalPhysicsType() { return m_originalPhysicsType; }
+
+	void changePhysicsBodyType(b2BodyType m_physicsType, bool changeOriginal=false);
 
 private:
 
@@ -79,9 +80,9 @@ private:
 	void _touchShapeForRefilter(b2ShapeId shape);
 
 	b2BodyId m_physicsBodyId{ 0 };
-	uint16_t m_physicsType{ 0 };
+	b2BodyType m_physicsType{};
+	b2BodyType m_originalPhysicsType{};
 	b2Vec2 m_objectAnchorPoint{ 0 , 0 };
-	std::optional<b2Vec2> m_changePositionPosition{};
 	bool m_touchingObjectsCapturedRequired{ true };
 	static const int m_maxBodyShapes{ 16 };
 	static const int m_maxBodyJoints{ 16 };

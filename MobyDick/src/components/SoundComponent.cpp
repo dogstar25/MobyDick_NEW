@@ -183,26 +183,26 @@ int SoundComponent::_calculateSoundDistanceAdjustment(SDL_FPoint playerPosition,
 
 	float playerToSoundSourceDistance = util::calculateDistance(playerPosition, parentPosition);
 
-	int soundMagnitude = int((playerToSoundSourceDistance / soundRange) * (float)255.0);
-	soundMagnitude = std::min((int)soundMagnitude, 255);
+	int soundDistanceAdjustment = int((playerToSoundSourceDistance / soundRange) * (float)255.0);
+	soundDistanceAdjustment = std::min((int)soundDistanceAdjustment, 255);
 
 	//If we have a value for lineOfSightAdjustment, then we need to see if there's any object tagged as barriers between
 	//the player and the sound source and adjust sound if there are
 	if (lineOfSightAdjustment > 0) {
 
-		soundMagnitude = _adjustForLineOfSight(soundMagnitude, lineOfSightAdjustment);
+		soundDistanceAdjustment = _adjustForLineOfSight(soundDistanceAdjustment, lineOfSightAdjustment);
 	}
 
 
-	return soundMagnitude;
+	return soundDistanceAdjustment;
 }
 
-int SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfSightAdjustment)
+int SoundComponent::_adjustForLineOfSight(int currentSoundDistanceAdjustment, int lineOfSightAdjustment)
 {
 
 	const auto& player = parent()->parentScene()->player();
 	bool applyLightOfSightAdjustment{};
-	int newSoundMagnitude{ currentSoundMagnitude };
+	int newSoundMagnitude{ currentSoundDistanceAdjustment };
 
 	b2Vec2 begin = { parent()->getCenterPosition().x, parent()->getCenterPosition().y };
 	b2Vec2 end = { player->getCenterPosition().x, player->getCenterPosition().y};
@@ -217,11 +217,11 @@ int SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfS
 
 	}
 
-	if (applyLightOfSightAdjustment) {
+	if (applyLightOfSightAdjustment == false) {
 
-		if (currentSoundMagnitude < 255) {
+		if (currentSoundDistanceAdjustment < 255) {
 
-			newSoundMagnitude = std::max(255 - lineOfSightAdjustment, currentSoundMagnitude);
+			newSoundMagnitude = std::max(255 - lineOfSightAdjustment, currentSoundDistanceAdjustment);
 		}
 	}
 

@@ -16,7 +16,7 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 	Json::Value physicsComponentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PHYSICS_COMPONENT);
 	Json::Value transformComponentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TRANSFORM_COMPONENT);
 
-	m_physicsType = game->enumMap()->toEnum(physicsComponentJSON["type"].asString());
+	m_physicsType = m_originalPhysicsType = (b2BodyType)game->enumMap()->toEnum(physicsComponentJSON["type"].asString());
 
 	m_objectAnchorPoint = { physicsComponentJSON["anchorPoint"]["x"].asFloat(),	physicsComponentJSON["anchorPoint"]["y"].asFloat() };
 
@@ -122,6 +122,17 @@ void PhysicsComponent::setTransform(b2Vec2 positionVector)
 
 	b2Body_SetTransform(m_physicsBodyId, positionVector, b2Body_GetRotation(m_physicsBodyId));
 
+}
+
+void PhysicsComponent::changePhysicsBodyType(b2BodyType physicsType, bool changeOriginal)
+{
+	m_physicsType = physicsType;
+	b2Body_SetType(m_physicsBodyId, physicsType);
+
+	//Changing the original means that we are permanantly changing this body type
+	if (changeOriginal) {
+		m_originalPhysicsType = m_physicsType;
+	}
 }
 
 void PhysicsComponent::setPhysicsBodyActive(bool  active)
@@ -239,20 +250,10 @@ void PhysicsComponent::setIsSensor(bool isSensor)
 
 void PhysicsComponent::update()
 {
-
 	
-	//If we were given a position change from our contactListener, since we cannnot change position within
-	//contactListener, we set it here. An example would be warping the player to a new location after making contact
-	//with a portal object
-	//TODO:This can be put into the contactListener now in box2d v3 so do it , like for warping an object
 	b2Vec2 currentPosition = b2Body_GetPosition(m_physicsBodyId);
-	if (m_changePositionPosition.has_value()) {
-		currentPosition = { m_changePositionPosition->x , m_changePositionPosition->y };
-		m_changePositionPosition.reset();
-	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////
-
+	//Handle Absolute positioned objects
 	if (parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->absolutePositioning() == true) {
 
 		SDL_FPoint cameraPosition = { Camera::instance().frame().x, Camera::instance().frame().y };
@@ -260,11 +261,8 @@ void PhysicsComponent::update()
 
 		currentPosition = { currentPosition.x + convertedCameraPosition.x, currentPosition.y + convertedCameraPosition.y};
 
+		b2Body_SetTransform(m_physicsBodyId, currentPosition, b2Body_GetRotation(m_physicsBodyId));
 	}
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-
-	b2Body_SetTransform(m_physicsBodyId, currentPosition, b2Body_GetRotation(m_physicsBodyId));
 
 	//Transfer the physicsComponent coordinates to the transformComponent
 	//converting the angle to degrees
@@ -274,20 +272,6 @@ void PhysicsComponent::update()
 	convertedPosition = b2MulSV(GameConfig::instance().scaleFactor(), b2Body_GetPosition(m_physicsBodyId));
 
 	parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->setPosition(convertedPosition, convertedAngle);
-
-
-
-	////////////////////////////////////////
-	//b2ShapeId shapeArray[m_maxBodyShapes];
-
-	//int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
-	//for (int i = 0; i < shapeCount; i++)
-	//{
-	//	b2Filter filter = b2Shape_GetFilter(shapeArray[i]);
-	//	b2Shape_SetFilter(shapeArray[i], filter); // data unchanged; forces refilter
-	//	b2BodyId body = b2Shape_GetBody(shapeArray[i]);
-	//	b2Body_SetAwake(body, true);
-	//}
 
 }
 
@@ -359,6 +343,11 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 
 		}
 
+		if (parent()->type() == "KEY1") {
+
+			int todd = 1;
+		}
+
 		auto collisionShape = game->enumMap()->toEnum(shapesJSON["collisionShape"].asString());
 
 		//The Surface Material structure is shared by all shape types
@@ -369,11 +358,6 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 		auto contactDefinition = std::make_unique<ContactDefinition>();
 		contactDefinition->contactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
 		contactDefinition->originalContactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
-
-		if (contactDefinition->contactTag == 14) {
-
-			int todd = 1;
-		}
 		
 		//All shapes except the chain share common code
 		if (collisionShape == b2ShapeType::b2_circleShape ||
@@ -383,21 +367,25 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 			b2Polygon box;
 
 			b2ShapeDef shapeDef = b2DefaultShapeDef();
+			shapeDef.material = surfaceMaterial;
 			shapeDef.density = shapesJSON["density"].asFloat();
-			shapeDef.isSensor = shapesJSON["isSensor"].asFloat();
+			shapeDef.isSensor = shapesJSON["isSensor"].asBool();
 			shapeDef.userData = contactDefinition.get();
-			shapeDef.enableSensorEvents = true;
+			if (shapesJSON["disableSensorInvolvement"].asBool() == true) {
+				shapeDef.enableSensorEvents = false;
+			}
+			else {
+				shapeDef.enableSensorEvents = true;
+			}
 
 			m_contactDefs.push_back(std::move(contactDefinition));
 
 			if (collisionShape == b2ShapeType::b2_circleShape)
 			{
-				
 				circle.radius = shapesJSON["collisionRadius"].asFloat();
 				circle.center = { xOffset, yOffset };
 
 				b2ShapeId shapeId = b2CreateCircleShape(bodyId, &shapeDef, &circle);
-				b2Shape_EnableSensorEvents(shapeId, true);
 
 			}
 			else if (collisionShape == b2ShapeType::b2_polygonShape) 
@@ -427,7 +415,6 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 				b2Vec2 offsetLocation = { xOffset, yOffset };
 				box = b2MakeOffsetBox(sizeX, sizeY, offsetLocation, b2Rot_identity);
 				b2ShapeId shapeId = b2CreatePolygonShape(bodyId, &shapeDef, &box);
-				b2Shape_EnableSensorEvents(shapeId, true);
 
 			}
 
@@ -630,11 +617,11 @@ void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointTyp
 		b2CreateWeldJoint(parent()->parentScene()->physicsWorld(), &weldJointDef);
 	}
 	else if (jointType == b2JointType::b2_revoluteJoint) {
-		weldJointDef.bodyIdA = m_physicsBodyId;
-		weldJointDef.bodyIdB = attachObjectPhysicsComponent->physicsBodyId();
-		weldJointDef.collideConnected = false;
-		weldJointDef.localAnchorA = attachLocation;
-		weldJointDef.localAnchorB = attachObjectAnchorPoint;
+		revoluteJointDef.bodyIdA = m_physicsBodyId;
+		revoluteJointDef.bodyIdB = attachObjectPhysicsComponent->physicsBodyId();
+		revoluteJointDef.collideConnected = false;
+		revoluteJointDef.localAnchorA = attachLocation;
+		revoluteJointDef.localAnchorB = attachObjectAnchorPoint;
 		b2CreateRevoluteJoint(parent()->parentScene()->physicsWorld(), &revoluteJointDef);
 
 	}

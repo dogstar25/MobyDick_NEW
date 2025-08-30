@@ -70,7 +70,8 @@ Scene::Scene(std::string sceneId)
 	if (m_hasPhysics == true)
 	{
 		m_debugDraw.setDrawShapes(true);
-		m_debugDraw.setDrawBounds(true);
+		m_debugDraw.setDrawBounds(false);
+		m_debugDraw.setUseDrawingBounds(false);
 	}
 
 	//If there is background music specified then play it
@@ -256,11 +257,6 @@ void Scene::update() {
 
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
-
-			if (gameObjects[i]->hasTrait(TraitTag::player)) {
-				int todd = 1;
-			}
-
 
 			gameObjects[i]->update();
 		}
@@ -868,7 +864,7 @@ void Scene::stepB2PhysicsWorld() {
 	b2World_Step(m_physicsWorld, m_physicsConfig.timeStep, 4);
 
 	game->contactHandler()->handleContacts(m_physicsWorld);
-	//game->contactHandler()->handleSensors(m_physicsWorld);
+	game->contactHandler()->handleSensors(m_physicsWorld);
 	
 
 

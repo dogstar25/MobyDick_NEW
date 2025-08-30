@@ -245,7 +245,6 @@ private:
 
 	std::optional<GameObject*> m_parentObject{};
 	
-	bool m_isTouchCaptureRequired{};
 	bool m_removeFromWorld{ false };
 	Scene* m_parentScene{nullptr};
 	std::bitset<100> m_traitTags{};

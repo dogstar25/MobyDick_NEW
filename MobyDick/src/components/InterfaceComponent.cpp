@@ -390,6 +390,11 @@ void InterfaceComponent::clearDragging()
 		const auto& physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 		physicsComponent->destroyJoint(m_b2MouseJointId);
 		m_b2MouseJointId = b2_nullJointId;
+
+		physicsComponent->changePhysicsBodyType(physicsComponent->originalPhysicsType());
+
+		b2BodyType test = b2Body_GetType(physicsComponent->physicsBodyId());
+
 	}
 
 }
@@ -456,7 +461,8 @@ void InterfaceComponent::handleDragging()
 		else {
 
 			const auto physicsComponent = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-			//b2Body_SetAwake(physicsComponent->physicsBodyId(), true);
+
+			physicsComponent->changePhysicsBodyType(b2BodyType::b2_dynamicBody);
 
 			SDL_FPoint mouseLocationSDL = util::getMouseWorldPosition();
 			util::toBox2dPoint(mouseLocationSDL);

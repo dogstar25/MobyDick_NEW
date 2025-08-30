@@ -137,18 +137,22 @@ void Camera::correctPosition(float& xPosition, float& yPosition)
 {
 	
 	//Check far left limit
-	if (xPosition < LevelManager::instance().m_levelBounds.x)
+	//Add check to take care if the camera frame is bigger than the level
+	if (xPosition < LevelManager::instance().m_levelBounds.x ||
+		LevelManager::instance().m_levelBounds.w - m_frame.w < 0)
 	{
 		xPosition = (float)LevelManager::instance().m_levelBounds.x;
 	}
 	//Check far right limit
-	else if (xPosition > LevelManager::instance().m_levelBounds.w - m_frame.w)
+	else if (xPosition > LevelManager::instance().m_levelBounds.w - m_frame.w )
 	{
 		xPosition = LevelManager::instance().m_levelBounds.w - m_frame.w;
 	}
 
 	//Check far top limit
-	if (yPosition < LevelManager::instance().m_levelBounds.y)
+	//Add check to take care if the camera frame is bigger than the level
+	if (yPosition < LevelManager::instance().m_levelBounds.y || 
+		LevelManager::instance().m_levelBounds.h - m_frame.h < 0)
 	{
 		yPosition = (float)LevelManager::instance().m_levelBounds.y;
 	}

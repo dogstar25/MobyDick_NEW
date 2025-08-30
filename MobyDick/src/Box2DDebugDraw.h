@@ -29,6 +29,7 @@ public:
 
     // ---- Implement these with your renderer (all coords are in meters) ----
     void drawPolygon(const b2Vec2* verts, int count, b2HexColor c);
+    void drawPolygon_old(const b2Vec2* verts, int count, b2HexColor c);
     void drawSolidPolygon(const b2Transform& xf, const b2Vec2* verts, int count, float radius, b2HexColor c);
     void drawCircle(const b2Vec2& center, float radius, b2HexColor c);
     void drawSolidCircle(const b2Transform& xf, float radius, b2HexColor c);

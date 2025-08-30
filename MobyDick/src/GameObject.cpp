@@ -338,7 +338,7 @@ void GameObject::update()
 			}
 		}
 
-		_updateTouchingObjects();
+		//_updateTouchingObjects();
 	}
 
 }
@@ -1401,10 +1401,10 @@ void GameObject::_imGuiDebugObject()
 
 		b2BodyId bodyId = physicsComponent->physicsBodyId();
 
-		b2Vec2 position = b2Body_GetPosition(bodyId);
+		b2Transform position = b2Body_GetTransform(bodyId);
 
-		ImGui::Text("position: (%.2f, %.2f)",                  // 02
-			position.x, position.y);
+		ImGui::Text("position: (%.2f, %.2f)", 
+			position.p.x, position.p.y);
 
 		for (const auto& item : m_touchingGameObjects) {
 
