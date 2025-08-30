@@ -2,7 +2,6 @@
 #include "../SoundManager.h"
 #include "../LevelManager.h"
 #include "../IMGui/IMGuiUtil.h"
-#include "../RayCastCallBack.h"
 #include <memory.h>
 
 #include "../EnumMap.h"
@@ -184,26 +183,26 @@ int SoundComponent::_calculateSoundDistanceAdjustment(SDL_FPoint playerPosition,
 
 	float playerToSoundSourceDistance = util::calculateDistance(playerPosition, parentPosition);
 
-	int soundMagnitude = int((playerToSoundSourceDistance / soundRange) * (float)255.0);
-	soundMagnitude = std::min((int)soundMagnitude, 255);
+	int soundDistanceAdjustment = int((playerToSoundSourceDistance / soundRange) * (float)255.0);
+	soundDistanceAdjustment = std::min((int)soundDistanceAdjustment, 255);
 
 	//If we have a value for lineOfSightAdjustment, then we need to see if there's any object tagged as barriers between
 	//the player and the sound source and adjust sound if there are
 	if (lineOfSightAdjustment > 0) {
 
-		soundMagnitude = _adjustForLineOfSight(soundMagnitude, lineOfSightAdjustment);
+		soundDistanceAdjustment = _adjustForLineOfSight(soundDistanceAdjustment, lineOfSightAdjustment);
 	}
 
 
-	return soundMagnitude;
+	return soundDistanceAdjustment;
 }
 
-int SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfSightAdjustment)
+int SoundComponent::_adjustForLineOfSight(int currentSoundDistanceAdjustment, int lineOfSightAdjustment)
 {
 
 	const auto& player = parent()->parentScene()->player();
 	bool applyLightOfSightAdjustment{};
-	int newSoundMagnitude{ currentSoundMagnitude };
+	int newSoundMagnitude{ currentSoundDistanceAdjustment };
 
 	b2Vec2 begin = { parent()->getCenterPosition().x, parent()->getCenterPosition().y };
 	b2Vec2 end = { player->getCenterPosition().x, player->getCenterPosition().y};
@@ -211,27 +210,18 @@ int SoundComponent::_adjustForLineOfSight(int currentSoundMagnitude, int lineOfS
 	util::toBox2dPoint(begin);
 	util::toBox2dPoint(end);
 
-	//cast a physics raycast from the light object to the center of this lightedArea's center
-	parent()->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), begin, end);
 
-	//Loop through all objects hit between the sound emitting object and the player
-	for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
+	if (util::hasLineOfSight(parent(), player.get(), parent()->parentScene()->physicsWorld() )) {
 
-		//Is this a barrier and also NOT its own body and the object is not physicsdisabled
-		if ((rayHitObject.gameObject->hasTrait(TraitTag::barrier) || rayHitObject.gameObject->hasState(GameObjectState::IMPASSABLE)) &&
-			rayHitObject.gameObject != parent()) {
-			applyLightOfSightAdjustment = true;
-			break;
-		}
+		applyLightOfSightAdjustment = true;
+
 	}
 
-	RayCastCallBack::instance().reset();
+	if (applyLightOfSightAdjustment == false) {
 
-	if (applyLightOfSightAdjustment) {
+		if (currentSoundDistanceAdjustment < 255) {
 
-		if (currentSoundMagnitude < 255) {
-
-			newSoundMagnitude = std::max(255 - lineOfSightAdjustment, currentSoundMagnitude);
+			newSoundMagnitude = std::max(255 - lineOfSightAdjustment, currentSoundDistanceAdjustment);
 		}
 	}
 

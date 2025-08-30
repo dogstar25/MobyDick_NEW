@@ -71,6 +71,8 @@ RenderComponent::RenderComponent(Json::Value componentJSON, GameObject* parent):
 	m_texture = TextureManager::instance().getTexture(componentJSON["textureId"].asString());
 
 
+
+
 }
 
 
@@ -306,7 +308,7 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 	
 	const auto& transform = parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
 	const auto& physics = parent()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-		
+
 	//Check if this object is in the viewable area of the world
 	//Add a tiles width to the camera to buffer it some
 	const SDL_FRect positionRect = transform->getPositionRect();
@@ -316,9 +318,6 @@ void RenderComponent::render(Texture* texture, SDL_Color color, SDL_FRect destQu
 		(int)Camera::instance().frame().w + game->worldTileSize().x,
 		(int)Camera::instance().frame().h + game->worldTileSize().y };
 
-	if (parent()->type() == "FULL_HOUSE_FRONT_EXTERIOR") {
-		int todd = 1;
-	}
 
 	/*
 	If this object is within the viewable area or if its absolute positioned and therefore is not dependent on the camera

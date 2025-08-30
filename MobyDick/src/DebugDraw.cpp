@@ -11,14 +11,14 @@ DebugDraw& DebugDraw::instance()
 	return singletonInstance;
 }
 
-void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void DebugDraw::DrawPolygon(const b2Vec2* vertices, int vertexCount, const b2HexColor& color)
 {
 
 	DrawSolidPolygon(vertices, vertexCount, color);
 
 }
 
-void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int vertexCount, const b2HexColor& color)
 {
 
 	std::vector< SDL_FPoint> points;
@@ -59,13 +59,13 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 
 }
 
-void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& color)
+void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2HexColor& color)
 {
 	b2Vec2 axis;
 	//DrawSolidCircle(center, radius, axis, color);
 }
 
-void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
+void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2HexColor& color)
 {
 	
 	//convert to propert game scale
@@ -78,9 +78,9 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 	newCenter.x -= Camera::instance().frame().x;
 	newCenter.y -= Camera::instance().frame().y;
 
-	int  sides = (int)((2 * b2_pi) * radius / 2);
+	int  sides = (int)((2 * B2_PI) * radius / 2);
 
-	float d_a = (2 * b2_pi) / sides,
+	float d_a = (2 * B2_PI) / sides,
 		angle = d_a;
 
 	b2Vec2 start, end;
@@ -95,10 +95,6 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 		end = end + newCenter;
 		angle += d_a;
 		
-		//SDL_Color sdlColor = { 255,255,255,255 };
-		SDL_Color sdlColor = { (Uint8)color.r,(Uint8)color.b,(Uint8)color.g,(Uint8)color.a };
-
-
 		glm::vec2 startPoint = {start.x, start.y};
 		glm::vec2 endPoint = { end.x, end.y };
 		glm::uvec4 color = { 255,255,255,255 };
@@ -108,7 +104,7 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 
 }
 
-void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
+void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2HexColor& color)
 {
 	glm::vec2 startPoint = { p1.x, p1.y };
 	glm::vec2 endPoint = { p2.x, p2.y };
@@ -143,23 +139,6 @@ void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c
 void DebugDraw::DrawTransform(const b2Transform& xf)
 {
 
-	//b2Vec2 point{};
-	//b2Vec2 point2{};
-
-	//point.x = xf.p.x * GameConfig::instance().scaleFactor();
-	//point.y = xf.p.y * GameConfig::instance().scaleFactor();
-
-	////Adjust position based on current camera position - offset
-	//point.x -= Camera::instance().frame().x;
-	//point.y -= Camera::instance().frame().y;
-
-	//float length = point.x + xf.p.Length();
-	//point2 = { point.x + (xf.p.Length() * GameConfig::instance().scaleFactor()), point.y };
-	//SDL_Color sdlColor = { 255,0,0,255 };
-	//RendererSDL::instance().drawLine(point, point2, sdlColor);
-
-	
-	DrawSegment(xf.q.GetXAxis(), xf.q.GetYAxis(),b2Color());
 
 
 }
@@ -167,7 +146,7 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
 
 
 
-void DebugDraw::DrawPoint(const b2Vec2& p, float size, const b2Color& color)
+void DebugDraw::DrawPoint(const b2Vec2& p, float size, const b2HexColor& color)
 {
 }
 
@@ -175,12 +154,12 @@ void DebugDraw::DrawString(int x, int y, const char *string, ...)
 {
 }
 
-void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
+void DebugDraw::DrawAABB(b2AABB* aabb, const b2HexColor& c)
 {
 	SDL_FRect poly;
 	poly.x = aabb->upperBound.x;
 	poly.y = aabb->upperBound.y;
-	poly.w = aabb->GetExtents().x * 2;
-	poly.h = aabb->GetExtents().y * 2;
+	poly.w = aabb->upperBound.x * 2;
+	poly.h = aabb->upperBound.y * 2;
 	//SDL_BlitSurface(Screen::white, &poly, Screen::screen, &poly);
 }

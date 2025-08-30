@@ -18,7 +18,7 @@ void DroneMoveAction::perform(b2Vec2 trajectory)
 	if (animationComponent)
 	{
 
-		if (trajectory.Length() != 0)
+		if (b2Length(trajectory) != 0)
 		{
 			
 			stateComponent->addState(GameObjectState::RUN);

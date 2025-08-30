@@ -17,7 +17,7 @@ struct Attachment
 	std::string id{};
 	std::shared_ptr<GameObject> gameObject{};
 	bool addToInventory{ false };
-	b2JointType attachB2JointType{ b2JointType::e_weldJoint };
+	b2JointType attachB2JointType{ b2JointType::b2_weldJoint };
 	b2Vec2 attachLocation{};
 	
 

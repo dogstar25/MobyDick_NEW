@@ -24,7 +24,7 @@ Game::~Game()
 }
 
 bool Game::init(
-	std::shared_ptr<ContactListener> contactListener, 
+	std::shared_ptr<ContactHandler> contactHandler, 
 	std::shared_ptr<ContactFilter> contactFilter,
 	std::shared_ptr<ComponentFactory> componentFactory, 
 	std::shared_ptr<ActionFactory> actionFactory, 
@@ -43,7 +43,7 @@ bool Game::init(
 {
 
 	//Set all of our game specific factories and managers
-	m_contactListener = contactListener;
+	m_contactHandler = contactHandler;
 	m_contactFilter = contactFilter;
 	m_componentFactory = componentFactory;
 	m_actionFactory = actionFactory;
@@ -76,7 +76,7 @@ bool Game::init(
 	}
 
 	//Create the game window
-	uint16 windowFlags = 0 | SDL_WINDOW_OPENGL;
+	uint16_t windowFlags = 0 | SDL_WINDOW_OPENGL;
 	if (GameConfig::instance().windowFullscreen() == true)
 	{
 		//Switch these depending on if you are building for a release executable or just local development
@@ -184,6 +184,9 @@ void Game::play()
 			}
 			else if (action->actionCode == SCENE_ACTION_START_NEW) {
 				SceneManager::instance().startNewGame();
+			}
+			else if (action->actionCode == SCENE_ACTION_SPAWN_CRYSTAL) {
+				SceneManager::instance().spawnCrystal();
 			}
 
 		}

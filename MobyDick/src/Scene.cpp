@@ -8,6 +8,7 @@
 #include "game.h"
 #include "LevelManager.h"
 
+
 extern std::unique_ptr<Game> game;
 
 Scene::Scene(std::string sceneId)
@@ -27,6 +28,7 @@ Scene::Scene(std::string sceneId)
 		_buildPhysicsWorld(physicsJSON);
 	}
 
+	
 	//Allocate the arrays for all of the gameObjects
 	auto maxObjects = definitionJSON["maxObjects"].asInt();
 	for (auto& gameLayer : m_gameObjects)
@@ -67,8 +69,9 @@ Scene::Scene(std::string sceneId)
 	//Debug Mode
 	if (m_hasPhysics == true)
 	{
-		DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit | DebugDraw::e_jointBit);
-		m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
+		m_debugDraw.setDrawShapes(true);
+		m_debugDraw.setDrawBounds(false);
+		m_debugDraw.setUseDrawingBounds(false);
 	}
 
 	//If there is background music specified then play it
@@ -197,8 +200,9 @@ void Scene::reset()
 	//Debug Mode
 	if (m_hasPhysics == true)
 	{
-		DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit);
-		m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
+		
+		//DebugDraw::instance().SetFlags(DebugDraw::e_shapeBit);
+		//m_physicsWorld->SetDebugDraw(&DebugDraw::instance());
 	}
 
 	//DebugSettings
@@ -216,20 +220,23 @@ void Scene::clear()
 	m_levelTriggers.clear();
 	m_levelObjectives.clear();
 
+	m_gameObjectLookup.clear();
+	m_player.reset();
+
 	for (int x = 0; x < GameLayer::GameLayer_COUNT; x++)
 	{
 		m_gameObjects[x].clear();
 	}
 
-	m_gameObjectLookup.clear();
-
 	if (m_hasPhysics) {
-		delete m_physicsWorld;
+		b2DestroyWorld(m_physicsWorld);
+		m_physicsWorld = b2_nullWorldId;
 	}
 
 }
 
 void Scene::update() {
+
 
 	//Direct the scne if it has a cutScene assigned
 	if (m_cutScene.has_value() == true) {
@@ -250,11 +257,6 @@ void Scene::update() {
 
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
-
-			if (gameObjects[i]->type() == "SKULL") {
-				int todd = 1;
-			}
-
 
 			gameObjects[i]->update();
 		}
@@ -313,7 +315,9 @@ void Scene::render() {
 	//DebugDraw
 	if (m_hasPhysics && isDebugSetting(DebugSceneSettings::SHOW_PHYSICS_DEBUG) == true)
 	{
-		m_physicsWorld->DebugDraw();
+
+		m_debugDraw.draw(m_physicsWorld);
+
 	}
 
 }
@@ -506,7 +510,6 @@ void Scene::_processGameObjectInterdependecies()
 				Camera::instance().setFollowMe(gameObject.second.lock());
 			}
 
-
 		}
 
 	}
@@ -516,35 +519,32 @@ void Scene::_processGameObjectInterdependecies()
 void Scene::_buildPhysicsWorld(Json::Value physicsJSON)
 {
 
- 	m_physicsConfig.gravity.Set(physicsJSON["gravity"]["x"].asFloat(), physicsJSON["gravity"]["y"].asFloat());
+	m_physicsConfig.gravity = { physicsJSON["gravity"]["x"].asFloat(), physicsJSON["gravity"]["y"].asFloat() };
 	m_physicsConfig.timeStep = physicsJSON["timeStep"].asFloat();
-	m_physicsConfig.velocityIterations = physicsJSON["velocityIterations"].asInt();
-	m_physicsConfig.positionIterations = physicsJSON["positionIterations"].asInt();
-	//m_physicsConfig.b2DebugDrawMode = physicsJSON["b2DebugDrawMode"].asBool();
+	m_physicsConfig.subSteps = physicsJSON["subSteps"].asInt();
 
 	//Build the box2d physics world
-	m_physicsWorld = new b2World(m_physicsConfig.gravity);
+	b2WorldDef worldDef = b2DefaultWorldDef();
+	worldDef.gravity = m_physicsConfig.gravity;
 
-	//Add a collision contact listener and filter for box2d callbacks
-	m_physicsWorld->SetContactFilter(game->contactFilter().get());
-	m_physicsWorld->SetContactListener(game->contactListener().get());
+	//enkit lets us setup a multithread situation for box2d to do its Step call much faster
+	m_enki.configure(worldDef);
 
+	//Create the box2d physics world
+	m_physicsWorld = b2CreateWorld(&worldDef);
+
+	//Add a collision contact filter for box2d callbacks
+	b2World_SetCustomFilterCallback(m_physicsWorld, &Scene::_shouldCollide, this);
+	
 }
 
-
-void Scene::flashContactListener()
+bool Scene::_shouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* context)
 {
-
-	m_physicsWorld->SetContactFilter(nullptr);
-	m_physicsWorld->SetContactFilter(game->contactFilter().get());
+	auto scene = static_cast<Scene*>(context);
+	return game->contactFilter()->instance().ShouldCollide(shapeAId, shapeBId, scene);
 
 }
 
-void _updatePhysics(b2World* physicsWorld)
-{
-	//Update ALL physics object states
-	physicsWorld->Step(.016, 6, 2);
-}
 
 void Scene::_buildSceneGameObjects(Json::Value definitionJSON)
 {
@@ -859,3 +859,13 @@ void Scene::_showNavigationMap()
 
 }
 
+void Scene::stepB2PhysicsWorld() {
+
+	b2World_Step(m_physicsWorld, m_physicsConfig.timeStep, 4);
+
+	game->contactHandler()->handleContacts(m_physicsWorld);
+	game->contactHandler()->handleSensors(m_physicsWorld);
+	
+
+
+}

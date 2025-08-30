@@ -12,11 +12,13 @@ class TransformComponent;
 
 struct ContactDefinition {
 	int contactTag{};
-	int saveOriginalContactTag{};
+	int originalContactTag{};
 };
 
 class PhysicsComponent : public Component
 {
+	//This is used to force a refilter on contacts for when we disable or enable conatacts
+	static constexpr uint32_t kRefilterBit = 0x80000000u;
 
 	friend class StateComponent;
 
@@ -40,6 +42,10 @@ public:
 	void setTransform(b2Vec2 positionVector, float angle);
 	void setTransform(b2Vec2 positionVector);
 	void setLinearVelocity(b2Vec2 velocityVector);
+	void enableAllContacts();
+	void disableAllContacts();
+
+	void destroyJoint(b2JointId jointId);
 	
 	void setFixedRotation(bool fixedRotation);
 	void setBullet(bool isBullet);
@@ -48,33 +54,40 @@ public:
 	void setAngularDamping(float angularDamping);
 	void setGravityScale(float gravityScale);
 	void setIsSensor(bool isSensor);
+	void setOriginalPhysicsType(b2BodyType bodyType) { m_originalPhysicsType = bodyType; }
 
-	//This is when we want to chnage the position of the object from within a box2d callback
-	void setChangePositionPosition(b2Vec2 position) { m_changePositionPosition = position; }
-	
 	void attachItem(GameObject* inventoryObject, b2JointType jointType, b2Vec2 attachLocation = {0,0});
 	void deleteAllJoints();
-	b2MouseJoint* createB2MouseJoint();
+	b2JointId createB2MouseJoint();
+	void setCollisionTag(int contactTag);
 
 	//Accessor functions
 	b2Vec2 objectAnchorPoint() { return m_objectAnchorPoint; }
-	b2Vec2 position() { return m_physicsBody->GetPosition(); }
-	float angle() { return m_physicsBody->GetAngle(); }
-	b2Body* physicsBody() {	return m_physicsBody; }
+	b2Vec2 position();
+	float angle();
+	b2BodyId physicsBodyId() {	return m_physicsBodyId; }
 	bool isTouchingObjectsCapturedRequired() { return m_touchingObjectsCapturedRequired; }
+	b2BodyType originalPhysicsType() { return m_originalPhysicsType; }
+
+	void changePhysicsBodyType(b2BodyType m_physicsType, bool changeOriginal=false);
 
 private:
 
 	void setPhysicsBodyActive(bool  active);
 
-	b2Body* _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, b2Vec2 sizeOverride);
-	uint16 _setCollisionMask(Json::Value physicsComponentJSON);
+	b2BodyId _buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2WorldId physicsWorldId, b2Vec2 sizeOverride);
+	uint16_t _setCollisionMask(Json::Value physicsComponentJSON);
+	void _touchShapeForRefilter(b2ShapeId shape);
 
-	b2Body* m_physicsBody{ nullptr };
-	uint16 m_physicsType{ 0 };
+	b2BodyId m_physicsBodyId{ 0 };
+	b2BodyType m_physicsType{};
+	b2BodyType m_originalPhysicsType{};
 	b2Vec2 m_objectAnchorPoint{ 0 , 0 };
-	std::optional<b2Vec2> m_changePositionPosition{};
 	bool m_touchingObjectsCapturedRequired{ true };
+	static const int m_maxBodyShapes{ 16 };
+	static const int m_maxBodyJoints{ 16 };
+
+	std::vector<std::unique_ptr<ContactDefinition>> m_contactDefs;
 
 };
 

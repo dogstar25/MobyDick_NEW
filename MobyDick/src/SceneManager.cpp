@@ -298,6 +298,19 @@ void SceneManager::startNewGame()
 
 }
 
+void SceneManager::spawnCrystal()
+{
+
+	SDL_FPoint mousePosition = game->getMouseWorldPosition();
+
+	SDL_Point tilePosition = util::pixelToTileLocation(mousePosition.x, mousePosition.y);
+
+	for (int i = 0; i < 100; i++) {
+		m_scenes.back().addGameObject("CRYSTAL", nullptr, GameLayer::MAIN,
+			static_cast<float>(tilePosition.x), static_cast<float>(tilePosition.y));
+	}
+}
+
 void SceneManager::popScene()
 {
 
@@ -307,6 +320,8 @@ void SceneManager::popScene()
 	}
 
 }
+
+
 
 Scene& SceneManager::pushScene(std::string sceneId, bool pausePreviousScene)
 {

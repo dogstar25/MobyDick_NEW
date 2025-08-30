@@ -59,6 +59,8 @@ public:
 	void quickLoad();
 	void startNewGame();
 
+	void spawnCrystal();
+
 	std::optional<SceneAction> getSceneKeyAction(SDL_Keycode);
 
 	auto currentSceneIndex(){

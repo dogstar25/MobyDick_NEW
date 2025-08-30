@@ -7,8 +7,8 @@
 
 extern std::unique_ptr<Game> game;
 
-PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene, float xMapPos, float yMapPos, float angleAdjust,
-	b2Vec2 sizeOverride) :
+PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene, float xMapPos, float yMapPos, 
+	float angleAdjust,	b2Vec2 sizeOverride) :
 	Component(ComponentTypes::PHYSICS_COMPONENT, parent)
 {
 
@@ -16,13 +16,12 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 	Json::Value physicsComponentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::PHYSICS_COMPONENT);
 	Json::Value transformComponentJSON = util::getComponentConfig(definitionJSON, ComponentTypes::TRANSFORM_COMPONENT);
 
-	m_physicsType = game->enumMap()->toEnum(physicsComponentJSON["type"].asString());
+	m_physicsType = m_originalPhysicsType = (b2BodyType)game->enumMap()->toEnum(physicsComponentJSON["type"].asString());
 
-	m_objectAnchorPoint.Set(physicsComponentJSON["anchorPoint"]["x"].asFloat(),
-		physicsComponentJSON["anchorPoint"]["y"].asFloat());
+	m_objectAnchorPoint = { physicsComponentJSON["anchorPoint"]["x"].asFloat(),	physicsComponentJSON["anchorPoint"]["y"].asFloat() };
 
 	//Build the physics body
-	m_physicsBody = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld(), sizeOverride);
+	m_physicsBodyId = _buildB2Body(physicsComponentJSON, transformComponentJSON, parentScene->physicsWorld(), sizeOverride);
 
 	//Calculate the spawn position
 	b2Vec2 position{};
@@ -44,11 +43,13 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 	}
 	
 	//Angle adjustment if any in radians
+	
 	float newAngle = util::degreesToRadians(angleAdjust);
+	b2Rot rotation = {cos(newAngle), sin(newAngle)};
 
 	//The width and height can change when a rectangle shape is rotated
-	float objectWidthAfterAngle = abs(sin(newAngle) * size.y + cos(newAngle) * size.x);
-	float objectHeightAfterAngle = abs(sin(newAngle) * size.x + cos(newAngle) * size.y);
+	float objectWidthAfterAngle = abs(rotation.s * size.y + rotation.c * size.x);
+	float objectHeightAfterAngle = abs(rotation.s * size.x + rotation.c * size.y);
 
 	//Get the pixel position of where we are placing the object. Divide by 2 to get the center
 	position.x = (xMapPos * game->worldTileSize().x + (objectWidthAfterAngle / 2));
@@ -58,108 +59,201 @@ PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* paren
 	position = util::toBox2dPoint(position);
 
 	//Initial spawn position
-	m_physicsBody->SetTransform(position, newAngle);
+	b2Body_SetTransform(m_physicsBodyId, position, rotation);
 
 }
 
 PhysicsComponent::~PhysicsComponent()
 {
 
-	//We need to free the memory associated with our special object that we store in each fixture's userdata
-	//NOTE:this should be the only spot where we do not depend on smart pointers
-	//std::cout << this->parent()->id() << " PhysicsComponent Destructor called" << std::endl;
-	for (auto fixture = m_physicsBody->GetFixtureList(); fixture != 0; fixture = fixture->GetNext())
-	{
+	m_contactDefs.clear();
 
-		ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(fixture->GetUserData().pointer);
-		if (contactDefinition) {
-			delete contactDefinition;
+	if (b2Body_IsValid(m_physicsBodyId)) {
+
+		b2ShapeId shapeArray[m_maxBodyShapes];
+
+		int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
+		for (int i = 0; i < shapeCount; i++)
+		{
+			b2Shape_SetUserData(shapeArray[i], nullptr);
 		}
 
+		b2Body_SetUserData(m_physicsBodyId, nullptr);
+
+		b2DestroyBody(m_physicsBodyId);
 	}
 
-	parent()->parentScene()->physicsWorld()->DestroyBody(m_physicsBody);
+}
+
+void PhysicsComponent::setCollisionTag(int contactTag)
+{
+
+	b2ShapeId shapeArray[m_maxBodyShapes];
+
+	int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
+	for (int i = 0; i < shapeCount; i++)
+	{
+		ContactDefinition* contactDefinition = reinterpret_cast<ContactDefinition*>(b2Shape_GetUserData(shapeArray[i]));
+		if (contactDefinition) {
+			contactDefinition->contactTag = contactTag;
+		}
+	}
 
 }
+
 
 void PhysicsComponent::postInit()
 {
 
 
-	}
+}
 
-//void PhysicsComponent::setParent(GameObject* gameObject)
-//{
-//	Component::setParent(gameObject);
-//	m_physicsBody->GetUserData().pointer = reinterpret_cast<uintptr_t>(gameObject);
-//}
-
-void PhysicsComponent::setTransform(b2Vec2 positionVector, float angle)
+void PhysicsComponent::setTransform(b2Vec2 positionVector, float angleInRadians)
 {
-	m_physicsBody->SetTransform(positionVector, angle);
+
+	b2Rot rotation = { cos(angleInRadians), sin(angleInRadians) };
+
+	b2Body_SetTransform(m_physicsBodyId, positionVector, rotation);
+
 }
 
 void PhysicsComponent::setTransform(b2Vec2 positionVector)
 {
-	m_physicsBody->SetTransform(positionVector, m_physicsBody->GetAngle());
+
+	b2Body_SetTransform(m_physicsBodyId, positionVector, b2Body_GetRotation(m_physicsBodyId));
+
+}
+
+void PhysicsComponent::changePhysicsBodyType(b2BodyType physicsType, bool changeOriginal)
+{
+	m_physicsType = physicsType;
+	b2Body_SetType(m_physicsBodyId, physicsType);
+
+	//Changing the original means that we are permanantly changing this body type
+	if (changeOriginal) {
+		m_originalPhysicsType = m_physicsType;
+	}
 }
 
 void PhysicsComponent::setPhysicsBodyActive(bool  active)
 {
-	m_physicsBody->SetEnabled(active);
+
+	b2Body_Enable(m_physicsBodyId);
 
 }
 
 void PhysicsComponent::setLinearVelocity(b2Vec2 velocityVector)
 {
-	m_physicsBody->SetLinearVelocity(velocityVector);
+
+	b2Body_SetLinearVelocity(m_physicsBodyId, velocityVector);
+
+}
+
+void PhysicsComponent::enableAllContacts()
+{
+
+	b2ShapeId shapeArray[m_maxBodyShapes];
+
+	int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
+	for (int i = 0; i < shapeCount; i++)
+	{
+
+		auto userData = b2Shape_GetUserData(shapeArray[i]);
+		ContactDefinition* contactDefinition = static_cast<ContactDefinition*>(userData);
+		contactDefinition->contactTag = contactDefinition->originalContactTag;
+		_touchShapeForRefilter(shapeArray[i]);
+
+	}
+
+	b2Body_SetAwake(m_physicsBodyId, true);
+}
+
+void PhysicsComponent::_touchShapeForRefilter(b2ShapeId shape)
+{
+	b2Filter f = b2Shape_GetFilter(shape);
+	// Flip a no-op category bit to force a change
+	f.categoryBits ^= kRefilterBit;
+	b2Shape_SetFilter(shape, f); // forces refilter, destroys stale contacts
+}
+
+void PhysicsComponent::disableAllContacts()
+{
+
+	b2ShapeId shapeArray[m_maxBodyShapes];
+
+	int shapeCount = b2Body_GetShapes(m_physicsBodyId, shapeArray, m_maxBodyShapes);
+	for (int i = 0; i < shapeCount; i++)
+	{
+
+		auto userData = b2Shape_GetUserData(shapeArray[i]);
+		ContactDefinition* contactDefinition = static_cast<ContactDefinition*>(userData);
+		contactDefinition->contactTag = ContactTag::GENERAL_FREE;
+		_touchShapeForRefilter(shapeArray[i]);
+
+	}
+
+	b2Body_SetAwake(m_physicsBodyId, true);
+
+}
+
+void PhysicsComponent::destroyJoint(b2JointId jointId)
+{
+	b2DestroyJoint(jointId);
 }
 
 void PhysicsComponent::setLinearDamping(float linearDamping)
 {
-	m_physicsBody->SetLinearDamping(linearDamping);
+
+	b2Body_SetLinearDamping(m_physicsBodyId, linearDamping);
+
 }
 
 void PhysicsComponent::setAngularDamping(float angularDamping)
 {
-	m_physicsBody->SetAngularDamping(angularDamping);
+	b2Body_SetAngularDamping(m_physicsBodyId, angularDamping);
 }
 
 void PhysicsComponent::setGravityScale(float gravityScale)
 {
-	m_physicsBody->SetGravityScale(gravityScale);
+	b2Body_SetGravityScale(m_physicsBodyId, gravityScale);
 }
 
 void PhysicsComponent::setAngle(float angle)
 {
-	auto normalizedAngle = util::normalizeRadians(angle);
+	b2Rot rotation = b2MakeRot(angle);
+	b2Vec2 pos = b2Body_GetPosition(m_physicsBodyId);
+	b2Body_SetTransform(m_physicsBodyId, pos, rotation);
 
-	b2Vec2 currentPosition = { m_physicsBody->GetPosition().x , m_physicsBody->GetPosition().y };
-	m_physicsBody->SetTransform(currentPosition, normalizedAngle);
+}
+
+b2Vec2 PhysicsComponent::position() 
+{ 
+	return b2Body_GetPosition(m_physicsBodyId);
+}
+
+float PhysicsComponent::angle() 
+{ 
+	float angle = b2Rot_GetAngle(b2Body_GetRotation(m_physicsBodyId));
+
+	return angle; 
+}
+
+void PhysicsComponent::setIsSensor(bool isSensor)
+{
+
+	//need to find a way to live without this
+	//Game items for example, could have to shapes on the body. one for collision and one for sensor.
+	//we could then change the collision filter of the collision shape and or sensor shape
 
 }
 
 
 void PhysicsComponent::update()
 {
+	
+	b2Vec2 currentPosition = b2Body_GetPosition(m_physicsBodyId);
 
-	//We want to make sure that the angle stays in the range of 0 to 360 for various concerns throughtout the game
-	//Unfortunately, box2d's only function to set an angle value directly is the setTransform which also takes
-	// X and Y position, so we have to send setTransform the current X,Y position as well as the updated angle
-	// value 
-	auto normalizedAngle = util::normalizeRadians(m_physicsBody->GetAngle());
-
-	//If we were given a position change from our contactListener, since we cannnot change position within
-	//contactListener, we set it here. An example would be warping the player to a new location after making contact
-	//with a portal object
-	b2Vec2 currentPosition = { m_physicsBody->GetPosition().x , m_physicsBody->GetPosition().y };
-	if (m_changePositionPosition.has_value()) {
-		currentPosition = { m_changePositionPosition->x , m_changePositionPosition->y };
-		m_changePositionPosition.reset();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////
-
+	//Handle Absolute positioned objects
 	if (parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->absolutePositioning() == true) {
 
 		SDL_FPoint cameraPosition = { Camera::instance().frame().x, Camera::instance().frame().y };
@@ -167,71 +261,58 @@ void PhysicsComponent::update()
 
 		currentPosition = { currentPosition.x + convertedCameraPosition.x, currentPosition.y + convertedCameraPosition.y};
 
+		b2Body_SetTransform(m_physicsBodyId, currentPosition, b2Body_GetRotation(m_physicsBodyId));
 	}
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	//Set the transform
-	m_physicsBody->SetTransform(currentPosition, normalizedAngle);
-
 
 	//Transfer the physicsComponent coordinates to the transformComponent
 	//converting the angle to degrees
-	b2Vec2 convertedPosition{ 0,0 };
-	float convertedAngle = util::radiansToDegrees(m_physicsBody->GetAngle());
+	b2Vec2 convertedPosition{};
+	float convertedAngle = util::radiansToDegrees(angle());
 
-	convertedPosition.x = m_physicsBody->GetPosition().x * GameConfig::instance().scaleFactor();
-	convertedPosition.y = m_physicsBody->GetPosition().y * GameConfig::instance().scaleFactor();
+	convertedPosition = b2MulSV(GameConfig::instance().scaleFactor(), b2Body_GetPosition(m_physicsBodyId));
 
 	parent()->getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT)->setPosition(convertedPosition, convertedAngle);
-}
 
-void PhysicsComponent::setIsSensor(bool isSensor)
-{
-
-	for (auto fixture = physicsBody()->GetFixtureList(); fixture != 0; fixture = fixture->GetNext()){
-
-		fixture->SetSensor(isSensor);
-		//fixture->Refilter();
-	}
 }
 
 
-b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2World* physicsWorld, 
+b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::Value transformComponentJSON, b2WorldId physicsWorldId,
 	b2Vec2 sizeOverride)
 {
-	b2BodyDef bodyDef;
+
+	b2BodyDef bodyDef = b2DefaultBodyDef();
 	bodyDef.type = static_cast<b2BodyType>(m_physicsType);
-
-	//Default the position to zero.
-	bodyDef.position.SetZero();
-	bodyDef.allowSleep = true;
-	b2Body* body = physicsWorld->CreateBody(&bodyDef);
-
-	//Store a reference to the parent object in the userData pointer field
-	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(parent());
-
+	bodyDef.position = b2Vec2( 0.0f, 0.0f );
+	
 	if (physicsComponentJSON.isMember("linearDamping")) {
-		body->SetLinearDamping(physicsComponentJSON["linearDamping"].asFloat());
+		bodyDef.linearDamping = physicsComponentJSON["linearDamping"].asFloat();
 	}
 	if (physicsComponentJSON.isMember("angularDamping")) {
-		body->SetAngularDamping(physicsComponentJSON["angularDamping"].asFloat());
+		bodyDef.angularDamping = physicsComponentJSON["angularDamping"].asFloat();
 	}
 	if (physicsComponentJSON.isMember("gravityScale")) {
-		body->SetGravityScale(physicsComponentJSON["gravityScale"].asFloat());
+		bodyDef.gravityScale = physicsComponentJSON["gravityScale"].asFloat();
 	}
 	if (physicsComponentJSON.isMember("isBullet")) {
-		body->SetBullet(physicsComponentJSON["isBullet"].asBool());
+		bodyDef.isBullet = physicsComponentJSON["isBullet"].asBool();
 	}
+
+	b2BodyId bodyId = b2CreateBody(physicsWorldId, &bodyDef);
+
+	//Withbox2d V3 bodies that are still will go to sleep causing them to not get picked up as sesorEvents
+	b2Body_EnableSleep(bodyId, false);
+
+	//Store a reference to the parent object in the userData pointer field
+	b2Body_SetUserData(bodyId, parent());
+
 	//Size Override will only apply to an object that has one fixure and it is a box/polygon shape
 	bool isSizeOverrideAllowed{};
 
-	if (physicsComponentJSON["fixtures"].size() == 1) {
+	if (physicsComponentJSON["shapes"].size() == 1) {
 		
-		auto checkCollisionShape = game->enumMap()->toEnum(physicsComponentJSON["fixtures"][0]["collisionShape"].asString());
+		auto checkCollisionShape = game->enumMap()->toEnum(physicsComponentJSON["shapes"][0]["collisionShape"].asString());
 
-		if (checkCollisionShape == b2Shape::e_polygon && sizeOverride != b2Vec2_zero) {
+		if (checkCollisionShape == b2ShapeType::b2_polygonShape && sizeOverride != b2Vec2_zero) {
 
 			isSizeOverrideAllowed = true;
 
@@ -239,80 +320,117 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 	}
 
 	//Build fixtures
-	for (const auto& fixtureJSON : physicsComponentJSON["fixtures"]) {
+	for (const auto& shapesJSON : physicsComponentJSON["shapes"]) {
 
 		float xOffset{};
 		float yOffset{};
 
-		b2Shape* shape;
-		b2PolygonShape box;
-		b2CircleShape circle;
-		b2ChainShape chain;
-		b2EdgeShape edge;
-
-		auto collisionShape = game->enumMap()->toEnum(fixtureJSON["collisionShape"].asString());
-		//default
-		shape = &box;
+		b2ShapeId shapeId;
+		b2ChainId chainId;
 
 		//See if we have an offset value
-		if (fixtureJSON.isMember("offset")) {
+		if (shapesJSON.isMember("offset")) {
 
-			auto offsetJSON = fixtureJSON["offset"];
+			auto offsetJSON = shapesJSON["offset"];
 			if (offsetJSON.isMember("x")) {
-				xOffset = fixtureJSON["offset"]["x"].asFloat();
+				xOffset = shapesJSON["offset"]["x"].asFloat();
 				util::toBox2dPoint(xOffset);
 			}
 			if (offsetJSON.isMember("y")) {
-				yOffset = fixtureJSON["offset"]["y"].asFloat();
+				yOffset = shapesJSON["offset"]["y"].asFloat();
 				util::toBox2dPoint(yOffset);
 			}
 
 		}
 
-		if (collisionShape == b2Shape::e_circle)
-		{
-			circle.m_radius = fixtureJSON["collisionRadius"].asFloat();
-			circle.m_p.Set(xOffset, yOffset);
-			shape = &circle;
-		}
-		else if (collisionShape == b2Shape::e_polygon) {
+		if (parent()->type() == "KEY1") {
 
-			float sizeX{};
-			float sizeY{};
-			//If a size is not specified for the fixture then default to the transform size of the object
-			//Also, apply the override if there is one
-			if (isSizeOverrideAllowed) {
-				sizeX = sizeOverride.x;
-				sizeY = sizeOverride.y;
-			}
-			else if (fixtureJSON.isMember("size")) {
-				sizeX = fixtureJSON["size"]["width"].asFloat();
-				sizeY = fixtureJSON["size"]["height"].asFloat();
+			int todd = 1;
+		}
+
+		auto collisionShape = game->enumMap()->toEnum(shapesJSON["collisionShape"].asString());
+
+		//The Surface Material structure is shared by all shape types
+		b2SurfaceMaterial surfaceMaterial = b2DefaultSurfaceMaterial();
+		surfaceMaterial.friction = shapesJSON["friction"].asFloat();
+		surfaceMaterial.restitution = shapesJSON["restitution"].asFloat();
+
+		auto contactDefinition = std::make_unique<ContactDefinition>();
+		contactDefinition->contactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
+		contactDefinition->originalContactTag = game->enumMap()->toEnum(shapesJSON["contactTag"].asString());
+		
+		//All shapes except the chain share common code
+		if (collisionShape == b2ShapeType::b2_circleShape ||
+			collisionShape == b2ShapeType::b2_polygonShape  )
+		{
+			b2Circle circle;
+			b2Polygon box;
+
+			b2ShapeDef shapeDef = b2DefaultShapeDef();
+			shapeDef.material = surfaceMaterial;
+			shapeDef.density = shapesJSON["density"].asFloat();
+			shapeDef.isSensor = shapesJSON["isSensor"].asBool();
+			shapeDef.userData = contactDefinition.get();
+			if (shapesJSON["disableSensorInvolvement"].asBool() == true) {
+				shapeDef.enableSensorEvents = false;
 			}
 			else {
-				sizeX = transformComponentJSON["size"]["width"].asFloat();
-				sizeY = transformComponentJSON["size"]["height"].asFloat();
+				shapeDef.enableSensorEvents = true;
 			}
 
-			//Convert to what box2d needs
-			sizeX = util::toBox2dPoint(sizeX) / 2;
-			sizeY = util::toBox2dPoint(sizeY) / 2;
+			m_contactDefs.push_back(std::move(contactDefinition));
 
-			box.SetAsBox(sizeX, sizeY);
-			b2Vec2 offsetLocation = { xOffset, yOffset };
-			box.SetAsBox(sizeX, sizeY, offsetLocation, 0);
-			shape = &box;
+			if (collisionShape == b2ShapeType::b2_circleShape)
+			{
+				circle.radius = shapesJSON["collisionRadius"].asFloat();
+				circle.center = { xOffset, yOffset };
+
+				b2ShapeId shapeId = b2CreateCircleShape(bodyId, &shapeDef, &circle);
+
+			}
+			else if (collisionShape == b2ShapeType::b2_polygonShape) 
+			{
+
+				float sizeX{};
+				float sizeY{};
+				//If a size is not specified for the fixture then default to the transform size of the object
+				//Also, apply the override if there is one
+				if (isSizeOverrideAllowed) {
+					sizeX = sizeOverride.x;
+					sizeY = sizeOverride.y;
+				}
+				else if (shapesJSON.isMember("size")) {
+					sizeX = shapesJSON["size"]["width"].asFloat();
+					sizeY = shapesJSON["size"]["height"].asFloat();
+				}
+				else {
+					sizeX = transformComponentJSON["size"]["width"].asFloat();
+					sizeY = transformComponentJSON["size"]["height"].asFloat();
+				}
+
+				//Convert to what box2d needs
+				sizeX = util::toBox2dPoint(sizeX) / 2;
+				sizeY = util::toBox2dPoint(sizeY) / 2;
+
+				b2Vec2 offsetLocation = { xOffset, yOffset };
+				box = b2MakeOffsetBox(sizeX, sizeY, offsetLocation, b2Rot_identity);
+				b2ShapeId shapeId = b2CreatePolygonShape(bodyId, &shapeDef, &box);
+
+			}
+
 		}
-		else if (collisionShape == b2Shape::e_chain) {
+		else if (collisionShape == b2ShapeType::b2_chainSegmentShape) {
 
-			PhysicsChainType physicsChainType = (PhysicsChainType)game->enumMap()->toEnum(fixtureJSON["physicsChainType"].asString());
+			PhysicsChainType physicsChainType = (PhysicsChainType)game->enumMap()->toEnum(shapesJSON["physicsChainType"].asString());
+			b2ChainDef chainDef = b2DefaultChainDef();
+			chainDef.enableSensorEvents = true;
 
 			float sizeX{};
 			float sizeY{};
 			//If a size is not specified for the fixture then default to the transform size of the object
-			if (fixtureJSON.isMember("size")) {
-				sizeX = fixtureJSON["size"]["width"].asFloat() / GameConfig::instance().scaleFactor();
-				sizeY = fixtureJSON["size"]["height"].asFloat() / GameConfig::instance().scaleFactor();
+			if (shapesJSON.isMember("size")) {
+				sizeX = shapesJSON["size"]["width"].asFloat() / GameConfig::instance().scaleFactor();
+				sizeY = shapesJSON["size"]["height"].asFloat() / GameConfig::instance().scaleFactor();
 			}
 			else {
 				sizeX = transformComponentJSON["size"]["width"].asFloat() / GameConfig::instance().scaleFactor();
@@ -320,46 +438,42 @@ b2Body* PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::V
 			}
 
 			b2Vec2 chainVs[4];
+
 			if (physicsChainType == PhysicsChainType::CW_REFLECT_OUT) {
-				chainVs[0].Set(-sizeX/2, -sizeY/2);
-				chainVs[1].Set(sizeX/2 , -sizeY/2);
-				chainVs[2].Set(sizeX/2, sizeY/2);
-				chainVs[3].Set(-sizeX/2, sizeY/2);
+
+				chainVs[0] = b2Vec2(-sizeX / 2, -sizeY / 2);
+				chainVs[1] = b2Vec2(sizeX / 2, -sizeY / 2);
+				chainVs[2] = b2Vec2(sizeX / 2,  sizeY / 2);
+				chainVs[3] = b2Vec2(-sizeX / 2,  sizeY / 2);
 			}
 			else if (physicsChainType == PhysicsChainType::CCW_REFLECT_IN) {
-				chainVs[0].Set(-sizeX / 2, sizeY / 2);
-				chainVs[1].Set(sizeX / 2, sizeY / 2);
-				chainVs[2].Set(sizeX / 2, -sizeY / 2);
-				chainVs[3].Set(-sizeX / 2, -sizeY / 2);
+				
+				chainVs[0] = b2Vec2(-sizeX / 2, sizeY / 2);
+				chainVs[1] = b2Vec2(sizeX / 2, sizeY / 2);
+				chainVs[2] = b2Vec2(sizeX / 2, -sizeY / 2);
+				chainVs[3] = b2Vec2(-sizeX / 2, -sizeY / 2);
+
 			}
 
-			chain.CreateLoop(chainVs, 4);
-			shape = &chain;
+			chainDef.points = chainVs;
+			chainDef.count = 4;
+			chainDef.isLoop = true;
+
+			chainDef.userData = contactDefinition.get();
+			m_contactDefs.push_back(std::move(contactDefinition));
+
+			b2ChainId chainId = b2CreateChain(bodyId, &chainDef);
 		}
-
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape = shape;
-		fixtureDef.friction = fixtureJSON["friction"].asFloat();
-		fixtureDef.density = fixtureJSON["density"].asFloat();
-		fixtureDef.restitution = fixtureJSON["restitution"].asFloat();
-		fixtureDef.isSensor = fixtureJSON["isSensor"].asFloat();
-
-		ContactDefinition* contactDefinition = new ContactDefinition();
-		contactDefinition->contactTag = game->enumMap()->toEnum(fixtureJSON["contactTag"].asString());
-		contactDefinition->saveOriginalContactTag = game->enumMap()->toEnum(fixtureJSON["contactTag"].asString());
-		fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(contactDefinition);
-
-		body->CreateFixture(&fixtureDef);
 
 	}
 
-	return body;
+	return bodyId;
 
 }
 
-uint16 PhysicsComponent::_setCollisionMask(Json::Value physicsComponentJSON)
+uint16_t PhysicsComponent::_setCollisionMask(Json::Value physicsComponentJSON)
 {
-	uint16 mask = 0;
+	uint16_t mask = 0;
 
 	return mask;
 
@@ -372,23 +486,21 @@ void PhysicsComponent::applyImpulse(float force, b2Vec2 trajectory)
 	trajectory.x *= force;
 	trajectory.y *= force;
 
-	//m_physicsBody->ApplyLinearImpulseToCenter(trajectory, true);
-	m_physicsBody->ApplyLinearImpulseToCenter(trajectory, true);
+	b2Body_ApplyLinearImpulseToCenter(m_physicsBodyId, trajectory, true);
 
 }
 
 void PhysicsComponent::applyImpulse(float speed, int direction, int strafeDirection)
 {
 	b2Vec2 trajectory = { (float)strafeDirection, (float)direction };
-	trajectory.Normalize();
+	trajectory = b2Normalize(trajectory);
 
 	trajectory *= speed;
 
 	//apply point
 	b2Vec2 applyPoint{2, -2};
 
-	//m_physicsBody->ApplyLinearImpulseToCenter(trajectory, true);
-	m_physicsBody->ApplyForce(trajectory, applyPoint, true);
+	b2Body_ApplyForce(m_physicsBodyId, trajectory, applyPoint, true);
 
 }
 
@@ -398,87 +510,54 @@ void PhysicsComponent::applyMovement(float velocity, b2Vec2 trajectory)
 	trajectory.x *= velocity;
 	trajectory.y *= velocity;
 
-	//m_physicsBody->ApplyForceToCenter(trajectory, true);
-	m_physicsBody->SetLinearVelocity(trajectory);
+	b2Body_SetLinearVelocity(m_physicsBodyId, trajectory);
 
 }
 
 void PhysicsComponent::applyAngleImpulse(float force)
 {
 
-	m_physicsBody->ApplyAngularImpulse(force,false);
-	//m_physicsBody->ApplyForceToCenter(trajectory, true);
+	b2Body_ApplyAngularImpulse(m_physicsBodyId, force,false);
 
 }
 
-b2MouseJoint* PhysicsComponent::createB2MouseJoint()
+b2JointId PhysicsComponent::createB2MouseJoint()
 {
-	b2MouseJointDef* mouseJointDef;
+	b2JointId jointId{};
 
-	//Find the cage object that should exist for 
+	//Find the cage object that should exist for the world
 	const auto& levelCageObject = parent()->parentScene()->getFirstGameObjectByType("LEVEL_CAGE");
 	const auto& cagePhysicsComponent = levelCageObject.value().get()->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
-	mouseJointDef = new b2MouseJointDef();
-	mouseJointDef->bodyA = cagePhysicsComponent->physicsBody();
-	mouseJointDef->bodyB = m_physicsBody;
-	mouseJointDef->target = m_physicsBody->GetPosition();
-	mouseJointDef->maxForce = 1000.0f;
-	mouseJointDef->stiffness = 5000;
+	b2MouseJointDef jointDef = b2DefaultMouseJointDef();
+	jointDef.bodyIdA = cagePhysicsComponent->physicsBodyId();
+	jointDef.bodyIdB = m_physicsBodyId;
+	jointDef.target = b2Body_GetPosition(m_physicsBodyId);
+	jointDef.maxForce = 10000.0f;
+	jointDef.hertz = 50000;
+	jointDef.dampingRatio = 0.7f;
+	jointDef.collideConnected = false;
 
-	b2MouseJoint* mouseJoint = static_cast<b2MouseJoint*>(parent()->parentScene()->physicsWorld()->CreateJoint(mouseJointDef));
+	//i added the IF during DEBUGGING BRO
+	if (b2Body_IsValid(jointDef.bodyIdA) && b2Body_IsValid(jointDef.bodyIdB)) {
 
-	return mouseJoint;
+		jointId = b2CreateMouseJoint(parent()->parentScene()->physicsWorld(), &jointDef);
+
+	}
+
+	return jointId;
 
 }
-
-//void PhysicsComponent::applyMovement(float speed, int direction, int strafeDirection)
-//{
-//
-//
-//	//Calc direction XY
-//	//float dx = cos(this->physicsBody->GetAngle()) * velocity * this->direction; // X-component.
-//	//float dy = sin(this->physicsBody->GetAngle()) * velocity * this->direction; // Y-component.
-//	float dx = (float)cos(1.5708) * speed * direction; // X-component.
-//	float dy = (float)sin(1.5708) * speed * direction; // Y-component.
-//
-//	//calc strafe xy and add direction and strafe vectors
-//	//1.5708 is 90 degrees
-//	//float sx = cos(this->physicsBody->GetAngle() + 1.5708) * velocity * this->strafe; // X-component.
-//	//float sy = sin(this->physicsBody->GetAngle() + 1.5708) * velocity * this->strafe; // Y-component.
-//	float sx = (float)cos((1.5708) + 1.5708) * speed * strafeDirection; // X-component.
-//	float sy = (float)sin((1.5708) + 1.5708) * speed * strafeDirection; // Y-component.
-//
-//	//Create the vector for forward/backward  direction
-//	b2Vec2 directionVector = b2Vec2(dx, dy);
-//
-//	//Create the vector for strafe direction
-//	b2Vec2 strafeVector = b2Vec2(sx, sy);
-//
-//	//Initialize new final movement vector
-//	b2Vec2 vec2;
-//	vec2.SetZero();
-//
-//	vec2 = (directionVector + strafeVector);
-//
-//	//this->physicsBody->SetTransform(vec3, this->physicsBody->GetAngle());
-//	std::cout << "applyMovement " << vec2.x << " " << vec2.y << "\n";
-//	m_physicsBody->SetLinearVelocity(vec2);
-//
-//	//m_physicsBody->ApplyLinearImpulseToCenter(vec2, true);
-//
-//
-//}
 
 void PhysicsComponent::applyMovement(float speed, int direction, int strafeDirection)
 {
 
 	b2Vec2 trajectory = { (float)strafeDirection, (float)direction  };
-	trajectory.Normalize();
+	b2Normalize(trajectory);
 
 	trajectory *= speed;
 
-	m_physicsBody->SetLinearVelocity(trajectory);
+	b2Body_SetLinearVelocity(m_physicsBodyId, trajectory);
 
 
 }
@@ -486,99 +565,78 @@ void PhysicsComponent::applyMovement(float speed, int direction, int strafeDirec
 void PhysicsComponent::applyMovement(b2Vec2 velocity)
 {
 
-	m_physicsBody->ApplyLinearImpulseToCenter(velocity, true);
-
+	b2Body_ApplyLinearImpulseToCenter(m_physicsBodyId, velocity, true);
 
 }
 
 void PhysicsComponent::applyRotation(float angularVelocity)
 {
-	m_physicsBody->SetAngularVelocity(angularVelocity);
+	b2Body_SetAngularVelocity(m_physicsBodyId, angularVelocity);
 }
 
 void PhysicsComponent::applyTorque(float angularVelocity)
 {
-	m_physicsBody->ApplyTorque(angularVelocity, true);
+	b2Body_ApplyTorque(m_physicsBodyId, angularVelocity, true);
 }
-
-//void PhysicsComponent::stash()
-//{
-//	b2Vec2 velocityVector = b2Vec2(0, 0);
-//	b2Vec2 positionVector = b2Vec2(-50, -50);
-//
-//	m_physicsBody->SetTransform(positionVector, 0);
-//	m_physicsBody->SetLinearVelocity(velocityVector);
-//	m_physicsBody->SetEnabled(false);
-//}
 
 void PhysicsComponent::deleteAllJoints()
 {
-	std::vector< b2JointEdge*> joints{};
 
-	//We need to store the joints in an array first , then delete them
-	//deleting them as you go will mess up the ->next
-	for (b2JointEdge* joint = physicsBody()->GetJointList(); joint; joint = joint->next)
-	{
-		joints.push_back(joint);
+	b2JointId jointArray[m_maxBodyJoints];
+
+	int jointCount = b2Body_GetJoints(m_physicsBodyId, jointArray, m_maxBodyJoints);
+	for (int i=0; i < jointCount; i++) {
+
+		b2DestroyJoint(jointArray[i]);
 	}
-
-	for (auto joint : joints) {
-
-		parent()->parentScene()->physicsWorld()->DestroyJoint(joint->joint);
-
-	}
-
 
 }
 
 void PhysicsComponent::attachItem(GameObject* attachObject, b2JointType jointType, b2Vec2 attachLocation)
 {
-	b2JointDef* jointDef=nullptr;
-	b2WeldJointDef* weldJointDef;
-	b2RevoluteJointDef* revoluteJointDef;
+
+	b2WeldJointDef weldJointDef = b2DefaultWeldJointDef();
+	b2RevoluteJointDef revoluteJointDef = b2DefaultRevoluteJointDef();
 
 	//Get physics component of the attachment object
 	const auto& attachObjectPhysicsComponent = attachObject->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
 
 	//Get attachment anchor point
 	b2Vec2 attachObjectAnchorPoint = {
-	attachObjectPhysicsComponent->m_objectAnchorPoint.x,
-	attachObjectPhysicsComponent->m_objectAnchorPoint.y
+		attachObjectPhysicsComponent->m_objectAnchorPoint.x,
+		attachObjectPhysicsComponent->m_objectAnchorPoint.y
 	};
 
 	//Build specific joint
-	if (jointType == b2JointType::e_weldJoint) {
-		weldJointDef = new b2WeldJointDef();
-		weldJointDef->bodyA = m_physicsBody;
-		weldJointDef->bodyB = attachObjectPhysicsComponent->m_physicsBody;
-		weldJointDef->collideConnected = false;
-		weldJointDef->localAnchorA = attachLocation;
-		weldJointDef->localAnchorB = attachObjectAnchorPoint;
-		jointDef = weldJointDef;
+	if (jointType == b2JointType::b2_weldJoint) {
+		weldJointDef.bodyIdA = m_physicsBodyId;
+		weldJointDef.bodyIdB = attachObjectPhysicsComponent->physicsBodyId();
+		weldJointDef.collideConnected = false;
+		weldJointDef.localAnchorA = attachLocation;
+		weldJointDef.localAnchorB = attachObjectAnchorPoint;
+		b2CreateWeldJoint(parent()->parentScene()->physicsWorld(), &weldJointDef);
 	}
-	else if (jointType == b2JointType::e_revoluteJoint) {
-		revoluteJointDef = new b2RevoluteJointDef();
-		revoluteJointDef->bodyA = m_physicsBody;
-		revoluteJointDef->bodyB = attachObjectPhysicsComponent->m_physicsBody;
-		revoluteJointDef->collideConnected = false;
-		revoluteJointDef->localAnchorA = attachLocation;
-		revoluteJointDef->localAnchorB = attachObjectAnchorPoint;
+	else if (jointType == b2JointType::b2_revoluteJoint) {
+		revoluteJointDef.bodyIdA = m_physicsBodyId;
+		revoluteJointDef.bodyIdB = attachObjectPhysicsComponent->physicsBodyId();
+		revoluteJointDef.collideConnected = false;
+		revoluteJointDef.localAnchorA = attachLocation;
+		revoluteJointDef.localAnchorB = attachObjectAnchorPoint;
+		b2CreateRevoluteJoint(parent()->parentScene()->physicsWorld(), &revoluteJointDef);
 
-		jointDef = revoluteJointDef;
 	}
 
-	parent()->parentScene()->physicsWorld()->CreateJoint(jointDef);
 
 }
 
 void PhysicsComponent::setFixedRotation(bool fixedRotation)
 {
-	m_physicsBody->SetFixedRotation(fixedRotation);
+	b2Body_SetFixedRotation(m_physicsBodyId, fixedRotation);
 }
 
 void PhysicsComponent::setBullet(bool isBullet)
 {
-	m_physicsBody->SetBullet(isBullet);
+	b2Body_SetBullet(m_physicsBodyId, isBullet);
 }
 
 

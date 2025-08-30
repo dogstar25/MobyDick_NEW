@@ -14,6 +14,8 @@
 #include "GameConfig.h"
 #include "ObjectPoolManager.h"
 #include "triggers/Trigger.h"
+#include "Box2DDebugDraw.h"
+#include "Box2DEnkiAdapter.h"
 
 #include <thread>
 
@@ -30,8 +32,7 @@ struct PhysicsConfig
 {
 	b2Vec2 gravity{};
 	float timeStep{};
-	int velocityIterations{};
-	int positionIterations{};
+	int subSteps{};
 };
 
 struct Parallax
@@ -39,8 +40,6 @@ struct Parallax
 	int layer{};
 	float rate{1};
 };
-
-void _updatePhysics(b2World* physicsWorld);
 
 class Scene
 {
@@ -57,6 +56,8 @@ public:
 	void render();
 	void update();
 	void clearEvents();
+
+	static bool _shouldCollide(b2ShapeId shapeAId, b2ShapeId shapeBId, void* context);
 
 	std::shared_ptr<GameObject> createGameObject(std::string gameObjectType, GameObject* parent, float xMapPos, float yMapPos, float angleAdjust, 
 		Scene* parentScene, GameLayer layer = GameLayer::MAIN, bool cameraFollow = false, std::string name = "", b2Vec2 sizeOverride = { 0.,0. });
@@ -90,11 +91,7 @@ public:
 	int incrementRenderSequence(GameObject* gameObject);
 	
 	
-	void stepB2PhysicsWorld() {
-		m_physicsWorld->Step(m_physicsConfig.timeStep,
-			m_physicsConfig.velocityIterations,
-			m_physicsConfig.positionIterations);
-	}
+	void stepB2PhysicsWorld();
 
 	const std::array <std::vector<std::shared_ptr<GameObject>>, GameLayer::GameLayer_COUNT>& gameObjects() {
 		return m_gameObjects;
@@ -102,10 +99,11 @@ public:
 
 	//Accessor Functions
 	std::string id() {	return m_id;}
-	std::shared_ptr<GameObject> player() { return m_player; }
+	std::shared_ptr<GameObject> player() { return m_player.lock(); }
 	int parentSceneIndex() { return m_parentSceneIndex; }
-	b2World* physicsWorld() { return m_physicsWorld;	}
+	b2WorldId physicsWorld() { return m_physicsWorld;	}
 	int inputControlMode() { return m_inputControlMode; }
+	//DebugDraw debugDraw() { return m_debugDraw; }
 	const std::vector<Objective>& objectives() { return m_levelObjectives; }
 
 	void setState(SceneState state) { m_state = state; }
@@ -152,11 +150,15 @@ private:
 	int m_parentSceneIndex{};
 	bool m_hasPhysics{};
 	SDL_FPoint m_playerOrigSpawnPoint{};
-	std::shared_ptr<GameObject> m_player;
+	std::weak_ptr<GameObject> m_player;
 
 	SceneState m_state{};
 	std::optional<std::shared_ptr<CutScene>> m_cutScene{};
-	b2World* m_physicsWorld{};
+	
+	b2WorldId m_physicsWorld;
+	Box2DDebugDrawAdapter m_debugDraw;
+	Box2DEnkiAdapter m_enki;
+
 	PhysicsConfig m_physicsConfig{};
 	ObjectPoolManager m_objectPoolManager{};
 

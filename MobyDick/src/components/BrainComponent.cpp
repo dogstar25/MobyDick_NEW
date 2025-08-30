@@ -1,7 +1,8 @@
 #include "BrainComponent.h"
 
 #include "../game.h"
-#include "../RayCastCallBack.h"
+#include "../QueryAABBHits.h"
+#include "../RayCastHits.h"
 #include "../EnumMap.h"
 
 #include <algorithm>
@@ -68,28 +69,30 @@ void BrainComponent::_updateSensorInput()
 	aabb.upperBound = b2Vec2(centerB2.x + m_sightSensorSize, centerB2.y + m_sightSensorSize);
 	
 	//Make the AABB query
-	parent()->parentScene()->physicsWorld()->QueryAABB(&BrainAABBCallback::instance(), aabb);
+	std::vector<b2ShapeId> queryAABBHits = QueryAABBHits(parent()->parentScene()->physicsWorld(), aabb);
 
 	//Loop through all of the found objects and store the ones that we care about that we have a direct line
 	//of sight to
-	for (BrainAABBFoundObject detectedObject : BrainAABBCallback::instance().foundObjects()) {
+	for (b2ShapeId shapeId : queryAABBHits) {
+
+		b2BodyId bodyId = b2Shape_GetBody(shapeId);
+		GameObject* detectedGameObject = static_cast<GameObject*>(b2Body_GetUserData(bodyId));
 
 		for (auto i = 0; i < m_detectObjectTraits.size(); i++) {
 
 			//Is this one we care about and is it NOT our own body being detected
-			if (detectedObject.gameObject->traits()[i] && m_detectObjectTraits[i]
-				&& (detectedObject.gameObject != parent())) {
+			if (detectedGameObject->traits()[i] && m_detectObjectTraits[i]
+				&& (detectedGameObject != parent())) {
 
 				//Get this objects shared pointer from the scene and store it instead of the raw pointer
-				std::optional<std::weak_ptr<GameObject>> gameObject = parent()->parentScene()->getGameObject(detectedObject.gameObject->id());
+				std::optional<std::weak_ptr<GameObject>> gameObject = parent()->parentScene()->getGameObject(detectedGameObject->id());
 
 				m_detectedObjects.push_back(gameObject.value());
 
-				auto seenObjectDetails = _hasLineOfSight(detectedObject);
+				auto seenObjectDetails = _hasLineOfSight(detectedGameObject);
 				if (seenObjectDetails.has_value() == true) {
 
 					seenObjectDetails.value().gameObject = gameObject.value();
-					seenObjectDetails.value().fixture = detectedObject.fixture;
 					m_seenObjects.push_back(seenObjectDetails.value());
 
 				}
@@ -99,8 +102,6 @@ void BrainComponent::_updateSensorInput()
 		}
 	}
 
-	BrainAABBCallback::instance().reset();
-
 }
 
 /*
@@ -108,64 +109,13 @@ void BrainComponent::_updateSensorInput()
 * If no barrier object was found along this ray, then there
 * is a clear line of sight
 */
-std::optional<SeenObjectDetails> BrainComponent::_hasLineOfSight(BrainAABBFoundObject& detectedObject)
+std::optional<SeenObjectDetails> BrainComponent::_hasLineOfSight(GameObject* detectedObject)
 {
+	bool clearPath{true};
 
-	SeenObjectDetails seenObjectDetails{};
+	std::optional<SeenObjectDetails> seenObjectDetails{};
 
-	//Get parents position
-	auto parentPosition = parent()->getCenterPosition();
-
-	//Cast a ray from this object to the brain parent to see if we have a direct line of sight
-	auto objectPosition = detectedObject.gameObject->getCenterPosition();
-	b2Vec2 begin = { objectPosition.x, objectPosition.y };
-	b2Vec2 end = { parentPosition.x, parentPosition.y };
-
-	util::toBox2dPoint(begin);
-	util::toBox2dPoint(end);
-
-	b2Vec2 distance = end - begin;
-
-	bool clearPath{ true };
-
-	// If the distance is zero, 
-	//then this object is right on top of the Brain owner so assume its a seen object
-	//and dont call the raycast because box2d will blow up if distance is zero
-	if (distance.LengthSquared() > 0.0f) {
-
-		//Cast the ray, storing all intersected objects
-		parent()->parentScene()->physicsWorld()->RayCast(&RayCastCallBack::instance(), begin, end);
-
-		//Loop through all objects hit between the brain owner and the detected object
-		//If there is a clear line of sight then store it in seenObjects
-		//We must sort the raycast hit objects by distance because they are not guarenteed to return in
-		//distance order
-		std::sort(RayCastCallBack::instance().intersectionItems().begin(),
-			RayCastCallBack::instance().intersectionItems().end(),
-			intersection_sort_compare());
-
-		for (BrainRayCastFoundItem rayHitObject : RayCastCallBack::instance().intersectionItems()) {
-
-			//Is this a barrier and also NOT its own body and the object is not physicsdisabled
-			if (rayHitObject.gameObject->hasTrait(TraitTag::barrier) &&
-				rayHitObject.gameObject != parent() ) {
-				clearPath = false;
-				break;
-			}
-
-			//If this the brain owning object then store the distance and normal data and break
-			if (rayHitObject.gameObject == parent()) {
-				
-				//save the details but replace the 
-				seenObjectDetails.distance = rayHitObject.fraction;
-				seenObjectDetails.fixture = rayHitObject.fixture;
-				seenObjectDetails.normal = rayHitObject.normal;
-				break;
-			}
-		}
-
-		RayCastCallBack::instance().reset();
-	}
+	seenObjectDetails = util::hasLineOfSight(parent(), detectedObject, parent()->parentScene()->physicsWorld());
 
 	if (clearPath) {
 		return seenObjectDetails;

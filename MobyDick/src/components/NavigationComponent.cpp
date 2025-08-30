@@ -1,6 +1,5 @@
 #include "NavigationComponent.h"
 #include "../EnumMap.h"
-#include "../RayCastCallBack.h"
 #include "../game.h"
 #include <thread>
 #include <glm/glm.hpp>
@@ -521,7 +520,7 @@ void NavigationComponent::_moveTo(SDL_Point destinationTile)
 	//game->renderer()->addLine(startPoint, endPoint, color);
 	///
 
-	trajectory.Normalize();
+	b2Normalize(trajectory);
 
 	const auto& actionComponent = parent()->getComponent<ActionComponent>(ComponentTypes::ACTION_COMPONENT);
 	const auto& moveAction = actionComponent->getAction(Actions::MOVE);

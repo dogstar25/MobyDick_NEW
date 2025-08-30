@@ -127,7 +127,7 @@ void ParticleXComponent::update()
 					//Position - If zero was passed in then use the location of the gameObject
 					//that this ParticlrComponent belongs to
 					b2Vec2 positionVector = {};
-					if (effect.originMin.Length() > 0 || effect.originMax.Length() > 0) 
+					if (b2Length(effect.originMin) > 0 || b2Length(effect.originMax) > 0)
 					{
 						positionVector.x = util::generateRandomNumber(effect.originMin.x, effect.originMax.x);
 						positionVector.y = util::generateRandomNumber(effect.originMin.y, effect.originMax.y);

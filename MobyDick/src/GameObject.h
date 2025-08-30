@@ -45,6 +45,8 @@ class GameObject
 {
 public:
 
+
+	
 	GameObject() {}
 	~GameObject();
 	
@@ -104,6 +106,7 @@ public:
 	SDL_FPoint getOriginalPosition();
 	SDL_FPoint getOriginalTilePosition();
 	std::vector<SeenObjectDetails> getSeenObjects();
+	b2BodyId getB2BodyId();
 
 	bool isPointingAt(SDL_FPoint gameObject);
 	bool holdsDependentGameObjects();
@@ -172,6 +175,7 @@ public:
 	bool isTouchingByName(std::string name);
 	bool isTouchingById(const std::string id);
 	void addTouchingObject(std::shared_ptr<GameObject> touchingObject);
+	void removeTouchingObject(const GameObject* touchingObject);
 	void setParent(GameObject* parentObject);
 	std::optional<GameObject*> parent() { return m_parentObject; }
 	bool isDragging();
@@ -241,7 +245,6 @@ private:
 
 	std::optional<GameObject*> m_parentObject{};
 	
-	bool m_isTouchCaptureRequired{};
 	bool m_removeFromWorld{ false };
 	Scene* m_parentScene{nullptr};
 	std::bitset<100> m_traitTags{};
@@ -260,6 +263,7 @@ private:
 	
 	void _imGuiDebugObject();
 	void _updateTouchingObjects();
+	static bool _overlapCollectFcn(b2ShapeId shapeId, void* context);
 
 	//moving this to private. Traits should not be removed. If so, it should be a state not a trait
 	void removeTrait(int32_t trait) { m_traitTags.set(trait, false); }

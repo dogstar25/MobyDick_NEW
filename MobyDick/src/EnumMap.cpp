@@ -77,12 +77,12 @@ EnumMap::EnumMap()
 	m_enumMap["B2_STATIC"] = b2_staticBody;
 	m_enumMap["B2_KINEMATIC"] = b2_kinematicBody;
 	m_enumMap["B2_DYNAMIC"] = b2_dynamicBody;
-	m_enumMap["B2_CIRCLE"] = b2Shape::e_circle;
-	m_enumMap["B2_BOX"] = b2Shape::e_polygon;
-	m_enumMap["B2_CHAIN"] = b2Shape::e_chain;
-	m_enumMap["B2_EDGE"] = b2Shape::e_edge;
-	m_enumMap["B2_WELD"] = b2JointType::e_weldJoint;
-	m_enumMap["B2_REVOLUTE"] = b2JointType::e_revoluteJoint;
+	m_enumMap["B2_CIRCLE"] = b2ShapeType::b2_circleShape;
+	m_enumMap["B2_BOX"] = b2ShapeType::b2_polygonShape;
+	m_enumMap["B2_CHAIN"] = b2ShapeType::b2_chainSegmentShape;
+	m_enumMap["B2_EDGE"] = b2ShapeType::b2_segmentShape;
+	m_enumMap["B2_WELD"] = b2JointType::b2_weldJoint;
+	m_enumMap["B2_REVOLUTE"] = b2JointType::b2_revoluteJoint;
 
 	//Physics chain winding order to reflec outwards or inwards
 	m_enumMap["PhysicsChainType::CCW_REFLECT_IN"] = (int)PhysicsChainType::CCW_REFLECT_IN;
@@ -144,6 +144,7 @@ EnumMap::EnumMap()
 	m_enumMap["Key::SDL_SCANCODE_D"] = SDL_SCANCODE_D;
 	m_enumMap["Key::SDL_SCANCODE_I"] = SDL_SCANCODE_I;
 	m_enumMap["Key::SDL_SCANCODE_F"] = SDL_SCANCODE_F;
+	m_enumMap["Key::SDL_SCANCODE_Z"] = SDL_SCANCODE_Z;
 
 	m_enumMap["Key::SDLK_F1"] = SDLK_F1;
 	m_enumMap["Key::SDLK_F2"] = SDLK_F2;
@@ -168,6 +169,8 @@ EnumMap::EnumMap()
 	m_enumMap["SCENE_ACTION_QUICK_SAVE"] = SCENE_ACTION_QUICK_SAVE;
 	m_enumMap["SCENE_ACTION_QUICK_LOAD"] = SCENE_ACTION_QUICK_LOAD;
 	m_enumMap["SCENE_ACTION_START_NEW"] = SCENE_ACTION_START_NEW;
+	m_enumMap["SCENE_ACTION_SPAWN_CRYSTAL"] = SCENE_ACTION_SPAWN_CRYSTAL;
+
 
 	//Scene Tags
 	m_enumMap["SCENETAG_MENU"] = SCENETAG_MENU;

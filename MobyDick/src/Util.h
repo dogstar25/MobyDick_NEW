@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#pragma once
+
 
 #include <string>
 #include <map>
@@ -17,6 +17,13 @@
 #include "BaseConstants.h"
 
 class GameObject;
+
+struct SeenObjectDetails {
+
+	std::weak_ptr<GameObject> gameObject{};
+	float distance{};
+	b2Vec2 normal{};
+};
 
 /*
 Overloaded operators used throught the game
@@ -78,11 +85,10 @@ namespace util
 	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition);
 
 	std::string wideStringToString(const std::wstring& wstr);
-	bool hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject);
+	std::optional<SeenObjectDetails> hasLineOfSight(GameObject* sourceObject, GameObject* candidateObject, b2WorldId physicsWorldId);
 	//void propogateStateToAllChildren(GameObject* gameObject, GameObjectState stateToPropogate, std::optional<int> trait = std::nullopt);
 	void replaceAll(std::string& str, const std::string& from, const std::string& to);
 
 };
 
 
-#endif

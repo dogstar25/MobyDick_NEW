@@ -100,7 +100,7 @@ public:
 
 	virtual void drawLine(glm::vec2 pointA, glm::vec2 pointB, glm::uvec4 color, GameLayer layer) = 0;
 	virtual void drawPoints(std::vector<SDL_FPoint> points, SDL_Color color, GameLayer layer) = 0;
-
+	virtual void drawPoint(glm::vec2 point, SDL_Color color, GameLayer layer) = 0;
 
 	//new
 	virtual int setRenderTarget(Texture* targetTexture) = 0;

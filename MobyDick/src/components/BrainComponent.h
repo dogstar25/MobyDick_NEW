@@ -1,7 +1,6 @@
 #pragma once
 #include "Component.h"
 #include "../LevelManager.h"
-#include "../BrainAABBCallback.h"
 
 #include <json/json.h>
 #include "glm/glm.hpp"
@@ -12,14 +11,6 @@
 inline constexpr int DESTINATION_DISTANCE_TOLERANCE = 25;
 inline constexpr int HASMOVED_DISTANCE_TOLERANCE = 2;
 inline constexpr int NAVIGATION_STUCK_TIMER_DURATION = 2;
-
-struct SeenObjectDetails {
-
-    std::weak_ptr<GameObject> gameObject{};
-    float distance{};
-    b2Vec2 normal{};
-    b2Fixture* fixture{};
-};
 
 class GameObject;
 
@@ -52,7 +43,7 @@ protected:
 
 private:
     void _updateSensorInput();
-    std::optional<SeenObjectDetails> _hasLineOfSight(BrainAABBFoundObject& detectedObject);
+    std::optional<SeenObjectDetails> _hasLineOfSight(GameObject* detectedObject);
     Timer m_updateSensorInputTimer{0.25, true};
 
 };

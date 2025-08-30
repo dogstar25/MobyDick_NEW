@@ -1,4 +1,5 @@
 #include "TriggerFactory.h"
+#include <cassert>
 
 
 

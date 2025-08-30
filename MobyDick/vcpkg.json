@@ -1,27 +1,34 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-    "name": "mobydick",
-    "version": "1.0.0",
-    "dependencies": [
-        "sdl2",
-        "sdl2-image",
-        "sdl2-mixer",
-        "sdl2-ttf",
-        "box2d",
-        "jsoncpp",
-        {
-            "name": "imgui",
-            "default-features": true,
-            "features": [ "opengl3-binding", "sdl2-binding", "sdl2-renderer-binding" ]
-        },
-        "glm",
-        {
-            "name": "glad",
-            "default-features": true,
-            "features": [ "loader"]
-        }
-
-    ],
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "mobydick",
+  "version": "1.0.0",
+  "dependencies": [
+    "7zip",
+    "sdl2",
+    "sdl2-image",
+    "sdl2-mixer",
+    "sdl2-ttf",
+    "box2d",
+    "enkits",
+    "jsoncpp",
+    {
+      "name": "imgui",
+      "default-features": true,
+      "features": [
+        "opengl3-binding",
+        "sdl2-binding",
+        "sdl2-renderer-binding"
+      ]
+    },
+    "glm",
+    {
+      "name": "glad",
+      "default-features": true,
+      "features": [
+        "loader"
+      ]
+    }
+  ],
     "overrides": [
         {
             "name": "sdl2",
@@ -37,7 +44,7 @@
         },
         {
             "name": "box2d",
-            "version": "2.4.1#3"
+            "version": "3.1.1"
         },
         {
             "name": "yaml-cpp",
@@ -54,10 +61,11 @@
         {
             "name": "glm",
             "version": "0.9.9.8#1"
+        },
+        {
+            "name": "enkits",
+            "version": "1.11#3"
         }
-
     ],
-
-    "builtin-baseline": "5787cfa699a75805ef41938ec66bc7492714d290"
-
+  "builtin-baseline": "efcfaaf60d7ec57a159fc3110403d939bfb69729"
 }
