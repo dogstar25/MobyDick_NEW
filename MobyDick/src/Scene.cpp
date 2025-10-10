@@ -384,7 +384,9 @@ std::shared_ptr<GameObject> Scene::createGameObject(std::string gameObjectType, 
 		std::make_shared<GameObject>(gameObjectType, parent, xMapPos, yMapPos, angleAdjust, parentScene, layer, cameraFollow, name, sizeOverride);
 
 	//Add to the main gameObject lookup collection where every gameObject must live
-	m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
+	if (layer != GameLayer::GRID_DISPLAY) {
+		m_gameObjectLookup.emplace(std::pair<std::string, std::shared_ptr<GameObject>>(gameObject->id(), gameObject));
+	}
 
 	//If this is the player object, then store it for easy access
 	if (gameObject->hasTrait(TraitTag::player)) {

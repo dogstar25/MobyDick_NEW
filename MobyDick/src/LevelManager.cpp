@@ -140,6 +140,9 @@ void LevelManager::_loadDefinition(std::string levelId)
 		m_locationDefinedList = root["locationDefinedObjects"];
 	}
 
+	//Load the debug Grid Definition
+	_loadDebugGridDefinition(root);
+
 
 }
 
@@ -290,17 +293,27 @@ void LevelManager::_clear()
 void LevelManager::_buildDebugGridObjects(Scene* scene)
 {
 
-	//build all of the initial , blank, grid objects
-	for (auto x = 0; x < m_width;x++) {
-		for (auto y = 0; y < m_height; y++) {
-
-			const auto& gridObject = scene->addGameObject("DEBUG_GRID_32", nullptr, GameLayer::GRID_DISPLAY, (float)x, (float)y, (float)0);
-			gridObject->disableRender();
+	for (const auto region : m_debugGridDefinition.regions) {
 
 
 
+		int maxX = region.x + region.w;
+		int maxY = region.y + region.h;
+
+		for (auto x = region.x; x < maxX; x++) {
+			for (auto y = region.y; y < maxY; y++) {
+
+				const auto& gridObject = scene->addGameObject("DEBUG_GRID_32", nullptr, GameLayer::GRID_DISPLAY, (float)x, (float)y, (float)0);
+				gridObject->disableRender();
+
+			}
 		}
+
+
+
 	}
+
+	//build all of the initial , blank, grid objects
 
 }
 
@@ -508,6 +521,40 @@ std::optional<LevelObject> LevelManager::_determineColorDefinedObject(SDL_Color 
 	}
 	
 	return levelObject;
+}
+
+void LevelManager::_loadDebugGridDefinition(Json::Value jsonDefinition)
+{
+
+
+	if (jsonDefinition.isMember("debugGrid")) {
+		
+		const auto debugGridJSON = jsonDefinition["debugGrid"];
+
+		if(debugGridJSON.isMember("regions")) 
+		{
+			for (Json::Value region : debugGridJSON["regions"]) {
+
+				int startX = region["x"].asInt();
+				int startY = region["y"].asInt();
+				int width = region["width"].asInt();
+				int height = region["height"].asInt();
+
+				m_debugGridDefinition.regions.push_back(SDL_Rect( startX, startY, width, height ));
+
+			}
+
+			//Trait tags
+			for (Json::Value traitTag : debugGridJSON["impassableTraitTags"])
+			{
+				uint32_t trait = game->enumMap()->toEnum(traitTag.asString());
+				m_debugGridDefinition.barrierTraits.set(trait);
+			}
+
+		}
+
+	}
+
 }
 
 std::vector<LevelObject> LevelManager::_determineLocationDefinedObject(int x, int y)

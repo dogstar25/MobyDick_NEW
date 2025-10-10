@@ -55,6 +55,12 @@ struct TiledLayerDefinition
 
 };
 
+struct DebugGridDefinition
+{
+	std::vector<SDL_Rect> regions;
+	std::bitset<100> barrierTraits;
+};
+
 
 
 class LevelManager
@@ -97,6 +103,8 @@ private:
 	std::vector<std::string> m_levels{};
 	std::map<int, TiledLayerDefinition> m_tiledLayerDefinitions;
 
+	DebugGridDefinition m_debugGridDefinition{};
+
 	std::vector<LevelObject> _determineTile(int x, int y, SDL_Surface* bluePrintSurface);
 	LevelObject _determineWallObject(int x, int y, SDL_Surface* bluePrintSurface);
 	std::vector<LevelObject> _determineLocationDefinedObject(int x, int y);
@@ -113,6 +121,9 @@ private:
 	void _startBackgroundMusic();
 	bool _isColorDefinedObject(SDL_Color color);
 	void _clear();
+	void _loadDebugGridDefinition(Json::Value jsonDefinition);
 	std::bitset< static_cast<int>(GameObjectState::GameObjectState_Count)> _storeStates(Json::Value statesJSON);
+
+	
 };
 

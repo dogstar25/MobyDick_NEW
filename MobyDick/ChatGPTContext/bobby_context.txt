@@ -1,0 +1,69 @@
+﻿Bobby Context v3.0 — October 2025
+
+Project: MobyDick Engine
+Type: Custom C++ 2D/2.5D Game Engine
+Games: MortalRecon (legacy), Bobby’s Burden (active)
+
+🔧 Architecture
+
+Modular engine: Core, Render, RendererGL, Audio (future RendererVulkan).
+
+Built as a static library (MobyDickEngine) via CMake.
+
+Shared via git submodule for cross-platform games.
+
+⚙️ Build System
+
+Uses CMake + vcpkg.json for dependencies: SDL2, Box2D, EnkiTS, ImGui, glm, glad, jsoncpp.
+
+Each platform defines:
+
+MOBYDICK_PLATFORM_WINDOWS
+
+MOBYDICK_PLATFORM_ANDROID
+
+MOBYDICK_PLATFORM_IOS
+
+Platform-specific code gated by EnginePlatform.h.
+
+Games use add_subdirectory(MobyDick) + target_link_libraries().
+
+🎨 Rendering
+
+SDL2 used only for window, input, audio.
+
+Rendering handled by custom OpenGL backend (RendererGL implementing IRenderer).
+
+Future goal: optional Vulkan renderer.
+
+2D sprites rendered as quads in 3D space (orthographic projection).
+
+Lighting and shadow-mapping pipeline for true 3D lighting in 2D scenes.
+
+🧩 Components
+
+ShaderManager, Material, FrameBufferObject (FBO) planned.
+
+Batching and material sorting for efficiency.
+
+Physics remains 2D-only (Box2D v3).
+
+🚀 Cross-Platform Plan
+
+Windows first (vcpkg native).
+
+Android/iOS next via CMake toolchains.
+
+Shared engine repo (MobyDick_NEW) versioned per game branch/tag.
+
+🧭 Current Focus
+
+Finalize CMake + vcpkg integration on Windows.
+
+Modularize engine libs.
+
+Expand OpenGL renderer with shaders/materials/FBOs.
+
+Implement lighting + shadows.
+
+Test Android/iOS builds.
