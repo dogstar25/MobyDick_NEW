@@ -476,7 +476,6 @@
     <ResourceCompile Include="MobyDick.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ChatGPTContext\bobby_context.txt" />
     <None Include="readme.md" />
     <None Include="vcpkg.json" />
   </ItemGroup>
