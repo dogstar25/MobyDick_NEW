@@ -264,3 +264,4 @@ __pycache__/
 /MobyDick/vcpkg_installed
 /MobyDick/vcpkg_installed/x64-windows/vcpkg/updates
 /MobyDick/vcpkg_installed/x64-windows
+/MobyDick/ChatGPTContext/*
