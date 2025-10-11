@@ -733,7 +733,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="ExtraLibs\SDL2main.lib" />
+    <Library Include="include\ExtraLibs\SDL2main.lib" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MobyDick.rc">
@@ -743,5 +743,6 @@
   <ItemGroup>
     <None Include="readme.md" />
     <None Include="vcpkg.json" />
+    <None Include="ChatGPTContext\bobby_context.txt" />
   </ItemGroup>
 </Project>

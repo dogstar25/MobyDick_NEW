@@ -138,7 +138,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -470,12 +470,13 @@
     <ClInclude Include="src\puzzles\UnLockDoorPuzzle.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="ExtraLibs\SDL2main.lib" />
+    <Library Include="include\ExtraLibs\SDL2main.lib" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MobyDick.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ChatGPTContext\bobby_context.txt" />
     <None Include="readme.md" />
     <None Include="vcpkg.json" />
   </ItemGroup>
