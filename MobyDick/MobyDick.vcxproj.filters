@@ -743,6 +743,5 @@
   <ItemGroup>
     <None Include="readme.md" />
     <None Include="vcpkg.json" />
-    <None Include="ChatGPTContext\bobby_context.txt" />
   </ItemGroup>
 </Project>
