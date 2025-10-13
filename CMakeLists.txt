@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.21)
 
 project(MobyDick VERSION 0.1.0 LANGUAGES CXX)
 
+message(STATUS "?? MobyDick CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
+
+
 # --- Global Settings ---
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -41,8 +44,14 @@ target_include_directories(MobyDick
 #This to avoid the jsoncpp warning due its unfortunate reliance on older cmake versions
 cmake_policy(VERSION 3.31)
 
-# --- Dependencies (vcpkg will provide them) ---
+# ---------------------------------------------------------
+# Dependencies (resolved via vcpkg)
+# ---------------------------------------------------------
+
 find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL2_image CONFIG REQUIRED)
+find_package(SDL2_mixer CONFIG REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(box2d CONFIG REQUIRED)
 find_package(enkiTS CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
@@ -50,9 +59,16 @@ find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 
+# ---------------------------------------------------------
+# Link everything cleanly
+# ---------------------------------------------------------
 target_link_libraries(MobyDick
     PUBLIC
         SDL2::SDL2
+        SDL2::SDL2main
+        SDL2_image::SDL2_image
+        SDL2_mixer::SDL2_mixer
+        SDL2_ttf::SDL2_ttf
         box2d::box2d
         enkiTS::enkiTS
         imgui::imgui
