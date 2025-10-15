@@ -41,6 +41,7 @@ target_include_directories(MobyDick
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+
 #This to avoid the jsoncpp warning due its unfortunate reliance on older cmake versions
 cmake_policy(VERSION 3.31)
 
@@ -85,6 +86,10 @@ elseif(ANDROID)
 elseif(IOS)
     target_compile_definitions(MobyDick PUBLIC MOBYDICK_PLATFORM_IOS)
 endif()
+
+# -------define the assets directory
+target_compile_definitions(MobyDick PUBLIC GAME_WORKING_DIR=\"${GAME_WORKING_DIR}\")
+
 
 # --- Output Info ---
 message(STATUS "Building MobyDick ${PROJECT_VERSION}")
