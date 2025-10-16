@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.22)
 
 project(MobyDick VERSION 0.1.0 LANGUAGES CXX)
 
@@ -40,10 +40,6 @@ target_include_directories(MobyDick
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-
-
-#This to avoid the jsoncpp warning due its unfortunate reliance on older cmake versions
-cmake_policy(VERSION 3.31)
 
 # ---------------------------------------------------------
 # Dependencies (resolved via vcpkg)
