@@ -56,23 +56,40 @@ find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 
-# ---------------------------------------------------------
-# Link everything cleanly
-# ---------------------------------------------------------
-target_link_libraries(MobyDick
-    PUBLIC
-        SDL2::SDL2
-        SDL2::SDL2main
-        SDL2_image::SDL2_image
-        SDL2_mixer::SDL2_mixer
-        SDL2_ttf::SDL2_ttf
-        box2d::box2d
-        enkiTS::enkiTS
-        imgui::imgui
-        glm::glm
-        glad::glad
-        JsonCpp::JsonCpp
-)
+# --- Link MobyDick cleanly per-platform ---
+if (WIN32)
+    target_link_libraries(MobyDick PUBLIC
+            SDL2::SDL2
+            SDL2::SDL2main
+            SDL2_image::SDL2_image
+            SDL2_mixer::SDL2_mixer
+            SDL2_ttf::SDL2_ttf
+            box2d::box2d
+            enkiTS::enkiTS
+            imgui::imgui
+            glm::glm
+            glad::glad
+            JsonCpp::JsonCpp
+    )
+elseif (ANDROID)
+    # Your arm64-android triplet exports only the -static satellites:
+    #   SDL2_image::SDL2_image-static, SDL2_mixer::SDL2_mixer-static, SDL2_ttf::SDL2_ttf-static
+    # SDL2main is not used on Android.
+    target_link_libraries(MobyDick PUBLIC
+            SDL2::SDL2
+            SDL2_image::SDL2_image-static
+            SDL2_mixer::SDL2_mixer-static
+            SDL2_ttf::SDL2_ttf-static
+            box2d::box2d
+            enkiTS::enkiTS
+            imgui::imgui
+            glm::glm
+            glad::glad
+            JsonCpp::JsonCpp
+    )
+else()
+    message(FATAL_ERROR "Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
+endif()
 
 # --- Platform Defines ---
 if(WIN32)
