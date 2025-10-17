@@ -6,6 +6,7 @@
 #include <box2d/box2d.h>
 
 #include <string>
+#include <expected>
 
 #include "BaseConstants.h"
 
@@ -14,7 +15,7 @@ class GameConfig
 
 public:
 	static GameConfig& instance();
-	bool init(std::string configFile);
+	std::expected<void, std::string> init(std::string configFile);
 
 	//Accessor functions
 	float scaleFactor() {
@@ -63,6 +64,8 @@ public:
 private:
 	GameConfig();
 	~GameConfig();
+
+	std::expected<void, std::string> setWorkingDirectory();
 
 	RendererType m_rendererType;
 

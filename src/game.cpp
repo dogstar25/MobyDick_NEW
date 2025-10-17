@@ -14,6 +14,8 @@
 #include "SoundManager.h"
 #include "GameStateManager.h"
 #include "NavigationManager.h"
+#include <print>
+
 
 
 Game::~Game()
@@ -60,11 +62,14 @@ bool Game::init(
 	m_colorMap = colorMap;
 
 	//Get all of the configuration values
-	GameConfig::instance().init("gameConfig");
+	auto result = GameConfig::instance().init("gameConfig");
+	if (!result) {
+		assert(false && "Init GameConfig faled!");
+	}
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
-		assert(true && "SDL_Init faled!");
+		assert(false && "SDL_Init faled!");
 	}
 	
 	std::optional<SDL_Point> gameResolution = _determineScreenResolution();

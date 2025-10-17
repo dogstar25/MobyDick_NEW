@@ -34,6 +34,7 @@
 #include "Renderer.h"
 #include "EnumMap.h"
 #include "ColorMap.h"
+#include <exception>
 
 
 

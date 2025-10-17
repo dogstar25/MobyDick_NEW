@@ -4,6 +4,10 @@
 #include "EnumMap.h"
 
 #include <fstream>
+#include <filesystem>
+#include <iostream>
+#include <print>
+
 
 extern std::unique_ptr<Game> game;
 
@@ -18,9 +22,17 @@ GameConfig::~GameConfig()
 
 }
 
-bool GameConfig::init(std::string configFile)
+std::expected<void , std::string> GameConfig::init(std::string configFile)
 {
 
+	//Set the working directory for the game
+    //Uses a CMAKE define in the Games levels CMakeLists
+	auto result = setWorkingDirectory();
+	if (!result) {
+		return result;
+	}
+
+	//Read and process the game config file
 	Json::Value root;
 	std::ifstream ifs("assets/config/" + configFile + ".json");
 	ifs >> root;
@@ -45,7 +57,7 @@ bool GameConfig::init(std::string configFile)
 
 	m_windowFullscreen = root["window"]["fullscreen"].asBool();
 
-	return true;
+	return{};
 }
 
 GameConfig& GameConfig::instance()
@@ -53,5 +65,38 @@ GameConfig& GameConfig::instance()
 
 	static GameConfig singletonInstance;
 	return singletonInstance;
+
+}
+
+std::expected<void, std::string> GameConfig::setWorkingDirectory()
+{
+    namespace fs = std::filesystem;
+
+	#ifndef GAME_WORKING_DIR
+
+		return std::unexpected("No GAME_WORKING_DIR define setup in your Games CMAKELists.txt file!");
+
+	#endif
+
+    // Try automatically walking upward until "assets" is found
+	fs::path pathCheckPrefix = fs::current_path();
+	fs::path pathCheck = pathCheckPrefix / GAME_WORKING_DIR / "assets";
+    for (int i = 0; i < 5; ++i) // climb up to 5 levels max
+    {
+        if (fs::exists(pathCheck))
+        {
+            //We found the gameTitle/assets directory, now remove the assets directory part for our working directory
+            fs::current_path(pathCheck.parent_path());
+            std::println("[Init] Changed working directory to: {}", fs::current_path().string());
+			return{};
+        }
+
+		pathCheckPrefix = pathCheckPrefix.parent_path();
+		pathCheck = pathCheckPrefix / GAME_WORKING_DIR / "assets";
+
+    }
+
+    std::println("[Init] Warning: could not locate assets folder near {}", fs::current_path().string());
+	return std::unexpected("[error]:No assets directory found for this game!");
 
 }
