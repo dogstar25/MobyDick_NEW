@@ -58,7 +58,7 @@ void GameObjectManager::load(std::string gameObjectAssetsFilename)
 	if (!gameObjectAssetResult) {
 
 		std::string errorMsg = std::format("GameObjectManager: Error loading game object definition {}", gameObjectAssetsFilename);
-		SDL_Log(errorMsg.c_str());
+        SDL_Log("%s", errorMsg.c_str());
 		std::abort();
 
 	}
