@@ -6,7 +6,7 @@
 #include "gameConfig.h"
 #include "IMGui/IMGuiUtil.h"
 #include "TextureManager.h"
-
+#include "ResourceManager.h"
 
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
@@ -51,19 +51,20 @@ void SceneManager::load(std::string sceneDefinitionsFilename)
 {
 
 	//Read file and stream it to a JSON object
-	Json::Value root;
-	std::string filename = "assets/config/" + sceneDefinitionsFilename + ".json";
-	std::ifstream ifs(filename);
-	ifs >> root;
+	auto scenesResult = mobydick::ResourceManager::getJSON("config/" + sceneDefinitionsFilename + ".json");
+	if (!scenesResult) {
 
-	for (Json::Value itr : root["scenes"])
+		SDL_Log("Critical error loading scenes. Aborting");
+		std::abort();
+
+	}
+
+	Json::Value scenesJSON = scenesResult.value();
+
+	for (Json::Value itr : scenesJSON["scenes"])
 	{
 		std::string sceneId = itr["id"].asString();
-
-
 		auto maxObjects = itr["maxObjects"].asInt();
-
-		//Json::Value sceneJSON = Json::Value(itr);
 		m_sceneDefinitions.emplace(sceneId, Json::Value(itr));
 	}
 }
@@ -104,13 +105,6 @@ void SceneManager::run()
 			scene.render();
 		}
 
-		//If our Renderer is OpenGL, and we are batching, then we need to send the vertex data that hasn't been drawn yet
-		//This needs to happen before the IMGui draw piece below
-		if (GameConfig::instance().rendererType() == RendererType::OPENGL &&
-			GameConfig::instance().openGLBatching() == true) {
-			game->renderer()->drawBatches();
-		}
-
 		//Render any IMGui frames that were updated in this loop
 		ImGui::MobyDickRenderFrame();
 
@@ -118,8 +112,6 @@ void SceneManager::run()
 		game->renderer()->present();
 
 	}
-
-
 
 }
 

@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "Game.h"
 #include "RayCastHits.h"
+#include "ResourceManager.h"
 
 #define NOMINMAX 10000000 // need this so that the compiler doesnt find the min and max in the windows include
 #include <Windows.h>
@@ -250,19 +251,24 @@ namespace util
 		return position;
 	}
 
-	Json::Value getModelComponent(std::string componentId, std::string modelId)
+	std::expected<Json::Value, std::string> getModelComponent(std::string componentId, std::string modelId)
 	{
-		std::string definitionFilename = "assets/gameObjectDefinitions/models/" + componentId + "_models.json";
+		std::string definitionFilename = "gameObjectDefinitions/models/" + componentId + "_models.json";
 
-		Json::Value root;
-		std::ifstream definitionFile(definitionFilename);
-		definitionFile >> root;
+		auto definitionResult = mobydick::ResourceManager::getJSON(definitionFilename);
+		if (!definitionResult) {
 
-		if (root.isMember(modelId)) {
+			return std::unexpected("Error in util::getModelComponent for file " + definitionFilename);
+			
+		}
 
-			if (root[modelId]["id"].asString() == componentId) {
+		Json::Value definitionJSON = definitionResult.value();
 
-				return root[modelId];
+		if (definitionJSON.isMember(modelId)) {
+
+			if (definitionJSON[modelId]["id"].asString() == componentId) {
+
+				return definitionJSON[modelId];
 			}
 			else {
 				SDL_assert(false && "Component model is wrong type!");
@@ -436,7 +442,13 @@ namespace util
 				//and retrieve it from the models/directory and return it instead of whats in componentJSON
 				if (origComponentId.contains('[')) {
 
-					componentJSON = getModelComponent(componentId, origComponentId);
+					auto componentResult = getModelComponent(componentId, origComponentId);
+					if (!componentResult) {
+						SDL_Log(componentResult.error().c_str());
+						abort();
+					}
+
+					return componentResult.value();
 
 				}
 

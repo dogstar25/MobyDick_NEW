@@ -1,12 +1,14 @@
 #include "SoundManager.h"
 
 #include <fstream>
+#include <format>
 
 #include <json/json.h>
 
 #include "GameConfig.h"
 #include "game.h"
 #include "Util.h"
+#include "ResourceManager.h"
 
 extern std::unique_ptr<Game>game;
 
@@ -62,29 +64,50 @@ void SoundManager::loadSounds()
 	Mix_Music* music = nullptr;
 
 	//Read file and stream it to a JSON object
-	Json::Value root;
-	std::ifstream ifs("assets/sound/soundAssets.json");
-	ifs >> root;
+	auto soundAssetResult = mobydick::ResourceManager::getJSON("sound/soundAssets.json");
+	if (!soundAssetResult) {
+
+		SDL_Log("SoundManager : Error loading sound asets");
+		std::abort();
+
+	}
+
+	Json::Value soundAssetsJSON = soundAssetResult.value();
 
 	//Store the sound affects sound items
-	for (auto chunksItr : root["soundEffects"])
+	for (auto chunksItr : soundAssetsJSON["soundEffects"])
 	{
 
 		id = chunksItr["id"].asString();
-		filename = "assets/sound/" + chunksItr["filename"].asString();
-		soundChunk = Mix_LoadWAV(filename.c_str());
+
+		std::string soundAssetFile = "sound/" + chunksItr["filename"].asString();
+		auto soundAssetResult = mobydick::ResourceManager::getSound(soundAssetFile);
+		if (!soundAssetResult) {
+
+			SDL_Log(soundAssetResult.error().c_str());
+			std::abort();
+
+		}
+
 		m_sfxChunks.emplace(id, soundChunk);
 
 	}
 
 	//Store the sound music items
-	for (auto musicItr : root["music"])
+	for (auto musicItr : soundAssetsJSON["music"])
 	{
 
 		id = musicItr["id"].asString();
-		filename = "assets/sound/music/" + musicItr["filename"].asString();
-		music = Mix_LoadMUS(filename.c_str());
-		m_sfxMusic.emplace(id, music);
+
+		std::string musicAssetFile = "sound/music/" + musicItr["filename"].asString();
+		auto musicAssetResult = mobydick::ResourceManager::getMusic(musicAssetFile);
+		if (!musicAssetResult) {
+
+			SDL_Log(musicAssetResult.error().c_str());
+			std::abort();
+
+		}
+		m_sfxMusic.emplace(id, musicAssetResult.value());
 
 	}
 

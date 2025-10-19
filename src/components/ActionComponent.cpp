@@ -20,6 +20,7 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 
 	for (Json::Value itrAction: componentJSON["actions"])
 	{
+
 		//Get the name of the class to be used as the action as a string
 		std::string actionClass = itrAction["actionClass"].asString();
 

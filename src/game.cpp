@@ -14,6 +14,8 @@
 #include "SoundManager.h"
 #include "GameStateManager.h"
 #include "NavigationManager.h"
+#include "ResourceManager.h"
+
 #include <print>
 
 
@@ -61,6 +63,9 @@ bool Game::init(
 	m_enumMap = enumMap;
 	m_colorMap = colorMap;
 
+	//Initialize the Game Base Path
+	mobydick::ResourceManager::init();
+	 
 	//Get all of the configuration values
 	auto result = GameConfig::instance().init("gameConfig");
 	if (!result) {
@@ -102,16 +107,7 @@ bool Game::init(
 		m_gameScreenResolution.y,
 		windowFlags);
 
-	if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-
-		m_renderer = std::make_shared<RendererGL>();
-
-	}
-	else if (GameConfig::instance().rendererType() == RendererType::SDL) {
-
-		m_renderer = std::make_shared<RendererSDL>();
-
-	}
+	m_renderer = std::make_shared<RendererSDL>();
 
 	return true;
 }
@@ -224,42 +220,30 @@ void Game::_displayLoadingMsg()
 	//Assume nothing has been initialzed yet except for the renderer so build and render a text item in
 	//a very crude and manual way
 	m_renderer->clear();
-	TTF_Font* m_fontObject = TTF_OpenFont("assets/fonts/arial.ttf", 32);
+	auto ttfFontResult = mobydick::ResourceManager::getTTFFont("fonts/arial.ttf");
+	if (!ttfFontResult) {
+
+		SDL_Log("Could not open TTF file");
+		abort();
+	}
+
+	//Get reference to pointer
+	auto fontObject = ttfFontResult.value();
 
 	//Create the surface
-	SDL_Surface* tempSurface = TTF_RenderText_Blended(m_fontObject, statusMsg.c_str(), SDL_Color(255, 255, 255, 255));
+	SDL_Surface* tempSurface = TTF_RenderText_Blended(fontObject, statusMsg.c_str(), SDL_Color(255, 255, 255, 255));
 
-	//Do different stuff based on if we're using SDL or direct OpenGL to render
-	if (GameConfig::instance().rendererType() == RendererType::SDL) {
+	std::shared_ptr<SDLTexture> sdlTexture = std::make_shared<SDLTexture>();
 
-		std::shared_ptr<SDLTexture> sdlTexture = std::make_shared<SDLTexture>();
-
-		sdlTexture->sdlTexture = SDL_CreateTextureFromSurface(m_renderer->sdlRenderer(), tempSurface);
-		sdlTexture->surface = tempSurface;
-		texture = sdlTexture;
-	}
-	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-
-		std::shared_ptr<OpenGLTexture> openGLTexture = std::make_shared<OpenGLTexture>();
-
-		glGenTextures(1, &displayLoadingTextureId);
-		
-		openGLTexture->textureId = displayLoadingTextureId;
-		glBindTexture(GL_TEXTURE_2D, openGLTexture->textureId);
-
-		SDL_Surface* formattedSurface = SDL_ConvertSurfaceFormat(tempSurface, SDL_PIXELFORMAT_ABGR8888, 0);
-		openGLTexture->surface = formattedSurface;
-		static_cast<RendererGL*>(renderer())->prepTexture(openGLTexture.get());
-
-		texture = openGLTexture;
-
-	}
+	sdlTexture->sdlTexture = SDL_CreateTextureFromSurface(m_renderer->sdlRenderer(), tempSurface);
+	sdlTexture->surface = tempSurface;
+	texture = sdlTexture;
 
 	SDL_Rect quad = { 0 , 0, texture->surface->w, texture->surface->h };
 
 	texture->textureAtlasQuad = std::move(quad);
 
-	TTF_CloseFont(m_fontObject);
+	TTF_CloseFont(fontObject);
 	SDL_FRect dest = {
 		m_gameScreenResolution.x / (float)2 - (float)100,
 		m_gameScreenResolution.y / (float)2 - (float)42,

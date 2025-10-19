@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include<expected>
 
 #include <json/json.h>
 #include <SDL2/SDL.h>
@@ -76,7 +77,7 @@ namespace util
 	SDL_FPoint tileToPixelPlacementLocation(float tileX, float tileY, float objectWidth, float objectHeight);
 	SDL_Point pixelToTileLocation(float pixelX, float pixelY);
 	std::string locationToString(float x, float y);
-	Json::Value getModelComponent(std::string componentId, std::string modelId);
+	std::expected<Json::Value, std::string> getModelComponent(std::string componentId, std::string modelId);
 	std::string getComponentType(Json::Value configJSON);
 
 	b2Vec2 matchParentRotation(SDL_FPoint childPosition, SDL_FPoint parentPosition, float);

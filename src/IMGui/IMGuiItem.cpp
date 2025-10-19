@@ -1,4 +1,5 @@
 #include "IMGuiItem.h"
+#include "../ResourceManager.h"
 #include "../game.h"
 
 extern std::unique_ptr<Game> game;
@@ -21,30 +22,61 @@ IMGuiItem::IMGuiItem(std::string gameObjectType, b2Vec2 padding, ImVec4 backgrou
 	//Fonts - these are static so only initialize if they are null
 	//First font loaded into ImGui defaults to the default font
 	if (!m_normalFont) {
-		m_normalFont = io.Fonts->AddFontFromFileTTF("assets/fonts/DroidSans.ttf", 24.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/DroidSans.ttf", 24.0f);
+		if (loadFontResult) {
+			m_normalFont = loadFontResult.value();
+		}
 	}
 
 	if (!m_xSmallFont) {
-		m_xSmallFont = io.Fonts->AddFontFromFileTTF("assets/fonts/DroidSans.ttf", 8.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/DroidSans.ttf", 8.0f);
+		if (loadFontResult) {
+			m_xSmallFont = loadFontResult.value();
+		}
+
 	}
 	if (!m_smallFont) {
-		m_smallFont = io.Fonts->AddFontFromFileTTF("assets/fonts/DroidSans.ttf", 16.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/DroidSans.ttf", 16.0f);
+		if (loadFontResult) {
+			m_smallFont = loadFontResult.value();
+		}
+
 	}
 	if (!m_mediumFont) {
-		m_mediumFont = io.Fonts->AddFontFromFileTTF("assets/fonts/DroidSans.ttf", 32.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/DroidSans.ttf", 32.0f);
+		if (loadFontResult) {
+			m_mediumFont = loadFontResult.value();
+		}
+
 	}
 	if (!m_largeFont) {
-		m_largeFont = io.Fonts->AddFontFromFileTTF("assets/fonts/DroidSans.ttf", 48.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/DroidSans.ttf", 48.0f);
+		if (loadFontResult) {
+			m_largeFont = loadFontResult.value();
+		}
+
 	}
 	if (!m_xLargeFont) {
-		m_xLargeFont = io.Fonts->AddFontFromFileTTF("assets/fonts/DroidSans.ttf", 64.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/DroidSans.ttf", 64.0f);
+		if (loadFontResult) {
+			m_xLargeFont = loadFontResult.value();
+		}
+
 	}
 
 	if (!m_xSmallGothicFont) {
-		m_xSmallGothicFont = io.Fonts->AddFontFromFileTTF("assets/fonts/AnandaBlack.ttf", 14.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/AnandaBlack.ttf", 14.0f);
+		if (loadFontResult) {
+			m_xSmallGothicFont = loadFontResult.value();
+		}
+
 	}
 	if (!m_smallGothicFont) {
-		m_smallGothicFont = io.Fonts->AddFontFromFileTTF("assets/fonts/AnandaBlack.ttf", 24.0f);
+		auto loadFontResult = mobydick::ResourceManager::loadImGuiTTFFont(io, "fonts/AnandaBlack.ttf", 24.0f);
+		if (loadFontResult) {
+			m_smallGothicFont = loadFontResult.value();
+		}
+
 	}
 
 }
