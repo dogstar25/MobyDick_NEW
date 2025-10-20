@@ -10,6 +10,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL.h>
+#include <SDL_system.h>
 #include <json/json.h>
 
 #include "texture.h"
