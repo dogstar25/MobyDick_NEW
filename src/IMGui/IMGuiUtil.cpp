@@ -116,7 +116,7 @@ namespace ImGui
 			ImGui::SetCursorPosX(diff * 0.5f);
 		}
 		
-		ImGui::TextWrapped(text.c_str());
+		ImGui::TextWrapped("%s", text.c_str());
 	}
 
 	void setCursorToCentered(float itemToCenterSize) {
