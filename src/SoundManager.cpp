@@ -49,10 +49,6 @@ void SoundManager::update()
 	auto volume = game->contextMananger()->getSoundVolume();
 	setVolume( volume);
 
-	//for (int x = 0; x < 32; x++) {
-	//	ImGui::Value("SoundChannel", Mix_Playing(x));
-	//}
-
 }
 
 
@@ -103,7 +99,7 @@ void SoundManager::loadSounds()
 		auto musicAssetResult = mobydick::ResourceManager::getMusic(musicAssetFile);
 		if (!musicAssetResult) {
 
-			SDL_Log(musicAssetResult.error().c_str());
+			SDL_Log("%s", musicAssetResult.error().c_str());
 			std::abort();
 
 		}
