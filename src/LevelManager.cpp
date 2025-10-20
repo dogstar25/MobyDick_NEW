@@ -44,7 +44,7 @@ LevelManager::LevelManager()
 	auto levelsJSONResult = mobydick::ResourceManager::getJSON("levels/levels.json");
 	if (!levelsJSONResult) {
 
-		SDL_Log(levelsJSONResult.error().c_str());
+		SDL_Log("%s", levelsJSONResult.error().c_str());
 		abort();
 	}
 
