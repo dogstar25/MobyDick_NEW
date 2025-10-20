@@ -80,7 +80,7 @@ void SoundManager::loadSounds()
 		auto soundAssetResult = mobydick::ResourceManager::getSound(soundAssetFile);
 		if (!soundAssetResult) {
 
-			SDL_Log(soundAssetResult.error().c_str());
+			SDL_Log("%s", soundAssetResult.error().c_str());
 			std::abort();
 
 		}
@@ -113,7 +113,6 @@ void SoundManager::stopChannel(int channel)
 {
 	Mix_SetDistance(channel, 0);
 	Mix_HaltChannel(channel);
-//	std::cout << "Sound Stopped " << std::endl;
 
 }
 
@@ -150,21 +149,6 @@ int SoundManager::playSound(std::string id, int distanceMagnitude, bool loops )
 	return channelPlayedOn;
 
 }
-
-
-//void SoundManager::playSound(std::string id, int channel, int distanceMagnitude, bool loops)
-//{
-//
-//	int loopFlag{};
-//	if (loops) {
-//		loopFlag = -1;
-//	}
-//
-//	Mix_SetDistance(channel, distanceMagnitude);
-//
-//	int channelPlayedOn = Mix_PlayChannel(channel, m_sfxChunks[id], loopFlag);
-//
-//}
 
 void SoundManager::playMusic(std::string id, int loopTimes)
 {
