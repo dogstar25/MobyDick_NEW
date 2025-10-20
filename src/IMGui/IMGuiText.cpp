@@ -39,7 +39,7 @@ glm::vec2 IMGuiText::render()
 	{
 		ImGui::SetWindowPos(ImVec2{ renderComponent->getRenderDestRect().x, renderComponent->getRenderDestRect().y });
 
-		ImGui::Text(m_staticTextValue.c_str());
+		ImGui::Text("%s", m_staticTextValue.c_str());
 
 		windowSize = { ImGui::GetWindowSize().x, ImGui::GetWindowSize().y };
 
