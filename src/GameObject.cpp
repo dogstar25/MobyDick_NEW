@@ -1384,7 +1384,7 @@ void GameObject::_imGuiDebugObject()
 		for (const auto& item : m_touchingGameObjects) {
 
 			if (item.second.lock()) {
-				ImGui::Text(item.second.lock()->type().c_str());
+				ImGui::TextUnformatted(item.second.lock()->type().c_str());
 			}
 		}
 
@@ -1409,7 +1409,7 @@ void GameObject::_imGuiDebugObject()
 		for (const auto& item : m_touchingGameObjects) {
 
 			if (item.second.lock()) {
-				ImGui::Text(item.second.lock()->type().c_str());
+				ImGui::TextUnformatted(item.second.lock()->type().c_str());
 			}
 		}
 
