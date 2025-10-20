@@ -86,7 +86,7 @@ void LevelManager::_loadDefinition(std::string levelId)
 	auto levelResult = mobydick::ResourceManager::getJSON(filename);
 	if (!levelResult) {
 
-		SDL_Log(levelResult.error().c_str());
+		SDL_Log("%s", levelResult.error().c_str());
 		abort();
 	}
 
