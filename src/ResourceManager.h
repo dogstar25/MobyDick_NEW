@@ -27,6 +27,8 @@ namespace mobydick {
 			static std::expected<Json::Value, std::string> getJSON(std::string);
 			static std::expected<std::string, std::string> getAssetsLocation();
 			static std::expected<ImFont*, std::string> loadImGuiTTFFont(ImGuiIO&, std::string, float);
+			static std::expected<Json::Value, std::string> getUserPathDataJSON(std::string);
+			static std::expected<Json::Value, std::string> saveUserPathDataJSON(Json::Value jsonData, std::string filename);
 
 		private:
 

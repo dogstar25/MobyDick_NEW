@@ -56,6 +56,7 @@
 #include "../src/QueryAABBHits.h"
 #include "../src/RayCastHits.h"
 #include "../src/GameStateManager.h"
+#include "../src/ResourceManager.h"
 #include "../src/actions/Action.h"
 #include "../src/actions/ActionFactory.h"
 #include "../src/actions/ActorWarpAction.h"

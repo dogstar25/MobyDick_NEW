@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <cstring>
+#include <string>
 #include <cstdlib> // getenv
 #include <system_error>
 #include <SDL.h>
@@ -283,7 +284,6 @@ namespace mobydick {
 
 
 #endif
-        ifs.close();
         return json;
     }
 
@@ -338,6 +338,99 @@ namespace mobydick {
 
 
         return fontObject;
+    }
+
+    std::expected<Json::Value, std::string> ResourceManager::getUserPathDataJSON(std::string filename)
+    {
+        //Make sure base directory has been set
+        if (m_basePath.empty()) {
+
+            auto result = init();
+            if (!result) {
+
+                return std::unexpected{ result.error() };
+            }
+        }
+
+        Json::Value jsonData;
+        std::string writableDirUtf8;
+
+        //std::filesystem::path fullFileName = std::filesystem::path(m_basePath) / std::filesystem::path("assets") / std::filesystem::path(filename);
+        if (char* prefPathCstr = SDL_GetPrefPath("com.sinbadgames", GAME_WORKING_DIR)) {
+            writableDirUtf8.assign(prefPathCstr);
+            SDL_free(prefPathCstr);
+        }
+        std::filesystem::path fullFileName = std::filesystem::path{ writableDirUtf8 } / filename;
+        std::filesystem::create_directories(fullFileName.parent_path());
+
+        // 1) Try to load existing JSON
+        {
+            std::ifstream input(fullFileName, std::ios::binary);
+            if (input) {
+                Json::CharReaderBuilder builder;
+                std::string errs;
+                if (Json::parseFromStream(builder, input, &jsonData, &errs)) {
+                    return jsonData;
+                }
+                // If parse fails, fall through to defaults
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "Settings parse failed (%s): %s",
+                    fullFileName.string().c_str(), errs.c_str());
+            }
+        }
+
+        // 2) Initialize defaults and save
+        Json::Value blankJson();
+        auto saveResult = saveUserPathDataJSON(jsonData, filename);
+        if (!saveResult) {
+
+            return std::unexpected(std::string("Could not read or initialize settings file") + fullFileName.string());
+        }
+
+        return jsonData;
+    }
+
+    std::expected<Json::Value, std::string> ResourceManager::saveUserPathDataJSON(Json::Value jsonData, std::string filename)
+    {
+        //Make sure base directory has been set
+        if (m_basePath.empty()) {
+
+            auto result = init();
+            if (!result) {
+
+                return std::unexpected{ result.error() };
+            }
+        }
+
+        Json::Value json;
+        std::string writableDirUtf8;
+
+        //std::filesystem::path fullFileName = std::filesystem::path(m_basePath) / std::filesystem::path("assets") / std::filesystem::path(filename);
+        if (char* prefPathCstr = SDL_GetPrefPath("com.sinbadgames", GAME_WORKING_DIR)) {
+            writableDirUtf8.assign(prefPathCstr);
+            SDL_free(prefPathCstr);
+        }
+        std::filesystem::path fullFileName = std::filesystem::path{ writableDirUtf8 } / filename;
+        std::filesystem::create_directories(fullFileName.parent_path());
+
+		std::ofstream outputStream(fullFileName, std::ios::binary | std::ios::trunc);
+		if (!outputStream) {
+			return std::unexpected(std::string("Could not open for write: ") + fullFileName.string());
+
+		}
+
+		Json::StreamWriterBuilder writerBuilder;
+		writerBuilder["indentation"] = "  ";  // compact; use "  " for pretty
+		std::unique_ptr<Json::StreamWriter> writer(writerBuilder.newStreamWriter());
+		writer->write(jsonData, &outputStream);
+		outputStream.flush();  // closes automatically at scope end
+
+		if (!outputStream) {
+			return std::unexpected(std::string("Write failed: ") + fullFileName.string());
+
+		}
+
+        return {};
     }
 
     bool ResourceManager::_ensureBaseDirSet()

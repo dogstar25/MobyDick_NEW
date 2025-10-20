@@ -49,7 +49,7 @@ struct UserSettings {
 };
 
 
-const std::string GAME_SETTINGS_FILENAME = "\\gameSettings.dat";
+const std::string GAME_SETTINGS_FILENAME = "gameSettings.dat";
 
 class ContextManager
 {
