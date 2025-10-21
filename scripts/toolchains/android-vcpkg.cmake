@@ -18,9 +18,27 @@ if(NOT DEFINED CMAKE_ANDROID_NDK OR NOT EXISTS "${CMAKE_ANDROID_NDK}")
 endif()
 file(TO_CMAKE_PATH "${CMAKE_ANDROID_NDK}" CMAKE_ANDROID_NDK)
 
-# >>> IMPORTANT: Make vcpkg see the same NDK (it looks at these) <<<
-set(ANDROID_NDK "${CMAKE_ANDROID_NDK}" CACHE PATH "Android NDK path" FORCE)
-set(ANDROID_NDK_HOME "${CMAKE_ANDROID_NDK}" CACHE PATH "Android NDK home" FORCE)
+# 2b) Make current configure AND vcpkg's child configures see the NDK
+set(ANDROID_NDK       "${CMAKE_ANDROID_NDK}" CACHE PATH "Android NDK path" FORCE)
+set(ANDROID_NDK_HOME  "${CMAKE_ANDROID_NDK}" CACHE PATH "Android NDK home" FORCE)
+set(ANDROID_NDK_ROOT  "${CMAKE_ANDROID_NDK}" CACHE PATH "Android NDK root" FORCE)
+# Export to env so child processes inherit
+set(ENV{ANDROID_NDK}       "${CMAKE_ANDROID_NDK}")
+set(ENV{ANDROID_NDK_HOME}  "${CMAKE_ANDROID_NDK}")
+set(ENV{ANDROID_NDK_ROOT}  "${CMAKE_ANDROID_NDK}")
+
+# 2c) Tell vcpkg to KEEP these env vars when it cleans the environment  <<<< NEW
+set(VCPKG_KEEP_ENV_VARS "ANDROID_NDK;ANDROID_NDK_HOME;ANDROID_NDK_ROOT" CACHE STRING "" FORCE)
+# (Older vcpkg used this name; harmless to set both)
+set(VCPKG_ENV_PASSTHROUGH "ANDROID_NDK;ANDROID_NDK_HOME;ANDROID_NDK_ROOT" CACHE STRING "" FORCE)
+
+# Also predefine ABI/platform so detect_compiler doesn’t guess
+if(NOT DEFINED ANDROID_ABI)
+  set(ANDROID_ABI "arm64-v8a" CACHE STRING "" FORCE)
+endif()
+if(NOT DEFINED ANDROID_PLATFORM)
+  set(ANDROID_PLATFORM "android-24" CACHE STRING "" FORCE)
+endif()
 
 # 3) Chain-load the official Android toolchain
 set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE
@@ -35,7 +53,7 @@ if(NOT DEFINED VCPKG_TARGET_TRIPLET)
 endif()
 set(VCPKG_FEATURE_FLAGS "manifests")
 
-# 5) Include vcpkg buildsystem
+# 5) Include vcpkg buildsystem (triggers detect_compiler)
 include("${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
 # 6) Diagnostics
