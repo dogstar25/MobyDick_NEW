@@ -70,7 +70,6 @@ namespace util
 	float calculateDistance(SDL_FPoint location1, SDL_FPoint location2);
 	float calculateDistance(SDL_Point location1, SDL_Point location2);
 	float calculateDistance(glm::vec2 location1, glm::vec2 location2);
-	bool fileExists(const std::string& filename);
 	void colorApplyAlpha(SDL_Color& color, int alpha);
 	void colorApplyAlpha(ImVec4& color, int alpha);
 	SDL_FPoint tileToPixelLocation(float tileX, float tileY);
