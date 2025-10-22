@@ -8,24 +8,18 @@
 #include <SDL.h>
 
 #include "game.h"
+#include <source_location>
 
-#if defined(__ANDROID__)
-
-#include <SDL.h>
 #include <SDL_system.h>
-#include <android/asset_manager.h>
-
-#elif defined(_WIN32)
 
 #define NOMINMAX
-#include <windows.h>
-#include <shlobj.h>
 #include <SDL_image.h>
 #include <format>
 
-#endif
 
 extern std::unique_ptr<Game> game;
+
+
 
 namespace mobydick {
 
@@ -34,39 +28,28 @@ namespace mobydick {
     // Initialize the Base working directory of the game
     //
     ///////////////////////////////////////////////////////
-    std::expected<void, std::string> ResourceManager::init()
+    void ResourceManager::init()
     {
-
-#ifndef GAME_WORKING_DIR
-
-        return std::unexpected("GAME_WORKING_DIR is not defined in CMKAE project file!");
-
-#endif 
 
         // Try automatically walking upward until "assets" is found
         char* basePathPtr = SDL_GetBasePath();
         std::string basePath = basePathPtr;
         free(basePathPtr);
 
-        std::filesystem::path pathCheck = basePath;
+#if defined(_WIN32)
 
-        for (int i = 0; i < 5; ++i) // climb up to 5 levels max
-        {
-            std::filesystem::path testPath = pathCheck / GAME_WORKING_DIR / std::filesystem::path("assets");
+        m_basePath = basePath + "assets/";
 
-            if (std::filesystem::exists(testPath))
-            {
-                //We found the gameTitle/assets directory, now remove the assets directory part for our working directory
-                m_basePath = testPath.parent_path().string() + "/";
-                SDL_Log("[Init] Base working directory is: %s", m_basePath.c_str());
-                return{};
-            }
+#elif defined (__ANDROID__)
 
-            pathCheck = pathCheck.parent_path();
+        m_basePath = basePath;
 
-        }
+#elif defined (__APPLE__)
 
-        return std::unexpected("[Init] Warning: could not locate assets folder near %s" + basePath);
+        m_basePath = basePath + "Resources/assets/";
+
+#endif
+
     }
 
     ////////////////////////////////////////////////////////
@@ -79,50 +62,25 @@ namespace mobydick {
 
         std::shared_ptr<SDLTexture> texture = std::make_shared<SDLTexture>();
 
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
+        std::string fullTextureFileName = m_basePath + textureFileName;
 
-            auto result = init();
-            if(!result){
+        SDL_RWops* textureFile = SDL_RWFromFile(fullTextureFileName.c_str(), "rb");
+        if (!textureFile) {
 
-                return std::unexpected(result.error());
-            }
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
         }
 
-#if defined(_WIN32)
-
-        std::filesystem::path fullTextureFileName = std::filesystem::path(m_basePath) / "assets" / textureFileName;
-        std::string fullTextureFileNameStr = fullTextureFileName.string();
-        texture->surface = IMG_Load(fullTextureFileNameStr.c_str());
+        texture->surface = IMG_Load_RW(textureFile, 1);
         if (!texture->surface) {
-            std::string errorMsg = std::format("getTexture: IMG_Load failed on loading {}", fullTextureFileNameStr);
-            return std::unexpected(errorMsg);
+
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
         }
+
         texture->sdlTexture = SDL_CreateTextureFromSurface(game->renderer()->sdlRenderer(), texture->surface);
-
-#elif defined (__ANDROID__)
-
-        AAssetManager* mgr = SDL_AndroidGetAssetManager();
-        if (!asset) {
-            SDL_Log("AAsset open failed: %s", textureFileName.c_str());
-            return nullptr;
-        }
-
-        AAsset* asset = AAssetManager_open(mgr, textureFileName.c_str(), AASSET_MODE_BUFFER);
-        const void* buf = AAsset_getBuffer(asset);
-        const size_t len = static_cast<size_t>(AAsset_getLength(asset));
-        if (!buf || !len) {
-            SDL_Log("Empty asset: %s", textureFileName.c_str());
-            AAsset_close(asset);
-            return nullptr;
-        }
-
-        SDL_RWops* rw = SDL_RWFromConstMem(buf, static_cast<int>(len));
-        texture->surface = IMG_Load_RW(rw, 1);
-        texture->sdlTexture = SDL_CreateTextureFromSurface(game->renderer()->sdlRenderer(), texture->surface);
-        AAsset_close(asset);
-        
-#endif
 
         return texture;
 
@@ -133,45 +91,29 @@ namespace mobydick {
     // Return the requested TFFFont pointer
     //
     ///////////////////////////////////////////////////////
-    std::expected<TTF_Font*, std::string> ResourceManager::getTTFFont(std::string fontFileName)
+    std::expected<TTF_Font*, std::string> ResourceManager::getTTFFont(std::string fontFileName, int ptSize)
     {
         //The return object
         TTF_Font* fontObject;
 
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
+        std::string fullTTFFileName = m_basePath + fontFileName;
 
-            auto result = init();
-            if (!result) {
+        SDL_RWops* fontFile = SDL_RWFromFile(fullTTFFileName.c_str(), "rb");
+        if (!fontFile) {
 
-                return std::unexpected(result.error());
-            }
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
         }
 
-#if defined(_WIN32)
+        fontObject = TTF_OpenFontRW(fontFile, 1, ptSize);
+        if (!fontObject) {
 
-        std::filesystem::path fullTTFFileName = std::filesystem::path(m_basePath) / "assets" / fontFileName;
-        std::string fullTextureFileNameStr = fullTTFFileName.string();
-
-        fontObject = TTF_OpenFont(fullTextureFileNameStr.c_str(), 32);
-        if (fontObject) {
-
-            return fontObject;
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
         }
-        else {
-
-            return std::unexpected("Could not open TTF file " + fullTextureFileNameStr);
-        }
-
-        
-
-#elif defined (__ANDROID__)
-
-#endif
-
 
         return fontObject;
-
 
     }
 
@@ -183,35 +125,24 @@ namespace mobydick {
     std::expected<Mix_Chunk*, std::string> ResourceManager::getSound(std::string soundFilename)
     {
 
-        //The return object
-
         Mix_Chunk* mixChunk;
 
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
+        std::string fullSoundFilename = m_basePath + soundFilename;
 
-            auto result = init();
-            if (!result) {
+        SDL_RWops* soundFile = SDL_RWFromFile(fullSoundFilename.c_str(), "rb");
+        if (!soundFile) {
 
-                return std::unexpected(result.error());
-            }
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
         }
 
-#if defined(_WIN32)
-
-        std::filesystem::path fullSoundFilename = std::filesystem::path(m_basePath) / "assets" / soundFilename;
-        std::string fullSoundFilenameStr = fullSoundFilename.string();
-
-        mixChunk = Mix_LoadWAV(fullSoundFilenameStr.c_str());
+        mixChunk = Mix_LoadWAV_RW(soundFile, 1);
         if (!mixChunk) {
 
-            return std::unexpected("Could not open sound file " + fullSoundFilenameStr);
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
         }
-
-
-#elif defined (__ANDROID__)
-
-#endif
 
         return mixChunk;
 
@@ -223,143 +154,132 @@ namespace mobydick {
 
         Mix_Music* mixMusic;
 
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
+        std::string fullMusicFilename = m_basePath + musicFilename;
 
-            auto result = init();
-            if (!result) {
+        SDL_RWops* musicFile = SDL_RWFromFile(fullMusicFilename.c_str(), "rb");
+        if (!musicFile) {
 
-                return std::unexpected(result.error());
-            }
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
         }
 
-#if defined(_WIN32)
-
-        std::filesystem::path fullMusicFilename = std::filesystem::path(m_basePath) / "assets" / musicFilename;
-        std::string fullMusicFilenameStr = fullMusicFilename.string();
-
-        mixMusic = Mix_LoadMUS(fullMusicFilenameStr.c_str());
+        mixMusic = Mix_LoadMUS_RW(musicFile, 1);
         if (!mixMusic) {
 
-            return std::unexpected("Could not open music file " + fullMusicFilenameStr);
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
         }
 
-#elif defined (__ANDROID__)
-
-#endif
-
         return mixMusic;
-
-
     }
 
     std::expected<Json::Value, std::string> ResourceManager::getJSON(std::string filename)
     {
 
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
+        Json::Value jsonData;
 
-            auto result = init();
-            if (!result) {
+        std::string fullFileName = m_basePath + filename;
 
-                return std::unexpected{result.error()};
-            }
+        SDL_RWops* jsonFile = SDL_RWFromFile(fullFileName.c_str(), "rb");
+        if (!jsonFile) {
+
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
         }
 
-        Json::Value json;
+        size_t sz = 0;
+        void* mem = SDL_LoadFile_RW(jsonFile, &sz, 1);
+        if (!mem) {
 
-#if defined(_WIN32)
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
 
-        std::filesystem::path fullFileName = std::filesystem::path(m_basePath) / std::filesystem::path("assets") / std::filesystem::path(filename);
-        std::ifstream ifs(fullFileName);
-        if (ifs) {
-            ifs >> json;
-        }
-        else {
-            return std::unexpected(std::string("Could not read file") + fullFileName.string() );
         }
 
+        std::string jsonString(static_cast<char*>(mem), sz); // NUL-terminated by SDL_LoadFile_RW
+        SDL_free(mem);
 
-#elif defined (__ANDROID__)
+        Json::CharReaderBuilder builder;
+        builder["collectComments"] = false;
+        std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
+        std::string errs;
+        const char* begin = jsonString.data();
+        const char* end = begin + jsonString.size();
 
-#endif
-        return json;
+        if (!reader->parse(begin, end, &jsonData, &errs)) {
+
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), errs.c_str());
+            return std::unexpected("ResourceManager Error");
+
+        }
+
+        return jsonData;
+
     }
 
 
-    std::expected<std::string, std::string> ResourceManager::getAssetsLocation()
-    {
-
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
-
-            auto result = init();
-            if (!result) {
-
-                return std::unexpected{ result.error() };
-            }
-        }
-
-        std::filesystem::path assetsPath = std::filesystem::path(m_basePath) / std::filesystem::path("assets") ;
-
-        return assetsPath.string();
-
-    }
-
-    std::expected<ImFont*, std::string> ResourceManager::loadImGuiTTFFont(ImGuiIO& imgui_io, std::string fontFileName, float size)
+    std::expected<ImFont*, std::string> ResourceManager::loadImGuiTTFFont(ImGuiIO& imgui_io, std::string fontFileName, float ptSize)
     {
 
         //The return object
         ImFont* fontObject;
 
-        //Make sure base directory has been set
-        if (!_ensureBaseDirSet())
+
+        std::string fullFileName = m_basePath + fontFileName;
+
+        SDL_RWops* fontFile = SDL_RWFromFile(fullFileName.c_str(), "rb");
+        if (!fontFile) {
+
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
+        }
+
+        size_t sz = 0;
+        void* data = SDL_LoadFile_RW(fontFile, &sz, 1);
+        if (!data) {
+
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+            return std::unexpected("ResourceManager Error");
+
+        }
+
+        ImGuiIO& io = ImGui::GetIO();
+        ImFontConfig cfg;
+        cfg.FontDataOwnedByAtlas = true; // ImGui will free() 'data' when the atlas is destroyed
+
+        // Use default glyph range if none provided
+        const ImWchar* glyph_ranges = io.Fonts->GetGlyphRangesDefault();
+
+        fontObject = io.Fonts->AddFontFromMemoryTTF(data, (int)sz, ptSize, &cfg, glyph_ranges);
+        if (!fontObject)
         {
-            return std::unexpected("eeor");
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), "AddFontFromMemoryTTF failed");
+            return std::unexpected("ResourceManager Error");
+
         }
-
-#if defined(_WIN32)
-
-        std::filesystem::path fullTTFFileName = std::filesystem::path(m_basePath) / "assets" / fontFileName;
-        std::string fullTextureFileNameStr = fullTTFFileName.string();
-
-        fontObject = imgui_io.Fonts->AddFontFromFileTTF(fullTextureFileNameStr.c_str(), size);
-        if (!fontObject) {
-
-            return std::unexpected("Could not load IMGUI TTF file " + fullTextureFileNameStr);
-        }
-
-
-
-#elif defined (__ANDROID__)
-
-#endif
-
 
         return fontObject;
     }
 
     std::expected<Json::Value, std::string> ResourceManager::getUserPathDataJSON(std::string filename)
     {
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
-
-            auto result = init();
-            if (!result) {
-
-                return std::unexpected{ result.error() };
-            }
-        }
 
         Json::Value jsonData;
         std::string writableDirUtf8;
 
-        //std::filesystem::path fullFileName = std::filesystem::path(m_basePath) / std::filesystem::path("assets") / std::filesystem::path(filename);
-        if (char* prefPathCstr = SDL_GetPrefPath("com.sinbadgames", GAME_WORKING_DIR)) {
-            writableDirUtf8.assign(prefPathCstr);
-            SDL_free(prefPathCstr);
+        char* prefPathCstr = SDL_GetPrefPath(GameConfig::instance().installGameOrg().c_str(), GameConfig::instance().installGameName().c_str());
+        if (!prefPathCstr) {
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), "AddFontFromMemoryTTF failed");
+            return std::unexpected("ResourceManager Error");
         }
+
+        writableDirUtf8.assign(prefPathCstr);
+        SDL_free(prefPathCstr);
+
         std::filesystem::path fullFileName = std::filesystem::path{ writableDirUtf8 } / filename;
         std::filesystem::create_directories(fullFileName.parent_path());
 
@@ -390,26 +310,21 @@ namespace mobydick {
         return jsonData;
     }
 
-    std::expected<Json::Value, std::string> ResourceManager::saveUserPathDataJSON(Json::Value jsonData, std::string filename)
+    std::expected<void, std::string> ResourceManager::saveUserPathDataJSON(Json::Value jsonData, std::string filename)
     {
-        //Make sure base directory has been set
-        if (m_basePath.empty()) {
-
-            auto result = init();
-            if (!result) {
-
-                return std::unexpected{ result.error() };
-            }
-        }
 
         Json::Value json;
         std::string writableDirUtf8;
 
-        //std::filesystem::path fullFileName = std::filesystem::path(m_basePath) / std::filesystem::path("assets") / std::filesystem::path(filename);
-        if (char* prefPathCstr = SDL_GetPrefPath("com.sinbadgames", GAME_WORKING_DIR)) {
-            writableDirUtf8.assign(prefPathCstr);
-            SDL_free(prefPathCstr);
+        char* prefPathCstr = SDL_GetPrefPath(GameConfig::instance().installGameOrg().c_str(), GameConfig::instance().installGameName().c_str());
+        if (!prefPathCstr) {
+            SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), "AddFontFromMemoryTTF failed");
+            return std::unexpected("ResourceManager Error");
         }
+
+        writableDirUtf8.assign(prefPathCstr);
+        SDL_free(prefPathCstr);
+
         std::filesystem::path fullFileName = std::filesystem::path{ writableDirUtf8 } / filename;
         std::filesystem::create_directories(fullFileName.parent_path());
 
@@ -439,14 +354,10 @@ namespace mobydick {
         //Make sure base directory has been set
         if (m_basePath.empty()) {
 
-            auto result = init();
-            if (!result) {
-
-                return false;
-            }
+            init();
         }
 
         return true;
     }
 
-} // namespace md
+}

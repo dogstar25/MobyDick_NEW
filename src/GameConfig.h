@@ -60,6 +60,14 @@ public:
 	bool debugGrid() {
 		return m_debugGrid;
 	}
+	std::string installGameOrg() {
+		return m_installGameOrg;
+	}
+
+	std::string installGameName() {
+		return m_installGameName;
+	}
+
 
 private:
 	GameConfig();
@@ -77,6 +85,8 @@ private:
 	SDL_Point m_debugPanelLocation{};
 	int	m_debugPanelFontSize{};
 	int m_soundChannels{};
+	std::string m_installGameOrg{"com.sinbadgames"};
+	std::string m_installGameName{ "GameName" };
 
 	std::string m_gameTitle;
 	float m_scaleFactor{};

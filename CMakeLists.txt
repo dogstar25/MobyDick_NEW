@@ -101,7 +101,7 @@ elseif(IOS)
 endif()
 
 # -------define the assets directory
-target_compile_definitions(MobyDick PUBLIC GAME_WORKING_DIR=\"${GAME_WORKING_DIR}\")
+#target_compile_definitions(MobyDick PUBLIC GAME_WORKING_DIR=\"${GAME_WORKING_DIR}\")
 
 
 # --- Output Info ---

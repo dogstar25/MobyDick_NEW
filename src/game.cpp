@@ -220,7 +220,7 @@ void Game::_displayLoadingMsg()
 	//Assume nothing has been initialzed yet except for the renderer so build and render a text item in
 	//a very crude and manual way
 	m_renderer->clear();
-	auto ttfFontResult = mobydick::ResourceManager::getTTFFont("fonts/arial.ttf");
+	auto ttfFontResult = mobydick::ResourceManager::getTTFFont("fonts/arial.ttf", 32);
 	if (!ttfFontResult) {
 
 		SDL_Log("Could not open TTF file");

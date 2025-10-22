@@ -20,16 +20,16 @@ namespace mobydick {
 	class ResourceManager {
 		public:
 
-			static std::expected<void, std::string> init();
+			static void init();
 			static std::expected<std::shared_ptr<SDLTexture>, std::string> getTexture(std::string);
-			static std::expected<TTF_Font*, std::string> getTTFFont(std::string);
+			static std::expected<TTF_Font*, std::string> getTTFFont(std::string, int ptSize);
 			static std::expected<Mix_Chunk*, std::string> getSound(std::string);
 			static std::expected<Mix_Music*, std::string> getMusic(std::string);
 			static std::expected<Json::Value, std::string> getJSON(std::string);
 			static std::expected<std::string, std::string> getAssetsLocation();
 			static std::expected<ImFont*, std::string> loadImGuiTTFFont(ImGuiIO&, std::string, float);
 			static std::expected<Json::Value, std::string> getUserPathDataJSON(std::string);
-			static std::expected<Json::Value, std::string> saveUserPathDataJSON(Json::Value jsonData, std::string filename);
+			static std::expected<void, std::string> saveUserPathDataJSON(Json::Value jsonData, std::string filename);
 
 		private:
 

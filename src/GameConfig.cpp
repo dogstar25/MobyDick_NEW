@@ -44,6 +44,8 @@ std::expected<void , std::string> GameConfig::init(std::string configFile)
 	m_scaleFactor = configJSON["physics"]["box2dScale"].asFloat();
 	m_rendererType = static_cast<RendererType>(game->enumMap()->toEnum(configJSON["rendererType"].asString()));
 	m_openGLBatching = configJSON["openGLBatching"].asBool();
+	m_installGameOrg = configJSON["gameInstallOrg"].asString();
+	m_installGameName = configJSON["gameInstallName"].asString();
 
 	m_debugGrid = configJSON["debugGrid"].asBool();
 
