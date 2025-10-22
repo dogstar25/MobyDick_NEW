@@ -219,10 +219,10 @@ std::optional<SceneAction> SceneManager::pollEvents()
 
 					//Get the keyboard state array and copy it to our save spot - memcpy!!!
 					keyStates = SDL_GetKeyboardState(&keyStateCount);
-					memcpy_s(playerInputEvent.keyStates,
-						SDL_NUM_SCANCODES * sizeof(unsigned char),
+					std::memcpy(playerInputEvent.keyStates,
 						keyStates,
-						keyStateCount * sizeof(unsigned char));
+						sizeof playerInputEvent.keyStates);
+
 				}
 
 				break;
