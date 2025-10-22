@@ -434,7 +434,7 @@ namespace util
 
 					auto componentResult = getModelComponent(componentId, origComponentId);
 					if (!componentResult) {
-						SDL_Log(componentResult.error().c_str());
+						SDL_Log("%s", componentResult.error().c_str());
 						abort();
 					}
 
