@@ -1,8 +1,9 @@
 #include "StateComponent.h"
 #include "../SceneManager.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 StateComponent::StateComponent(Json::Value componentJSON, GameObject* parent) :
 	Component(ComponentTypes::STATE_COMPONENT, parent)

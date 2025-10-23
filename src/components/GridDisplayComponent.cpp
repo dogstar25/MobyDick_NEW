@@ -3,8 +3,9 @@
 #include "../GameObject.h"
 #include "../game.h"
 #include "../EnumMap.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 //GridDisplayComponent::GridDisplayComponent() :
 //	Component(ComponentTypes::GRID_DISPLAY_COMPONENT)

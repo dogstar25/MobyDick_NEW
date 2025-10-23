@@ -3,8 +3,9 @@
 #include "../TextureManager.h"
 #include "../game.h"
 #include <SDL2/SDL.h>
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 glm::vec2 IMGuiExample::render()
 {

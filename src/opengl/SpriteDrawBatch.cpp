@@ -1,8 +1,9 @@
 #include "SpriteDrawBatch.h"
 
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 SpriteDrawBatch::SpriteDrawBatch(GLDrawerType objectType, Texture* texture, GLShaderType shaderType, RenderBlendMode textureBlendMode)
 {

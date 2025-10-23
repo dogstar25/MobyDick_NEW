@@ -7,9 +7,10 @@
 #include "../game.h"
 #include "../BaseConstants.h"
 #include "../TextureManager.h"
+#include "../include/GameGlobals.h"
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 RenderComponent::RenderComponent(Json::Value componentJSON, GameObject* parent):
 	Component(ComponentTypes::RENDER_COMPONENT, parent)

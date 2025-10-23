@@ -1,8 +1,6 @@
 #include "CloseInventoryAction.h"
+#include "../components/InventoryComponent.h"
 #include <memory>
-#include "../game.h"
-
-extern std::unique_ptr<Game> game;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // gameObject is the object that has the inventory to be hidden

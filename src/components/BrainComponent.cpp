@@ -4,11 +4,12 @@
 #include "../QueryAABBHits.h"
 #include "../RayCastHits.h"
 #include "../EnumMap.h"
+#include "../include/GameGlobals.h"
 
 #include <algorithm>
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 //BrainComponent::BrainComponent() :
 //	Component(ComponentTypes::BRAIN_COMPONENT)

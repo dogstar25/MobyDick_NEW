@@ -3,8 +3,9 @@
 #include "../game.h"
 #include <thread>
 #include <glm/glm.hpp>
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 NavigationComponent::~NavigationComponent()
 {

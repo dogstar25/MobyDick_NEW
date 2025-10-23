@@ -2,12 +2,13 @@
 
 #include "../TextureManager.h"
 #include "RenderComponent.h"
+#include "../include/GameGlobals.h"
 #include "../game.h"
 
 
 #include "../EnumMap.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 AnimationComponent::AnimationComponent(Json::Value componentJSON, GameObject* parent) :
 	Component(ComponentTypes::ANIMATION_COMPONENT, parent)

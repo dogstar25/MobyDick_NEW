@@ -3,9 +3,9 @@
 
 #include "../EnumMap.h"
 #include "../Game.h"
+#include "../include/GameGlobals.h"
 
-
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 PhysicsComponent::PhysicsComponent(Json::Value definitionJSON, GameObject* parent, Scene* parentScene, float xMapPos, float yMapPos, 
 	float angleAdjust,	b2Vec2 sizeOverride) :

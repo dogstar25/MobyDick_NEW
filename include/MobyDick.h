@@ -30,6 +30,8 @@
 #include "imgui_impl_sdlrenderer.h"
 
 //MobyDick
+#include "../include/GameGlobals.h"
+
 #include "../src/BaseConstants.h"
 #include "../src/Blueprint.h"
 #include "../src/Camera.h"
@@ -134,4 +136,5 @@
 #include "../src/NavigationManager.h"
 #include "../src/Timer.h"
 #include "../src/Util.h"
+
 

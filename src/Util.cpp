@@ -9,12 +9,13 @@
 #include <iostream>
 #include "Scene.h"
 #include "Game.h"
+#include "../include/GameGlobals.h"
 #include "RayCastHits.h"
 #include "ResourceManager.h"
 
 #define NOMINMAX 10000000 // need this so that the compiler doesnt find the min and max in the windows include
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 
 namespace util

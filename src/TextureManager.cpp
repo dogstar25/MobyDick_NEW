@@ -5,8 +5,9 @@
 
 #include "ResourceManager.h"
 #include "game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 TextureManager::TextureManager()
 {

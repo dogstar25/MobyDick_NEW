@@ -8,9 +8,10 @@
 #include <iostream>
 #include <print>
 #include "ResourceManager.h"
+#include "../include/GameGlobals.h"
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 GameConfig::GameConfig()
 {

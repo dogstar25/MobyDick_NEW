@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-#include "game.h"
+//#include "game.h"
 #include "gameConfig.h"
 #include "IMGui/IMGuiUtil.h"
 #include "TextureManager.h"
@@ -11,10 +11,10 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdlrenderer.h"
+#include "../include/GameGlobals.h"
 
 
-
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 SceneManager::~SceneManager()
 {

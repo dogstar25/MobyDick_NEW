@@ -5,8 +5,9 @@
 #include "../SceneManager.h"
 #include "../EnumMap.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 //PlayerControlComponent::PlayerControlComponent() :
 //	Component(ComponentTypes::PLAYER_CONTROL_COMPONENT)

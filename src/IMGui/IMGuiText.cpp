@@ -3,13 +3,14 @@
 #include "../SoundManager.h"
 #include "../TextureManager.h"
 #include "../Scene.h"
-#include "../game.h"
+//#include "../game.h"
 #include <SDL2/SDL.h>
 #include "IMGuiUtil.h"
+#include "../include/GameGlobals.h"
 
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 
 IMGuiText::IMGuiText(std::string gameObjectType, b2Vec2 padding, ImVec4 backgroundColor, ImVec4 textColor, ImVec4 buttonColor, ImVec4 buttonHoverColor, ImVec4 buttonActiveColor, bool autoSize, std::string staticTextValue):

@@ -1,7 +1,12 @@
 #include "Box2DDebugDraw.h"
+#include "../include/GameGlobals.h"
+#include <SDL.h>
+#include <vector>
+#include "GameConfig.h"
+#include "Camera.h"
 #include "game.h"
 
-extern std::unique_ptr<Game> game;
+
 
 Box2DDebugDrawAdapter::Box2DDebugDrawAdapter()
 {

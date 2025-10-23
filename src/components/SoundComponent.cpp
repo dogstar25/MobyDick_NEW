@@ -6,9 +6,10 @@
 
 #include "../EnumMap.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 SoundComponent::SoundComponent(Json::Value componentJSON, GameObject* parent) :
 	Component(ComponentTypes::SOUND_COMPONENT, parent)

@@ -1,10 +1,11 @@
 #include "ChildrenComponent.h"
 #include "../EnumMap.h"
 #include "../GameObject.h"
+#include "../include/GameGlobals.h"
 #include "../game.h"
 #include "../EnumMap.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :
 	Component(ComponentTypes::CHILDREN_COMPONENT, parent)

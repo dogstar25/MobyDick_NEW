@@ -1,7 +1,8 @@
 #include "TransformComponent.h"
 #include "../Game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 //TransformComponent::TransformComponent() :
 //	Component(ComponentTypes::TRANSFORM_COMPONENT)

@@ -1,8 +1,10 @@
 #include "TakeItemAction.h"
 #include <memory>
+#include "../include/GameGlobals.h"
 #include "../game.h"
 
-extern std::unique_ptr<Game> game;
+
+//extern std::unique_ptr<Game> game;
 
 void TakeItemAction::perform()
 {

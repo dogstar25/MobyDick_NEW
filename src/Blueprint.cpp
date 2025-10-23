@@ -4,9 +4,10 @@
 #include "TextureManager.h"
 #include <fstream>
 
+#include "../include/GameGlobals.h"
 #include "game.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 Blueprint::Blueprint(std::string blueprintName)
 {

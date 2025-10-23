@@ -13,9 +13,10 @@
 #include "components/LightedTreatmentComponent.h"
 #include "components/MaskedOverlayComponent.h"
 #include "components/InventoryComponent.h"
+#include "../include/GameGlobals.h"
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 struct OverlapCtx {
 	b2BodyId selfBody;

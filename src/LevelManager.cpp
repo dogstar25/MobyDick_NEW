@@ -11,9 +11,9 @@
 #include "SoundManager.h"
 #include "components/PhysicsComponent.h"
 #include "ResourceManager.h"
+#include "../include/GameGlobals.h"
 
-
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 static const unsigned char wallOnLeft = 0b0001;
 static const unsigned char wallOnRight = 0b0010;

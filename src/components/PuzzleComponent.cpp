@@ -1,7 +1,8 @@
 #include "PuzzleComponent.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 PuzzleComponent::PuzzleComponent(Json::Value componentJSON, GameObject* parent) :
 	Component(ComponentTypes::PUZZLE_COMPONENT, parent)

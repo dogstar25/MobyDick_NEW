@@ -15,9 +15,9 @@
 #define NOMINMAX
 #include <SDL_image.h>
 #include <format>
+#include "../include/GameGlobals.h"
 
-
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 
 

@@ -3,10 +3,11 @@
 #include "../RayCastHits.h"
 
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
 #include <algorithm>
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 
 LightedTreatmentComponent::LightedTreatmentComponent(Json::Value componentJSON, GameObject* parent) :
