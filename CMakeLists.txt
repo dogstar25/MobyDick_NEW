@@ -56,8 +56,19 @@ find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 
-if (ANDROID)
-    find_package(unofficial-iconv CONFIG REQUIRED)
+# --- Iconv on Android (vcpkg) ---
+if(ANDROID)
+  find_package(unofficial-iconv CONFIG QUIET)
+  if (TARGET unofficial-iconv::libiconv)
+    set(ICONV_TARGET unofficial-iconv::libiconv)
+  else()
+    find_package(Iconv QUIET)  # alternate export name
+    if (TARGET Iconv::Iconv)
+      set(ICONV_TARGET Iconv::Iconv)
+    else()
+      message(FATAL_ERROR "Iconv not found. Ensure 'libiconv' is in vcpkg.json and installed for arm64-android.")
+    endif()
+  endif()
 endif()
 
 # --- Link MobyDick cleanly per-platform ---
@@ -90,7 +101,7 @@ elseif (ANDROID)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
-            unofficial-iconv::libiconv
+            ${ICONV_TARGET}
     )
 else()
     message(FATAL_ERROR "Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
