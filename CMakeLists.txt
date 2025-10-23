@@ -56,6 +56,10 @@ find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 
+if(ANDROID)
+  find_package(unofficial-iconv CONFIG REQUIRED)  # <-- add this
+endif()
+
 # --- Link MobyDick cleanly per-platform ---
 if (WIN32)
     target_link_libraries(MobyDick PUBLIC
@@ -73,18 +77,6 @@ if (WIN32)
     )
 elseif (ANDROID)
 
-
-    # before target_link_libraries()
-    set(_trip "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
-    set(_iconv_dbg "${_trip}/debug/lib/libiconv.a")
-    set(_iconv_rel "${_trip}/lib/libiconv.a")
-    if(EXISTS "${_trip}/debug/lib/libcharset.a")
-      set(_charset_dbg "${_trip}/debug/lib/libcharset.a")
-    endif()
-    if(EXISTS "${_trip}/lib/libcharset.a")
-      set(_charset_rel "${_trip}/lib/libcharset.a")
-    endif()
-
     # Your arm64-android triplet exports only the -static satellites:
     #   SDL2_image::SDL2_image-static, SDL2_mixer::SDL2_mixer-static, SDL2_ttf::SDL2_ttf-static
     # SDL2main is not used on Android.
@@ -99,10 +91,7 @@ elseif (ANDROID)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
-            $<$<CONFIG:Debug>:${_iconv_dbg}>
-            $<$<NOT:$<CONFIG:Debug>>:${_iconv_rel}>
-            $<$<CONFIG:Debug>:${_charset_dbg}>
-            $<$<NOT:$<CONFIG:Debug>>:${_charset_rel}>
+            unofficial-iconv::libiconv
     )
 
 else()
