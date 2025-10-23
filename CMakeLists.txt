@@ -58,16 +58,10 @@ find_package(jsoncpp CONFIG REQUIRED)
 
 # --- Iconv on Android (vcpkg) ---
 if(ANDROID)
-  find_package(unofficial-iconv CONFIG QUIET)
-  if (TARGET unofficial-iconv::libiconv)
-    set(ICONV_TARGET unofficial-iconv::libiconv)
-  else()
-    find_package(Iconv QUIET)  # alternate export name
-    if (TARGET Iconv::Iconv)
-      set(ICONV_TARGET Iconv::Iconv)
-    else()
-      message(FATAL_ERROR "Iconv not found. Ensure 'libiconv' is in vcpkg.json and installed for arm64-android.")
-    endif()
+  # Try config mode first; fall back to CMake’s FindIconv if needed
+  find_package(Iconv CONFIG QUIET)
+  if(NOT TARGET Iconv::Iconv)
+    find_package(Iconv REQUIRED)  # module mode
   endif()
 endif()
 
@@ -101,7 +95,7 @@ elseif (ANDROID)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
-            ${ICONV_TARGET}
+            Iconv::Iconv
     )
 else()
     message(FATAL_ERROR "Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
