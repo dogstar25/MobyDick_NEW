@@ -2,33 +2,33 @@
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "mobydick",
   "version": "1.0.0",
-  "dependencies": [
-    "sdl2",
-    "sdl2-image",
-    "sdl2-mixer",
-    "sdl2-ttf",
-    "libiconv",
-    "box2d",
-    "enkits",
-    "jsoncpp",
-    {
-      "name": "imgui",
-      "default-features": true,
-      "features": [
-        "opengl3-binding",
-        "sdl2-binding",
-        "sdl2-renderer-binding"
-      ]
-    },
-    "glm",
-    {
-      "name": "glad",
-      "default-features": true,
-      "features": [
-        "loader"
-      ]
-    }
-  ],
+    "dependencies": [
+        "sdl2",
+        "sdl2-image",
+        "sdl2-mixer",
+        "sdl2-ttf",
+        "box2d",
+        "enkits",
+        "jsoncpp",
+        "libiconv",
+        {
+            "name": "imgui",
+            "default-features": true,
+            "features": [
+                "opengl3-binding",
+                "sdl2-binding",
+                "sdl2-renderer-binding"
+            ]
+        },
+        "glm",
+        {
+            "name": "glad",
+            "default-features": true,
+            "features": [
+                "loader"
+            ]
+        }
+    ],
     "overrides": [
         {
             "name": "sdl2",

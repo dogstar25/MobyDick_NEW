@@ -55,15 +55,7 @@ find_package(imgui CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
-
-# --- Iconv on Android (vcpkg) ---
-if(ANDROID)
-  # Try config mode first; fall back to CMake’s FindIconv if needed
-  find_package(Iconv CONFIG QUIET)
-  if(NOT TARGET Iconv::Iconv)
-    find_package(Iconv REQUIRED)  # module mode
-  endif()
-endif()
+find_package(Iconv REQUIRED)
 
 # --- Link MobyDick cleanly per-platform ---
 if (WIN32)
@@ -79,6 +71,7 @@ if (WIN32)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
+            Iconv::Iconv
     )
 elseif (ANDROID)
     # Your arm64-android triplet exports only the -static satellites:
