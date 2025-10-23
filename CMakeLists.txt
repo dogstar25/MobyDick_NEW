@@ -58,7 +58,7 @@ find_package(jsoncpp CONFIG REQUIRED)
 
 # --- Iconv on Android (vcpkg) ---
 if(ANDROID)
-  # Try config mode first; fall back to CMake’s FindIconv if needed
+  # Try config mode first; fall back to CMakeâ€™s FindIconv if needed
   find_package(Iconv CONFIG QUIET)
   if(NOT TARGET Iconv::Iconv)
     find_package(Iconv REQUIRED)  # module mode
@@ -97,6 +97,7 @@ elseif (ANDROID)
             JsonCpp::JsonCpp
             Iconv::Iconv
     )
+
 else()
     message(FATAL_ERROR "Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
 endif()
