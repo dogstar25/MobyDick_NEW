@@ -11,6 +11,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+#=========================================================================================
+# Check if a built-in libiconv is available for the current API level
+if (ANDROID_PLATFORM_API GREATER_EQUAL 28)
+    # Link directly to the NDK's prebuilt libiconv
+    add_library(iconv_lib SHARED IMPORTED)
+    set_target_properties(iconv_lib PROPERTIES IMPORTED_LOCATION ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/${ANDROID_ARCH_NAME}/libiconv.so)
+else()
+    # Fallback for older API levels, e.g., print a warning or handle differently
+    message(WARNING "libiconv is not available for API Level ${ANDROID_PLATFORM_API}. Use vcpkg or update your minSdkVersion.")
+endif()
+#===================================================================================================================
+
 # Enable MSVC multi-processor compilation
 if (MSVC)
     add_compile_options(/MP)
@@ -88,7 +100,7 @@ elseif (ANDROID)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
-            Iconv::Iconv
+            iconv_lib
     )
 
 else()
