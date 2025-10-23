@@ -11,18 +11,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#=========================================================================================
-# Check if a built-in libiconv is available for the current API level
-if (ANDROID_PLATFORM_API GREATER_EQUAL 28)
-    # Link directly to the NDK's prebuilt libiconv
-    add_library(iconv_lib SHARED IMPORTED)
-    set_target_properties(iconv_lib PROPERTIES IMPORTED_LOCATION ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/${ANDROID_ARCH_NAME}/libiconv.so)
-else()
-    # Fallback for older API levels, e.g., print a warning or handle differently
-    message(WARNING "libiconv is not available for API Level ${ANDROID_PLATFORM_API}. Use vcpkg or update your minSdkVersion.")
-endif()
-#===================================================================================================================
-
 # Enable MSVC multi-processor compilation
 if (MSVC)
     add_compile_options(/MP)
@@ -67,7 +55,6 @@ find_package(imgui CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
-find_package(Iconv REQUIRED)
 
 # --- Link MobyDick cleanly per-platform ---
 if (WIN32)
@@ -83,9 +70,21 @@ if (WIN32)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
-            Iconv::Iconv
     )
 elseif (ANDROID)
+
+
+    # before target_link_libraries()
+    set(_trip "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+    set(_iconv_dbg "${_trip}/debug/lib/libiconv.a")
+    set(_iconv_rel "${_trip}/lib/libiconv.a")
+    if(EXISTS "${_trip}/debug/lib/libcharset.a")
+      set(_charset_dbg "${_trip}/debug/lib/libcharset.a")
+    endif()
+    if(EXISTS "${_trip}/lib/libcharset.a")
+      set(_charset_rel "${_trip}/lib/libcharset.a")
+    endif()
+
     # Your arm64-android triplet exports only the -static satellites:
     #   SDL2_image::SDL2_image-static, SDL2_mixer::SDL2_mixer-static, SDL2_ttf::SDL2_ttf-static
     # SDL2main is not used on Android.
@@ -100,7 +99,10 @@ elseif (ANDROID)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
-            iconv_lib
+            $<$<CONFIG:Debug>:${_iconv_dbg}>
+            $<$<NOT:$<CONFIG:Debug>>:${_iconv_rel}>
+            $<$<CONFIG:Debug>:${_charset_dbg}>
+            $<$<NOT:$<CONFIG:Debug>>:${_charset_rel}>
     )
 
 else()
