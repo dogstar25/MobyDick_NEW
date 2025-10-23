@@ -7,6 +7,7 @@
     "sdl2-image",
     "sdl2-mixer",
     "sdl2-ttf",
+    "libiconv",
     "box2d",
     "enkits",
     "jsoncpp",

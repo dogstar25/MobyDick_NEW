@@ -86,6 +86,7 @@ elseif (ANDROID)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
+            unofficial-iconv::libiconv
     )
 else()
     message(FATAL_ERROR "Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
