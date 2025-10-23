@@ -56,6 +56,10 @@ find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 
+if (ANDROID)
+    find_package(unofficial-iconv CONFIG REQUIRED)
+endif()
+
 # --- Link MobyDick cleanly per-platform ---
 if (WIN32)
     target_link_libraries(MobyDick PUBLIC
