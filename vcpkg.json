@@ -3,7 +3,10 @@
   "name": "mobydick",
   "version": "1.0.0",
     "dependencies": [
-        "sdl2",
+        {
+            "name": "sdl2",
+            "default-features": false
+        },
         "sdl2-image",
         "sdl2-mixer",
         "sdl2-ttf",
