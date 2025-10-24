@@ -7,8 +7,14 @@
             "name": "sdl2",
             "default-features": false
         },
-        "sdl2-image",
-        "sdl2-mixer",
+        {
+            "name": "sdl2-mixer",
+            "default-features": false
+        },
+        {
+            "name": "sdl2-image",
+            "default-features": false
+        },
         "sdl2-ttf",
         "box2d",
         "enkits",
