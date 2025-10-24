@@ -56,8 +56,19 @@ find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
 
+# --- iconv for Android (simple + robust) ---
 if(ANDROID)
-  find_package(unofficial-iconv CONFIG REQUIRED)  # <-- add this
+  # Look first in your project-local vcpkg_installed, then in global vcpkg
+  find_library(ICONV_LIB
+    NAMES iconv libiconv
+    PATHS
+      "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib"
+      "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/lib"
+    NO_DEFAULT_PATH
+  )
+  if(NOT ICONV_LIB)
+    message(FATAL_ERROR "iconv not found for ${VCPKG_TARGET_TRIPLET}. Ensure 'libiconv' is in vcpkg.json and installed.")
+  endif()
 endif()
 
 # --- Link MobyDick cleanly per-platform ---
@@ -91,7 +102,7 @@ elseif (ANDROID)
             glm::glm
             glad::glad
             JsonCpp::JsonCpp
-            unofficial-iconv::libiconv
+            ${ICONV_LIB}    
     )
 
 else()
