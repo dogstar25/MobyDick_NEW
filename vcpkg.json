@@ -13,7 +13,6 @@
         "box2d",
         "enkits",
         "jsoncpp",
-        "libiconv",
         {
             "name": "imgui",
             "default-features": true,
