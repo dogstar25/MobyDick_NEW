@@ -10,7 +10,11 @@
         {
             "name": "sdl2-mixer",
             "default-features": false,
-            "features": [ "mpg123" ]
+            "platform": "android"
+        },
+        {
+            "name": "sdl2-mixer",
+            "platform": "windows"
         },
         {
             "name": "sdl2-image",
