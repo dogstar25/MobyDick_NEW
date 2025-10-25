@@ -9,7 +9,8 @@
         },
         {
             "name": "sdl2-mixer",
-            "default-features": false
+            "default-features": false,
+            "features": [ "mpg123" ]
         },
         {
             "name": "sdl2-image",
