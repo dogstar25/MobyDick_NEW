@@ -42,7 +42,6 @@
             ]
         }
     ],
-
     "overrides": [
         {
             "name": "sdl2",

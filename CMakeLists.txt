@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 
 project(MobyDick VERSION 0.1.0 LANGUAGES CXX)
 
-message(STATUS "?? MobyDick CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
+message(STATUS "Todd MobyDick - ?? MobyDick CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 
 
 # --- Global Settings ---
@@ -90,7 +90,7 @@ elseif (ANDROID)
     )
 
 else()
-    message(FATAL_ERROR "Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
+    message(FATAL_ERROR "Todd MobyDick - Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
 endif()
 
 # --- Platform Defines ---
@@ -107,5 +107,5 @@ endif()
 
 
 # --- Output Info ---
-message(STATUS "Building MobyDick ${PROJECT_VERSION}")
-message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "Todd MobyDick - Building MobyDick ${PROJECT_VERSION}")
+message(STATUS "Todd MobyDick - C++ Standard: ${CMAKE_CXX_STANDARD}")
