@@ -31,14 +31,12 @@ namespace mobydick {
     void ResourceManager::init()
     {
 
-        // Try automatically walking upward until "assets" is found
-        char* basePathPtr = SDL_GetBasePath();
-        std::string basePath = basePathPtr;
-        free(basePathPtr);
-
+        std::string basePath = "";
+        
 #if defined(_WIN32)
-
+        char* basePathPtr = SDL_GetBasePath();
         m_basePath = basePath + "assets/";
+        free(basePathPtr);
 
 #elif defined (__ANDROID__)
 
