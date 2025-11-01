@@ -1,14 +1,17 @@
 #include "SoundManager.h"
 
 #include <fstream>
+#include <format>
 
 #include <json/json.h>
 
 #include "GameConfig.h"
 #include "game.h"
 #include "Util.h"
+#include "ResourceManager.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game>game;
+//extern std::unique_ptr<Game>game;
 
 
 SoundManager::SoundManager()
@@ -47,10 +50,6 @@ void SoundManager::update()
 	auto volume = game->contextMananger()->getSoundVolume();
 	setVolume( volume);
 
-	//for (int x = 0; x < 32; x++) {
-	//	ImGui::Value("SoundChannel", Mix_Playing(x));
-	//}
-
 }
 
 
@@ -62,29 +61,50 @@ void SoundManager::loadSounds()
 	Mix_Music* music = nullptr;
 
 	//Read file and stream it to a JSON object
-	Json::Value root;
-	std::ifstream ifs("assets/sound/soundAssets.json");
-	ifs >> root;
+	auto soundAssetResult = mobydick::ResourceManager::getJSON("sound/soundAssets.json");
+	if (!soundAssetResult) {
+
+		SDL_Log("SoundManager : Error loading sound asets");
+		std::abort();
+
+	}
+
+	Json::Value soundAssetsJSON = soundAssetResult.value();
 
 	//Store the sound affects sound items
-	for (auto chunksItr : root["soundEffects"])
+	for (auto chunksItr : soundAssetsJSON["soundEffects"])
 	{
 
 		id = chunksItr["id"].asString();
-		filename = "assets/sound/" + chunksItr["filename"].asString();
-		soundChunk = Mix_LoadWAV(filename.c_str());
+
+		std::string soundAssetFile = "sound/" + chunksItr["filename"].asString();
+		auto soundAssetResult = mobydick::ResourceManager::getSound(soundAssetFile);
+		if (!soundAssetResult) {
+
+			SDL_Log("%s", soundAssetResult.error().c_str());
+			std::abort();
+
+		}
+
 		m_sfxChunks.emplace(id, soundChunk);
 
 	}
 
 	//Store the sound music items
-	for (auto musicItr : root["music"])
+	for (auto musicItr : soundAssetsJSON["music"])
 	{
 
 		id = musicItr["id"].asString();
-		filename = "assets/sound/music/" + musicItr["filename"].asString();
-		music = Mix_LoadMUS(filename.c_str());
-		m_sfxMusic.emplace(id, music);
+
+		std::string musicAssetFile = "sound/music/" + musicItr["filename"].asString();
+		auto musicAssetResult = mobydick::ResourceManager::getMusic(musicAssetFile);
+		if (!musicAssetResult) {
+
+			SDL_Log("%s", musicAssetResult.error().c_str());
+			std::abort();
+
+		}
+		m_sfxMusic.emplace(id, musicAssetResult.value());
 
 	}
 
@@ -94,7 +114,6 @@ void SoundManager::stopChannel(int channel)
 {
 	Mix_SetDistance(channel, 0);
 	Mix_HaltChannel(channel);
-//	std::cout << "Sound Stopped " << std::endl;
 
 }
 
@@ -131,21 +150,6 @@ int SoundManager::playSound(std::string id, int distanceMagnitude, bool loops )
 	return channelPlayedOn;
 
 }
-
-
-//void SoundManager::playSound(std::string id, int channel, int distanceMagnitude, bool loops)
-//{
-//
-//	int loopFlag{};
-//	if (loops) {
-//		loopFlag = -1;
-//	}
-//
-//	Mix_SetDistance(channel, distanceMagnitude);
-//
-//	int channelPlayedOn = Mix_PlayChannel(channel, m_sfxChunks[id], loopFlag);
-//
-//}
 
 void SoundManager::playMusic(std::string id, int loopTimes)
 {

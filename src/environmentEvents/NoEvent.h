@@ -2,6 +2,7 @@
 #include "NoEvent.h"
 #include "EnvironmentEvent.h"
 #include <string>
+#include <vector>
 
 class NoEvent :   public EnvironmentEvent
 {

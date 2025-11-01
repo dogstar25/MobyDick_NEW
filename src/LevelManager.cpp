@@ -10,9 +10,10 @@
 #include "BaseConstants.h"
 #include "SoundManager.h"
 #include "components/PhysicsComponent.h"
+#include "ResourceManager.h"
+#include "../include/GameGlobals.h"
 
-
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 static const unsigned char wallOnLeft = 0b0001;
 static const unsigned char wallOnRight = 0b0010;
@@ -40,9 +41,14 @@ static const unsigned char column = 0b0000;
 LevelManager::LevelManager()
 {
 
-	Json::Value levelsJSON;
-	std::ifstream ifs("assets/levels/levels.json" );
-	ifs >> levelsJSON;
+	auto levelsJSONResult = mobydick::ResourceManager::getJSON("levels/levels.json");
+	if (!levelsJSONResult) {
+
+		SDL_Log("%s", levelsJSONResult.error().c_str());
+		abort();
+	}
+
+	Json::Value levelsJSON = levelsJSONResult.value();;
 
 	for (auto level : levelsJSON["levels"]) {
 		std::string levelName = level.asString();
@@ -73,47 +79,49 @@ void LevelManager::setLevelObjectArraySize(int width, int height)
 void LevelManager::_loadDefinition(std::string levelId)
 {
 	//Read file and stream it to a JSON object
-	std::stringstream filename;
+	std::string filename;
 
-	filename << "assets/levels/" << levelId << "_definition.json";
+	filename = "levels/" + levelId + "_definition.json";
 
-	Json::Value root;
-	std::ifstream ifs(filename.str());
-	if (ifs.fail() == true) {
-		return;
+	auto levelResult = mobydick::ResourceManager::getJSON(filename);
+	if (!levelResult) {
+
+		SDL_Log("%s", levelResult.error().c_str());
+		abort();
 	}
 
-	ifs >> root;
-	m_levelDefinition = root;
+	Json::Value levelResultJSON = levelResult.value();
+	
+	m_levelDefinition = levelResultJSON;
 
 	//Level definition values
 	//m_id = levelId;
-	m_description = root["description"].asString();
-	m_blueprintTexture = root["blueprint"].asString();
+	m_description = levelResultJSON["description"].asString();
+	m_blueprintTexture = levelResultJSON["blueprint"].asString();
 
-	if (root.isMember("wallColor")) {
-		m_wallColor = game->colorMap()->toSDLColor(root["wallColor"].asString());
+	if (levelResultJSON.isMember("wallColor")) {
+		m_wallColor = game->colorMap()->toSDLColor(levelResultJSON["wallColor"].asString());
 	}
 
 	//Background Music
-	if (root.isMember("backgroundMusic")) {
-		m_backgroundMusicAssetId = root["backgroundMusic"].asString();
+	if (levelResultJSON.isMember("backgroundMusic")) {
+		m_backgroundMusicAssetId = levelResultJSON["backgroundMusic"].asString();
 	}
 
 	//Dimensions
-	m_width = root["dimensions"]["levelWidth"].asInt();
-	m_height = root["dimensions"]["levelHeight"].asInt();
-	m_tileWidth = root["dimensions"]["tileWidth"].asInt();
-	m_tileHeight = root["dimensions"]["tileHeight"].asInt();
+	m_width = levelResultJSON["dimensions"]["levelWidth"].asInt();
+	m_height = levelResultJSON["dimensions"]["levelHeight"].asInt();
+	m_tileWidth = levelResultJSON["dimensions"]["tileWidth"].asInt();
+	m_tileHeight = levelResultJSON["dimensions"]["tileHeight"].asInt();
 	m_levelBounds.x = 0;
 	m_levelBounds.y = 0;
 	m_levelBounds.w = m_width * m_tileWidth;
 	m_levelBounds.h = (m_height * m_tileHeight) + m_tileHeight + 8;
 
 	//Background tiles?
-	if (root.isMember("tiledLayers")){
+	if (levelResultJSON.isMember("tiledLayers")){
 
-		for (auto& tiledLayer : root["tiledLayers"]) {
+		for (auto& tiledLayer : levelResultJSON["tiledLayers"]) {
 
 			TiledLayerDefinition tiledLayerDefinition;
 
@@ -131,17 +139,17 @@ void LevelManager::_loadDefinition(std::string levelId)
 
 	//Save a
 	//Save all color defined definitions
-	if (root.isMember("colorDefinedObjects")) {
-		m_colorDefinedList = root["colorDefinedObjects"];
+	if (levelResultJSON.isMember("colorDefinedObjects")) {
+		m_colorDefinedList = levelResultJSON["colorDefinedObjects"];
 	}
 
 	//Save all locationobject definitions
-	if (root.isMember("locationDefinedObjects")) {
-		m_locationDefinedList = root["locationDefinedObjects"];
+	if (levelResultJSON.isMember("locationDefinedObjects")) {
+		m_locationDefinedList = levelResultJSON["locationDefinedObjects"];
 	}
 
 	//Load the debug Grid Definition
-	_loadDebugGridDefinition(root);
+	_loadDebugGridDefinition(levelResultJSON);
 
 
 }

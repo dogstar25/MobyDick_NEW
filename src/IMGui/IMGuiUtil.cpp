@@ -1,10 +1,11 @@
 #include "IMGuiUtil.h"
 #include "../GameConfig.h"
 #include "../Renderer.h"
-#include "../game.h"
+//#include "../game.h"
+#include "../include/GameGlobals.h"
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 namespace ImGui
 {
@@ -116,7 +117,7 @@ namespace ImGui
 			ImGui::SetCursorPosX(diff * 0.5f);
 		}
 		
-		ImGui::TextWrapped(text.c_str());
+		ImGui::Text("%s", text.c_str());
 	}
 
 	void setCursorToCentered(float itemToCenterSize) {

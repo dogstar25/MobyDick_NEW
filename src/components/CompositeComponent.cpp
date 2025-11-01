@@ -2,9 +2,10 @@
 
 #include "../TextureManager.h"
 #include "../ColorMap.h"
+#include "../include/GameGlobals.h"
 #include "../game.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 
 CompositeComponent::CompositeComponent(Json::Value componentJSON, GameObject* parent, std::string parentName, Scene* parentScene) :

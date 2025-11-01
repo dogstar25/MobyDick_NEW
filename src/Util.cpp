@@ -9,25 +9,17 @@
 #include <iostream>
 #include "Scene.h"
 #include "Game.h"
+#include "../include/GameGlobals.h"
 #include "RayCastHits.h"
+#include "ResourceManager.h"
 
 #define NOMINMAX 10000000 // need this so that the compiler doesnt find the min and max in the windows include
-#include <Windows.h>
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 
 namespace util
 {
-
-	std::string wideStringToString(const std::wstring& wstr)
-	{
-		if (wstr.empty()) return std::string();
-		int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-		std::string strTo(size_needed, 0);
-		WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
-		return strTo;
-	}
 
 	bool isMouseOverGameObject(SDL_FRect gameObjectRenderDest)
 	{
@@ -250,19 +242,24 @@ namespace util
 		return position;
 	}
 
-	Json::Value getModelComponent(std::string componentId, std::string modelId)
+	std::expected<Json::Value, std::string> getModelComponent(std::string componentId, std::string modelId)
 	{
-		std::string definitionFilename = "assets/gameObjectDefinitions/models/" + componentId + "_models.json";
+		std::string definitionFilename = "gameObjectDefinitions/models/" + componentId + "_models.json";
 
-		Json::Value root;
-		std::ifstream definitionFile(definitionFilename);
-		definitionFile >> root;
+		auto definitionResult = mobydick::ResourceManager::getJSON(definitionFilename);
+		if (!definitionResult) {
 
-		if (root.isMember(modelId)) {
+			return std::unexpected("Error in util::getModelComponent for file " + definitionFilename);
+			
+		}
 
-			if (root[modelId]["id"].asString() == componentId) {
+		Json::Value definitionJSON = definitionResult.value();
 
-				return root[modelId];
+		if (definitionJSON.isMember(modelId)) {
+
+			if (definitionJSON[modelId]["id"].asString() == componentId) {
+
+				return definitionJSON[modelId];
 			}
 			else {
 				SDL_assert(false && "Component model is wrong type!");
@@ -436,7 +433,13 @@ namespace util
 				//and retrieve it from the models/directory and return it instead of whats in componentJSON
 				if (origComponentId.contains('[')) {
 
-					componentJSON = getModelComponent(componentId, origComponentId);
+					auto componentResult = getModelComponent(componentId, origComponentId);
+					if (!componentResult) {
+						SDL_Log("%s", componentResult.error().c_str());
+						abort();
+					}
+
+					return componentResult.value();
 
 				}
 
@@ -475,16 +478,6 @@ namespace util
 		auto distance = glm::distance(location1, location2);
 
 		return distance;
-	}
-
-	bool fileExists(const std::string& filename)
-	{
-		struct stat buf;
-		if (stat(filename.c_str(), &buf) != -1)
-		{
-			return true;
-		}
-		return false;
 	}
 
 	const std::string genRandomId(const int len) 

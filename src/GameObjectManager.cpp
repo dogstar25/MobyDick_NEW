@@ -1,4 +1,5 @@
 #include "GameObjectManager.h"
+#include "ResourceManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -51,15 +52,23 @@ bool GameObjectManager::init()
 
 void GameObjectManager::load(std::string gameObjectAssetsFilename)
 {
+
 	//Read file and stream it to a JSON object
-	Json::Value root;
-	std::string filename = "assets/" + gameObjectAssetsFilename + ".json";
-	std::ifstream ifs(filename);
-	ifs >> root;
+	auto gameObjectAssetResult = mobydick::ResourceManager::getJSON(gameObjectAssetsFilename + ".json");
+	if (!gameObjectAssetResult) {
+
+		std::string errorMsg = std::format("GameObjectManager: Error loading game object definition {}", gameObjectAssetsFilename);
+        SDL_Log("%s", errorMsg.c_str());
+		std::abort();
+        //test
+
+	}
+
+	Json::Value scenesJSON = gameObjectAssetResult.value();
 
 	std::string id, textureId;
 
-	for (Json::Value itr : root["gameObjects"])
+	for (Json::Value itr : scenesJSON["gameObjects"])
 	{
 		std::string gameObjectType = itr["type"].asString();
 

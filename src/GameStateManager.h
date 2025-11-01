@@ -8,16 +8,14 @@
 
 
 
-const std::string GAMEOBJECT_STATE_FILENAME = "\\gameObjectState.dat";
+const std::string GAMEOBJECT_STATE_FILENAME = "gameObjectState.dat";
 
 class GameStateManager
 {
 public:
-	GameStateManager();
+	GameStateManager() = default;
 	~GameStateManager() {};
 
-	std::string getGamePath() { return m_saveGamePath; }
-	void setGamePath(std::string pathName) { m_saveGamePath = pathName; }
 	void initializeGameDataFile();
 
 	virtual void saveGame() = 0;
@@ -32,7 +30,6 @@ public:
 
 protected:
 
-	std::string m_saveGamePath{};
 	Json::Value m_loadedSaveDataJSON{};
 	std::string m_beginPrimerFilename{};
 

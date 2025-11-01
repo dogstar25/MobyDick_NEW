@@ -3,8 +3,9 @@
 
 #include "../game.h"
 #include "../EnumMap.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 ParticleComponent::ParticleComponent(Json::Value componentJSON, GameObject* parent) :
 	Component(ComponentTypes::PARTICLE_COMPONENT, parent)

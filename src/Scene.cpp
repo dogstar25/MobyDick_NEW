@@ -7,9 +7,9 @@
 #include "SoundManager.h"
 #include "game.h"
 #include "LevelManager.h"
+#include "../include/GameGlobals.h"
 
-
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 Scene::Scene(std::string sceneId)
 {

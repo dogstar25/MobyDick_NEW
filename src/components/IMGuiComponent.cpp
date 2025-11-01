@@ -6,11 +6,11 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdlrenderer.h"
 #include "../ColorMap.h"
-
+#include "../include/GameGlobals.h"
 
 #include <memory>
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 IMGuiComponent::IMGuiComponent(Json::Value componentJSON, GameObject* parent, std::string gameObjectType, Scene* parentScene) :
 	Component(ComponentTypes::IMGUI_COMPONENT, parent)

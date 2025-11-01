@@ -1,8 +1,9 @@
 #include "EnvironmentComponent.h"
 #include "../SceneManager.h"
+#include "../include/GameGlobals.h"
 #include "../game.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 
 EnvironmentComponent::EnvironmentComponent(Json::Value componentJSON, GameObject* parent) :

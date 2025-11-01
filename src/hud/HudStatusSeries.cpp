@@ -1,8 +1,9 @@
 #include "HudStatusSeries.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 HudStatusSeries::HudStatusSeries(std::string labelObjectId, std::string statusObjectId, std::string statusValueId, float labelPadding, Scene* parentScene)
 {

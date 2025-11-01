@@ -2,8 +2,9 @@
 #include "game.h"
 #include "texture.h"
 #include <memory>
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 RendererSDL::RendererSDL()
 {

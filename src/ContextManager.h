@@ -1,9 +1,6 @@
 #pragma once
 #include <map>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
 
 class StatusItem
@@ -52,7 +49,7 @@ struct UserSettings {
 };
 
 
-const std::string GAME_SETTINGS_FILENAME = "\\gameSettings.dat";
+const std::string GAME_SETTINGS_FILENAME = "gameSettings.dat";
 
 class ContextManager
 {

@@ -1,17 +1,9 @@
 #include "ContextManager.h"
 #include "SoundManager.h"
 #include "BaseConstants.h"
-#include <iostream>
-//#include <atlstr.h>
-#include <shlobj.h>
 #include <assert.h>
-#include <filesystem>
 #include <string>
-#include <locale>
-#include <codecvt>
-#include <Windows.h>
 #include "Util.h"
-
 
 
 
@@ -81,7 +73,6 @@ void ContextManager::setSoundVolume(int volume)
 {
 
     m_userSettings.soundLevel = volume;
-	//SoundManager::instance().setVolume(volume);
 
 }
 

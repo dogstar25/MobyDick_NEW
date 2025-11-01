@@ -1,9 +1,9 @@
 #include "DebugDraw.h"
 
 #include "game.h"
+#include "../include/GameGlobals.h"
 
-
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 DebugDraw& DebugDraw::instance()
 {

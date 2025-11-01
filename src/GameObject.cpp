@@ -13,9 +13,10 @@
 #include "components/LightedTreatmentComponent.h"
 #include "components/MaskedOverlayComponent.h"
 #include "components/InventoryComponent.h"
+#include "../include/GameGlobals.h"
 
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 struct OverlapCtx {
 	b2BodyId selfBody;
@@ -1302,79 +1303,7 @@ bool GameObject::isTouchingById(const std::string id)
 void GameObject::_imGuiDebugObject()
 {
 
-	//if (type() == "MAIN_HUD_HOLDER") {
 
-	//	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-	//	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-
-
-	//	ImGui::Begin("MAIN_HUD_HOLDER");
-
-	//	ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
-	//	ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
-
-	//	ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
-	//	ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
-
-
-	//	ImGui::End();
-
-	//}
-
-	//if (type() == "HUD_INTERFACE_FRAME") {
-
-	//	const auto& renderComponent = getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
-	//	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-	//	//const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-
-
-	//	ImGui::Begin("HUD_INTERFACE_FRAME Position");
-
-	//	ImGui::Value("Center Position X", transformComponent->getCenterPosition().x);
-	//	ImGui::Value("Center Position Y", transformComponent->getCenterPosition().y);
-
-	//	/*ImGui::Value("Physics Position X", physicsComponent->position().x);
-	//	ImGui::Value("Physics Position Y", physicsComponent->position().y);*/
-
-	//	ImGui::Value("Display Position X", renderComponent->getRenderDestRect().x);
-	//	ImGui::Value("Display Position Y", renderComponent->getRenderDestRect().y);
-
-	//	
-
-	//	ImGui::End();
-
-	//}
-	/*if (type() == "DRAWER_SMALL") {
-
-		const auto& inventoryComponent = getComponent<InventoryComponent>(ComponentTypes::INVENTORY_COMPONENT);
-
-
-		ImGui::Begin("Small Drawer Inventory");
-
-		for (const auto& item : inventoryComponent->items()) {
-
-			if (item) {
-				ImGui::Text(item.value()->type().c_str());
-			}
-		}
-
-		ImGui::End();
-
-	}
-
-	if (name() == "toddcan") {
-
-		const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
-
-
-		ImGui::Begin("Todds Can");
-
-		ImGui::Value("x", transformComponent->getCenterPosition().x);
-		ImGui::Value("y", transformComponent->getCenterPosition().y);
-
-		ImGui::End();
-
-	}*/
 	
 	if (type() == "BOBBY") {
 
@@ -1384,7 +1313,7 @@ void GameObject::_imGuiDebugObject()
 		for (const auto& item : m_touchingGameObjects) {
 
 			if (item.second.lock()) {
-				ImGui::Text(item.second.lock()->type().c_str());
+				ImGui::TextUnformatted(item.second.lock()->type().c_str());
 			}
 		}
 
@@ -1409,7 +1338,7 @@ void GameObject::_imGuiDebugObject()
 		for (const auto& item : m_touchingGameObjects) {
 
 			if (item.second.lock()) {
-				ImGui::Text(item.second.lock()->type().c_str());
+				ImGui::TextUnformatted(item.second.lock()->type().c_str());
 			}
 		}
 

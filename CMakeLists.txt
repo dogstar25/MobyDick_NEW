@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 
 project(MobyDick VERSION 0.1.0 LANGUAGES CXX)
 
-message(STATUS "?? MobyDick CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
+message(STATUS "Todd MobyDick - ?? MobyDick CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 
 
 # --- Global Settings ---
@@ -72,6 +72,7 @@ if (WIN32)
             JsonCpp::JsonCpp
     )
 elseif (ANDROID)
+
     # Your arm64-android triplet exports only the -static satellites:
     #   SDL2_image::SDL2_image-static, SDL2_mixer::SDL2_mixer-static, SDL2_ttf::SDL2_ttf-static
     # SDL2main is not used on Android.
@@ -87,8 +88,9 @@ elseif (ANDROID)
             glad::glad
             JsonCpp::JsonCpp
     )
+
 else()
-    message(FATAL_ERROR "Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
+    message(FATAL_ERROR "Todd MobyDick - Unsupported platform for MobyDick (expected WIN32 or ANDROID).")
 endif()
 
 # --- Platform Defines ---
@@ -101,9 +103,9 @@ elseif(IOS)
 endif()
 
 # -------define the assets directory
-target_compile_definitions(MobyDick PUBLIC GAME_WORKING_DIR=\"${GAME_WORKING_DIR}\")
+#target_compile_definitions(MobyDick PUBLIC GAME_WORKING_DIR=\"${GAME_WORKING_DIR}\")
 
 
 # --- Output Info ---
-message(STATUS "Building MobyDick ${PROJECT_VERSION}")
-message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "Todd MobyDick - Building MobyDick ${PROJECT_VERSION}")
+message(STATUS "Todd MobyDick - C++ Standard: ${CMAKE_CXX_STANDARD}")

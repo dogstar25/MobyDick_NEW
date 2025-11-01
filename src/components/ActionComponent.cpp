@@ -3,6 +3,7 @@
 #include <memory.h>
 
 #include "../EnumMap.h"
+#include "../include/GameGlobals.h"
 #include "../game.h"
 #include "../Util.h"
 
@@ -12,7 +13,7 @@
 #include "../actions/DefaultOnHoverOutAction.h"
 #include "../IMGui/IMGuiItem.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) :
 	Component(ComponentTypes::ACTION_COMPONENT, parent)
@@ -20,6 +21,7 @@ ActionComponent::ActionComponent(Json::Value componentJSON, GameObject* parent) 
 
 	for (Json::Value itrAction: componentJSON["actions"])
 	{
+
 		//Get the name of the class to be used as the action as a string
 		std::string actionClass = itrAction["actionClass"].asString();
 

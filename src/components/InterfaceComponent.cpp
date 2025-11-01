@@ -1,8 +1,9 @@
 #include "InterfaceComponent.h"
 #include "../SceneManager.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 InterfaceComponent::InterfaceComponent(Json::Value componentJSON, GameObject* parent, Scene* parentScene) :
 	Component(ComponentTypes::INTERFACE_COMPONENT, parent)

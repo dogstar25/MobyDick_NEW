@@ -1,5 +1,4 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
 
 #include <optional>
 #include <memory>
@@ -58,4 +57,3 @@ private:
 
 };
 
-#endif

@@ -3,9 +3,11 @@
 #include <fstream>
 #include "EnumMap.h"
 
+#include "ResourceManager.h"
 #include "game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 TextureManager::TextureManager()
 {
@@ -24,24 +26,11 @@ TextureManager::~TextureManager()
 				textureItem.second->surface = nullptr;
 			}
 
-			if (GameConfig::instance().rendererType() == RendererType::SDL) {
+			std::shared_ptr<SDLTexture> texture = std::static_pointer_cast<SDLTexture>(textureItem.second);
 
-				std::shared_ptr<SDLTexture> texture = std::static_pointer_cast<SDLTexture>(textureItem.second);
-
-				if (texture->sdlTexture != nullptr) {
-					SDL_DestroyTexture(texture->sdlTexture);
-					texture->sdlTexture = nullptr;
-				}
-			}
-
-			if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-
-				std::shared_ptr<OpenGLTexture> texture = std::static_pointer_cast<OpenGLTexture>(textureItem.second);
-
-				if (texture->fbo != 0) {
-					glDeleteFramebuffers(1, &texture->fbo);
-				}
-
+			if (texture->sdlTexture != nullptr) {
+				SDL_DestroyTexture(texture->sdlTexture);
+				texture->sdlTexture = nullptr;
 			}
 
 		}
@@ -80,63 +69,40 @@ void TextureManager::loadTextures(std::string textureAtlas)
 {
 	//Read file and stream it to a JSON object
 	Json::Value root;
-	std::string atlasConfigfilename = "assets/" + textureAtlas + ".json";
-	std::string atlasImagefilename = "assets/" + textureAtlas + ".png";
-	std::ifstream ifs(atlasConfigfilename);
+	std::string atlasConfigfilename = textureAtlas + ".json";
+	std::string atlasImagefilename = textureAtlas + ".png";
+	
 
-	assert(ifs.fail() == false && "Opening TextureAsset file failed!!");
+	auto atlasConfigResult = mobydick::ResourceManager::getJSON(atlasConfigfilename);
+	if (!atlasConfigResult) {
 
-	ifs >> root;
-
-	std::shared_ptr<Texture> atlasTexture;
-
-	//Build the render specific texture object
-	if (GameConfig::instance().rendererType() == RendererType::SDL) {
-		
-		std::shared_ptr<SDLTexture> atlasTextureSDL = std::make_shared<SDLTexture>();
-		atlasTextureSDL->surface = IMG_Load(atlasImagefilename.c_str());
-		atlasTextureSDL->sdlTexture = SDL_CreateTextureFromSurface(game->renderer()->sdlRenderer(), atlasTextureSDL->surface);
-		atlasTexture = atlasTextureSDL;
-
+		SDL_Log("Critical error loading texture. Aborting");
+		std::abort();
 	}
-	else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-		std::shared_ptr<OpenGLTexture> atlasTextureGL = std::make_shared<OpenGLTexture>();
-		atlasTextureGL->surface = IMG_Load(atlasImagefilename.c_str());
+	Json::Value atlasConfig = atlasConfigResult.value();
 
-		GLuint textureId;
-		glGenTextures(1, &textureId);
-
-		atlasTextureGL->textureId = textureId;
-		glActiveTexture(textureId);
-		glBindTexture(GL_TEXTURE_2D, textureId);
-		static_cast<RendererGL*>(game->renderer())->prepTexture(atlasTextureGL.get());
-		atlasTexture = atlasTextureGL;
-
+	//Build the texture object
+	auto atlasTextureSDLResult = mobydick::ResourceManager::getTexture(atlasImagefilename);
+	if (!atlasTextureSDLResult) {
+		SDL_Log("Critical error loading texture. Aborting");
+		std::abort();
 	}
+
+	std::shared_ptr<SDLTexture> atlasTextureSDL = atlasTextureSDLResult.value();
 
 	//Store the atlas texture
-	m_textureAtlasMap.emplace(textureAtlas, atlasTexture);
+	m_textureAtlasMap.emplace(textureAtlas, atlasTextureSDL);
 
+	//Pointer of super class Texture that covers SDL and OpenGL
 	std::shared_ptr<Texture> texture{};
 
 	//Store all individual textures
-	for (auto itr : root["textures"])
+	for (auto itr : atlasConfig["textures"])
 	{
-		if (GameConfig::instance().rendererType() == RendererType::SDL) {
-
-			std::shared_ptr<SDLTexture> textureSDL = std::make_shared<SDLTexture>();
-			textureSDL->sdlTexture = std::static_pointer_cast<SDLTexture>(m_textureAtlasMap[textureAtlas])->sdlTexture;
-			texture = textureSDL;
-
-		}
-		else if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-
-			std::shared_ptr<OpenGLTexture> textureGL = std::make_shared<OpenGLTexture>();
-			textureGL->textureId = std::static_pointer_cast<OpenGLTexture>(m_textureAtlasMap[textureAtlas])->textureId;
-			texture = textureGL;
-
-		}
+		std::shared_ptr<SDLTexture> textureSDL = std::make_shared<SDLTexture>();
+		textureSDL->sdlTexture = std::static_pointer_cast<SDLTexture>(m_textureAtlasMap[textureAtlas])->sdlTexture;
+		texture = textureSDL;
 
 		auto quadX = itr["quadPosition"]["x"].asInt();
 		auto quadY = itr["quadPosition"]["y"].asInt();
@@ -164,26 +130,29 @@ void TextureManager::loadTextures(std::string textureAtlas)
 void TextureManager::loadBlueprints(std::string blueprintAssets)
 {
 
-	Json::Value root;
-	std::string filename = "assets/" + blueprintAssets + ".json";
-	std::ifstream ifs(filename);
+	auto blueprintResult = mobydick::ResourceManager::getJSON(blueprintAssets+".json");
+	if (!blueprintResult) {
 
-	assert(ifs.fail() == false && "Opening blueprintAssets file failed!!");
+		SDL_Log("Critical error loading texture. Aborting");
+		std::abort();
 
-	ifs >> root;
+	}
 
-	for (auto itr : root["textureBlueprints"])
+	Json::Value blueprintJSON = blueprintResult.value();
+
+	for (auto itr : blueprintJSON["textureBlueprints"])
 	{
-		//textureObject = new Texture();
-		std::shared_ptr<Texture> texture = std::make_shared<Texture>();
-
 		auto id = itr["id"].asString();
-		auto imageFilename = itr["filename"].asString();
+		auto textureFilename = itr["filename"].asString();
 
-		//Load the file
-		texture->surface = IMG_Load(imageFilename.c_str());
+		auto textureResult = mobydick::ResourceManager::getTexture(textureFilename);
+		if (!textureResult) {
 
-		m_blueprintMap.emplace(id, texture);
+			SDL_Log("Critical error loading texture. Aborting");
+			std::abort();
+
+		}
+		m_blueprintMap.emplace(id, textureResult.value());
 
 	}
 
@@ -192,15 +161,17 @@ void TextureManager::loadBlueprints(std::string blueprintAssets)
 void TextureManager::loadFonts(std::string fontAssets)
 {
 
-	Json::Value root;
-	std::string filename = "assets/" + fontAssets + ".json";
-	std::ifstream ifs(filename);
+	auto fontsResult = mobydick::ResourceManager::getJSON(fontAssets + ".json");
+	if (!fontsResult) {
 
-	assert(ifs.fail() == false && "Opening fontAssets file failed!!");
+		SDL_Log("Critical error loading fonts. Aborting");
+		std::abort();
 
-	ifs >> root;
+	}
 
-	for (auto itr : root["fonts"])
+	Json::Value fontsJSON = fontsResult.value();
+
+	for (auto itr : fontsJSON["fonts"])
 	{
 		auto id = itr["id"].asString();
 		auto imageFilename = itr["filename"].asString();
@@ -212,15 +183,19 @@ void TextureManager::loadFonts(std::string fontAssets)
 
 void TextureManager::loadCursors(std::string cursorAtlas)
 {
-	Json::Value root;
-	std::string filename = "assets/" + cursorAtlas + ".json";
-	std::ifstream ifs(filename);
 
-	assert(ifs.fail() == false && "Opening cursorAtlas file failed!!");
 
-	ifs >> root;
+	auto cursorResult = mobydick::ResourceManager::getJSON(cursorAtlas + ".json");
+	if (!cursorResult) {
 
-	for (auto itr : root["mouseCursors"])
+		SDL_Log("Critical error loading cursors. Aborting");
+		std::abort();
+
+	}
+
+	Json::Value cursorJSON = cursorResult.value();
+
+	for (auto itr : cursorJSON["mouseCursors"])
 	{
 		SDL_Point hotspot{};
 		auto id = itr["id"].asString();

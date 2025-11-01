@@ -2,8 +2,6 @@
 #include <memory>
 #include "../game.h"
 
-extern std::unique_ptr<Game> game;
-
 void ButtonCloseInventoryAction::perform()
 {
 	//This gameObject is the inventory display object. 

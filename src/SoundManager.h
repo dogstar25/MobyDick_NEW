@@ -1,6 +1,4 @@
-#ifndef SOUND_MANAGER_H
-#define SOUND_MANAGER_H
-
+#pragma once
 
 #include <string>
 #include <stdio.h>
@@ -46,4 +44,3 @@ private:
 
 };
 
-#endif

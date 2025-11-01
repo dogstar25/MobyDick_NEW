@@ -4,8 +4,9 @@
 #include "../EnumMap.h"
 #include "../hud/HudItem.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 HudComponent::HudComponent(Json::Value componentJSON, GameObject* parent, Scene* parentScene) :
 	Component(ComponentTypes::HUD_COMPONENT, parent)

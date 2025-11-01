@@ -2,9 +2,9 @@
 
 #include "../game.h"
 #include "../ColorMap.h"
-#include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 //WeaponComponent::WeaponComponent() :
 //	Component(ComponentTypes::WEAPON_COMPONENT)

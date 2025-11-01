@@ -2,8 +2,9 @@
 
 #include "../texture.h"
 #include "../game.h"
+#include "../include/GameGlobals.h"
 
-extern std::unique_ptr<Game> game;
+//extern std::unique_ptr<Game> game;
 
 //initialize static variables
 RenderBlendMode GLDrawer::m_lastRenderBlendMode = RenderBlendMode::NONE;
