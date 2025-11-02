@@ -87,7 +87,7 @@ bool Game::init(
 	}*/
 
 	//Create the game window
-	uint16_t windowFlags = 0 | SDL_WINDOW_OPENGL;
+	uint16_t windowFlags = SDL_WINDOW_ALLOW_HIGHDPI;
 	if (GameConfig::instance().windowFullscreen() == true)
 	{
 		//Switch these depending on if you are building for a release executable or just local development
