@@ -72,8 +72,8 @@ namespace ImGui
 
 		//IMGUI requires a 1:1 scale. Ensure that is always is here
 		SDL_RenderSetScale(game->renderer()->sdlRenderer(), 1.0f, 1.0f);
-		SDL_RenderSetViewport(game->renderer()->sdlRenderer(), nullptr);
-		SDL_RenderSetClipRect(game->renderer()->sdlRenderer(), nullptr);
+		//SDL_RenderSetViewport(game->renderer()->sdlRenderer(), nullptr);
+		//SDL_RenderSetClipRect(game->renderer()->sdlRenderer(), nullptr);
 
 
 
