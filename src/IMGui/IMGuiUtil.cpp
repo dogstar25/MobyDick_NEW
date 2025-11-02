@@ -37,6 +37,10 @@ namespace ImGui
 		//We must load a default font
 		io.Fonts->AddFontDefault();
 
+		///temporary
+		SDL_RenderSetIntegerScale(game->renderer()->sdlRenderer(), SDL_FALSE);
+		/////////////
+
 
 	}
 
@@ -52,17 +56,11 @@ namespace ImGui
 		ImGui_ImplSDLRenderer_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 
-
 		//Set the logical screen size
 		io.DisplaySize = { static_cast<float>(game->logicalCanvasSize().x), static_cast<float>(game->logicalCanvasSize().y) };
 
-		int outW, outH;
-		SDL_GetRendererOutputSize(game->renderer()->sdlRenderer(), &outW, &outH);
-
-		io.DisplayFramebufferScale = { static_cast<float>(outW) / game->logicalCanvasSize().x,
-			static_cast<float>(outH) / game->logicalCanvasSize().y };
-
-
+		//IMGUI requires a 1:1 scale. Ensure that is always is here
+		io.DisplayFramebufferScale = { 1, 1 };
 
 		ImGui::NewFrame();
 
@@ -70,9 +68,21 @@ namespace ImGui
 
 	void MobyDickRenderFrame()
 	{
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 		//IMGUI requires a 1:1 scale. Ensure that is always is here
 		SDL_RenderSetScale(game->renderer()->sdlRenderer(), 1.0f, 1.0f);
+
+
+		//Log some values
+		int x, y;
+		SDL_GetRendererOutputSize(game->renderer()->sdlRenderer(), &x, &y);
+		std::cout << ("io.DisplaySize: {} {}", io.DisplaySize.x, io.DisplaySize.y);
+		std::cout << ("RendererOutputSize: {} {}", x, y);
+		SDL_RenderGetLogicalSize(game->renderer()->sdlRenderer(), &x, &y);
+		std::cout << ("RendererLogicalSize: {} {}", x, y);
+		std::cout << ("io.Display Buffer Scale: {} {}", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+
 
 		ImGui::Render();
 		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
