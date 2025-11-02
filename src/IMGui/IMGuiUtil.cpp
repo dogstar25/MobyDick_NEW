@@ -49,10 +49,6 @@ namespace ImGui
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		//Translate the mouse position to be correctly aligned with a logical canvas size vs the current screen resolution
-		auto mousePosition = util::getMouseScreenPosition();
-		io.MousePos = { mousePosition .x, mousePosition .y};
-
 		ImGui_ImplSDLRenderer_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 
@@ -61,6 +57,11 @@ namespace ImGui
 
 		//IMGUI requires a 1:1 scale. Ensure that is always is here
 		io.DisplayFramebufferScale = { 1, 1 };
+
+		//Translate the mouse position to be correctly aligned with a logical canvas size vs the current screen resolution
+		auto mousePosition = util::getMouseScreenPosition();
+		io.MousePos = { mousePosition.x, mousePosition.y };
+
 
 		ImGui::NewFrame();
 
@@ -75,13 +76,13 @@ namespace ImGui
 
 
 		//Log some values
-		int x, y;
+		/*int x, y;
 		SDL_GetRendererOutputSize(game->renderer()->sdlRenderer(), &x, &y);
 		std::cout << ("io.DisplaySize: {} {}", io.DisplaySize.x, io.DisplaySize.y);
 		std::cout << ("RendererOutputSize: {} {}", x, y);
 		SDL_RenderGetLogicalSize(game->renderer()->sdlRenderer(), &x, &y);
 		std::cout << ("RendererLogicalSize: {} {}", x, y);
-		std::cout << ("io.Display Buffer Scale: {} {}", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+		std::cout << ("io.Display Buffer Scale: {} {}", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);*/
 
 
 		ImGui::Render();
