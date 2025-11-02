@@ -128,7 +128,7 @@ bool Game::init(
 	}
 	
 	//Initialize IMGUI
-	ImGui::MobyDickInit(this);
+	ImGui::MobyDickInit();
 
 	return true;
 }

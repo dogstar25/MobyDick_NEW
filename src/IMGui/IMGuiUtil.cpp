@@ -9,7 +9,7 @@
 
 namespace ImGui
 {
-	void MobyDickInit(Game* mobyDickGame)
+	void MobyDickInit()
 	{
 		ImGui::CreateContext();
 
@@ -26,25 +26,17 @@ namespace ImGui
 		// Setup Platform/Renderer backends
 		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-			ImGui_ImplSDL2_InitForOpenGL(mobyDickGame->window(), gl_context);
+			ImGui_ImplSDL2_InitForOpenGL(game->window(), gl_context);
 			ImGui_ImplOpenGL3_Init(glsl_version);
 		}
 		else {
-			ImGui_ImplSDL2_InitForSDLRenderer(mobyDickGame->window(), mobyDickGame->renderer()->sdlRenderer());
-			ImGui_ImplSDLRenderer_Init(mobyDickGame->renderer()->sdlRenderer());
+			ImGui_ImplSDL2_InitForSDLRenderer(game->window(), game->renderer()->sdlRenderer());
+			ImGui_ImplSDLRenderer_Init(game->renderer()->sdlRenderer());
 		}
 
 		//We must load a default font
 		io.Fonts->AddFontDefault();
 
-		//Set the logical screen size
-		io.DisplaySize = { static_cast<float>(mobyDickGame->logicalCanvasSize().x), static_cast<float>(mobyDickGame->logicalCanvasSize().y) };
-
-		int outW, outH;
-		SDL_GetRendererOutputSize(mobyDickGame->renderer()->sdlRenderer(), &outW, &outH);
-
-		io.DisplayFramebufferScale = { static_cast<float>(outW) / mobyDickGame->logicalCanvasSize().x,
-			static_cast<float>(outH) / mobyDickGame->logicalCanvasSize().y };
 
 	}
 
@@ -57,11 +49,14 @@ namespace ImGui
 		auto mousePosition = util::getMouseScreenPosition();
 		io.MousePos = { mousePosition .x, mousePosition .y};
 
-		//IMGUI requires a 1:1 scale. Ensure that is always is here
-		SDL_RenderSetScale(game->renderer()->sdlRenderer(), 1.0f, 1.0f);
-
 		ImGui_ImplSDLRenderer_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
+
+		//Set the logical screen size
+		io.DisplaySize = { static_cast<float>(game->logicalCanvasSize().x), static_cast<float>(game->logicalCanvasSize().y) };
+
+		//IMGUI requires a 1:1 scale. Ensure that is always is here
+		io.DisplayFramebufferScale = { 1, 1 };
 
 		ImGui::NewFrame();
 
@@ -69,6 +64,9 @@ namespace ImGui
 
 	void MobyDickRenderFrame()
 	{
+
+		//IMGUI requires a 1:1 scale. Ensure that is always is here
+		SDL_RenderSetScale(game->renderer()->sdlRenderer(), 1.0f, 1.0f);
 
 		ImGui::Render();
 		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {

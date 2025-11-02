@@ -9,7 +9,7 @@ namespace ImGui
 	}
 
 
-	void MobyDickInit(Game*);
+	void MobyDickInit();
 	void MobyDickNewFrame();
 	void MobyDickRenderFrame();
 	void MobyDickFPSFrame();
