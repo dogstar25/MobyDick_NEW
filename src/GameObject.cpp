@@ -110,7 +110,7 @@ void GameObject::addTouchingObject(std::shared_ptr<GameObject> touchingObject)
 void GameObject::removeTouchingObject(const GameObject* touchingObject)
 {
 
-	// Erase by key; does nothing if the key isn’t found
+	// Erase by key; does nothing if the key isnâ€™t found
 	m_touchingGameObjects.erase(touchingObject->id());
 
 }
@@ -273,13 +273,13 @@ void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, fl
 
 	if (windowPosition == PositionAlignment::CENTER) {
 
-		xMapPos = (float)game->gameScreenResolution().x / 2;
-		yMapPos = (float)game->gameScreenResolution().y / 2;
+		xMapPos = (float)game->logicalCanvasSize().x / 2;
+		yMapPos = (float)game->logicalCanvasSize().y / 2;
 
 	}
 	else if (windowPosition == PositionAlignment::TOP_CENTER) {
 
-		xMapPos = (float)game->gameScreenResolution().x / 2;
+		xMapPos = (float)game->logicalCanvasSize().x / 2;
 		yMapPos = (objectHeight / 2);
 	}
 	else if (windowPosition == PositionAlignment::TOP_LEFT) {
@@ -289,33 +289,33 @@ void GameObject::setPosition(PositionAlignment windowPosition, float adjustX, fl
 	}
 	else if (windowPosition == PositionAlignment::TOP_RIGHT) {
 
-		xMapPos = (float)(game->gameScreenResolution().x - (objectWidth / 2));
+		xMapPos = (float)(game->logicalCanvasSize().x - (objectWidth / 2));
 		yMapPos = (objectHeight / 2);
 	}
 	else if (windowPosition == PositionAlignment::CENTER_LEFT) {
 
 		xMapPos = (objectWidth / 2);
-		yMapPos = (float)game->gameScreenResolution().y / 2;
+		yMapPos = (float)game->logicalCanvasSize().y / 2;
 	}
 	else if (windowPosition == PositionAlignment::CENTER_RIGHT) {
 
-		xMapPos = (float)(game->gameScreenResolution().x - (objectWidth / 2));
-		yMapPos = (float)game->gameScreenResolution().y / 2;
+		xMapPos = (float)(game->logicalCanvasSize().x - (objectWidth / 2));
+		yMapPos = (float)game->logicalCanvasSize().y / 2;
 	}
 	else if (windowPosition == PositionAlignment::BOTTOM_LEFT) {
 
 		xMapPos = (objectWidth / 2);
-		yMapPos = (float)(game->gameScreenResolution().y - objectHeight);
+		yMapPos = (float)(game->logicalCanvasSize().y - objectHeight);
 	}
 	else if (windowPosition == PositionAlignment::BOTTOM_CENTER) {
 
-		xMapPos = (float)(game->gameScreenResolution().x / 2);
-		yMapPos = (float)(game->gameScreenResolution().y - objectHeight);
+		xMapPos = (float)(game->logicalCanvasSize().x / 2);
+		yMapPos = (float)(game->logicalCanvasSize().y - objectHeight);
 	}
 	else if (windowPosition == PositionAlignment::BOTTOM_RIGHT) {
 
-		xMapPos = (float)(game->gameScreenResolution().x - (objectWidth / 2));
-		yMapPos = (float)(game->gameScreenResolution().y - objectHeight);
+		xMapPos = (float)(game->logicalCanvasSize().x - (objectWidth / 2));
+		yMapPos = (float)(game->logicalCanvasSize().y - objectHeight);
 	}
 
 	//Add adjustments

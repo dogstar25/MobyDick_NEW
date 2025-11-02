@@ -65,7 +65,9 @@ namespace util
 	b2Vec2& toBox2dPoint(b2Vec2& point);
 	SDL_FPoint& toBox2dPoint(SDL_FPoint& value);
 	float& toBox2dPoint(float& value);
+	SDL_FPoint getMouseScreenPosition();
 	SDL_FPoint getMouseWorldPosition();
+	uint32_t getMouseButtonState();
 	Json::Value getComponentConfig(Json::Value definitionJSON, int);
 	float calculateDistance(SDL_FPoint location1, SDL_FPoint location2);
 	float calculateDistance(SDL_Point location1, SDL_Point location2);

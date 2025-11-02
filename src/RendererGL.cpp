@@ -60,7 +60,7 @@ void RendererGL::init(SDL_Window* window)
 	std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
 	std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
 
-	m_projectionMatrix = glm::ortho(0.0f, (float)game->gameScreenResolution().x, (float)game->gameScreenResolution().y, 0.0f, 0.0f, 10.0f);
+	m_projectionMatrix = glm::ortho(0.0f, (float)game->logicalCanvasSize().x, (float)game->logicalCanvasSize().y, 0.0f, 0.0f, 10.0f);
 
 	//Create the different drawers
 	m_spriteDrawer = GLDrawer(GLDrawerType::GLSPRITE);
@@ -368,10 +368,10 @@ void RendererGL::resetRenderTarget()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Reset projection Matrix
-	m_projectionMatrix = glm::ortho(0.0f, (float)game->gameScreenResolution().x, (float)game->gameScreenResolution().y, 0.0f, 0.0f, 10.0f);
+	m_projectionMatrix = glm::ortho(0.0f, (float)game->logicalCanvasSize().x, (float)game->logicalCanvasSize().y, 0.0f, 0.0f, 10.0f);
 
 	// Reset viewport to the window size
-	glViewport(0, 0, game->gameScreenResolution().x, game->gameScreenResolution().y);
+	glViewport(0, 0, game->logicalCanvasSize().x, game->logicalCanvasSize().y);
 
 	m_currentRenderTargetType = RenderTargetType::SCREEN;
 }
@@ -467,11 +467,11 @@ void RendererGL::prepTexture(OpenGLTexture* texture)
 			texture_format = GL_BGR;
 	}
 
-	//Set the minification and magnification filters.  In this case, when the texture is minified (i.e., the texture's pixels (texels) are
-	//*smaller* than the screen pixels you're seeing them on, linearly filter them (i.e. blend them together).  This blends four texels for
-	//each sample--which is not very much.  Mipmapping can give better results.  Find a texturing tutorial that discusses these issues
-	//further.  Conversely, when the texture is magnified (i.e., the texture's texels are *larger* than the screen pixels you're seeing
-	//them on), linearly filter them.  Qualitatively, this causes "blown up" (overmagnified) textures to look blurry instead of blocky.
+	//Set the minification and magnification filters.Â  In this case, when the texture is minified (i.e., the texture's pixels (texels) are
+	//*smaller* than the screen pixels you're seeing them on, linearly filter them (i.e. blend them together).Â  This blends four texels for
+	//each sample--which is not very much.Â  Mipmapping can give better results.Â  Find a texturing tutorial that discusses these issues
+	//further.Â  Conversely, when the texture is magnified (i.e., the texture's texels are *larger* than the screen pixels you're seeing
+	//them on), linearly filter them.Â  Qualitatively, this causes "blown up" (overmagnified) textures to look blurry instead of blocky.
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

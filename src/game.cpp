@@ -15,6 +15,7 @@
 #include "GameStateManager.h"
 #include "NavigationManager.h"
 #include "ResourceManager.h"
+#include <source_location>
 
 #include <print>
 
@@ -77,13 +78,13 @@ bool Game::init(
 		assert(false && "SDL_Init faled!");
 	}
 	
-	std::optional<SDL_Point> gameResolution = _determineScreenResolution();
+	/*std::optional<SDL_Point> gameResolution = _determineScreenResolution();
 	if (gameResolution.has_value() == false){
 		assert(true && "No Supported screen resolution was detected!");
 	}
 	else {
-		m_gameScreenResolution = gameResolution.value();
-	}
+		m_logicalCanvasSize = gameResolution.value();
+	}*/
 
 	//Create the game window
 	uint16_t windowFlags = 0 | SDL_WINDOW_OPENGL;
@@ -103,11 +104,31 @@ bool Game::init(
 		GameConfig::instance().gameTitle().c_str(),
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		m_gameScreenResolution.x,
-		m_gameScreenResolution.y,
+		m_logicalCanvasSize.x,
+		m_logicalCanvasSize.y,
 		windowFlags);
 
 	m_renderer = std::make_shared<RendererSDL>();
+	
+
+	//Determine logical screen size
+	m_renderer->init(m_window);
+	auto screenSizeResult = _determineScreenSize(m_renderer.get());
+	if (!screenSizeResult) {
+
+		assert(false && "_determineScreenSize faled!");
+	}
+	else {
+		m_logicalCanvasSize = screenSizeResult.value();
+		SDL_RenderSetLogicalSize(m_renderer->sdlRenderer(), m_logicalCanvasSize.x, m_logicalCanvasSize.y);
+		
+		//Set scale to ber 1:1 always
+		SDL_RenderSetScale(renderer()->sdlRenderer(), 1.0f, 1.0f);
+
+	}
+	
+	//Initialize IMGUI
+	ImGui::MobyDickInit(this);
 
 	return true;
 }
@@ -245,8 +266,8 @@ void Game::_displayLoadingMsg()
 
 	TTF_CloseFont(fontObject);
 	SDL_FRect dest = {
-		m_gameScreenResolution.x / (float)2 - (float)100,
-		m_gameScreenResolution.y / (float)2 - (float)42,
+		m_logicalCanvasSize.x / (float)2 - (float)100,
+		m_logicalCanvasSize.y / (float)2 - (float)42,
 		(float)texture->surface->w, (float)texture->surface->h };
 
 	m_renderer->drawSprite(0, dest, SDL_Color{ 255,255,255,255 }, texture.get(), &texture->textureAtlasQuad, 0, false, SDL_Color{},
@@ -278,18 +299,51 @@ void Game::_displayLoadingMsg()
 
 }
 
-SDL_FPoint Game::getMouseWorldPosition()
+SDL_FPoint Game::getMouseScreenPosition()
 {
 	b2Vec2 mouseWorldPosition{};
 
-	return util::getMouseWorldPosition();
+	return util::getMouseScreenPosition();
 
 }
+
+
+std::expected<SDL_Point, std::string> Game::_determineScreenSize(Renderer* renderer)
+{
+	int width, height;
+	SDL_Point renderSize{};
+
+
+	SDL_GetRendererOutputSize(renderer->sdlRenderer(), &width, &height);
+
+	//If size is big or bigger than our target resolution then use the target
+	//else use the fallback
+	if (width >= GameConfig::instance().targetScreenResolution().x) {
+
+		renderSize = GameConfig::instance().targetScreenResolution();
+
+	}
+	else if (width >= GameConfig::instance().fallbackScreenResolution().x) {
+		renderSize = GameConfig::instance().fallbackScreenResolution();
+	}
+	else {
+
+		SDL_Log("%s %u %s", std::source_location::current().file_name(), std::source_location::current().line(), SDL_GetError());
+		return std::unexpected("Error");
+	}
+
+	return renderSize;
+
+
+}
+
+
 
 std::optional<SDL_Point> Game::_determineScreenResolution()
 {
 
 	//GameConfig::instance().targetScreenResolution()
+
 
 	int numVideDisplays = SDL_GetNumVideoDisplays();
 	if (numVideDisplays < 1) {

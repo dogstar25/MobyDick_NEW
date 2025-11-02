@@ -11,7 +11,7 @@ Camera::Camera()
 	//Get the move action that does not require a physics component
 	m_moveAction = std::dynamic_pointer_cast<Action>(game->actionFactory()->create("PrimitiveMove", Json::Value{}, nullptr));
 
-	m_frame = {0, 0, static_cast<float>(game->gameScreenResolution().x), static_cast<float>(game->gameScreenResolution().y) };
+	m_frame = {0, 0, static_cast<float>(game->logicalCanvasSize().x), static_cast<float>(game->logicalCanvasSize().y) };
 
 }
 
@@ -128,8 +128,8 @@ glm::vec2 Camera::getCenterPosition()
 {
 	glm::vec2 center{};
 
-	center.x = m_frame.x + static_cast<float>(game->gameScreenResolution().x / 2);
-	center.y = m_frame.y + static_cast<float>(game->gameScreenResolution().y / 2);
+	center.x = m_frame.x + static_cast<float>(game->logicalCanvasSize().x / 2);
+	center.y = m_frame.y + static_cast<float>(game->logicalCanvasSize().y / 2);
 
 	return center;
 }

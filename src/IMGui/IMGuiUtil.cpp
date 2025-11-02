@@ -37,6 +37,15 @@ namespace ImGui
 		//We must load a default font
 		io.Fonts->AddFontDefault();
 
+		//Set the logical screen size
+		io.DisplaySize = { static_cast<float>(mobyDickGame->logicalCanvasSize().x), static_cast<float>(mobyDickGame->logicalCanvasSize().y) };
+
+		int outW, outH;
+		SDL_GetRendererOutputSize(mobyDickGame->renderer()->sdlRenderer(), &outW, &outH);
+
+		io.DisplayFramebufferScale = { static_cast<float>(outW) / mobyDickGame->logicalCanvasSize().x,
+			static_cast<float>(outH) / mobyDickGame->logicalCanvasSize().y };
+
 	}
 
 	void MobyDickNewFrame()
@@ -44,25 +53,23 @@ namespace ImGui
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		{
-			if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-				ImGui_ImplOpenGL3_NewFrame();
-				ImGui_ImplSDL2_NewFrame();
-			}
-			else {
-				ImGui_ImplSDLRenderer_NewFrame();
-				ImGui_ImplSDL2_NewFrame();
-			}
+		//Translate the mouse position to be correctly aligned with a logical canvas size vs the current screen resolution
+		auto mousePosition = util::getMouseScreenPosition();
+		io.MousePos = { mousePosition .x, mousePosition .y};
 
-			//io.Fonts->Build();
-			ImGui::NewFrame();
+		//IMGUI requires a 1:1 scale. Ensure that is always is here
+		SDL_RenderSetScale(game->renderer()->sdlRenderer(), 1.0f, 1.0f);
 
-		}
+		ImGui_ImplSDLRenderer_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+
+		ImGui::NewFrame();
 
 	}
 
 	void MobyDickRenderFrame()
 	{
+
 		ImGui::Render();
 		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -88,12 +95,12 @@ namespace ImGui
 
 		ImGui::Text("World Coords");
 		ImGui::SameLine();
-		ImGui::Value("X", game->getMouseWorldPosition().x);
+		ImGui::Value("X", game->getMouseScreenPosition().x);
 		ImGui::SameLine();
-		ImGui::Value("Y", game->getMouseWorldPosition().y);
+		ImGui::Value("Y", game->getMouseScreenPosition().y);
 
 
-		int dwWidth = game->gameScreenResolution().x / 2;
+		int dwWidth = game->logicalCanvasSize().x / 2;
 		ImGui::SetWindowPos(ImVec2(0, 0));
 		ImGui::End();
 
