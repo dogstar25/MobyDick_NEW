@@ -49,8 +49,8 @@ namespace ImGui
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		ImGui_ImplSDLRenderer_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
+		ImGui_ImplSDLRenderer_NewFrame();
 
 		//Set the logical screen size
 		io.DisplaySize = { static_cast<float>(game->logicalCanvasSize().x), static_cast<float>(game->logicalCanvasSize().y) };
@@ -62,7 +62,6 @@ namespace ImGui
 		auto mousePosition = util::getMouseScreenPosition();
 		io.MousePos = { mousePosition.x, mousePosition.y };
 
-
 		ImGui::NewFrame();
 
 	}
@@ -73,6 +72,9 @@ namespace ImGui
 
 		//IMGUI requires a 1:1 scale. Ensure that is always is here
 		SDL_RenderSetScale(game->renderer()->sdlRenderer(), 1.0f, 1.0f);
+		SDL_RenderSetViewport(game->renderer()->sdlRenderer(), nullptr);
+		SDL_RenderSetClipRect(game->renderer()->sdlRenderer(), nullptr);
+
 
 
 		//Log some values
@@ -86,12 +88,7 @@ namespace ImGui
 
 
 		ImGui::Render();
-		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		}
-		else {
-			ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
-		}
+		ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
 
 	}
 

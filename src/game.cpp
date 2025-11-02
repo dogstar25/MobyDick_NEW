@@ -104,8 +104,8 @@ bool Game::init(
 		GameConfig::instance().gameTitle().c_str(),
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		m_logicalCanvasSize.x,
-		m_logicalCanvasSize.y,
+		0,
+		0,
 		windowFlags);
 
 	m_renderer = std::make_shared<RendererSDL>();
