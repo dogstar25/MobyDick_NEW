@@ -52,11 +52,17 @@ namespace ImGui
 		ImGui_ImplSDLRenderer_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 
+
 		//Set the logical screen size
 		io.DisplaySize = { static_cast<float>(game->logicalCanvasSize().x), static_cast<float>(game->logicalCanvasSize().y) };
 
-		//IMGUI requires a 1:1 scale. Ensure that is always is here
-		io.DisplayFramebufferScale = { 1, 1 };
+		int outW, outH;
+		SDL_GetRendererOutputSize(game->renderer()->sdlRenderer(), &outW, &outH);
+
+		io.DisplayFramebufferScale = { static_cast<float>(outW) / game->logicalCanvasSize().x,
+			static_cast<float>(outH) / game->logicalCanvasSize().y };
+
+
 
 		ImGui::NewFrame();
 
