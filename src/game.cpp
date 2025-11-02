@@ -314,7 +314,7 @@ std::expected<SDL_Point, std::string> Game::_determineScreenSize(Renderer* rende
 	SDL_Point renderSize{};
 
 	renderSize = { GameConfig::instance().targetScreenResolution().x , GameConfig::instance().targetScreenResolution().y };
-	return;
+	return renderSize;
 
 	SDL_GetRendererOutputSize(renderer->sdlRenderer(), &width, &height);
 
