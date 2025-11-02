@@ -75,18 +75,6 @@ namespace ImGui
 		SDL_RenderSetViewport(game->renderer()->sdlRenderer(), nullptr);
 		SDL_RenderSetClipRect(game->renderer()->sdlRenderer(), nullptr);
 
-
-
-		//Log some values
-		/*int x, y;
-		SDL_GetRendererOutputSize(game->renderer()->sdlRenderer(), &x, &y);
-		std::cout << ("io.DisplaySize: {} {}", io.DisplaySize.x, io.DisplaySize.y);
-		std::cout << ("RendererOutputSize: {} {}", x, y);
-		SDL_RenderGetLogicalSize(game->renderer()->sdlRenderer(), &x, &y);
-		std::cout << ("RendererLogicalSize: {} {}", x, y);
-		std::cout << ("io.Display Buffer Scale: {} {}", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);*/
-
-
 		ImGui::Render();
 		ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
 
@@ -113,7 +101,7 @@ namespace ImGui
 
 
 		int dwWidth = game->logicalCanvasSize().x / 2;
-		ImGui::SetWindowPos(ImVec2(0, 0));
+		ImGui::SetWindowPos(ImVec2(dwWidth, 0));
 		ImGui::End();
 
 	}

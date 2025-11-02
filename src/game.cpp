@@ -78,14 +78,6 @@ bool Game::init(
 		assert(false && "SDL_Init faled!");
 	}
 	
-	/*std::optional<SDL_Point> gameResolution = _determineScreenResolution();
-	if (gameResolution.has_value() == false){
-		assert(true && "No Supported screen resolution was detected!");
-	}
-	else {
-		m_logicalCanvasSize = gameResolution.value();
-	}*/
-
 	//Create the game window
 	uint16_t windowFlags = SDL_WINDOW_ALLOW_HIGHDPI;
 	if (GameConfig::instance().windowFullscreen() == true)
