@@ -75,7 +75,7 @@ public:
 	}
 	void setWorldParams(SDL_Rect gameScreenResolution, SDL_Point gameTileSize);
 
-	SDL_Point gameScreenResolution() { return m_gameScreenResolution; }
+	SDL_Point logicalCanvasSize() { return m_logicalCanvasSize; }
 
 	SDL_Window* window() {
 		return m_window;
@@ -133,7 +133,7 @@ public:
 		return m_colorMap;
 	}
 
-	SDL_FPoint getMouseWorldPosition();
+	SDL_FPoint getMouseScreenPosition();
 
 	Renderer* renderer() { return m_renderer.get(); }
 
@@ -142,7 +142,7 @@ protected:
 	SDL_Window* m_window{};
 	GameState m_gameState{};
 	SDL_Rect m_worldBounds{};
-	SDL_Point m_gameScreenResolution{};
+	SDL_Point m_logicalCanvasSize{};
 	SDL_Point m_worldTileSize{};
 	std::shared_ptr<ContactHandler> m_contactHandler{};
 	std::shared_ptr<ContactFilter> m_contactFilter{};
@@ -163,6 +163,7 @@ protected:
 	std::shared_ptr<Renderer> m_renderer;
 
 	std::optional<SDL_Point> _determineScreenResolution();
+	std::expected<SDL_Point, std::string> _determineScreenSize(Renderer* renderer);
 
 };
 

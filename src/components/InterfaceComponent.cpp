@@ -92,6 +92,12 @@ void InterfaceComponent::update()
 		}
 	}
 
+	if (parent()->type() == "PAPER_BALLOON")
+	{
+
+		int todd = 1;
+
+	}
 
 	if (util::isMouseOverGameObject(renderComponent->getRenderDestRect())) {
 
@@ -179,9 +185,8 @@ void InterfaceComponent::update()
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				SDL_Point mouseLocation{};
-				auto buttonState = SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
-				SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y });
+				auto buttonState = util::getMouseButtonState();
+				SDL_FPoint mouseLocation = util::getMouseScreenPosition();;
 
 				//Has mouse contact then start drag if its draggable
 				//otherwise execture ON_LCLICK action if one exists
@@ -193,7 +198,7 @@ void InterfaceComponent::update()
 						&& isDraggingAllowed()) {
 
 						newEventsState.set((int)InterfaceEvents::ON_DRAG, true);
-						_initializeDragging(mouseWorldPosition);
+						_initializeDragging(mouseLocation);
 					}
 
 					//Set click state
@@ -447,14 +452,10 @@ void InterfaceComponent::handleDragging()
 
 		if (parent()->hasComponent(ComponentTypes::PHYSICS_COMPONENT) == false) {
 
-			SDL_Point mouseLocation{};
-			SDL_GetMouseState(&mouseLocation.x, &mouseLocation.y);
+			SDL_FPoint newPosition = util::getMouseScreenPosition();
 
-			SDL_FPoint newPosition{};
-			SDL_FPoint mouseWorldPosition = util::screenToWorldPosition({ (float)mouseLocation.x, (float)mouseLocation.y });
-
-			newPosition.x = mouseWorldPosition.x + m_dragOffset.x;
-			newPosition.y = mouseWorldPosition.y + m_dragOffset.y;
+			newPosition.x += m_dragOffset.x;
+			newPosition.y += m_dragOffset.y;
 
 			parent()->setPosition(newPosition.x, newPosition.y);
 

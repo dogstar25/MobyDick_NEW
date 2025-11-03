@@ -298,7 +298,7 @@ void SceneManager::startNewGame()
 void SceneManager::spawnCrystal()
 {
 
-	SDL_FPoint mousePosition = game->getMouseWorldPosition();
+	SDL_FPoint mousePosition = game->getMouseScreenPosition();
 
 	SDL_Point tilePosition = util::pixelToTileLocation(mousePosition.x, mousePosition.y);
 

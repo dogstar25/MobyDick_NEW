@@ -9,7 +9,7 @@
 
 namespace ImGui
 {
-	void MobyDickInit(Game* mobyDickGame)
+	void MobyDickInit()
 	{
 		ImGui::CreateContext();
 
@@ -26,16 +26,21 @@ namespace ImGui
 		// Setup Platform/Renderer backends
 		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
 
-			ImGui_ImplSDL2_InitForOpenGL(mobyDickGame->window(), gl_context);
+			ImGui_ImplSDL2_InitForOpenGL(game->window(), gl_context);
 			ImGui_ImplOpenGL3_Init(glsl_version);
 		}
 		else {
-			ImGui_ImplSDL2_InitForSDLRenderer(mobyDickGame->window(), mobyDickGame->renderer()->sdlRenderer());
-			ImGui_ImplSDLRenderer_Init(mobyDickGame->renderer()->sdlRenderer());
+			ImGui_ImplSDL2_InitForSDLRenderer(game->window(), game->renderer()->sdlRenderer());
+			ImGui_ImplSDLRenderer_Init(game->renderer()->sdlRenderer());
 		}
 
 		//We must load a default font
 		io.Fonts->AddFontDefault();
+
+		///temporary
+		SDL_RenderSetIntegerScale(game->renderer()->sdlRenderer(), SDL_FALSE);
+		/////////////
+
 
 	}
 
@@ -44,32 +49,34 @@ namespace ImGui
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		{
-			if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-				ImGui_ImplOpenGL3_NewFrame();
-				ImGui_ImplSDL2_NewFrame();
-			}
-			else {
-				ImGui_ImplSDLRenderer_NewFrame();
-				ImGui_ImplSDL2_NewFrame();
-			}
+		ImGui_ImplSDL2_NewFrame();
+		ImGui_ImplSDLRenderer_NewFrame();
 
-			//io.Fonts->Build();
-			ImGui::NewFrame();
+		//Set the logical screen size
+		io.DisplaySize = { static_cast<float>(game->logicalCanvasSize().x), static_cast<float>(game->logicalCanvasSize().y) };
 
-		}
+		//IMGUI requires a 1:1 scale. Ensure that is always is here
+		io.DisplayFramebufferScale = { 1, 1 };
+
+		//Translate the mouse position to be correctly aligned with a logical canvas size vs the current screen resolution
+		auto mousePosition = util::getMouseScreenPosition();
+		io.MousePos = { mousePosition.x, mousePosition.y };
+
+		ImGui::NewFrame();
 
 	}
 
 	void MobyDickRenderFrame()
 	{
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+		//IMGUI requires a 1:1 scale. Ensure that is always is here
+		SDL_RenderSetScale(game->renderer()->sdlRenderer(), 1.0f, 1.0f);
+		SDL_RenderSetViewport(game->renderer()->sdlRenderer(), nullptr);
+		SDL_RenderSetClipRect(game->renderer()->sdlRenderer(), nullptr);
+
 		ImGui::Render();
-		if (GameConfig::instance().rendererType() == RendererType::OPENGL) {
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		}
-		else {
-			ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
-		}
+		ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
 
 	}
 
@@ -88,13 +95,13 @@ namespace ImGui
 
 		ImGui::Text("World Coords");
 		ImGui::SameLine();
-		ImGui::Value("X", game->getMouseWorldPosition().x);
+		ImGui::Value("X", game->getMouseScreenPosition().x);
 		ImGui::SameLine();
-		ImGui::Value("Y", game->getMouseWorldPosition().y);
+		ImGui::Value("Y", game->getMouseScreenPosition().y);
 
 
-		int dwWidth = game->gameScreenResolution().x / 2;
-		ImGui::SetWindowPos(ImVec2(0, 0));
+		int dwWidth = game->logicalCanvasSize().x / 2;
+		ImGui::SetWindowPos(ImVec2(dwWidth, 0));
 		ImGui::End();
 
 	}

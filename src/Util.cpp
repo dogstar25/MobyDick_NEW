@@ -24,36 +24,63 @@ namespace util
 	bool isMouseOverGameObject(SDL_FRect gameObjectRenderDest)
 	{
 
-		int mouseX;
-		int mouseY;
+		int mouseX, mouseY;
 
-		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
-		SDL_FPoint mouseLocation = { (float)mouseX , (float)mouseY };
+		SDL_FPoint mouseLocation = getMouseScreenPosition();
 
 		return  SDL_PointInFRect(&mouseLocation, &gameObjectRenderDest);
+
+	}
+
+	SDL_FPoint getMouseScreenPosition()
+	{
+
+		int mouseX, mouseY;
+		float logicalX, logicalY;
+		SDL_FPoint position{};
+
+		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
+		SDL_RenderWindowToLogical(game->renderer()->sdlRenderer(), mouseX, mouseY, &logicalX, &logicalY);
+		position = {logicalX, logicalY};
+
+		return position;
 
 	}
 
 	SDL_FPoint getMouseWorldPosition()
 	{
 
-		int mouseX;
-		int mouseY;
+		int mouseX, mouseY;
+		float logicalX, logicalY;
+		SDL_FPoint screenPosition{};
+		SDL_FPoint worldPosition{};
 
 		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
-		SDL_FPoint mouseLocation = { (float)mouseX , (float)mouseY };
-
-		SDL_FPoint worldPosition = screenToWorldPosition(mouseLocation);
+		SDL_RenderWindowToLogical(game->renderer()->sdlRenderer(), mouseX, mouseY, &logicalX, &logicalY);
+		screenPosition = { logicalX, logicalY };
+		worldPosition = screenToWorldPosition(screenPosition);
 
 		return worldPosition;
+
+	}
+
+	uint32_t getMouseButtonState()
+	{
+
+		int mouseX, mouseY;
+
+		const uint32_t currentMouseStates = SDL_GetMouseState(&mouseX, &mouseY);
+
+		return currentMouseStates;
 
 	}
 
 	SDL_FPoint screenToWorldPosition(SDL_FPoint screenPosition)
 	{
 		SDL_FPoint worldPosition{};
-		worldPosition.x = screenPosition.x += Camera::instance().frame().x;
-		worldPosition.y = screenPosition.y += Camera::instance().frame().y;
+
+		worldPosition.x = screenPosition.x + Camera::instance().frame().x;
+		worldPosition.y = screenPosition.y + Camera::instance().frame().y;
 
 		return  worldPosition;
 
