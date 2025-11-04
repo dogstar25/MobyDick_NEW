@@ -89,8 +89,11 @@ void SoundManager::loadSounds()
 			//std::abort();
 
 		}
+		else {
+			m_sfxChunks.emplace(id, soundAssetResult.value());
+		}
 
-		m_sfxChunks.emplace(id, soundAssetResult.value());
+		
 
 	}
 
@@ -108,7 +111,10 @@ void SoundManager::loadSounds()
 			//std::abort();
 
 		}
-		m_sfxMusic.emplace(id, musicAssetResult.value());
+		else {
+			m_sfxMusic.emplace(id, musicAssetResult.value());
+		}
+		
 
 	}
 
