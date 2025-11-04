@@ -86,7 +86,7 @@ void SoundManager::loadSounds()
 		if (!soundAssetResult) {
 
 			SDL_Log("%s", soundAssetResult.error().c_str());
-			//std::abort();
+			std::abort();
 
 		}
 		else {
@@ -108,7 +108,7 @@ void SoundManager::loadSounds()
 		if (!musicAssetResult) {
 
 			SDL_Log("%s", musicAssetResult.error().c_str());
-			//std::abort();
+			std::abort();
 
 		}
 		else {
