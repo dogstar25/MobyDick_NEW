@@ -105,7 +105,7 @@ void SoundManager::loadSounds()
 		if (!musicAssetResult) {
 
 			SDL_Log("%s", musicAssetResult.error().c_str());
-			std::abort();
+			//std::abort();
 
 		}
 		m_sfxMusic.emplace(id, musicAssetResult.value());
