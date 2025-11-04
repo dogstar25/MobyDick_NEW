@@ -37,7 +37,7 @@ bool SoundManager::initSound()
 	auto result = Mix_OpenAudio(48000, AUDIO_F32SYS, 2, 1024);
 	if (result != 0) {
 
-		SDL_Log(Mix_GetError());
+		SDL_Log("%s", Mix_GetError());
 		return false;
 	}
 
