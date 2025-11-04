@@ -21,6 +21,10 @@ SoundManager::SoundManager()
 
 SoundManager::~SoundManager()
 {
+
+
+	stopMusic();
+	stopSound();
 	m_sfxChunks.clear();
 	m_sfxMusic.clear();
 }
@@ -130,16 +134,23 @@ void SoundManager::loadSounds()
 
 }
 
-void SoundManager::stopChannel(int channel)
-{
-	Mix_SetDistance(channel, 0);
-	Mix_HaltChannel(channel);
-
-}
 
 void SoundManager::stopMusic()
 {
 	int channelPlayedOn = Mix_HaltMusic();;
+
+}
+
+void SoundManager::stopSound()
+{
+	Mix_HaltChannel(-1);
+
+}
+
+void SoundManager::stopChannel(int channel)
+{
+	Mix_SetDistance(channel, 0);
+	Mix_HaltChannel(channel);
 
 }
 
@@ -204,7 +215,7 @@ void SoundManager::allocateChannels()
 	int soundChannels = GameConfig::instance().soundChannels();
 
 	//Mix_AllocateChannels(soundChannels);
-	int channels = Mix_AllocateChannels(soundChannels);
+	int m_allocatedChannels = Mix_AllocateChannels(soundChannels);
 
 }
 

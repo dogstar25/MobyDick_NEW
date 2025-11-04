@@ -22,6 +22,7 @@ public:
 	void playMusic(std::string id, int loopTimes);
 	void stopChannel(int channel);
 	void stopMusic();
+	void stopSound();
 	void setVolume(int volume);
 	void setChannelDistance(int channel, int distance);
 
@@ -40,6 +41,8 @@ private:
 
 	void loadSounds();
 	void allocateChannels();
+
+	int m_allocatedChannels{};
 
 
 };
