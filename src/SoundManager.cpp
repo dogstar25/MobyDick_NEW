@@ -32,9 +32,14 @@ SoundManager& SoundManager::instance()
 
 }
 
-void SoundManager::initSound()
+bool SoundManager::initSound()
 {
-	Mix_OpenAudio(48000, AUDIO_F32SYS, 2, 1024);
+	auto result = Mix_OpenAudio(48000, AUDIO_F32SYS, 2, 1024);
+	if (result != 0) {
+
+		SDL_Log(Mix_GetError());
+		return false;
+	}
 
 	auto volume = game->contextMananger()->getSoundVolume();
 	Mix_Volume(-1, volume);
@@ -42,6 +47,7 @@ void SoundManager::initSound()
 	loadSounds();
 	allocateChannels();
 
+	return true;
 }
 
 void SoundManager::update()
@@ -57,8 +63,6 @@ void SoundManager::loadSounds()
 {
 
 	std::string id, desc, filename;
-	Mix_Chunk* soundChunk=nullptr;
-	Mix_Music* music = nullptr;
 
 	//Read file and stream it to a JSON object
 	auto soundAssetResult = mobydick::ResourceManager::getJSON("sound/soundAssets.json");
@@ -82,11 +86,11 @@ void SoundManager::loadSounds()
 		if (!soundAssetResult) {
 
 			SDL_Log("%s", soundAssetResult.error().c_str());
-			//std::abort();
+			std::abort();
 
 		}
 
-		m_sfxChunks.emplace(id, soundChunk);
+		m_sfxChunks.emplace(id, soundAssetResult.value());
 
 	}
 
@@ -142,7 +146,8 @@ int SoundManager::playSound(std::string id, int distanceMagnitude, bool loops )
 		channelPlayedOn = Mix_PlayChannel(availableChannel, m_sfxChunks[id], loopFlag);
 	}
 	else {
-		std::cout << "negative sound channel for " << id << std::endl;
+		SDL_Log("Negative sound channel for %s", id.c_str());
+		//std::cout << "negative sound channel for " << id << std::endl;
 		return -1;
 	}
 
@@ -197,7 +202,7 @@ void SoundManager::setVolume(int volume)
 	Mix_VolumeMusic(volume);
 
 	//Total sound effects mix volumn - so things dont completely blast speakers when all sounds playing together
-	Mix_MasterVolume(int(volume - (volume * .20)));
+	//Mix_MasterVolume(int(volume - (volume * .20)));
 
 
 }
