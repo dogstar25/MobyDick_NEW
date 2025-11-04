@@ -34,7 +34,17 @@ SoundManager& SoundManager::instance()
 
 bool SoundManager::initSound()
 {
-	auto result = Mix_OpenAudio(48000, AUDIO_F32SYS, 2, 1024);
+	int chunckSize = 0;
+
+	SDL_SetHint(SDL_HINT_AUDIO_RESAMPLING_MODE, "medium");
+
+#if defined(_ANDROID__)
+	chunckSize = 4096;
+#else
+	chunckSize = 2048;
+#endif
+
+	auto result = Mix_OpenAudio(48000, AUDIO_F32SYS, 2, chunckSize);
 	if (result != 0) {
 
 		SDL_Log("%s", Mix_GetError());
