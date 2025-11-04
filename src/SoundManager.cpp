@@ -43,7 +43,8 @@ bool SoundManager::initSound()
 	SDL_SetHint(SDL_HINT_AUDIO_RESAMPLING_MODE, "medium");
 
 #if defined(_ANDROID__)
-	chunckSize = 4096;
+	//chunckSize = 4096;
+	chunckSize = 8192;
 #else
 	chunckSize = 2048;
 #endif
