@@ -387,7 +387,7 @@ md::Platform Game::_determinePlatform()
 	auto platformStr = SDL_GetPlatform();
 
 	if (platformStr == "Android") {
-		m_platform = md::Platform::ANDROID;
+		m_platform = md::Platform::ANDROIDX;
 	}
 	else if (platformStr == "iOS") {
 		m_platform = md::Platform::IOS;

@@ -9,7 +9,7 @@ namespace md {
 	enum Platform {
 
 		WINDOWS = 1,
-		ANDROID = 2,
+		ANDROIDX = 2,
 		IOS = 3,
 		MAC = 4,
 		LINUX = 5
