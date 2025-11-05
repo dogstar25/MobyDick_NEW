@@ -64,6 +64,7 @@ bool Game::init(
 	m_enumMap = enumMap;
 	m_colorMap = colorMap;
 
+
 	//Initialize the Game Base Path
 	mobydick::ResourceManager::init();
 	 
@@ -78,6 +79,9 @@ bool Game::init(
 		assert(false && "SDL_Init faled!");
 	}
 	
+	//Determine platform
+	m_platform = _determinePlatform();
+
 	//Create the game window
 	uint16_t windowFlags = SDL_WINDOW_ALLOW_HIGHDPI;
 	if (GameConfig::instance().windowFullscreen() == true)
@@ -374,5 +378,30 @@ std::optional<SDL_Point> Game::_determineScreenResolution()
 	}
 
 	return screenResolution;
+
+}
+
+md::Platform Game::_determinePlatform()
+{
+
+	auto platformStr = SDL_GetPlatform();
+
+	if (platformStr == "Android") {
+		m_platform = md::Platform::ANDROID;
+	}
+	else if (platformStr == "iOS") {
+		m_platform = md::Platform::IOS;
+	}
+	else if (platformStr == "Mac OS X" || platformStr == "macOS") {
+		m_platform = md::Platform::MAC;
+	}
+	else if (platformStr == "Windows") {
+		m_platform = md::Platform::WINDOWS;
+	}
+	else if (platformStr == "Linux") {
+		m_platform = md::Platform::LINUX;
+	}
+
+	return m_platform;
 
 }

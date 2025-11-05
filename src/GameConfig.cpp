@@ -38,6 +38,7 @@ std::expected<void , std::string> GameConfig::init(std::string configFile)
 	m_gameTitle = configJSON["gameTitle"].asString();
 	m_gameLoopStep = configJSON["gameLoopStep"].asFloat();
 	m_dynamicTextRefreshDelay = configJSON["dynamicTextRefreshDelay"].asFloat();
+	m_uIScalingFactorForMobile = configJSON["uIScalingFactorForMobile"].asInt();
 	m_debugPanelLocation.x = configJSON["debugPanel"]["xPos"].asInt();
 	m_debugPanelLocation.y = configJSON["debugPanel"]["yPos"].asInt();
 	m_debugPanelFontSize = configJSON["debugPanel"]["fontSize"].asInt();

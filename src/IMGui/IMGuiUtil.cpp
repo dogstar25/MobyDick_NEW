@@ -37,6 +37,22 @@ namespace ImGui
 		//We must load a default font
 		io.Fonts->AddFontDefault();
 
+		//Scale up the size if we are on a mobile
+		if (game->platform() == md::Platform::IOS ||
+			game->platform() == md::Platform::ANDROID) {
+
+			float ddpi = 0, hdpi = 0, vdpi = 0;
+
+			int display = SDL_GetWindowDisplayIndex(game->window());
+			SDL_GetDisplayDPI(display, &ddpi, &hdpi, &vdpi);
+
+			float newScale = ddpi / GameConfig::instance().uIScalingFactorForMobile();
+			ImGui::GetStyle().ScaleAllSizes(newScale);
+			io.FontGlobalScale = newScale;
+
+		}
+
+
 		///temporary
 		SDL_RenderSetIntegerScale(game->renderer()->sdlRenderer(), SDL_FALSE);
 		/////////////

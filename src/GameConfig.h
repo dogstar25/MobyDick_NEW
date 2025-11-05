@@ -68,6 +68,10 @@ public:
 		return m_installGameName;
 	}
 
+	int uIScalingFactorForMobile() {
+		return m_uIScalingFactorForMobile;
+	}
+
 
 private:
 	GameConfig();
@@ -94,6 +98,7 @@ private:
 	SDL_Point m_targetScreenResolution{};
 	SDL_Point m_fallbackScreenResolution{};
 	SDL_Point m_defaultTileSize{};
+	int m_uIScalingFactorForMobile{};
 
 
 };
