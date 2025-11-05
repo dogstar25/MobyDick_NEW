@@ -39,7 +39,7 @@ namespace ImGui
 
 		//Scale up the size if we are on a mobile
 		if (game->platform() == md::Platform::IOS ||
-			game->platform() == md::Platform::ANDROID) {
+			game->platform() == md::Platform::ANDROIDX) {
 
 			float ddpi = 0, hdpi = 0, vdpi = 0;
 
