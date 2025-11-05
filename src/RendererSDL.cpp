@@ -219,6 +219,8 @@ std::shared_ptr<Texture> RendererSDL::createEmptyTexture(int width, int height, 
 	texture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET, (int)width, (int)height);
 
+	SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_BLEND);
+
 	texture->textureAtlasQuad.x = 0;
 	texture->textureAtlasQuad.y = 0;
 	texture->textureAtlasQuad.w = width;
