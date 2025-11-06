@@ -15,6 +15,7 @@
 #include "GameStateManager.h"
 #include "NavigationManager.h"
 #include "ResourceManager.h"
+#include "SoundManager.h"
 #include <source_location>
 
 #include <print>
@@ -25,7 +26,7 @@ Game::~Game()
 {
 
 	ImGui::DestroyContext();
-
+	SoundManager::instance().shutDown();
 }
 
 bool Game::init(

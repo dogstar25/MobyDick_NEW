@@ -21,19 +21,10 @@ SoundManager::SoundManager()
 
 SoundManager::~SoundManager()
 {
-
-
 	stopMusic();
 	stopSound();
 	m_sfxChunks.clear();
 	m_sfxMusic.clear();
-}
-
-SoundManager& SoundManager::instance()
-{
-	static SoundManager singletonInstance;
-	return singletonInstance;
-
 }
 
 bool SoundManager::initSound()

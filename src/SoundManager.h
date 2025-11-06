@@ -14,7 +14,6 @@ class SoundManager
 {
 
 public:
-	static SoundManager& instance();
 	bool initSound();
 	void update();
 	int playSound(std::string id, int distanceMagnitude=1, bool loops=false );
