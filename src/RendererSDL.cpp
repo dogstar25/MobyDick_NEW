@@ -106,28 +106,18 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 	}
 	else if (textureBlendMode == RenderBlendMode::CUSTOM_1_MASKED_OVERLAY) {
 
-
-
-
 		SDL_BlendMode maskedOverlayBlendMode =
 			SDL_ComposeCustomBlendMode(
 				SDL_BLENDFACTOR_ZERO,
+				SDL_BLENDFACTOR_ONE,
+				SDL_BLENDOPERATION_ADD,
 				SDL_BLENDFACTOR_ZERO,
-				SDL_BLENDOPERATION_MAXIMUM,
-				SDL_BLENDFACTOR_ZERO,
-				SDL_BLENDFACTOR_ZERO,
-				SDL_BLENDOPERATION_MINIMUM);
+				SDL_BLENDFACTOR_SRC_ALPHA,
+				SDL_BLENDOPERATION_ADD);
 
 		///////////////////////TEMP FOR BLEND DEBUGGING////////////////////////////////////////
 
-		//static SDL_BlendFactor srcColorFactor = SDL_BLENDFACTOR_ZERO;
-		//static SDL_BlendFactor dstColorFactor = SDL_BLENDFACTOR_ZERO;
-		//static SDL_BlendOperation colorOperation = SDL_BLENDOPERATION_MAXIMUM;
-		//static SDL_BlendFactor srcAlphaFactor = SDL_BLENDFACTOR_ZERO;
-		//static SDL_BlendFactor dstAlphaFactor = SDL_BLENDFACTOR_ZERO;
-		//static SDL_BlendOperation alphaOperation = SDL_BLENDOPERATION_MINIMUM;
-
-		static SDL_BlendFactor srcColorFactor;
+		/*static SDL_BlendFactor srcColorFactor;
 		static SDL_BlendFactor dstColorFactor;
 		static SDL_BlendOperation colorOperation;
 		static SDL_BlendFactor srcAlphaFactor;
@@ -153,14 +143,11 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 			colorOperation,
 			srcAlphaFactor,
 			dstAlphaFactor,
-			alphaOperation);
+			alphaOperation);*/
+		/////////////////////////////////////////////////////////////////////////////////
 
-		////////////////////////////////////////////////////////////////////////////////////
-
-
-
-		//SDL_SetTextureBlendMode(sdlTexture->sdlTexture, maskedOverlayBlendMode);
-		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, customBlendMode);
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, maskedOverlayBlendMode);
+		//SDL_SetTextureBlendMode(sdlTexture->sdlTexture, customBlendMode);
 	}
 	else{
 		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_NONE);
