@@ -106,6 +106,9 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 	}
 	else if (textureBlendMode == RenderBlendMode::CUSTOM_1_MASKED_OVERLAY) {
 
+
+
+
 		SDL_BlendMode maskedOverlayBlendMode =
 			SDL_ComposeCustomBlendMode(
 				SDL_BLENDFACTOR_ZERO,
@@ -115,7 +118,49 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 				SDL_BLENDFACTOR_ZERO,
 				SDL_BLENDOPERATION_MINIMUM);
 
-		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, maskedOverlayBlendMode);
+		///////////////////////TEMP FOR BLEND DEBUGGING////////////////////////////////////////
+
+		//static SDL_BlendFactor srcColorFactor = SDL_BLENDFACTOR_ZERO;
+		//static SDL_BlendFactor dstColorFactor = SDL_BLENDFACTOR_ZERO;
+		//static SDL_BlendOperation colorOperation = SDL_BLENDOPERATION_MAXIMUM;
+		//static SDL_BlendFactor srcAlphaFactor = SDL_BLENDFACTOR_ZERO;
+		//static SDL_BlendFactor dstAlphaFactor = SDL_BLENDFACTOR_ZERO;
+		//static SDL_BlendOperation alphaOperation = SDL_BLENDOPERATION_MINIMUM;
+
+		static SDL_BlendFactor srcColorFactor;
+		static SDL_BlendFactor dstColorFactor;
+		static SDL_BlendOperation colorOperation;
+		static SDL_BlendFactor srcAlphaFactor;
+		static SDL_BlendFactor dstAlphaFactor;
+		static SDL_BlendOperation alphaOperation;
+
+		const SDL_BlendFactor items[] = { SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE };
+		ImGui::SetNextWindowPos(ImVec2(100, 500));
+		ImGui::Begin("blending");
+
+		ImGui::InputInt("srcColorFactor (1-10)", (int*)&srcColorFactor);
+		ImGui::InputInt("dstColorFactor (1-10)", (int*)&dstColorFactor);
+		ImGui::InputInt("colorOperation (1-5)", (int*)&colorOperation);
+		ImGui::InputInt("srcAlphaFactor (1-10)", (int*)&srcAlphaFactor);
+		ImGui::InputInt("dstAlphaFactor (1-10)", (int*)&dstAlphaFactor);
+		ImGui::InputInt("alphaOperation (1-5)", (int*)&alphaOperation);
+
+		ImGui::End();
+
+		SDL_BlendMode customBlendMode = SDL_ComposeCustomBlendMode(
+			srcColorFactor,
+			dstColorFactor,
+			colorOperation,
+			srcAlphaFactor,
+			dstAlphaFactor,
+			alphaOperation);
+
+		////////////////////////////////////////////////////////////////////////////////////
+
+
+
+		//SDL_SetTextureBlendMode(sdlTexture->sdlTexture, maskedOverlayBlendMode);
+		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, customBlendMode);
 	}
 	else{
 		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_NONE);

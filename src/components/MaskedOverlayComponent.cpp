@@ -99,6 +99,11 @@ std::optional<std::shared_ptr<GameObject>> MaskedOverlayComponent::getOverlayObj
 void MaskedOverlayComponent::render()
 {
 
+
+
+
+
+
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
 	//Set the target render to the composite texture for this component static_cast<SDLTexture*>(targetTexture)->sdlTexture)
@@ -140,7 +145,6 @@ void MaskedOverlayComponent::render()
 			SDL_FPoint newPosition = { topLeftPos.x - parentTopLeftPos.x,  topLeftPos.y - parentTopLeftPos.y };
 
 			maskObject->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT)->render(newPosition, RenderBlendMode::CUSTOM_1_MASKED_OVERLAY);
-			
 
 		}
 
@@ -150,7 +154,7 @@ void MaskedOverlayComponent::render()
 	game->renderer()->resetRenderTarget();
 
 	//Finally render the composite texture
-	renderComponent->render(m_compositeTexture.get(), RenderBlendMode::MODULATE);
+	renderComponent->render(m_compositeTexture.get(), RenderBlendMode::BLEND);
 
 	///////////////////////////////////////////
 	//NOTE: when rendering to a texture OR rendering a specific texture passed in as an argument

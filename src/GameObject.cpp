@@ -1305,47 +1305,47 @@ void GameObject::_imGuiDebugObject()
 
 
 	
-	if (type() == "BOBBY") {
+	//if (type() == "BOBBY") {
 
 
-		ImGui::Begin("Bobby Touching");
+	//	ImGui::Begin("Bobby Touching");
 
-		for (const auto& item : m_touchingGameObjects) {
+	//	for (const auto& item : m_touchingGameObjects) {
 
-			if (item.second.lock()) {
-				ImGui::TextUnformatted(item.second.lock()->type().c_str());
-			}
-		}
+	//		if (item.second.lock()) {
+	//			ImGui::TextUnformatted(item.second.lock()->type().c_str());
+	//		}
+	//	}
 
-		ImGui::End();
+	//	ImGui::End();
 
-	}
+	//}
 
-	if (name() == "PICTURE_MERMAID") {
-
-
-		ImGui::Begin("Mermaid Touching");
-
-		const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
-
-		b2BodyId bodyId = physicsComponent->physicsBodyId();
-
-		b2Transform position = b2Body_GetTransform(bodyId);
-
-		ImGui::Text("position: (%.2f, %.2f)", 
-			position.p.x, position.p.y);
-
-		for (const auto& item : m_touchingGameObjects) {
-
-			if (item.second.lock()) {
-				ImGui::TextUnformatted(item.second.lock()->type().c_str());
-			}
-		}
+	//if (name() == "PICTURE_MERMAID") {
 
 
-		ImGui::End();
+	//	ImGui::Begin("Mermaid Touching");
 
-	}
+	//	const auto& physicsComponent = getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
+
+	//	b2BodyId bodyId = physicsComponent->physicsBodyId();
+
+	//	b2Transform position = b2Body_GetTransform(bodyId);
+
+	//	ImGui::Text("position: (%.2f, %.2f)", 
+	//		position.p.x, position.p.y);
+
+	//	for (const auto& item : m_touchingGameObjects) {
+
+	//		if (item.second.lock()) {
+	//			ImGui::TextUnformatted(item.second.lock()->type().c_str());
+	//		}
+	//	}
+
+
+	//	ImGui::End();
+
+	//}
 
 	//if (type() == "HOUSE_OVERLAY_FRONT") {
 
