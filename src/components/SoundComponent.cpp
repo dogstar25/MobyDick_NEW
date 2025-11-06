@@ -2,7 +2,6 @@
 #include "../SoundManager.h"
 #include "../LevelManager.h"
 #include "../IMGui/IMGuiUtil.h"
-#include <memory.h>
 
 #include "../EnumMap.h"
 #include "../game.h"
@@ -26,6 +25,8 @@ SoundComponent::SoundComponent(Json::Value componentJSON, GameObject* parent) :
 		m_sounds.emplace(soundItem.id, soundItem);
 
 	}
+
+	m_soundManagerRef = game->soundManager();
 
 }
 
@@ -80,7 +81,7 @@ void SoundComponent::update()
 				const auto parentPosition = parent()->getCenterPosition();
 				int soundDistanceAdjustment = _calculateSoundDistanceAdjustment(playerPosition, parentPosition, itr->second.soundRange, itr->second.lineOfSightAdjustment);
 
-				SoundManager::instance().setChannelDistance(itr->second.soundChannel.value(), soundDistanceAdjustment);
+				game->soundManager()->setChannelDistance(itr->second.soundChannel.value(), soundDistanceAdjustment);
 			}
 		}
 
@@ -101,9 +102,9 @@ void SoundComponent::postInit()
 
 		if (itr->second.isContinuous == true) {
 
-			int channel = SoundManager::instance().playSound(itr->second.soundAssetId, 255, true);
+			int channel = game->soundManager()->playSound(itr->second.soundAssetId, 255, true);
 			itr->second.soundChannel = channel;
-			SoundManager::instance().setChannelDistance(itr->second.soundChannel.value(), 255);
+			game->soundManager()->setChannelDistance(itr->second.soundChannel.value(), 255);
 
 		}
 
@@ -136,8 +137,8 @@ void SoundComponent::stopSound(std::string soundId)
 
 	if (m_sounds.find(soundId) != m_sounds.end()) {
 
-		if (m_sounds.at(soundId).soundChannel.has_value()) {
-			SoundManager::instance().stopChannel(m_sounds.at(soundId).soundChannel.value());
+		if (m_sounds.at(soundId).soundChannel.has_value() && m_soundManagerRef.expired() == false) {
+			m_soundManagerRef.lock()->stopChannel(m_sounds.at(soundId).soundChannel.value());
 
 			//Set this sounds channel to nothing because it has been freed and could have been grabbed by another sound
 			m_sounds.at(soundId).soundChannel = std::nullopt;
@@ -171,7 +172,7 @@ int SoundComponent::playSound(std::string soundId)
 		}
 
 		//play
-		channel = SoundManager::instance().playSound(m_sounds.at(soundId).soundAssetId, soundDistanceMagnitude, m_sounds.at(soundId).isContinuous);
+		channel = game->soundManager()->playSound(m_sounds.at(soundId).soundAssetId, soundDistanceMagnitude, m_sounds.at(soundId).isContinuous);
 		m_sounds.at(soundId).soundChannel = channel;
 	}
 

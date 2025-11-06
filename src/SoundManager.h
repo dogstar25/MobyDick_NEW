@@ -14,6 +14,10 @@ class SoundManager
 {
 
 public:
+
+	SoundManager();
+	~SoundManager();
+
 	bool initSound();
 	void update();
 	int playSound(std::string id, int distanceMagnitude=1, bool loops=false );
@@ -27,13 +31,12 @@ public:
 
 	void pauseSound();
 	void resumeSound();
+	bool isChannelActive(int channel);
 
 	float test;
 	
 
 private:
-	SoundManager();
-	~SoundManager();
 
 	std::map<std::string, Mix_Chunk*> m_sfxChunks;
 	std::map<std::string, Mix_Music*> m_sfxMusic;

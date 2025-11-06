@@ -28,6 +28,7 @@
 #include "EnvironmentEvents/EnvironmentEventFactory.h"
 #include "ContactHandler.h"
 #include "gameStateManager.h"
+#include "SoundManager.h"
 #include "NavigationManager.h"
 #include "ContactFilter.h"
 #include "ContextManager.h"
@@ -49,7 +50,8 @@ public:
 	~Game();
 
 	virtual bool init(
-		std::shared_ptr<ContactHandler>, 
+		std::shared_ptr<SoundManager>,
+		std::shared_ptr<ContactHandler>,
 		std::shared_ptr<ContactFilter>,
 		std::shared_ptr<ComponentFactory>, 
 		std::shared_ptr<ActionFactory>, 
@@ -88,6 +90,9 @@ public:
 	}
 	std::shared_ptr <ContactHandler> contactHandler() {
 		return m_contactHandler;
+	}
+	std::shared_ptr<SoundManager> soundManager() {
+		return m_soundManager;
 	}
 	std::shared_ptr<ContactFilter> contactFilter() {
 		return m_contactFilter;
@@ -149,6 +154,7 @@ protected:
 	SDL_Point m_logicalCanvasSize{};
 	SDL_Point m_worldTileSize{};
 	md::Platform m_platform{};
+	std::shared_ptr<SoundManager> m_soundManager{};
 	std::shared_ptr<ContactHandler> m_contactHandler{};
 	std::shared_ptr<ContactFilter> m_contactFilter{};
 	std::shared_ptr<ComponentFactory> m_componentFactory{};

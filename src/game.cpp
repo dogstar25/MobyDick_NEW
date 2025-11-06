@@ -26,11 +26,12 @@ Game::~Game()
 {
 
 	ImGui::DestroyContext();
-	SoundManager::instance().shutDown();
+	
 }
 
 bool Game::init(
-	std::shared_ptr<ContactHandler> contactHandler, 
+	std::shared_ptr<SoundManager> soundManager, 
+	std::shared_ptr<ContactHandler> contactHandler,
 	std::shared_ptr<ContactFilter> contactFilter,
 	std::shared_ptr<ComponentFactory> componentFactory, 
 	std::shared_ptr<ActionFactory> actionFactory, 
@@ -49,6 +50,7 @@ bool Game::init(
 {
 
 	//Set all of our game specific factories and managers
+	m_soundManager = soundManager;
 	m_contactHandler = contactHandler;
 	m_contactFilter = contactFilter;
 	m_componentFactory = componentFactory;
@@ -153,11 +155,11 @@ void Game::play()
 			}
 			else if (action->actionCode == SCENE_ACTION_WINDOW_PAUSE) {
 				m_gameState = GameState::PAUSE;
-				SoundManager::instance().pauseSound();
+				soundManager()->pauseSound();
 			}
 			else if (action->actionCode == SCENE_ACTION_WINDOW_UNPAUSE) {
 				m_gameState = GameState::PLAY;
-				SoundManager::instance().resumeSound();
+				soundManager()->resumeSound();
 			}
 			else if (action->actionCode == SCENE_ACTION_EXIT) {
 				SceneManager::instance().popScene();

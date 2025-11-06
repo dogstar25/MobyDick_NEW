@@ -139,10 +139,24 @@ void SoundManager::stopSound()
 
 }
 
+bool SoundManager::isChannelActive(int channel) 
+{
+	if (Mix_Playing(channel) != 0 ||
+		Mix_Paused(channel) != 0) {
+		return true;
+		}
+	else {
+		return false;
+	}
+}
+
 void SoundManager::stopChannel(int channel)
 {
-	Mix_SetDistance(channel, 0);
-	Mix_HaltChannel(channel);
+	if (isChannelActive(channel)) {
+
+		Mix_SetDistance(channel, 0);
+		Mix_HaltChannel(channel);
+	}
 
 }
 

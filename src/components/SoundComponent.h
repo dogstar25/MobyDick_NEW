@@ -6,10 +6,12 @@
 #include <vector>
 #include <unordered_map>
 #include <optional>
+#include <memory.h>
 
 #include <json/json.h>
 #include <box2d/box2d.h>
 
+#include "../SoundManager.h"
 #include "../actions/Action.h"
 #include "../actions/UseAction.h"
 #include "../actions/NoAction.h"
@@ -48,6 +50,7 @@ public:
 
 private:
 	std::unordered_map<std::string, SoundItem > m_sounds{};
+	std::weak_ptr<SoundManager> m_soundManagerRef{};
 
 
 	int _calculateSoundDistanceAdjustment(SDL_FPoint, SDL_FPoint, int soundRange, int lineOfSightAdjustment);
