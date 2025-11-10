@@ -95,9 +95,9 @@ namespace ImGui
 
 		ImGui::Text("World Coords");
 		ImGui::SameLine();
-		ImGui::Value("X", game->getMouseScreenPosition().x);
+		ImGui::Value("X", util::getMouseWorldPosition().x);
 		ImGui::SameLine();
-		ImGui::Value("Y", game->getMouseScreenPosition().y);
+		ImGui::Value("Y", util::getMouseWorldPosition().y);
 
 
 		int dwWidth = game->logicalCanvasSize().x / 2;

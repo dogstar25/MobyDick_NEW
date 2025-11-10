@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 
 #include <fstream>
+#include <Windows.h>
 
 //#include "game.h"
 #include "gameConfig.h"
@@ -139,14 +140,21 @@ std::optional<SceneAction> SceneManager::pollEvents()
 				count++;
 				switch (event.window.event)
 				{
+					
 					case SDL_WINDOWEVENT_FOCUS_LOST:
 					case SDL_WINDOWEVENT_MINIMIZED:
+						if (::IsDebuggerPresent() != 0) {
+							break;
+						}
 						sceneAction = SceneAction{};
 						sceneAction->actionCode = SCENE_ACTION_WINDOW_PAUSE;
 						break;
 					case SDL_WINDOWEVENT_RESTORED:
 					case SDL_WINDOWEVENT_MAXIMIZED:
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
+						if (::IsDebuggerPresent() != 0) {
+							break;
+						}
 						sceneAction = SceneAction{};
 						sceneAction->actionCode = SCENE_ACTION_WINDOW_UNPAUSE;
 						break;

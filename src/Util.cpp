@@ -250,8 +250,8 @@ namespace util
 		SDL_Point position{};
 
 		position = {
-			std::max(0, (int)trunc (pixelX / game->worldTileSize().x)),
-			std::max(0, (int)trunc (pixelY / game->worldTileSize().y))
+			std::max(0, (int)floor (pixelX / game->worldTileSize().x)),
+			std::max(0, (int)floor (pixelY / game->worldTileSize().y))
 		};
 
 		return position;

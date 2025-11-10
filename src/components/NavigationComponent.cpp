@@ -21,8 +21,16 @@ NavigationComponent::NavigationComponent(Json::Value componentJSON, GameObject* 
 
 	//Based on the size of the object, calculate the destination met tolerance
 	auto tileSize = game->worldTileSize().x;
-	m_navigationDestinationTolerance = float((m_passageFitSizeCategory + 1) * tileSize / 2);
 	m_navigationStuckTolerance = float((m_passageFitSizeCategory + 1) * tileSize / 16);
+
+	if (componentJSON.isMember("destinationReachedToleranceOverride")) {
+
+		m_navigationDestinationTolerance = componentJSON["destinationReachedToleranceOverride"].asInt();
+	}
+	else {
+		m_navigationDestinationTolerance = float((m_passageFitSizeCategory + 1) * tileSize / 2);
+
+	}
 
 }
 
@@ -62,7 +70,7 @@ NavigationStatus NavigationComponent::navigateTo(float pixelX, float pixelY)
 	//If we have been stuck in the same spot for a few seconds then
 	//return stuck status and let the brain decide what to do
 	//bool isStuck = _isStuck();
-	if (_isStuck()) {
+	if (isStuck()) {
 		return NavigationStatus::STUCK;
 	}
 
@@ -212,7 +220,7 @@ bool NavigationComponent::_buildPathToDestination()
 
 				//test
 
-				//parent()->parentScene()->updateGridDisplay(pathNode->position.x, pathNode->position.y, TURN_ON, Colors::GREEN);
+				parent()->parentScene()->updateGridDisplay(pathNode->position.x, pathNode->position.y, TURN_ON, Colors::GREEN);
 
 				/////
 
@@ -262,33 +270,38 @@ bool NavigationComponent::_buildPathToDestination()
 
 }
 
-bool NavigationComponent::_isStuck()
+bool NavigationComponent::isStuck()
 {
 	bool isStuck{};
 
-	//Get current location
-	float distanceTraveled = util::calculateDistance(parent()->getCenterPosition(), m_previousLocation);
-	if (distanceTraveled < m_navigationStuckTolerance) {
-
-		if (m_stuckTimer.isSet() == false) {
-			m_stuckTimer = { 2 };
-			//std::cout << "Reset Timer" << std::endl;
-		}
-		else {
-			if (m_stuckTimer.hasMetTargetDuration()) {
-				m_stuckTimer = { 0 };
-				//Fcoutstd::cout << "Stuck!" << std::endl;
-				isStuck = true;
-			}
-		}
-	}
-	else {
-		m_stuckTimer = { 0 };
-	}
-
-	m_previousLocation = parent()->getCenterPosition();
-
 	return isStuck;
+
+	////////////////////////////////////////////////////////////////
+	// // Commenting this out . it should be used by game specific override functions. its virtual
+	// saving for use by another game if it needs it
+	//Get current location
+	//float distanceTraveled = util::calculateDistance(parent()->getCenterPosition(), m_previousLocation);
+	//if (distanceTraveled < m_navigationStuckTolerance) {
+
+	//	if (m_stuckTimer.isSet() == false) {
+	//		m_stuckTimer = { 2 };
+	//		//std::cout << "Reset Timer" << std::endl;
+	//	}
+	//	else {
+	//		if (m_stuckTimer.hasMetTargetDuration()) {
+	//			m_stuckTimer = { 0 };
+	//			//Fcoutstd::cout << "Stuck!" << std::endl;
+	//			isStuck = true;
+	//		}
+	//	}
+	//}
+	//else {
+	//	m_stuckTimer = { 0 };
+	//}
+
+	//m_previousLocation = parent()->getCenterPosition();
+
+	//return isStuck;
 
 
 }
@@ -391,6 +404,10 @@ bool NavigationComponent::_isValidNode(const int x, const int y)
 	int yMax = navMap[0].size();
 	bool passable{true};
 
+	if (x==17 && y==142) {
+		int todd = 1;
+
+	}
 	//Check map boundaries - small navigating object
 	if (x >= 0 && x < xMax && y > 0 && y < yMax) {
 
@@ -502,9 +519,6 @@ bool NavigationComponent::_applyNavObjectSizeCheck(int x, int y, int objectCateg
 void NavigationComponent::_moveTo(SDL_Point destinationTile)
 {
 
-	//Need the objects size to calc the right pixel position
-	const auto objectSize = parent()->getSize();
-
 	SDL_FPoint destinationPixelLoc = util::tileToPixelLocation((float)destinationTile.x, (float)destinationTile.y);
 
 	b2Vec2 trajectory{};
@@ -512,14 +526,8 @@ void NavigationComponent::_moveTo(SDL_Point destinationTile)
 	trajectory.y = destinationPixelLoc.y - parent()->getCenterPosition().y;
 
 	/// debug line
-	//float x = parent()->getCenterPosition().x;
-	//float y = parent()->getCenterPosition().y;
-
-	//glm::vec2 startPoint = { x, y};
-	//glm::vec2 endPoint = { destinationPixelLoc.x, destinationPixelLoc.y };
-	//glm::uvec4 color = { 255,255,255,255 };
-	//game->renderer()->addLine(startPoint, endPoint, color);
-	///
+	float x = parent()->getCenterPosition().x;
+	float y = parent()->getCenterPosition().y;
 
 	b2Normalize(trajectory);
 
@@ -531,11 +539,6 @@ void NavigationComponent::_moveTo(SDL_Point destinationTile)
 	_applyAvoidanceMovement(trajectory);
 
 	moveAction->perform(trajectory);
-
-
-
-	//Set the angle to point towards the next nav point using the trajectory we calculated above
-	//_rotateTowards(trajectory, parent());
 
 
 }

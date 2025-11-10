@@ -2,7 +2,7 @@
 
 #include "../GameObject.h"
 
-void DefaultMoveAction::perform(int direction, int strafe)
+void DefaultMoveAction::perform(b2Vec2 trajectory)
 {
 	float speed{10};
 	const auto& physicsComponent = m_parent->getComponent<PhysicsComponent>(ComponentTypes::PHYSICS_COMPONENT);
@@ -13,6 +13,6 @@ void DefaultMoveAction::perform(int direction, int strafe)
 		speed = vitalityComponent->speed();
 	}
 
-	physicsComponent->applyMovement(speed, direction, strafe);
+	physicsComponent->applyMovement(speed, trajectory);
 
 }

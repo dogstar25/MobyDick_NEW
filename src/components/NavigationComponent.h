@@ -35,7 +35,7 @@ public:
 	void postInit() override;
 	NavigationStatus navigateTo(float pixelX, float pixelY);
 	void navigateStop();
-
+	virtual bool isStuck();
 
 private:
 
@@ -52,7 +52,7 @@ private:
 	void _applyAvoidanceMovement2(b2Vec2& trajectory);
 	void _checkLocation(const int x, const int y);
 	bool _applyNavObjectSizeCheck(int x, int y, int objectCategory);
-	bool _isStuck();
+	
 
 
 	Timer m_pathRefreshTimer{ 0.5, true };
