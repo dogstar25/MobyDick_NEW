@@ -296,6 +296,9 @@ b2BodyId PhysicsComponent::_buildB2Body(Json::Value physicsComponentJSON, Json::
 	if (physicsComponentJSON.isMember("isBullet")) {
 		bodyDef.isBullet = physicsComponentJSON["isBullet"].asBool();
 	}
+	if (physicsComponentJSON.isMember("isFixedRotation")) {
+		bodyDef.fixedRotation = physicsComponentJSON["isFixedRotation"].asBool();
+	}
 
 	b2BodyId bodyId = b2CreateBody(physicsWorldId, &bodyDef);
 
@@ -504,13 +507,33 @@ void PhysicsComponent::applyImpulse(float speed, int direction, int strafeDirect
 
 }
 
-void PhysicsComponent::applyMovement(float velocity, b2Vec2 trajectory)
+void PhysicsComponent::applyMovement(float speed, b2Vec2 trajectory)
 {
 
-	trajectory.x *= velocity;
-	trajectory.y *= velocity;
+	constexpr float kDirectionEpsilon = 1e-4f;
 
-	b2Body_SetLinearVelocity(m_physicsBodyId, trajectory);
+	const auto len = b2Length(trajectory);
+	if (len < kDirectionEpsilon) {
+
+		b2Body_SetLinearVelocity(m_physicsBodyId, {0.0f, 0.0f});
+		return;
+
+	}
+
+	//normalize
+	trajectory.x /= len;
+	trajectory.y /= len;
+
+	//Calculate basic velocity
+	b2Vec2 velocity = {
+		trajectory.x * speed,
+		trajectory.y * speed
+	};
+
+	//Get objects current velocity
+	const b2Vec2 currentLinearVelocity = b2Body_GetLinearVelocity(m_physicsBodyId);
+
+	b2Body_SetLinearVelocity(m_physicsBodyId, velocity);
 
 }
 

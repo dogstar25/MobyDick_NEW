@@ -15,6 +15,7 @@
 #include "GameStateManager.h"
 #include "NavigationManager.h"
 #include "ResourceManager.h"
+#include "SoundManager.h"
 #include <source_location>
 
 #include <print>
@@ -25,11 +26,12 @@ Game::~Game()
 {
 
 	ImGui::DestroyContext();
-
+	
 }
 
 bool Game::init(
-	std::shared_ptr<ContactHandler> contactHandler, 
+	std::shared_ptr<SoundManager> soundManager, 
+	std::shared_ptr<ContactHandler> contactHandler,
 	std::shared_ptr<ContactFilter> contactFilter,
 	std::shared_ptr<ComponentFactory> componentFactory, 
 	std::shared_ptr<ActionFactory> actionFactory, 
@@ -48,6 +50,7 @@ bool Game::init(
 {
 
 	//Set all of our game specific factories and managers
+	m_soundManager = soundManager;
 	m_contactHandler = contactHandler;
 	m_contactFilter = contactFilter;
 	m_componentFactory = componentFactory;
@@ -64,6 +67,7 @@ bool Game::init(
 	m_enumMap = enumMap;
 	m_colorMap = colorMap;
 
+
 	//Initialize the Game Base Path
 	mobydick::ResourceManager::init();
 	 
@@ -78,6 +82,9 @@ bool Game::init(
 		assert(false && "SDL_Init faled!");
 	}
 	
+	//Determine platform
+	m_platform = _determinePlatform();
+
 	//Create the game window
 	uint16_t windowFlags = SDL_WINDOW_ALLOW_HIGHDPI;
 	if (GameConfig::instance().windowFullscreen() == true)
@@ -148,11 +155,11 @@ void Game::play()
 			}
 			else if (action->actionCode == SCENE_ACTION_WINDOW_PAUSE) {
 				m_gameState = GameState::PAUSE;
-				SoundManager::instance().pauseSound();
+				soundManager()->pauseSound();
 			}
 			else if (action->actionCode == SCENE_ACTION_WINDOW_UNPAUSE) {
 				m_gameState = GameState::PLAY;
-				SoundManager::instance().resumeSound();
+				soundManager()->resumeSound();
 			}
 			else if (action->actionCode == SCENE_ACTION_EXIT) {
 				SceneManager::instance().popScene();
@@ -374,5 +381,30 @@ std::optional<SDL_Point> Game::_determineScreenResolution()
 	}
 
 	return screenResolution;
+
+}
+
+md::Platform Game::_determinePlatform()
+{
+
+	auto platformStr = SDL_GetPlatform();
+
+	if (platformStr == "Android") {
+		m_platform = md::Platform::ANDROIDX;
+	}
+	else if (platformStr == "iOS") {
+		m_platform = md::Platform::IOS;
+	}
+	else if (platformStr == "Mac OS X" || platformStr == "macOS") {
+		m_platform = md::Platform::MAC;
+	}
+	else if (platformStr == "Windows") {
+		m_platform = md::Platform::WINDOWS;
+	}
+	else if (platformStr == "Linux") {
+		m_platform = md::Platform::LINUX;
+	}
+
+	return m_platform;
 
 }

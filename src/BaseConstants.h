@@ -4,6 +4,19 @@
 
 #include <SDL2/SDL.h>
 
+namespace md {
+
+	enum Platform {
+
+		WINDOWS = 1,
+		ANDROIDX = 2,
+		IOS = 3,
+		MAC = 4,
+		LINUX = 5
+
+	};
+}
+
 enum NavigationStatus {
 
 	IN_PROGRESS = 0,

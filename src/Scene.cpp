@@ -78,7 +78,7 @@ Scene::Scene(std::string sceneId)
 	if (definitionJSON.isMember("backgroundMusicId")) {
 
 		std::string backGroundMusicId = definitionJSON["backgroundMusicId"].asString();
-		SoundManager::instance().playMusic(backGroundMusicId, -1);
+		game->soundManager()->playMusic(backGroundMusicId, -1);
 	}
 
 }
@@ -114,7 +114,7 @@ void Scene::loadLevel(std::string levelId)
 	m_currentLevelId = levelId;
 
 	//Stop music from previous level
-	SoundManager::instance().stopMusic();
+	game->soundManager()->stopMusic();
 
 	game->_displayLoadingMsg();
 
@@ -244,7 +244,7 @@ void Scene::update() {
 	}
 
 	Camera::instance().update();
-	SoundManager::instance().update();
+	game->soundManager()->update();
 
 	if (hasPhysics()) {
 		stepB2PhysicsWorld();

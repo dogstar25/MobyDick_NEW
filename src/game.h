@@ -28,6 +28,7 @@
 #include "EnvironmentEvents/EnvironmentEventFactory.h"
 #include "ContactHandler.h"
 #include "gameStateManager.h"
+#include "SoundManager.h"
 #include "NavigationManager.h"
 #include "ContactFilter.h"
 #include "ContextManager.h"
@@ -49,7 +50,8 @@ public:
 	~Game();
 
 	virtual bool init(
-		std::shared_ptr<ContactHandler>, 
+		std::shared_ptr<SoundManager>,
+		std::shared_ptr<ContactHandler>,
 		std::shared_ptr<ContactFilter>,
 		std::shared_ptr<ComponentFactory>, 
 		std::shared_ptr<ActionFactory>, 
@@ -88,6 +90,9 @@ public:
 	}
 	std::shared_ptr <ContactHandler> contactHandler() {
 		return m_contactHandler;
+	}
+	std::shared_ptr<SoundManager> soundManager() {
+		return m_soundManager;
 	}
 	std::shared_ptr<ContactFilter> contactFilter() {
 		return m_contactFilter;
@@ -132,7 +137,11 @@ public:
 	std::shared_ptr<ColorMap> colorMap() {
 		return m_colorMap;
 	}
+	md::Platform platform(){
 
+		return m_platform;
+	
+	}
 	SDL_FPoint getMouseScreenPosition();
 
 	Renderer* renderer() { return m_renderer.get(); }
@@ -144,6 +153,8 @@ protected:
 	SDL_Rect m_worldBounds{};
 	SDL_Point m_logicalCanvasSize{};
 	SDL_Point m_worldTileSize{};
+	md::Platform m_platform{};
+	std::shared_ptr<SoundManager> m_soundManager{};
 	std::shared_ptr<ContactHandler> m_contactHandler{};
 	std::shared_ptr<ContactFilter> m_contactFilter{};
 	std::shared_ptr<ComponentFactory> m_componentFactory{};
@@ -165,6 +176,8 @@ protected:
 	std::optional<SDL_Point> _determineScreenResolution();
 	std::expected<SDL_Point, std::string> _determineScreenSize(Renderer* renderer);
 
+private:
+		md::Platform _determinePlatform();
 };
 
 

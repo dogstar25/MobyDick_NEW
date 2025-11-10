@@ -20,17 +20,17 @@ MaskedOverlayComponent::MaskedOverlayComponent(Json::Value componentJSON, GameOb
 		m_maskObjectNames.push_back(objectItr.asString());
 	}
 
+	m_compositeTexture = game->renderer()->createEmptyTexture((int)parent->getSize().x, (int)parent->getSize().y, parent->name());
+
+	m_compositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
+		(int)parent->getSize().x,
+		(int)parent->getSize().y);
+
+
 }
 
 void MaskedOverlayComponent::postInit()
 {
-
-	m_compositeTexture = game->renderer()->createEmptyTexture((int)parent()->getSize().x, (int)parent()->getSize().y, parent()->name());
-
-	m_compositeTexture->textureAtlasQuad = SDL_Rect(0, 0,
-		(int)parent()->getSize().x,
-		(int)parent()->getSize().y);
-
 
 	//Go and find the mask objects to be added to this component.
 	//These are masks that are already created like the player mask
@@ -99,10 +99,16 @@ std::optional<std::shared_ptr<GameObject>> MaskedOverlayComponent::getOverlayObj
 void MaskedOverlayComponent::render()
 {
 
+
+
+
+
+
 	const auto& renderComponent = parent()->getComponent<RenderComponent>(ComponentTypes::RENDER_COMPONENT);
 
 	//Set the target render to the composite texture for this component static_cast<SDLTexture*>(targetTexture)->sdlTexture)
 	game->renderer()->setRenderTarget(m_compositeTexture.get());
+	game->renderer()->clear();
 
 	//Render the overlay objects to the composite texture
 	bool first = true;

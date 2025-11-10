@@ -21,19 +21,10 @@ SoundManager::SoundManager()
 
 SoundManager::~SoundManager()
 {
-
-
 	stopMusic();
 	stopSound();
 	m_sfxChunks.clear();
 	m_sfxMusic.clear();
-}
-
-SoundManager& SoundManager::instance()
-{
-	static SoundManager singletonInstance;
-	return singletonInstance;
-
 }
 
 bool SoundManager::initSound()
@@ -148,10 +139,24 @@ void SoundManager::stopSound()
 
 }
 
+bool SoundManager::isChannelActive(int channel) 
+{
+	if (Mix_Playing(channel) != 0 ||
+		Mix_Paused(channel) != 0) {
+		return true;
+		}
+	else {
+		return false;
+	}
+}
+
 void SoundManager::stopChannel(int channel)
 {
-	Mix_SetDistance(channel, 0);
-	Mix_HaltChannel(channel);
+	if (isChannelActive(channel)) {
+
+		Mix_SetDistance(channel, 0);
+		Mix_HaltChannel(channel);
+	}
 
 }
 

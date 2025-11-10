@@ -12,8 +12,6 @@
 #include "actions/Action.h"
 
 
-
-
 class Camera
 {
 public:

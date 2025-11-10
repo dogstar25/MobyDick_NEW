@@ -109,13 +109,45 @@ void RendererSDL::drawSprite(int layer, SDL_FRect destQuad, SDL_Color color, Tex
 		SDL_BlendMode maskedOverlayBlendMode =
 			SDL_ComposeCustomBlendMode(
 				SDL_BLENDFACTOR_ZERO,
+				SDL_BLENDFACTOR_ONE,
+				SDL_BLENDOPERATION_ADD,
 				SDL_BLENDFACTOR_ZERO,
-				SDL_BLENDOPERATION_MAXIMUM,
-				SDL_BLENDFACTOR_ZERO,
-				SDL_BLENDFACTOR_ZERO,
-				SDL_BLENDOPERATION_MINIMUM);
+				SDL_BLENDFACTOR_SRC_ALPHA,
+				SDL_BLENDOPERATION_ADD);
+
+		///////////////////////TEMP FOR BLEND DEBUGGING////////////////////////////////////////
+
+		/*static SDL_BlendFactor srcColorFactor;
+		static SDL_BlendFactor dstColorFactor;
+		static SDL_BlendOperation colorOperation;
+		static SDL_BlendFactor srcAlphaFactor;
+		static SDL_BlendFactor dstAlphaFactor;
+		static SDL_BlendOperation alphaOperation;
+
+		const SDL_BlendFactor items[] = { SDL_BLENDFACTOR_ZERO, SDL_BLENDFACTOR_ONE };
+		ImGui::SetNextWindowPos(ImVec2(100, 500));
+		ImGui::Begin("blending");
+
+		ImGui::InputInt("srcColorFactor (1-10)", (int*)&srcColorFactor);
+		ImGui::InputInt("dstColorFactor (1-10)", (int*)&dstColorFactor);
+		ImGui::InputInt("colorOperation (1-5)", (int*)&colorOperation);
+		ImGui::InputInt("srcAlphaFactor (1-10)", (int*)&srcAlphaFactor);
+		ImGui::InputInt("dstAlphaFactor (1-10)", (int*)&dstAlphaFactor);
+		ImGui::InputInt("alphaOperation (1-5)", (int*)&alphaOperation);
+
+		ImGui::End();
+
+		SDL_BlendMode customBlendMode = SDL_ComposeCustomBlendMode(
+			srcColorFactor,
+			dstColorFactor,
+			colorOperation,
+			srcAlphaFactor,
+			dstAlphaFactor,
+			alphaOperation);*/
+		/////////////////////////////////////////////////////////////////////////////////
 
 		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, maskedOverlayBlendMode);
+		//SDL_SetTextureBlendMode(sdlTexture->sdlTexture, customBlendMode);
 	}
 	else{
 		SDL_SetTextureBlendMode(sdlTexture->sdlTexture, SDL_BLENDMODE_NONE);
@@ -218,6 +250,8 @@ std::shared_ptr<Texture> RendererSDL::createEmptyTexture(int width, int height, 
 
 	texture->sdlTexture = SDL_CreateTexture(game->renderer()->sdlRenderer(), SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET, (int)width, (int)height);
+
+	SDL_SetTextureBlendMode(texture->sdlTexture, SDL_BLENDMODE_BLEND);
 
 	texture->textureAtlasQuad.x = 0;
 	texture->textureAtlasQuad.y = 0;

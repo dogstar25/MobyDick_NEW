@@ -331,7 +331,7 @@ void LevelManager::_startBackgroundMusic()
 	//If there is background music specified then play it
 	if (m_backgroundMusicAssetId.has_value()) {
 
-		SoundManager::instance().playMusic(m_backgroundMusicAssetId.value(), -1);
+		game->soundManager()->playMusic(m_backgroundMusicAssetId.value(), -1);
 	}
 
 
