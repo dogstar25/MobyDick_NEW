@@ -142,7 +142,7 @@ std::optional<SceneAction> SceneManager::pollEvents()
 				count++;
 				switch (event.window.event)
 				{
-					
+#if defined(_WIN32)					
 					case SDL_WINDOWEVENT_FOCUS_LOST:
 					case SDL_WINDOWEVENT_MINIMIZED:
 						if (::IsDebuggerPresent() != 0) {
@@ -160,7 +160,7 @@ std::optional<SceneAction> SceneManager::pollEvents()
 						sceneAction = SceneAction{};
 						sceneAction->actionCode = SCENE_ACTION_WINDOW_UNPAUSE;
 						break;
-
+#endif
 					default:
 						break;
 
