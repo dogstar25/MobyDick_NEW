@@ -650,6 +650,16 @@ SDL_FPoint GameObject::getCenterPosition()
 
 }
 
+SDL_Point GameObject::getTilePosition()
+{
+
+	const auto& transformComponent = getComponent<TransformComponent>(ComponentTypes::TRANSFORM_COMPONENT);
+	const auto centerPosition= transformComponent->getCenterPosition();
+
+	return util::pixelToTileLocation(centerPosition.x, centerPosition.y);
+
+}
+
 SDL_FRect GameObject::getPositionRect()
 {
 
@@ -1305,21 +1315,24 @@ void GameObject::_imGuiDebugObject()
 
 
 	
-	//if (type() == "BOBBY") {
+	if (type() == "GHOST") {
 
 
-	//	ImGui::Begin("Bobby Touching");
+		ImGui::Begin("GHOST Seen Objects");
 
-	//	for (const auto& item : m_touchingGameObjects) {
+		const auto& brainComponent = getComponent<BrainComponent>(ComponentTypes::BRAIN_COMPONENT);
 
-	//		if (item.second.lock()) {
-	//			ImGui::TextUnformatted(item.second.lock()->type().c_str());
-	//		}
-	//	}
 
-	//	ImGui::End();
+		for (const auto& item : brainComponent->seenObjects()) {
 
-	//}
+			if (!item.gameObject.expired()) {
+				ImGui::TextUnformatted(item.gameObject.lock()->type().c_str());
+			}
+		}
+
+		ImGui::End();
+
+	}
 
 	//if (name() == "PICTURE_MERMAID") {
 

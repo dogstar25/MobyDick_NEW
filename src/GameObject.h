@@ -101,6 +101,7 @@ public:
 	float getAngle();
 	float getAngleInDegrees();
 	SDL_FPoint getCenterPosition();
+	SDL_Point getTilePosition();
 	SDL_FPoint getTopLeftPosition();
 	SDL_FRect getPositionRect();
 	SDL_FPoint getOriginalPosition();

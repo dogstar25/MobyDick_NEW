@@ -71,7 +71,7 @@ AnimationComponent::AnimationComponent(Json::Value componentJSON, GameObject* pa
 	}
 
 	//If a default state is defined then set it, otherwise just use the first animation item in the map
-	//A;so this component could be used only for flashing
+	//Also this component could be used only for flashing
 	if (m_animations.empty() == false) {
 		if (componentJSON.isMember("default")) {
 
@@ -342,8 +342,14 @@ void AnimationComponent::setDefaultAnimationState(std::string animationId)
 	}
 }
 
-void AnimationComponent::setFlash(SDL_Color flashColor, float flashSpeed, int flashTimes)
+void AnimationComponent::setFlash(SDL_Color flashColor, float flashSpeed, int flashTimes, bool forceNewFlash)
 {
+
+	//If we already have a flash treatment going on, then do not override it unless forced
+	if (m_flashAnimation.has_value() && forceNewFlash == false) {
+		return;
+	 }
+
 	FlashAnimation flashAnimation;
 	flashAnimation.flashColor = flashColor;
 	flashAnimation.flashSpeed = flashSpeed;

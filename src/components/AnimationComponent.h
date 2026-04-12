@@ -67,7 +67,7 @@ public:
 
 	void setDefaultAnimationState(std::string animationId);
 	void setToDefaultAnimation();
-	void setFlash(SDL_Color flashColor, float flashSpeed, int flashTimes);
+	void setFlash(SDL_Color flashColor, float flashSpeed, int flashTimes, bool forceNewFlash=false);
 
 	std::unordered_map<std::string, Animation>& animations() { return m_animations; }
 

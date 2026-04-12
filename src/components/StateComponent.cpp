@@ -226,6 +226,11 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 		case GameObjectState::IDLE:
 
 			m_states.set((int)GameObjectState::WALK, false);
+			m_states.set((int)GameObjectState::WALK_RIGHT, false);
+			m_states.set((int)GameObjectState::WALK_LEFT, false);
+			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::WALK_DOWN, false);
+
 			m_states.set((int)GameObjectState::RUN, false);
 			m_states.set((int)GameObjectState::SPRINT, false);
 			m_states.set((int)GameObjectState::JUMP, false);
@@ -294,6 +299,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
@@ -314,6 +320,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
@@ -334,6 +341,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
@@ -354,6 +362,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_LEFT, false);
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
@@ -375,6 +384,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
@@ -395,6 +405,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
@@ -415,6 +426,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_DOWN, false);
@@ -435,6 +447,7 @@ void StateComponent::_setAndReconcileState(GameObjectState newState)
 			m_states.set((int)GameObjectState::WALK_RIGHT, false);
 			m_states.set((int)GameObjectState::WALK_UP, false);
 			m_states.set((int)GameObjectState::WALK_DOWN, false);
+			m_states.set((int)GameObjectState::IDLE, false);
 			m_states.set((int)GameObjectState::IDLE_RIGHT, false);
 			m_states.set((int)GameObjectState::IDLE_LEFT, false);
 			m_states.set((int)GameObjectState::IDLE_UP, false);
