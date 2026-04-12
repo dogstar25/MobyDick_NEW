@@ -68,6 +68,7 @@ public:
 	b2BodyId physicsBodyId() {	return m_physicsBodyId; }
 	bool isTouchingObjectsCapturedRequired() { return m_touchingObjectsCapturedRequired; }
 	b2BodyType originalPhysicsType() { return m_originalPhysicsType; }
+	b2Vec2 linearVelocity();
 
 	void changePhysicsBodyType(b2BodyType m_physicsType, bool changeOriginal=false);
 

@@ -537,6 +537,13 @@ void PhysicsComponent::applyMovement(float speed, b2Vec2 trajectory)
 
 }
 
+b2Vec2 PhysicsComponent::linearVelocity()
+{
+
+	return b2Body_GetLinearVelocity(m_physicsBodyId);
+
+}
+
 void PhysicsComponent::applyAngleImpulse(float force)
 {
 

@@ -23,10 +23,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 	m_isDependentObjectOwner = true;
 	std::optional<b2Vec2> sizeOverride{};
 
-	if (parent->type() == "SKULL") {
-		int todd = 1;
-	}
-
 	int childCount{};
 	for (Json::Value itrChild : componentJSON["childObjects"])
 	{
@@ -48,11 +44,6 @@ ChildrenComponent::ChildrenComponent(Json::Value componentJSON, GameObject* pare
 			sizeOverride = { itrChild["size"]["width"].asFloat(), itrChild["size"]["height"].asFloat() };
 		}
 
-		if (childObjectType == "LIT_AREA") {
-
-			int todd = 1;
-
-		}
 		//StepChild?
 		//StepChildren live in in main gameObjects collection for the scene and NOT under the parentObject
 		bool isStepChild = itrChild["isStepChild"].asBool();
@@ -223,6 +214,12 @@ void ChildrenComponent::update()
 
 		auto childSlotItr = childSlot.second.begin();
 		while (childSlotItr != childSlot.second.end()) {
+
+			if (parent()->type() == "BOBBYS_ROOM") {
+
+				int todd = 1;
+
+			}
 
 			if (childSlotItr->gameObject.has_value()) {
 				b2Vec2 newPosition =
@@ -691,6 +688,7 @@ void ChildrenComponent::addStepChild(std::shared_ptr<GameObject> gameObject, SDL
 	}
 
 }
+
 std::string ChildrenComponent::_determineSlotKey(SDL_FPoint absolutePosition)
 {
 	int count{};
