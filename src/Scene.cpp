@@ -320,6 +320,11 @@ void Scene::render() {
 
 	}
 
+	// Cutscene overlay (rendered on top of everything)
+	if (m_cutScene.has_value()) {
+		m_cutScene.value()->render();
+	}
+
 }
 
 void Scene::setDraggingObject(std::weak_ptr<GameObject> gameObject)
